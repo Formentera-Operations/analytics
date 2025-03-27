@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+ - name: oda
+   database: FO_RAW_DB
+   schema: '"oda"'
+   tables:
+     - name: '"Well"'
+     - name: "GL"
+     - name: "Account"
