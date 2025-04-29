@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+ - name: hubspot
+   database: fo_raw_db
+   schema: hubspot_raw
+   tables:
+     - name: companies
+       description: Raw companies data from HubSpot
+       columns:
+          - name: id
+            description: The unique identifier of the company
+            tests:
+              - unique
+              - not_null
+          
+          - name: properties
+            description: A variant column containing all company properties
+          
+          - name: created_at
+            description: Timestamp when the company was created in HubSpot
+          
+          - name: updated_at
+            description: Timestamp when the company was last updated in HubSpot
+          
+          - name: archived
+            description: Boolean flag indicating if the company is archived
+          
+          - name: _portable_extracted
+            description: Timestamp of when the record was extracted
+     - name: companies_property_history
+     - name: company_properties
+     - name: contacts
+     - name: contacts_property_history
+     - name: contact_properties
+     - name: emails 
+     - name: email_events
+     - name: engagements
+     - name: forms 
+     - name: meetings
+     - name: meeting_contacts
+     - name: owners
+     - name: teams
+     - name: tickets
+     - name: users
