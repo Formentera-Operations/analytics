@@ -1,0 +1,128 @@
+version: 2
+
+models:
+  - name: stg_oda__accounts
+    description: "Staged accounts data from ODA system"
+    config:
+      elementary:
+        timestamp_column: _fivetran_synced
+    
+    # Elementary model-level tests
+    tests:
+      - elementary.volume_anomalies:
+          tags: ["staging", "oda"]
+          anomaly_sensitivity: 3
+          fail_on_zero: true
+
+      - elementary.all_columns_anomalies:
+          tags: ["staging", "oda"]
+          exclude_regexp: ".*_date$|.*_synced$"
+          column_anomalies:
+            - null_count
+            - null_percent
+
+      - elementary.dimension_anomalies:
+          tags: ["staging", "oda"]
+          dimensions: 
+            - "account_type_name"
+            - "account_subtype_name"
+            - "is_active"
+          anomaly_sensitivity: 3
+
+      - elementary.freshness_anomalies:
+          tags: ["staging", "oda"]
+          timestamp_column: record_update_date
+          anomaly_sensitivity: 3
+
+    columns:
+      - name: account_id
+        description: "Primary identifier for accounts"
+        tests:
+          - unique
+          - not_null
+          - elementary.column_anomalies:
+              tags: ["staging", "oda"]
+              column_anomalies:
+                - null_count
+                - missing_count
+                - unique_count
+
+      - name: account_identity
+        description: "Account identity code"
+        tests:
+          - not_null
+
+      - name: account_code
+        description: "Account code identifier"
+        tests:
+          - not_null
+          - elementary.column_anomalies:
+              tags: ["staging", "oda"]
+              column_anomalies:
+                - null_count
+                - missing_count
+                - unique_count
+                - min_length
+                - max_length
+
+      - name: full_name
+        description: "Full name of the account"
+        tests:
+          - not_null
+
+      - name: account_type_id
+        description: "Foreign key to account types"
+        tests:
+          - not_null
+
+      - name: account_subtype_id
+        description: "Foreign key to account subtypes"
+        tests:
+          - not_null
+
+      - name: normally_debit
+        description: "Flag indicating if account is normally debit"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+      - name: is_active
+        description: "Flag indicating if account is active"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+      - name: create_date
+        description: "Date when the account was created"
+        tests:
+          - not_null
+          - dbt_utils.date_before:
+              field: update_date
+
+      - name: update_date
+        description: "Date when the account was last updated"
+        tests:
+          - not_null
+
+      - name: is_deleted
+        description: "Fivetran soft delete flag"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+      - name: account_sort
+        description: "Account sorting value"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: _fivetran_synced
+        description: "Timestamp of last Fivetran sync"
+        tests:
+          - not_null
+          - elementary.event_freshness_anomalies:
+              tags: ["staging", "oda"]
+              event_timestamp_column: create_date
+              update_timestamp_column: update_date
+              anomaly_sensitivity: 3
