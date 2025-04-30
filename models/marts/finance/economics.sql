@@ -294,5 +294,5 @@ final as (
 select * from final
 
 {% if is_incremental() %}
-    where extracted_at > (select max(extracted_at) from {{ this }})
+    where econ_run_date > (select max(econ_run_date) from {{ this }})
 {% endif %}
