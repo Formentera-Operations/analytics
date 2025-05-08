@@ -1,4 +1,4 @@
-name: 'formentera_partners_analytics'
+name: 'formentera_analytics'
 version: '1.0.0'
 config-version: 2
 
@@ -22,41 +22,75 @@ require-dbt-version: ">=1.0.0"
 
 # Configuring models
 models:
-  formentera_partners_analytics:
+  formentera_analytics:
     # Config applied to all models
     +materialized: view  # Default materialization
 
-    # Source/Raw models - minimal transformations
-    src:
-      +database: FO_RAW_DB
-      +schema: src
-      +materialized: view
-
-    # Staging models - cleaned data, 1:1 with source
-    staging:
-      +database: FO_STAGE_DB
-      +materialized: view
-      
-      # Combo Curve staging models
-      combo_curve:
-        +schema: stg_combo_curve
+    # Formentera Operations (Tenant 1)
+    operations:
+      # Source/Raw models - minimal transformations
+      src:
+        +database: FO_RAW_DB
+        +schema: src
         +materialized: view
 
-      # Hubspot staging models 
-      hubspot:
-        +schema: stg_hubspot
+      # Staging models - cleaned data, 1:1 with source
+      staging:
+        +database: FO_STAGE_DB
+        +materialized: view
+        
+        # Combo Curve staging models
+        combo_curve:
+          +schema: stg_combo_curve
+          +materialized: view
+
+        # Hubspot staging models 
+        hubspot:
+          +schema: stg_hubspot
+          +materialized: view
+
+      # Intermediate models - business logic layers
+      intermediate:
+        +database: FO_STAGE_DB
+        +schema: intermediate
+        +materialized: ephemeral
+        +tags: ["intermediate", "fo"]
+
+      # Mart models - business-facing data models
+      marts:
+        +database: FO_PRODUCTION_DB
+        +schema: marts
+        +materialized: table
+        +tags: ["marts", "fo"]
+
+    # Formentera Partners (Tenant 2)
+    fp:
+      # Source/Raw models - minimal transformations
+      src:
+        +database: FP_RAW_DB
+        +schema: src
         +materialized: view
 
-    # Intermediate models - business logic layers
-    intermediate:
-      +database: FO_STAGE_DB
-      +schema: intermediate
-      +materialized: ephemeral
-      +tags: ["intermediate"]
+      # Staging models - cleaned data, 1:1 with source
+      staging:
+        +database: FP_STAGE_DB
+        +materialized: view
+        
+        # Combo Curve staging models
+        combo_curve:
+          +schema: stg_combo_curve
+          +materialized: view
 
-    # Mart models - business-facing data models
-    marts:
-      +database: FO_PRODUCTION_DB
-      +schema: marts
-      +materialized: table
-      +tags: ["marts"]
+      # Intermediate models - business logic layers
+      intermediate:
+        +database: FP_STAGE_DB
+        +schema: intermediate
+        +materialized: ephemeral
+        +tags: ["intermediate", "fp"]
+
+      # Mart models - business-facing data models
+      marts:
+        +database: FP_PRODUCTION_DB
+        +schema: marts
+        +materialized: table
+        +tags: ["marts", "fp"]
