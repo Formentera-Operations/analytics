@@ -1,9 +1,9 @@
 {{
     config(
         materialized='incremental',
-        unique_key=['economic_run_well_id', 'economic_run_date'],
+        unique_key='economic_run_well_id',
+        on_schema_change='sync_all_columns',
         incremental_strategy='merge'
-        
     )
 }} 
 
@@ -21,6 +21,7 @@ final as (
 
     select
         -- Identifiers
+        economic_run_well_id,  -- Added this missing column
         economic_one_liner_id,
         economic_run_id,
         project_id,
