@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: stg_oda__afebudget
+    description: Staging model for AFE (Authorization for Expenditure) budget information
+    columns:
+      - name: id
+        description: Unique identifier for the AFE budget record
+        tests:
+          - unique
+          - not_null
+      - name: afe_budget_identity
+        description: Identity number for the AFE budget
+        tests:
+          - not_null
+
+  - name: stg_oda__afebudgetdetail_v2
+    description: Staging model for detailed AFE budget information version 2
+    columns:
+      - name: id
+        description: Unique identifier for the AFE budget detail record
+        tests:
+          - unique
+          - not_null
+      - name: afe_budget_detail_v2_identity
+        description: Identity number for the AFE budget detail
+        tests:
+          - not_null
+
+  - name: stg_oda__apinvoice
+    description: Staging model for Accounts Payable invoices
+    columns:
+      - name: id
+        description: Unique identifier for the AP invoice
+        tests:
+          - unique
+          - not_null
+      - name: ap_invoice_identity
+        description: Identity number for the AP invoice
+        tests:
+          - not_null
+
+  - name: stg_oda__apinvoicedetail
+    description: Staging model for detailed Accounts Payable invoice information
+    columns:
+      - name: id
+        description: Unique identifier for the AP invoice detail record
+        tests:
+          - unique
+          - not_null
+      - name: ap_invoice_detail_identity
+        description: Identity number for the AP invoice detail
+        tests:
+          - not_null
+
+  - name: stg_oda__gl
+    description: Staging model for General Ledger entries
+    columns:
+      - name: id
+        description: Unique identifier for the GL entry
+        tests:
+          - unique
+          - not_null
+      - name: gl_identity
+        description: Identity number for the GL entry
+        tests:
+          - not_null
+
+  - name: stg_oda__jib
+    description: Staging model for Joint Interest Billing information
+    columns:
+      - name: id
+        description: Unique identifier for the JIB record
+        tests:
+          - unique
+          - not_null
+      - name: jib_identity
+        description: Identity number for the JIB record
+        tests:
+          - not_null
+
+  - name: stg_oda__jibdetail
+    description: Staging model for detailed Joint Interest Billing information
+    columns:
+      - name: id
+        description: Unique identifier for the JIB detail record
+        tests:
+          - unique
+          - not_null
+      - name: jib_detail_identity
+        description: Identity number for the JIB detail
+        tests:
+          - not_null
+
+  - name: stg_oda__voucher_v2
+    description: Staging model for voucher information version 2
+    columns:
+      - name: id
+        description: Unique identifier for the voucher record
+        tests:
+          - unique
+          - not_null
+      - name: voucher_identity
+        description: Identity number for the voucher
+        tests:
+          - not_null

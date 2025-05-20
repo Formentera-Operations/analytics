@@ -103,9 +103,16 @@ converted as (
         try_to_decimal(TOTALGASVARIABLEEXPENSE, 38, 6) as total_gas_variable_expense,
         try_to_decimal(TOTALNGLVARIABLEEXPENSE, 38, 6) as total_ngl_variable_expense,
         try_to_decimal(TOTALDRIPCONDENSATEVARIABLEEXPENSE, 38, 6) as total_drip_condensate_variable_expense,
-        try_to_decimal(MONTHLYWELLCOST, 38, 6) as monthly_well_cost,
-        try_to_decimal(OTHERMONTHLYCOST_1, 38, 6) as other_monthly_cost_1,
-        try_to_decimal(OTHERMONTHLYCOST_2, 38, 6) as other_monthly_cost_2,
+        try_to_decimal(MONTHLYWELLCOST, 38, 6) as fixed_expense_1,
+        try_to_decimal(OTHERMONTHLYCOST_1, 38, 6) as fixed_expense_2,
+        try_to_decimal(OTHERMONTHLYCOST_2, 38, 6) as fixed_expense_3,
+        try_to_decimal(OTHERMONTHLYCOST_3, 38, 6) as fixed_expense_4,
+        try_to_decimal(OTHERMONTHLYCOST_4, 38, 6) as fixed_expense_5,
+        try_to_decimal(OTHERMONTHLYCOST_5, 38, 6) as fixed_expense_6,
+        try_to_decimal(OTHERMONTHLYCOST_6, 38, 6) as fixed_expense_7,
+        try_to_decimal(OTHERMONTHLYCOST_7, 38, 6) as fixed_expense_8,
+        try_to_decimal(OTHERMONTHLYCOST_8, 38, 6) as fixed_expense_9,
+
 
         -- Oil Processing Expenses (convert to numeric)
         try_to_decimal(OILGATHERINGEXPENSE, 38, 6) as oil_gathering_expense,
