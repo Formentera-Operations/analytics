@@ -142,7 +142,43 @@ joined as (
         runs.total_gas_variable_expense,
         runs.total_ngl_variable_expense,
         runs.total_drip_condensate_variable_expense,
-        runs.monthly_well_cost,
+        
+        
+        -- Fixed expense fields
+        runs.fixed_expense_1 as fixed_expense_1_original,
+        runs.fixed_expense_2,
+        runs.fixed_expense_3,
+        runs.fixed_expense_4,
+        runs.fixed_expense_5,
+        runs.fixed_expense_6,
+        runs.fixed_expense_7,
+        runs.fixed_expense_8,
+        runs.fixed_expense_9,
+        
+        -- Calculate leftover fixed expense (total fixed minus all individual fixed expenses)
+        runs.total_fixed_expense - 
+        coalesce(runs.fixed_expense_1, 0) - 
+        coalesce(runs.fixed_expense_2, 0) - 
+        coalesce(runs.fixed_expense_3, 0) - 
+        coalesce(runs.fixed_expense_4, 0) - 
+        coalesce(runs.fixed_expense_5, 0) - 
+        coalesce(runs.fixed_expense_6, 0) - 
+        coalesce(runs.fixed_expense_7, 0) - 
+        coalesce(runs.fixed_expense_8, 0) - 
+        coalesce(runs.fixed_expense_9, 0) as leftover_fixed_expense,
+        
+        -- Add leftover fixed expense to Fixed Expense 1
+        coalesce(runs.fixed_expense_1, 0) + 
+        (runs.total_fixed_expense - 
+         coalesce(runs.fixed_expense_1, 0) - 
+         coalesce(runs.fixed_expense_2, 0) - 
+         coalesce(runs.fixed_expense_3, 0) - 
+         coalesce(runs.fixed_expense_4, 0) - 
+         coalesce(runs.fixed_expense_5, 0) - 
+         coalesce(runs.fixed_expense_6, 0) - 
+         coalesce(runs.fixed_expense_7, 0) - 
+         coalesce(runs.fixed_expense_8, 0) - 
+         coalesce(runs.fixed_expense_9, 0)) as fixed_expense_1,
         
         -- monthly capital expenditure
         runs.total_capex as monthly_total_capex,
@@ -157,6 +193,9 @@ joined as (
         runs.ad_valorem_tax,
         runs.total_production_tax,
         runs.total_severance_tax,
+        runs.oil_severance_tax,
+        runs.gas_severance_tax,
+        runs.ngl_severance_tax,
         
         -- NRI (Net Revenue Interest) percentages
         runs.nri_oil,
@@ -199,8 +238,8 @@ joined as (
         end as oil_basis_diff_price_1,
         
         case 
-            when net_mmbtu_sales_volume != 0 
-            then (runs.net_gas_sales_volume * runs.gas_differentials_1) / net_mmbtu_sales_volume 
+            when (one_liners.shrunk_gas_btu / 1000.0) * runs.net_gas_sales_volume != 0 
+            then (runs.net_gas_sales_volume * runs.gas_differentials_1) / ((one_liners.shrunk_gas_btu / 1000.0) * runs.net_gas_sales_volume)
             else 0 
         end as gas_basis_diff_price_1,
         
@@ -217,8 +256,8 @@ joined as (
         end as oil_basis_diff_price_2,
         
         case 
-            when net_mmbtu_sales_volume != 0 
-            then (runs.net_gas_sales_volume * runs.gas_differentials_2) / net_mmbtu_sales_volume 
+            when (one_liners.shrunk_gas_btu / 1000.0) * runs.net_gas_sales_volume != 0 
+            then (runs.net_gas_sales_volume * runs.gas_differentials_2) / ((one_liners.shrunk_gas_btu / 1000.0) * runs.net_gas_sales_volume)
             else 0 
         end as gas_basis_diff_price_2,
         
@@ -228,12 +267,30 @@ joined as (
             else 0 
         end as ngl_basis_diff_price_2,
 
-        -- Net Operating Income
+        -- Net Operating Income (using all 9 fixed expense fields with fixed_expense_1 including leftover expenses)
         (
             runs.oil_revenue + runs.gas_revenue + runs.ngl_revenue
             - oil_gt_deduct - gas_gt_deduct - ngl_gt_deduct
             - oil_opc_expense - gas_opc_expense - runs.water_disposal
-            - runs.total_fixed_expense
+            - (coalesce(runs.fixed_expense_1, 0) + 
+               (runs.total_fixed_expense - 
+                coalesce(runs.fixed_expense_1, 0) - 
+                coalesce(runs.fixed_expense_2, 0) - 
+                coalesce(runs.fixed_expense_3, 0) - 
+                coalesce(runs.fixed_expense_4, 0) - 
+                coalesce(runs.fixed_expense_5, 0) - 
+                coalesce(runs.fixed_expense_6, 0) - 
+                coalesce(runs.fixed_expense_7, 0) - 
+                coalesce(runs.fixed_expense_8, 0) - 
+                coalesce(runs.fixed_expense_9, 0))) -- fixed_expense_1 with leftover
+            - coalesce(runs.fixed_expense_2, 0)
+            - coalesce(runs.fixed_expense_3, 0)
+            - coalesce(runs.fixed_expense_4, 0)
+            - coalesce(runs.fixed_expense_5, 0)
+            - coalesce(runs.fixed_expense_6, 0)
+            - coalesce(runs.fixed_expense_7, 0)
+            - coalesce(runs.fixed_expense_8, 0)
+            - coalesce(runs.fixed_expense_9, 0)
             - runs.ad_valorem_tax - runs.oil_severance_tax - runs.gas_severance_tax
             - runs.ngl_severance_tax - runs.drip_condensate_severance_tax
         ) as net_operating_income,
@@ -243,10 +300,28 @@ joined as (
             runs.oil_revenue + runs.gas_revenue + runs.ngl_revenue
             - oil_gt_deduct - gas_gt_deduct - ngl_gt_deduct
             - oil_opc_expense - gas_opc_expense - runs.water_disposal
-            - runs.total_fixed_expense
+            - (coalesce(runs.fixed_expense_1, 0) + 
+               (runs.total_fixed_expense - 
+                coalesce(runs.fixed_expense_1, 0) - 
+                coalesce(runs.fixed_expense_2, 0) - 
+                coalesce(runs.fixed_expense_3, 0) - 
+                coalesce(runs.fixed_expense_4, 0) - 
+                coalesce(runs.fixed_expense_5, 0) - 
+                coalesce(runs.fixed_expense_6, 0) - 
+                coalesce(runs.fixed_expense_7, 0) - 
+                coalesce(runs.fixed_expense_8, 0) - 
+                coalesce(runs.fixed_expense_9, 0))) -- fixed_expense_1 with leftover
+            - coalesce(runs.fixed_expense_2, 0)
+            - coalesce(runs.fixed_expense_3, 0)
+            - coalesce(runs.fixed_expense_4, 0)
+            - coalesce(runs.fixed_expense_5, 0)
+            - coalesce(runs.fixed_expense_6, 0)
+            - coalesce(runs.fixed_expense_7, 0)
+            - coalesce(runs.fixed_expense_8, 0)
+            - coalesce(runs.fixed_expense_9, 0)
             - runs.ad_valorem_tax - runs.oil_severance_tax - runs.gas_severance_tax
             - runs.ngl_severance_tax - runs.drip_condensate_severance_tax
-            - runs.total_capex  -- assuming this is the "Total Net Investment"
+            - runs.total_capex  -- Total Net Investment
         ) as net_cashflow
 
     from economic_one_liners as one_liners
