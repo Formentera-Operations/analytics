@@ -54,18 +54,347 @@ models:
           - not_null
 
   - name: stg_oda__gl
-    description: Staging model for General Ledger entries
+    description: |
+      Staging model for General Ledger entries from Quorum OnDemand Accounting.
+      This model standardizes column names, applies data type casting, and converts 
+      numeric flags to boolean values for easier downstream consumption.
     columns:
+      # Primary Keys
       - name: id
         description: Unique identifier for the GL entry
         tests:
           - unique
           - not_null
+      
+      - name: company_id
+        description: Company identifier (GUID format)
+        tests:
+          - not_null
+      
+      - name: account_id
+        description: GL account identifier
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_oda__accounts')
+              field: account_id
+      
+      - name: journal_date_key
+        description: Date key for journal entry
+      
+      # GL Identity
       - name: gl_identity
         description: Identity number for the GL entry
         tests:
           - not_null
-
+      
+      - name: n_id
+        description: Numeric identifier for the GL entry
+      
+      # Date Information
+      - name: journal_date
+        description: Date when the journal entry was created
+        tests:
+          - not_null
+      
+      - name: accrual_date
+        description: Date for accrual-based accounting
+      
+      - name: accrual_date_key
+        description: Date key for accrual date
+      
+      - name: cash_date
+        description: Date for cash-based accounting
+      
+      - name: cash_date_key
+        description: Date key for cash date
+      
+      # Description and Reference
+      - name: description
+        description: |
+          Description of the GL entry. Cleaned to replace single periods 
+          and empty values with 'No Description'
+        tests:
+          - not_null
+      
+      - name: reference
+        description: External reference number or identifier
+      
+      # Source Information
+      - name: source_module
+        description: Source module that generated this GL entry
+      
+      - name: source_module_id
+        description: ID of the source module
+      
+      - name: source_module_code
+        description: |
+          Code of the source module. Common values:
+          - AP: Accounts Payable
+          - JE: Journal Entry
+          - VR: Vendor Revenue
+          - PC: Purchase Contract
+          - RV: Revenue
+        tests:
+          - accepted_values:
+              values: ['AP', 'JE', 'VR', 'PC', 'RV']
+      
+      - name: source_module_name
+        description: Name of the source module
+      
+      # Related Entities
+      - name: afe_id
+        description: Authorization for Expenditure (AFE) identifier
+      
+      - name: well_id
+        description: Well identifier for oil & gas operations
+      
+      - name: entity_id
+        description: General entity identifier
+      
+      - name: entity_company_id
+        description: Company entity identifier
+      
+      - name: entity_owner_id
+        description: Owner entity identifier
+      
+      - name: entity_purchaser_id
+        description: Purchaser entity identifier
+      
+      - name: entity_vendor_id
+        description: Vendor entity identifier
+      
+      # Location Information
+      - name: location_type
+        description: |
+          Type of location reference. Values include:
+          - Owner
+          - None
+          - Vendor
+          - Well
+          - Purchaser
+        tests:
+          - accepted_values:
+              values: ['Owner', 'None', 'Vendor', 'Well', 'Purchaser']
+      
+      - name: location_company_id
+        description: Company location identifier
+      
+      - name: location_owner_id
+        description: Owner location identifier
+      
+      - name: location_purchaser_id
+        description: Purchaser location identifier
+      
+      - name: location_vendor_id
+        description: Vendor location identifier
+      
+      - name: location_well_id
+        description: Well location identifier
+      
+      # Financial Values
+      - name: gross_value
+        description: Gross monetary value of the transaction (defaults to 0 if null)
+        tests:
+          - not_null
+      
+      - name: gross_volume
+        description: Gross volume associated with the transaction (defaults to 0 if null)
+        tests:
+          - not_null
+      
+      - name: net_value
+        description: Net monetary value of the transaction (defaults to 0 if null)
+        tests:
+          - not_null
+      
+      - name: net_volume
+        description: Net volume associated with the transaction (defaults to 0 if null)
+        tests:
+          - not_null
+      
+      # Currency Information
+      - name: currency_id
+        description: Currency identifier (GUID format - currently all records use USD)
+        tests:
+          - not_null
+      
+      - name: is_convert_currency
+        description: Whether currency conversion is applied to this entry
+        tests:
+          - not_null
+      
+      - name: convert_currency_type_id
+        description: Type of currency conversion
+      
+      - name: exchange_rate_id
+        description: Exchange rate identifier
+      
+      - name: fluctuation_type_id
+        description: Type of currency fluctuation
+      
+      # Status Flags (Boolean)
+      - name: is_posted
+        description: Whether the GL entry has been posted
+        tests:
+          - not_null
+      
+      - name: is_generated_entry
+        description: Whether this is a system-generated entry
+        tests:
+          - not_null
+      
+      - name: is_reconciled
+        description: Whether the entry has been reconciled
+        tests:
+          - not_null
+      
+      - name: is_reconciled_trial
+        description: Whether the entry has been reconciled in trial mode
+        tests:
+          - not_null
+      
+      - name: reconciled_type_code
+        description: Code indicating the type of reconciliation
+      
+      - name: reconciliation_type_id
+        description: ID of the reconciliation type
+      
+      - name: is_present_in_journal_balance
+        description: Whether entry is included in journal balance calculations
+        tests:
+          - not_null
+      
+      - name: is_present_in_cash_balance
+        description: Whether entry is included in cash balance calculations
+        tests:
+          - not_null
+      
+      - name: is_present_in_accrual_balance
+        description: Whether entry is included in accrual balance calculations
+        tests:
+          - not_null
+      
+      - name: is_include_in_journal_report
+        description: Whether to include in journal reports (defaults to true)
+        tests:
+          - not_null
+      
+      - name: is_include_in_cash_report
+        description: Whether to include in cash reports (defaults to true)
+        tests:
+          - not_null
+      
+      - name: is_include_in_accrual_report
+        description: Whether to include in accrual reports (defaults to true)
+        tests:
+          - not_null
+      
+      # Related Documents
+      - name: voucher_id
+        description: Associated voucher identifier
+      
+      - name: ap_invoice_id
+        description: Accounts Payable invoice identifier
+      
+      - name: ap_check_id
+        description: Accounts Payable check identifier
+      
+      - name: ar_invoice_id
+        description: Accounts Receivable invoice identifier
+      
+      - name: check_revenue_id
+        description: Revenue check identifier
+      
+      - name: purchaser_revenue_receipt_id
+        description: Purchaser revenue receipt identifier
+      
+      - name: pending_expense_deck_id
+        description: Pending expense deck identifier
+      
+      - name: pending_expense_deck_set_id
+        description: Pending expense deck set identifier
+      
+      - name: source_expense_deck_revision_id
+        description: Source expense deck revision identifier
+      
+      - name: source_revenue_deck_revision_id
+        description: Source revenue deck revision identifier
+      
+      - name: source_well_allocation_deck_id
+        description: Source well allocation deck identifier
+      
+      - name: source_well_allocation_deck_revision_id
+        description: Source well allocation deck revision identifier
+      
+      # Payment Information
+      - name: payment_type_id
+        description: Payment type identifier
+      
+      - name: payment_type_code
+        description: |
+          Payment type code (trimmed to remove trailing spaces).
+          Common values: INVOICE, NONE, DRAFT, CHECK
+        tests:
+          - accepted_values:
+              values: ['INVOICE', 'NONE', 'DRAFT', 'CHECK', '']
+      
+      - name: manual_entry_reference_type_id
+        description: Reference type for manual entries
+      
+      # Allocation Information
+      - name: is_allocation_parent
+        description: Whether this is a parent entry for allocations
+        tests:
+          - not_null
+      
+      - name: is_allocation_generated
+        description: Whether this entry was generated by allocation process
+        tests:
+          - not_null
+      
+      - name: allocation_parent_id
+        description: Parent entry ID if this is an allocated entry
+      
+      - name: entry_group
+        description: Grouping identifier for related entries
+      
+      - name: ordinal
+        description: Order sequence within entry group
+      
+      # Metadata and Timestamps
+      - name: create_date
+        description: Timestamp when the record was created
+        tests:
+          - not_null
+      
+      - name: create_event_id
+        description: Event ID that created this record
+      
+      - name: update_date
+        description: Timestamp when the record was last updated
+      
+      - name: update_event_id
+        description: Event ID that last updated this record
+      
+      - name: record_insert_date
+        description: Timestamp when record was inserted into the database
+      
+      - name: record_update_date
+        description: Timestamp when record was last updated in the database
+      
+      - name: operation_type
+        description: CDC operation type (I=Insert, U=Update, D=Delete)
+        tests:
+          - accepted_values:
+              values: ['I', 'U', 'D']
+      
+      - name: flow_published_at
+        description: Timestamp when the record was published to the data flow
+      
+      - name: flow_document
+        description: Full JSON document for reference and debugging
+        
   - name: stg_oda__jib
     description: Staging model for Joint Interest Billing information
     columns:
@@ -104,3 +433,4 @@ models:
         description: Identity number for the voucher
         tests:
           - not_null
+    

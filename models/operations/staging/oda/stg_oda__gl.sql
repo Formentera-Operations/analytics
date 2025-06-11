@@ -17,15 +17,20 @@ renamed as (
         GLIDENTITY as gl_identity,
         NID as n_id,
         
-        -- Date information
-        JOURNALDATE as journal_date,
-        ACCRUALDATE as accrual_date,
+        -- Date information (with explicit casting)
+        CAST(JOURNALDATE as DATE) as journal_date,
+        CAST(ACCRUALDATE as DATE) as accrual_date,
         ACCRUALDATEKEY as accrual_date_key,
-        CASHDATE as cash_date,
+        CAST(CASHDATE as DATE) as cash_date,
         CASHDATEKEY as cash_date_key,
         
         -- Description and reference
-        DESCRIPTION as description,
+        CASE 
+            WHEN DESCRIPTION = '.' THEN 'No Description'
+            WHEN DESCRIPTION IS NULL THEN 'No Description'
+            WHEN TRIM(DESCRIPTION) = '' THEN 'No Description'
+            ELSE TRIM(DESCRIPTION)
+        END as description,
         REFERENCE as reference,
         
         -- Source information
@@ -51,32 +56,77 @@ renamed as (
         LOCATIONVENDORID as location_vendor_id,
         LOCATIONWELLID as location_well_id,
         
-        -- Financial values
-        GROSSVALUE as gross_value,
-        GROSSVOLUME as gross_volume,
-        NETVALUE as net_value,
-        NETVOLUME as net_volume,
+        -- Financial values (with explicit decimal casting)
+        CAST(COALESCE(GROSSVALUE, 0) as DECIMAL(19,4)) as gross_value,
+        CAST(COALESCE(GROSSVOLUME, 0) as DECIMAL(19,4)) as gross_volume,
+        CAST(COALESCE(NETVALUE, 0) as DECIMAL(19,4)) as net_value,
+        CAST(COALESCE(NETVOLUME, 0) as DECIMAL(19,4)) as net_volume,
         
         -- Currency information
-        CURRENCYID as currency_id,
+        COALESCE(CURRENCYID, 'USD') as currency_id,  -- Default to USD
         CONVERTCURRENCY as convert_currency,
         CONVERTCURRENCYTYPEID as convert_currency_type_id,
         EXCHANGERATEID as exchange_rate_id,
         FLUCTUATIONTYPEID as fluctuation_type_id,
         
-        -- Status flags
-        POSTED as posted,
-        GENERATEDENTRY as generated_entry,
-        RECONCILED as reconciled,
-        RECONCILEDTRIAL as reconciled_trial,
+        -- Status flags (converted to boolean)
+        CASE 
+            WHEN CONVERTCURRENCY = TRUE THEN TRUE
+            WHEN CONVERTCURRENCY = FALSE THEN FALSE
+            ELSE FALSE
+        END as is_convert_currency,
+        CASE 
+            WHEN POSTED = 1 THEN TRUE 
+            WHEN POSTED = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_posted,
+        CASE 
+            WHEN GENERATEDENTRY = 1 THEN TRUE 
+            WHEN GENERATEDENTRY = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_generated_entry,
+        CASE 
+            WHEN RECONCILED = 1 THEN TRUE 
+            WHEN RECONCILED = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_reconciled,
+        CASE 
+            WHEN RECONCILEDTRIAL = 1 THEN TRUE 
+            WHEN RECONCILEDTRIAL = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_reconciled_trial,
         RECONCILEDTYPECODE as reconciled_type_code,
         RECONCILIATIONTYPEID as reconciliation_type_id,
-        PRESENTINJOURNALBALANCE as present_in_journal_balance,
-        PRESENTINCASHBALANCE as present_in_cash_balance,
-        PRESENTINACCRUALBALANCE as present_in_accrual_balance,
-        INCLUDEINJOURNALREPORT as include_in_journal_report,
-        INCLUDEINCASHREPORT as include_in_cash_report,
-        INCLUDEINACCRUALREPORT as include_in_accrual_report,
+        CASE 
+            WHEN PRESENTINJOURNALBALANCE = 1 THEN TRUE 
+            WHEN PRESENTINJOURNALBALANCE = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_present_in_journal_balance,
+        CASE 
+            WHEN PRESENTINCASHBALANCE = 1 THEN TRUE 
+            WHEN PRESENTINCASHBALANCE = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_present_in_cash_balance,
+        CASE 
+            WHEN PRESENTINACCRUALBALANCE = 1 THEN TRUE 
+            WHEN PRESENTINACCRUALBALANCE = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_present_in_accrual_balance,
+        CASE 
+            WHEN INCLUDEINJOURNALREPORT = 1 THEN TRUE 
+            WHEN INCLUDEINJOURNALREPORT = 0 THEN FALSE
+            ELSE TRUE  -- Default to include
+        END as is_include_in_journal_report,
+        CASE 
+            WHEN INCLUDEINCASHREPORT = 1 THEN TRUE 
+            WHEN INCLUDEINCASHREPORT = 0 THEN FALSE
+            ELSE TRUE  -- Default to include
+        END as is_include_in_cash_report,
+        CASE 
+            WHEN INCLUDEINACCRUALREPORT = 1 THEN TRUE 
+            WHEN INCLUDEINACCRUALREPORT = 0 THEN FALSE
+            ELSE TRUE  -- Default to include
+        END as is_include_in_accrual_report,
         
         -- Related documents
         VOUCHERID as voucher_id,
@@ -94,25 +144,33 @@ renamed as (
         
         -- Payment information
         PAYMENTTYPEID as payment_type_id,
-        PAYMENTTYPECODE as payment_type_code,
+        TRIM(PAYMENTTYPECODE) as payment_type_code,  -- Remove trailing spaces
         MANUALENTRYREFERENCETYPEID as manual_entry_reference_type_id,
         
-        -- Allocation information
-        ISALLOCATIONPARENT as is_allocation_parent,
-        ISALLOCATIONGENERATED as is_allocation_generated,
+        -- Allocation information (with boolean conversion)
+        CASE 
+            WHEN ISALLOCATIONPARENT = 1 THEN TRUE 
+            WHEN ISALLOCATIONPARENT = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_allocation_parent,
+        CASE 
+            WHEN ISALLOCATIONGENERATED = 1 THEN TRUE 
+            WHEN ISALLOCATIONGENERATED = 0 THEN FALSE
+            ELSE FALSE 
+        END as is_allocation_generated,
         ALLOCATIONPARENTID as allocation_parent_id,
         ENTRYGROUP as entry_group,
-        ORDINAL as ordinal,
+        CAST(ORDINAL as INT) as ordinal,
         
-        -- Metadata and timestamps
-        CREATEDATE as create_date,
+        -- Metadata and timestamps (with explicit timestamp casting)
+        CAST(CREATEDATE as TIMESTAMP) as create_date,
         CREATEEVENTID as create_event_id,
-        UPDATEDATE as update_date,
+        CAST(UPDATEDATE as TIMESTAMP) as update_date,
         UPDATEEVENTID as update_event_id,
-        RECORDINSERTDATE as record_insert_date,
-        RECORDUPDATEDATE as record_update_date,
+        CAST(RECORDINSERTDATE as TIMESTAMP) as record_insert_date,
+        CAST(RECORDUPDATEDATE as TIMESTAMP) as record_update_date,
         "_meta/op" as operation_type,
-        FLOW_PUBLISHED_AT as flow_published_at,
+        CAST(FLOW_PUBLISHED_AT as TIMESTAMP) as flow_published_at,
         
         -- Full document JSON for reference
         FLOW_DOCUMENT as flow_document

@@ -250,7 +250,7 @@ SELECT
     )::VARCHAR AS location_name,
     
     -- Posted information
-    CASE WHEN gld.posted = '1' THEN 'Y' ELSE 'N' END::VARCHAR AS posted,
+    CASE WHEN gld.is_posted THEN 'Y' ELSE 'N' END::VARCHAR AS posted,
     vouchers.posted_date::TIMESTAMP_NTZ AS posted_date_time,
     CONVERT_TIMEZONE('UTC', 'America/Chicago', vouchers.posted_date)::TIMESTAMP_TZ AS posted_date_time_cst,
     TO_CHAR(vouchers.posted_date, 'MM-DD-YYYY')::VARCHAR AS posted_date,
@@ -281,12 +281,12 @@ SELECT
     CAST(wells.name AS VARCHAR) AS well_name,
     
     -- Report inclusion flags
-    gld.include_in_journal_report AS include_in_journal_report,
-    gld.present_in_journal_balance AS present_in_journal_balance,
-    gld.include_in_cash_report AS include_in_cash_report,
-    gld.present_in_cash_balance AS present_in_cash_balance,
-    gld.include_in_accrual_report AS include_in_accrual_report,
-    gld.present_in_accrual_balance AS present_in_accrual_balance,
+    gld.is_include_in_journal_report AS include_in_journal_report,
+    gld.is_present_in_journal_balance AS present_in_journal_balance,
+    gld.is_include_in_cash_report AS include_in_cash_report,
+    gld.is_present_in_cash_balance AS present_in_cash_balance,
+    gld.is_include_in_accrual_report AS include_in_accrual_report,
+    gld.is_present_in_accrual_balance AS present_in_accrual_balance,
     
     -- Revenue deck information
     CAST(rev_deck_revisions.revision_number AS VARCHAR) AS revenue_deck_change_code,
@@ -328,11 +328,11 @@ SELECT
     
     -- Reconciliation information
     CAST(recon_types.code AS VARCHAR) AS reconciliation_type,
-    gld.reconciled_trial AS reconciled_trial,
-    gld.reconciled AS reconciled,
+    gld.is_reconciled_trial AS reconciled_trial,
+    gld.is_reconciled AS reconciled,
     
     -- Entry metadata
-    gld.generated_entry AS generated_entry,
+    gld.is_generated_entry AS generated_entry,
     CAST(gld.entry_group AS VARCHAR) AS entry_group,
     gld.ordinal AS entry_seq
 
