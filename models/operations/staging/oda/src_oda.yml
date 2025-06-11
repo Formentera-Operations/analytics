@@ -20,6 +20,8 @@ sources:
       - name: ODA_BATCH_ODA_COMPANY_V2
       - name: ODA_BATCH_ODA_ACCOUNT
       - name: ODA_BATCH_ODA_ACCOUNT_V2
+      - name: ODA_BATCH_ODA_ACCOUNTTYPE
+      - name: ODA_BATCH_ODA_ACCOUNTSUBTYPE
       - name: ODA_BATCH_ODA_VENDOR_V2
       - name: ODA_BATCH_ODA_OWNER_V2
       - name: ODA_BATCH_ODA__OWNER
