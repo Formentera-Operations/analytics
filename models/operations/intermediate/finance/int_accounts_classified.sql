@@ -26,317 +26,200 @@ with accounts_hierarchy as (
     where a.active = true
 ),
 
+los_mapping as (
+    select * from {{ ref('seed_los_account_mapping') }}
+),
+
 los_classifications as (
-    select *,
-        -- High-level P&L classification based on confirmed hierarchy
+    select 
+        ah.*,
+        
+        -- LOS mapping from seed file (handle nulls for unmapped accounts)
+        lm.key_sort as los_category,
+        lm.category_full_name as los_category_name,
+        lm.category_type as los_category_type,
+        lm.category_description as los_category_description,
+        
+        -- High-level P&L classification based on confirmed hierarchy and LOS mapping
         case 
-            when subtype_code = 'R' then 'REVENUE'
-            when subtype_code = 'X' then 'EXPENSE' 
-            when type_code = 'B' then 'BALANCE_SHEET'
+            when lm.category_type = 'Revenue' then 'REVENUE'
+            when lm.category_type = 'Expense' then 'EXPENSE'
+            when ah.subtype_code = 'R' then 'REVENUE'
+            when ah.subtype_code = 'X' then 'EXPENSE' 
+            when ah.type_code = 'B' then 'BALANCE_SHEET'
             else 'OTHER'
         end as financial_statement_type,
         
-        -- ====== LOS-BASED REVENUE CLASSIFICATIONS ======
+        -- Use LOS mapping for line item classification, fallback for unmapped accounts
         case 
-            -- Oil Revenue (LOS Line 9)
-            when subtype_code = 'R' and (
-                account_code like '701%' or
-                account_code in ('705 / 3', '705 / 4', '705 / 6', '706 / 1') or
-                account_code like '840 / 1%' or account_code like '840 / 3%' or account_code like '840 / 5%' or account_code = '840 / 50' or
-                account_code like '850 / 1%' or account_code = '850 / 6' or account_code = '850 / 10'
-            ) then 'Oil Revenue'
-            
-            -- Gas Revenue (LOS Line 10) 
-            when subtype_code = 'R' and (
-                account_code like '702%' or
-                account_code in ('705 / 7', '705 / 8', '705 / 10', '705 / 15', '706 / 2') or
-                account_code like '840 / 7%' or account_code like '840 / 8%' or account_code like '840 / 9%' or 
-                account_code like '840 / 1_' or account_code like '840 / 2_' or account_code like '840 / 3_' or account_code = '840 / 51' or
-                account_code like '860 / 1%' or account_code like '860 / 2%' or account_code like '860 / 3%' or 
-                account_code like '860 / 4%' or account_code like '860 / 5%' or account_code like '860 / 6%' or account_code = '860 / 10' or
-                account_code like '861 / 2%' or account_code like '861 / 4%'
-            ) then 'Gas Revenue'
-            
-            -- NGL Revenue (LOS Line 11)
-            when subtype_code = 'R' and (
-                account_code like '703%' or
-                account_code in ('705 / 11', '705 / 12', '705 / 14', '705 / 16', '706 / 3') or
-                account_code like '840 / 25%' or account_code like '840 / 27%' or account_code like '840 / 29%' or account_code = '840 / 52' or
-                account_code like '870 / 1%' or account_code like '870 / 2%' or account_code like '870 / 3%' or 
-                account_code like '870 / 4%' or account_code like '870 / 5%' or account_code like '870 / 6%' or account_code = '870 / 10'
-            ) then 'NGL Revenue'
-            
-            -- Overhead Income (LOS Line 12)
-            when subtype_code = 'R' and (
-                account_code like '704%' or
-                account_code in ('715 / 2', '715 / 3', '715 / 4', '715 / 7', '715 / 13', '715 / 14', '715 / 15', '715 / 16', '715 / 17', '715 / 20', '715 / 23')
-            ) then 'Overhead Income'
-            
-            -- Misc Income (LOS Line 14)
-            when subtype_code = 'R' and (
-                account_code in ('715 / 5', '715 / 6', '715 / 8', '715 / 9', '715 / 10', '715 / 11', '715 / 12', '715 / 18', '715 / 21', '715 / 22', '705 / 999')
-            ) then 'Miscellaneous Income'
-            
-            -- Other Revenue
-            when subtype_code = 'R' then 'Other Revenue'
-            
-            -- ====== LOS-BASED EXPENSE CLASSIFICATIONS ======
-            -- Production and Ad Valorem Taxes (LOS Line 18)
-            when subtype_code = 'X' and (
-                account_code like '830%' or account_code like '831%' or account_code like '905%'
-            ) then 'Production & Ad Valorem Taxes'
-            
-            -- Workover Expenses (LOS Line 21)
-            when subtype_code = 'X' and account_code like '903%' then 'Workover Expenses'
-            
-            -- Lease Maintenance (LOS Line 22)
-            when subtype_code = 'X' and (
-                account_code like '900 / 1%' or account_code like '900 / 2%' or 
-                account_code like '900 / 10_' or account_code like '901 / 1%'
-            ) then 'Lease Maintenance'
-            
-            -- Water & Disposal (LOS Lines 23-24)
-            when subtype_code = 'X' and (
-                account_code like '900 / 4%' or account_code like '900 / 5%' or account_code like '900 / 6%' or
-                account_code like '900 / 11_' or account_code like '900 / 31_' or 
-                account_code like '900 / 36%' or account_code like '900 / 98_' or account_code like '900 / 99_' or
-                account_code like '901 / 4%' or account_code like '901 / 6%' or account_code like '904 / 98_' or account_code like '904 / 99_'
-            ) then 'Water & Disposal'
-            
-            -- Gas Lift Injection (LOS Line 25)
-            when subtype_code = 'X' and (
-                account_code like '900 / 35%' or account_code like '900 / 31_' or 
-                account_code like '900 / 985%' or account_code like '904 / 985%'
-            ) then 'Gas Lift Injection'
-            
-            -- Weather (LOS Line 26)
-            when subtype_code = 'X' and (
-                account_code like '900 / 12_' or account_code like '900 / 99_' or account_code like '904 / 99_'
-            ) then 'Weather Operations'
-            
-            -- Equipment & Services (LOS Lines 27-29, 33)
-            when subtype_code = 'X' and (
-                account_code like '900 / 2_' or account_code like '900 / 13_' or account_code like '900 / 14_' or 
-                account_code like '900 / 15_' or account_code like '900 / 16_' or account_code like '900 / 17_' or
-                account_code like '900 / 18_' or account_code like '900 / 19_' or account_code like '900 / 20_' or
-                account_code like '900 / 21%' or account_code like '900 / 22%' or account_code like '900 / 23%'
-            ) then 'Equipment & Services'
-            
-            -- Fuel & Power (LOS Line 30)
-            when subtype_code = 'X' and (
-                account_code like '900 / 175%' or account_code like '900 / 176%' or account_code like '900 / 177%' or
-                account_code like '900 / 20%' or account_code like '900 / 157%' or account_code like '900 / 996%' or
-                account_code like '901 / 20%' or account_code like '901 / 176%' or account_code like '904 / 996%'
-            ) then 'Fuel & Power'
-            
-            -- Chemicals & Treating (LOS Line 31)
-            when subtype_code = 'X' and (
-                account_code like '900 / 14%' or account_code like '900 / 15%' or account_code like '900 / 16%' or
-                account_code like '900 / 18_' or account_code like '901 / 14%' or account_code like '901 / 15%'
-            ) then 'Chemicals & Treating'
-            
-            -- Contract Labor (LOS Line 32)
-            when subtype_code = 'X' and (
-                account_code like '900 / 41%' or account_code like '900 / 42%' or account_code like '900 / 43%' or
-                account_code like '900 / 19_' or account_code like '900 / 983%' or account_code like '901 / 41%' or account_code like '901 / 19_'
-            ) then 'Contract Labor & Supervision'
-            
-            -- Company Labor (LOS Line 34)
-            when subtype_code = 'X' and (
-                account_code like '900 / 30_' or account_code like '802 / 14%' or account_code like '802 / 16%' or
-                account_code like '900 / 53%' or account_code like '900 / 55%' or account_code like '900 / 31_' or account_code like '900 / 32_'
-            ) then 'Company Labor & Overhead'
-            
-            -- Non-Op LOE (LOS Line 35)
-            when subtype_code = 'X' and (
-                account_code like '900 / 70%' or account_code like '900 / 308%' or 
-                account_code like '900 / 986%' or account_code like '904 / 986%'
-            ) then 'Non-Operated LOE'
-            
-            -- COPAS Overhead (LOS Line 37)
-            when subtype_code = 'X' and (
-                account_code like '900 / 48%' or account_code like '900 / 309%' or account_code like '900 / 989%' or
-                account_code like '901 / 309%' or account_code like '904 / 989%'
-            ) then 'COPAS Overhead'
-            
-            -- P&A (LOS Line 39)
-            when subtype_code = 'X' and account_code like '806%' then 'Plugging & Abandonment'
-            
-            -- Development CAPEX (LOS Line 53)
-            when subtype_code = 'X' and account_code like '310%' then 'Development CAPEX'
-            
-            -- Midstream CAPEX (LOS Line 54)
-            when subtype_code = 'X' and account_code like '328%' then 'Midstream CAPEX'
-            
-            -- Hedge Settlements (LOS Line 52)
-            when subtype_code = 'X' and account_code like '935%' then 'Hedge Settlements'
-            
-            -- Leasehold & Land (LOS Line 55)
-            when subtype_code = 'X' and account_code like '301%' then 'Leasehold & Land Costs'
-            
-            -- Other Expenses
-            when subtype_code = 'X' then 'Other Operating Expenses'
-            
+            when lm.category_full_name is not null then lm.category_full_name
+            when lm.category_type is null and ah.subtype_code = 'R' then 'Other Revenue'
+            when lm.category_type is null and ah.subtype_code = 'X' then 'Other Expenses'
+            when lm.category_type is null and ah.type_code = 'A' then 'Assets'
+            when lm.category_type is null and ah.type_code = 'L' then 'Liabilities'
+            when lm.category_type is null and ah.type_code = 'E' then 'Equity'
             else 'Other'
         end as los_line_item,
         
-        -- LOS-based income statement grouping
+        -- LOS-based income statement grouping using seed data with fallbacks
         case 
-            when subtype_code = 'R' then 'Revenue'
-            when subtype_code = 'X' and account_code like '830%' then 'Production Taxes'
-            when subtype_code = 'X' and account_code like '900%' then 'Lease Operating Expenses'
-            when subtype_code = 'X' and account_code like '903%' then 'Workover Expenses'
-            when subtype_code = 'X' and account_code like '905%' then 'Ad Valorem Taxes'
-            when subtype_code = 'X' and account_code like '806%' then 'Abandonment Costs'
-            when subtype_code = 'X' and account_code like '310%' then 'Development Capital'
-            when subtype_code = 'X' and account_code like '328%' then 'Midstream Capital'
-            when subtype_code = 'X' and account_code like '301%' then 'Leasehold Acquisition'
-            when subtype_code = 'X' and account_code like '935%' then 'Derivative Settlements'
+            when lm.key_sort in ('OIL SALES', 'GAS SALES', 'NGL SALES') then 'Commodity Revenue'
+            when lm.key_sort in ('OH INCOME', 'WELL SRV INCOME', 'OTHER INCOME') then 'Other Revenue'
+            when lm.key_sort in ('OIL PROD TAXES', 'GAS PROD TAXES', 'NGL PROD TAXES') then 'Production Taxes'
+            when lm.key_sort in ('OIL REV DEDUCT', 'GAS REV DEDUCT', 'NGL REV DEDUCT') then 'Revenue Deductions'
+            when lm.key_sort in ('LEASE MNT & HSE', '3PTY WTR DSPSL', 'CMPNY WTR DSPSL', 'WEATHER', 
+                                'RENTAL EQUIP', 'SURFACE EQUIP', 'FUEL & POWER', 'CHEM & TREATING',
+                                'CNTRCT LBR', 'COMPANY LABOR', 'WELL SERVICING', 'SRVCS & RPRS',
+                                'NON-OP LOE', 'COPAS OVERHEAD', 'AD VALOREM', 'MDSTRM GGA FEE') then 'Lease Operating Expenses'
+            when lm.key_sort = 'WORKOVER' then 'Workover Expenses'
+            when lm.key_sort = 'P&A' then 'Abandonment Costs'
+            when lm.key_sort = 'HEDGES' then 'Derivative Settlements'
+            when lm.key_sort = 'OTHER' then 'Other Expenses'
+            -- Fallback to original logic for unmapped accounts
+            when lm.key_sort is null and ah.subtype_code = 'R' then 'Revenue'
+            when lm.key_sort is null and ah.subtype_code = 'X' then 'Operating Expenses'
+            when lm.key_sort is null and ah.type_code = 'A' then 'Assets'
+            when lm.key_sort is null and ah.type_code = 'L' then 'Liabilities'
+            when lm.key_sort is null and ah.type_code = 'E' then 'Equity'
             else 'Other'
         end as income_statement_section,
         
-        -- Interest type classification (for revenue accounts)
+        -- Interest type classification (enhanced with LOS data)
         case 
-            when account_name ilike '%WI%' or account_name ilike '%working%' or account_code like '%/ 1' then 'Working Interest'
-            when account_name ilike '%RI%' or account_name ilike '%royalty%' or account_code like '%/ 2' then 'Royalty Interest'
-            when account_name ilike '%ORRI%' or account_name ilike '%overriding%' or account_code like '%/ 3' then 'Overriding Royalty'
-            when account_name ilike '%hedge%' or account_code like '%/ 4' or account_code like '%/ 2_' then 'Hedging'
-            when account_name ilike '%accrued%' or account_code like '%/ 5' then 'Accruals'
-            when account_name ilike '%deduct%' or account_code like '84_%' or account_code like '85_%' or account_code like '86_%' or account_code like '87_%' then 'Deductions'
+            when ah.account_name ilike '%WI%' or ah.account_name ilike '%working%' or ah.account_code like '%/ 1' then 'Working Interest'
+            when ah.account_name ilike '%RI%' or ah.account_name ilike '%royalty%' or ah.account_code like '%/ 2' then 'Royalty Interest'
+            when ah.account_name ilike '%ORRI%' or ah.account_name ilike '%overriding%' or ah.account_code like '%/ 3' then 'Overriding Royalty'
+            when ah.account_name ilike '%hedge%' or ah.account_code like '%/ 4' or ah.account_code like '%/ 2_' then 'Hedging'
+            when ah.account_name ilike '%accrued%' or ah.account_code like '%/ 5' then 'Accruals'
+            when ah.account_name ilike '%deduct%' or ah.account_code like '84_%' or ah.account_code like '85_%' or ah.account_code like '86_%' or ah.account_code like '87_%' then 'Deductions'
             else 'Base'
         end as interest_type,
         
-        -- Commodity classification (for revenue accounts)
+        -- Commodity classification (enhanced with LOS data, handle nulls)
         case 
-            when account_code like '701%' then 'Oil'
-            when account_code like '702%' then 'Gas'
-            when account_code like '703%' then 'NGL'
+            when lm.key_sort = 'OIL SALES' then 'Oil'
+            when lm.key_sort = 'GAS SALES' then 'Gas'
+            when lm.key_sort = 'NGL SALES' then 'NGL'
+            -- Fallback logic for unmapped accounts
+            when lm.key_sort is null and ah.account_code like '701%' then 'Oil'
+            when lm.key_sort is null and ah.account_code like '702%' then 'Gas'
+            when lm.key_sort is null and ah.account_code like '703%' then 'NGL'
             else 'Non-Commodity'
         end as commodity_type,
         
-        -- LOS line number for sorting
+        -- LOS line number for sorting (enhanced with comprehensive mapping)
         case 
             -- Revenue items
-            when account_code like '701%' or los_line_item = 'Oil Revenue' then 9
-            when account_code like '702%' or los_line_item = 'Gas Revenue' then 10
-            when account_code like '703%' or los_line_item = 'NGL Revenue' then 11
-            when los_line_item = 'Overhead Income' then 12
-            when los_line_item = 'Miscellaneous Income' then 14
+            when lm.key_sort = 'OIL SALES' then 9
+            when lm.key_sort = 'GAS SALES' then 10
+            when lm.key_sort = 'NGL SALES' then 11
+            when lm.key_sort = 'OH INCOME' then 12
+            when lm.key_sort = 'WELL SRV INCOME' then 13
+            when lm.key_sort = 'OTHER INCOME' then 14
             
-            -- Expense items
-            when los_line_item = 'Production & Ad Valorem Taxes' then 18
-            when los_line_item = 'Workover Expenses' then 21
-            when los_line_item = 'Lease Maintenance' then 22
-            when los_line_item = 'Water & Disposal' then 23
-            when los_line_item = 'Gas Lift Injection' then 25
-            when los_line_item = 'Weather Operations' then 26
-            when los_line_item = 'Equipment & Services' then 27
-            when los_line_item = 'Fuel & Power' then 30
-            when los_line_item = 'Chemicals & Treating' then 31
-            when los_line_item = 'Contract Labor & Supervision' then 32
-            when los_line_item = 'Company Labor & Overhead' then 34
-            when los_line_item = 'Non-Operated LOE' then 35
-            when los_line_item = 'COPAS Overhead' then 37
-            when los_line_item = 'Plugging & Abandonment' then 39
-            when los_line_item = 'Hedge Settlements' then 52
-            when los_line_item = 'Development CAPEX' then 53
-            when los_line_item = 'Midstream CAPEX' then 54
-            when los_line_item = 'Leasehold & Land Costs' then 55
+            -- Deduction items
+            when lm.key_sort = 'OIL REV DEDUCT' then 15
+            when lm.key_sort = 'GAS REV DEDUCT' then 16
+            when lm.key_sort = 'NGL REV DEDUCT' then 17
             
-            else 999
+            -- Tax items
+            when lm.key_sort = 'OIL PROD TAXES' then 18
+            when lm.key_sort = 'GAS PROD TAXES' then 19
+            when lm.key_sort = 'NGL PROD TAXES' then 20
+            
+            -- Operating expense items
+            when lm.key_sort = 'WORKOVER' then 21
+            when lm.key_sort = 'LEASE MNT & HSE' then 22
+            when lm.key_sort = '3PTY WTR DSPSL' then 23
+            when lm.key_sort = 'CMPNY WTR DSPSL' then 24
+            when lm.key_sort = 'MDSTRM GGA FEE' then 25
+            when lm.key_sort = 'WEATHER' then 26
+            when lm.key_sort = 'RENTAL EQUIP' then 27
+            when lm.key_sort = 'SURFACE EQUIP' then 28
+            when lm.key_sort = 'SRVCS & RPRS' then 29
+            when lm.key_sort = 'FUEL & POWER' then 30
+            when lm.key_sort = 'CHEM & TREATING' then 31
+            when lm.key_sort = 'CNTRCT LBR' then 32
+            when lm.key_sort = 'WELL SERVICING' then 33
+            when lm.key_sort = 'COMPANY LABOR' then 34
+            when lm.key_sort = 'NON-OP LOE' then 35
+            when lm.key_sort = 'COPAS OVERHEAD' then 37
+            when lm.key_sort = 'AD VALOREM' then 38
+            when lm.key_sort = 'P&A' then 39
+            
+            -- Other items
+            when lm.key_sort = 'HEDGES' then 52
+            when lm.key_sort = 'OTHER' then 999
+            
+            -- Fallback to original logic for unmapped accounts
+            when lm.key_sort is null and ah.account_code like '701%' then 9
+            when lm.key_sort is null and ah.account_code like '702%' then 10
+            when lm.key_sort is null and ah.account_code like '703%' then 11
+            when lm.key_sort is null and ah.account_code like '830%' then 18
+            when lm.key_sort is null and ah.account_code like '900%' then 30
+            when lm.key_sort is null and ah.account_code like '903%' then 21
+            when lm.key_sort is null and ah.account_code like '905%' then 38
+            when lm.key_sort is null and ah.account_code like '806%' then 39
+            when lm.key_sort is null and ah.account_code like '935%' then 52
+            
+            else 9999
         end as los_sort_order,
         
         -- Value type for LOS reporting
         case 
+            when lm.category_type = 'Revenue' then 'REVENUE_VALUE'
+            when lm.category_type = 'Expense' then 'EXPENSE_VALUE'
             when subtype_code = 'R' then 'REVENUE_VALUE'
             when subtype_code = 'X' then 'EXPENSE_VALUE'
             else 'OTHER_VALUE'
         end as los_value_type,
         
-        -- Operating vs Capital classification
+        -- Operating vs Capital classification (enhanced with LOS data, handle nulls)
         case 
-            when account_code like '310%' or account_code like '328%' or account_code like '301%' then 'CAPITAL'
-            when account_code like '806%' then 'ABANDONMENT'
-            when account_code like '935%' then 'DERIVATIVE'
-            when subtype_code = 'R' then 'REVENUE'
-            when subtype_code = 'X' then 'OPERATING'
+            when lm.key_sort = 'WORKOVER' and ah.account_code like '903%' then 'CAPITAL'
+            when lm.key_sort = 'P&A' then 'ABANDONMENT'
+            when lm.key_sort = 'HEDGES' then 'DERIVATIVE'
+            when lm.category_type = 'Revenue' then 'REVENUE'
+            when lm.category_type = 'Expense' then 'OPERATING'
+            -- Fallback logic for unmapped accounts
+            when lm.key_sort is null and ah.account_code like '310%' then 'CAPITAL'
+            when lm.key_sort is null and ah.account_code like '328%' then 'CAPITAL'
+            when lm.key_sort is null and ah.account_code like '301%' then 'CAPITAL'
+            when lm.key_sort is null and ah.account_code like '806%' then 'ABANDONMENT'
+            when lm.key_sort is null and ah.account_code like '935%' then 'DERIVATIVE'
+            when lm.key_sort is null and ah.subtype_code = 'R' then 'REVENUE'
+            when lm.key_sort is null and ah.subtype_code = 'X' then 'OPERATING'
             else 'OTHER'
         end as expense_type,
         
-        -- Detailed subcategory for enhanced reporting
-        case 
-            -- Oil Revenue subcategories
-            when account_code = '701' then 'Oil Sales - Header'
-            when account_code = '701 / 1' then 'Oil Sales - Working Interest'
-            when account_code = '701 / 2' then 'Oil Sales - Royalty Interest'
-            when account_code = '701 / 3' then 'Oil Sales - ORRI'
-            when account_code = '701 / 4' then 'Oil Hedging'
-            when account_code = '701 / 5' then 'Accrued Oil Sales'
-            
-            -- Gas Revenue subcategories
-            when account_code = '702' then 'Gas Sales - Header'
-            when account_code = '702 / 1' then 'Gas Sales - Working Interest'
-            when account_code = '702 / 2' then 'Gas Sales - Royalty Interest'
-            when account_code = '702 / 3' then 'Gas Sales - ORRI'
-            when account_code = '702 / 4' then 'Gas Hedging'
-            when account_code = '702 / 5' then 'Accrued Gas Sales'
-            when account_code = '702 / 6' then 'Firm Transportation Used'
-            when account_code like '702 / 7%' or account_code like '702 / 8%' or account_code like '702 / 9%' then 'Lease Gas Sales'
-            when account_code like '702 / 10%' or account_code like '702 / 11%' or account_code like '702 / 12%' then 'Flared Gas Sales'
-            when account_code = '702 / 990' then 'Gas Adjustment'
-            
-            -- NGL Revenue subcategories
-            when account_code = '703' then 'NGL Sales - Header'
-            when account_code = '703 / 1' then 'NGL Sales - Working Interest'
-            when account_code = '703 / 2' then 'NGL Sales - Royalty Interest'
-            when account_code = '703 / 3' then 'NGL Sales - ORRI'
-            when account_code = '703 / 5' then 'Accrued NGL Sales'
-            when account_code like '703 / 6%' or account_code like '703 / 7%' or account_code like '703 / 8%' or 
-                 account_code like '703 / 9%' or account_code like '703 / 10%' or account_code like '703 / 11%' then 'NGL Product Sales'
-            when account_code like '703 / 2_%' then 'NGL Hedging'
-            
-            -- Production Tax subcategories
-            when account_code like '830 / 1%' or account_code like '830 / 3%' or account_code like '830 / 5%' then 'Oil Production Taxes'
-            when account_code like '830 / 7%' or account_code like '830 / 9%' or account_code like '830 / 11%' then 'Gas Production Taxes'
-            when account_code like '830 / 13%' or account_code like '830 / 14%' or account_code like '830 / 15%' then 'NGL Production Taxes'
-            when account_code like '830 / 2%' or account_code like '830 / 4%' or account_code like '830 / 6%' or 
-                 account_code like '830 / 8%' or account_code like '830 / 10%' or account_code like '830 / 12%' then 'Regulatory Fees'
-            when account_code like '830 / 16%' or account_code like '830 / 17%' or account_code like '830 / 18%' then 'Accrued Production Taxes'
-            
-            -- LOE subcategories by major expense type
-            when account_code like '900 / 1%' then 'Road & Lease Maintenance'
-            when account_code like '900 / 4%' or account_code like '900 / 5%' or account_code like '900 / 6%' then 'Water & Disposal Services'
-            when account_code like '900 / 14%' or account_code like '900 / 15%' or account_code like '900 / 16%' then 'Chemicals & Treating'
-            when account_code like '900 / 20%' or account_code like '900 / 175%' or account_code like '900 / 176%' then 'Power & Fuel'
-            when account_code like '900 / 21%' or account_code like '900 / 22%' or account_code like '900 / 23%' then 'Well Servicing'
-            when account_code like '900 / 24%' or account_code like '900 / 25%' then 'Equipment Rentals'
-            when account_code like '900 / 30_%' then 'Company Labor & Supervision'
-            when account_code like '900 / 41%' or account_code like '900 / 42%' or account_code like '900 / 43%' then 'Contract Services'
-            when account_code like '900 / 48%' or account_code like '900 / 309%' then 'COPAS Overhead'
-            when account_code like '900 / 70%' then 'Non-Operated Expenses'
-            
-            else account_name
-        end as detailed_subcategory,
+        -- Detailed subcategory using account name from LOS mapping, fallback to original name
+        coalesce(lm.account_name, ah.account_name) as detailed_subcategory,
         
-        -- Flag for income statement relevance (confirmed mapping)
+        -- Flag for income statement relevance (handle nulls)
         case 
-            when subtype_code in ('R', 'X') then true
+            when lm.category_type in ('Revenue', 'Expense') then true
+            when lm.category_type is null and ah.subtype_code in ('R', 'X') then true
             else false
         end as is_income_statement_account,
         
-        -- Flag for LOS relevance
+        -- Flag for LOS relevance (accounts in our seed file)
         case 
-            when los_sort_order != 999 then true
+            when lm.account_code is not null then true
             else false
         end as is_los_account,
         
-        -- Flag for capital vs operating
+        -- Flag for capital vs operating (handle nulls)
         case 
-            when expense_type = 'CAPITAL' then true
+            when lm.key_sort = 'WORKOVER' and ah.account_code like '903%' then true
+            when lm.key_sort is null and ah.account_code like '310%' then true
+            when lm.key_sort is null and ah.account_code like '328%' then true
+            when lm.key_sort is null and ah.account_code like '301%' then true
             else false
         end as is_capital_account
         
-    from accounts_hierarchy
+    from accounts_hierarchy ah
+    left join los_mapping lm 
+        on ah.account_code = lm.account_code
 )
 
 select * from los_classifications
