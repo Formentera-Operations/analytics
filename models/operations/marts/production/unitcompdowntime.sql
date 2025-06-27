@@ -3,7 +3,7 @@
     materialized='incremental',
     unique_key='id_rec',
     on_schema_change='fail',
-    alias='unit_comp_downtime'
+    alias='pvunitcompdowntime'
   )
 }}
 

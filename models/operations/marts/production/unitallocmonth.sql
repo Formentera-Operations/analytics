@@ -1,8 +1,8 @@
 {{
   config(
     materialized='table',
-    alias='unitallocmonth'
+    alias='pvunitallocmonth'
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunit') }}
+select * from {{ ref('stg_prodview__pvunitallocmonth') }}
