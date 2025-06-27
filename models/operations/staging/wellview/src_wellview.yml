@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: wellview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_WV120
+    schema: FORMENTERAOPS_WV120_DBO
+    tables:
+      - name: WVT_WVSYSINTEGRATION

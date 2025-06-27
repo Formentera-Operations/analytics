@@ -54,6 +54,14 @@ models:
           +schema: stg_oda
           +materialized: view
 
+        prodview:
+          +schema: stg_prodview
+          +materialized: view
+
+        wellview:
+          +schema: stg_wellview
+          +materialized: view
+
       # Intermediate models - business logic layers
       intermediate:
         +database: FO_STAGE_DB

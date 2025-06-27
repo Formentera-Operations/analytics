@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVUNIT
+      - name: PVT_PVROUTESETROUTE
+      - name: PVT_PVUNITCOMP
+      - name: PVT_PVSYSINTEGRATION
+      - name: PVT_PVFLOWNETHEADER
+      - name: PVT_PVUNITALLOCMONTH
+      - name: PVT_PVUNITALLOCMONTHDAY
+      - name: PVT_PVUNITDISPMONTH
+      - name: PVT_PVUNITDISPMONTHDAY
+      - name: PVT_PVUNITNODE
+      - name: PVT_PVUNITCOMPDOWNTM
+      - name: PVT_PVUNITCOMPPARAM
+      - name: PVT_PVUNITCOMPSTATUS
+      - name: PVT_PVUNITNODEMONTHDAYCALC
+      - name: PVT_PVUNITMETERLIQUID
+      - name: PVT_PVUNITMETERLIQUIDENTRY
