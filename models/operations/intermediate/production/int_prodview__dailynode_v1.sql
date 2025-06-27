@@ -7,39 +7,39 @@
 
 with pvunitnodemonthdaycalc as (
     select * from {{ ref('stg_prodview__pvunitnodemonthdaycalc') }}
-    where deleted = false
+    where DELETED = false
 )
 
 select
     -- Key IDs
-    id_rec,
-    id_rec_node as node_id,
-    id_rec_facility as facility_id,
+    IDREC,
+    IDRECNODE,
+    IDRECFACILITY,
     
     -- Time period
-    dttm,
-    year,
-    month,
-    day_of_month,
+    DTTM,
+    YEAR,
+    MONTH,
+    DAYOFMONTH,
     
     -- Volume data (already converted to standard units)
-    vol_gas,
-    vol_hc_liq,
-    vol_hc_liq_gas_eq,
-    vol_sand,
-    vol_water,
+    VOLGAS,
+    VOLHCLIQ,
+    VOLHCLIQGASEQ,
+    VOLSAND,
+    VOLWATER,
     
     -- Heat content data
-    heat,
-    fact_heat,
+    HEAT,
+    FACTHEAT,
     
     -- System audit fields
-    sys_create_date,
-    sys_create_user,
-    sys_mod_date,
-    sys_mod_user,
+    SYSCREATEDATE,
+    SYSCREATEUSER,
+    SYSMODDATE,
+    SYSMODUSER,
     
     -- Update tracking
-    update_date
+    UPDATE_DATE
 
 from pvunitnodemonthdaycalc

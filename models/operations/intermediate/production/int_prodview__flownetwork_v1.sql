@@ -7,43 +7,43 @@
 
 with pvflownetheader as (
     select * from {{ ref('stg_prodview__pvflownetheader') }}
-    where deleted = false
+    where DELETED = false
 )
 
 select
     -- General information
-    com,
-    dttm_end,
-    dttm_start,
-    dttm_last_alloc_process,
-    id_flow_net as flow_net_id,
-    name,
-    id_rec_resp_1 as primary_resp_team_id,
+    COM,
+    DTTMEND,
+    DTTMSTART,
+    DTTMALLOCPROCESSBEGAN,
+    IDFLOWNET,
+    NAME,
+    IDRECRESP1,
     
     -- Reporting configuration flags
-    rpt_allocations,
-    rpt_component_dispositions,
-    rpt_dispositions,
-    rpt_gathered_calcs,
-    rpt_node_calculations,
+    RPTGATHEREDCALCS,
+    RPTALLOCATIONS,
+    RPTDISPOSITIONS,
+    RPTCOMPONENTDISPOSITIONS,
+    RPTNODECALCULATIONS,
     
     -- System audit fields
-    sys_create_date,
-    sys_create_user,
-    sys_mod_date,
-    sys_mod_user,
+    SYSCREATEDATE,
+    SYSCREATEUSER,
+    SYSMODDATE,
+    SYSMODUSER,
     
     -- Flow network type and configuration
-    type,
+    TYP,
     
     -- User-defined text fields
-    user_txt_1,
-    user_txt_2,
-    user_txt_3,
-    user_txt_4,
-    user_txt_5,
+    USERTXT1,
+    USERTXT2,
+    USERTXT3,
+    USERTXT4,
+    USERTXT5,
     
     -- Update tracking
-    update_date
+    UPDATE_DATE
 
 from pvflownetheader

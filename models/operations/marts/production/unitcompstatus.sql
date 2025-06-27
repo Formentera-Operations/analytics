@@ -1,7 +1,7 @@
 {{
   config(
     materialized='incremental',
-    unique_key='id_rec',
+    unique_key='IDREC',
     on_schema_change='fail',
     alias='pvunitcompstatus'
   )

@@ -12,57 +12,57 @@ with source as (
 renamed as (
     select
         -- Primary identifiers
-        IDFLOWNET as id_flow_net,
-        IDRECPARENT as id_rec_parent,
-        IDREC as id_rec,
-        IDRECNODE as id_rec_node,
-        IDRECNODETK as id_rec_node_tk,
+        IDFLOWNET,
+        IDRECPARENT,
+        IDREC,
+        IDRECNODE,
+        IDRECNODETK,
         
         -- Time period
-        DTTM as dttm,
-        YEAR as year,
-        MONTH as month,
-        DAYOFMONTH as day_of_month,
+        DTTM,
+        YEAR,
+        MONTH,
+        DAYOFMONTH,
         
         -- Volume data with unit conversions (cubic meters to standard units)
-        VOLHCLIQ / 0.158987294928 as vol_hc_liq,
-        case when VOLHCLIQ is not null then 'BBL' else null end as vol_hc_liq_unit_label,
-        VOLHCLIQGASEQ / 28.316846592 as vol_hc_liq_gas_eq,
-        case when VOLHCLIQGASEQ is not null then 'MCF' else null end as vol_hc_liq_gas_eq_unit_label,
-        VOLGAS / 28.316846592 as vol_gas,
-        case when VOLGAS is not null then 'MCF' else null end as vol_gas_unit_label,
-        VOLWATER / 0.158987294928 as vol_water,
-        case when VOLWATER is not null then 'BBL' else null end as vol_water_unit_label,
-        VOLSAND / 0.158987294928 as vol_sand,
-        case when VOLSAND is not null then 'BBL' else null end as vol_sand_unit_label,
+        VOLHCLIQ / 0.158987294928 as VOLHCLIQ,
+        case when VOLHCLIQ is not null then 'BBL' else null end as VOLHCLIQUNITLABEL,
+        VOLHCLIQGASEQ / 28.316846592 as VOLHCLIQGASEQ,
+        case when VOLHCLIQGASEQ is not null then 'MCF' else null end as VOLHCLIQGASEQUNITLABEL,
+        VOLGAS / 28.316846592 as VOLGAS,
+        case when VOLGAS is not null then 'MCF' else null end as VOLGASUNITLABEL,
+        VOLWATER / 0.158987294928 as VOLWATER,
+        case when VOLWATER is not null then 'BBL' else null end as VOLWATERUNITLABEL,
+        VOLSAND / 0.158987294928 as VOLSAND,
+        case when VOLSAND is not null then 'BBL' else null end as VOLSANDUNITLABEL,
         
         -- Heat content and heating value conversions
-        HEAT / 1055055852.62 as heat,
-        case when HEAT is not null then 'MMBTU' else null end as heat_unit_label,
-        FACTHEAT / 37258.9458078313 as fact_heat,
-        case when FACTHEAT is not null then 'BTU/FT³' else null end as fact_heat_unit_label,
+        HEAT / 1055055852.62 as HEAT,
+        case when HEAT is not null then 'MMBTU' else null end as HEATUNITLABEL,
+        FACTHEAT / 37258.9458078313 as FACTHEAT,
+        case when FACTHEAT is not null then 'BTU/FT³' else null end as FACTHEATUNITLABEL,
         
         -- Facility reference
-        IDRECFACILITY as id_rec_facility,
-        IDRECFACILITYTK as id_rec_facility_tk,
+        IDRECFACILITY,
+        IDRECFACILITYTK,
         
         -- System locking fields
-        SYSLOCKMEUI as sys_lock_me_ui,
-        SYSLOCKCHILDRENUI as sys_lock_children_ui,
-        SYSLOCKME as sys_lock_me,
-        SYSLOCKCHILDREN as sys_lock_children,
-        SYSLOCKDATE as sys_lock_date,
+        SYSLOCKMEUI,
+        SYSLOCKCHILDRENUI,
+        SYSLOCKME,
+        SYSLOCKCHILDREN,
+        SYSLOCKDATE,
         
         -- System audit fields
-        SYSMODDATE as sys_mod_date,
-        SYSMODUSER as sys_mod_user,
-        SYSCREATEDATE as sys_create_date,
-        SYSCREATEUSER as sys_create_user,
-        SYSTAG as sys_tag,
+        SYSMODDATE,
+        SYSMODUSER,
+        SYSCREATEDATE,
+        SYSCREATEUSER,
+        SYSTAG,
         
         -- Fivetran metadata
-        _FIVETRAN_SYNCED as update_date,
-        _FIVETRAN_DELETED as deleted
+        _FIVETRAN_SYNCED as UPDATE_DATE,
+        _FIVETRAN_DELETED as DELETED
 
     from source
 )

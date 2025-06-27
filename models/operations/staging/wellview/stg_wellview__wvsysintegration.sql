@@ -1,3 +1,9 @@
+{{
+  config(
+    materialized='view',
+    alias='wvsysintegration'
+  )
+}}
 
 with source as (
     select * from {{ source('wellview', 'WVT_WVSYSINTEGRATION') }}
@@ -6,36 +12,36 @@ with source as (
 renamed as (
     select
         -- Primary identifiers
-        IDWELL as id_well,
-        IDRECPARENT as id_rec_parent,
-        IDREC as id_rec,
+        IDWELL,
+        IDRECPARENT,
+        IDREC,
         
         -- Integration metadata
-        TBLKEYPARENT as tbl_key_parent,
-        INTEGRATORDES as integrator_description,
-        INTEGRATORVER as integrator_version,
-        AFPRODUCT as af_product,
-        AFIDENTITY as af_identity,
-        AFIDREC as af_id_rec,
-        NOTE as note,
+        TBLKEYPARENT,
+        INTEGRATORDES,
+        INTEGRATORVER,
+        AFPRODUCT,
+        AFIDENTITY,
+        AFIDREC,
+        NOTE,
         
         -- System locking fields
-        SYSLOCKMEUI as sys_lock_me_ui,
-        SYSLOCKCHILDRENUI as sys_lock_children_ui,
-        SYSLOCKME as sys_lock_me,
-        SYSLOCKCHILDREN as sys_lock_children,
-        SYSLOCKDATE as sys_lock_date,
+        SYSLOCKMEUI,
+        SYSLOCKCHILDRENUI,
+        SYSLOCKME,
+        SYSLOCKCHILDREN,
+        SYSLOCKDATE,
         
         -- System audit fields
-        SYSMODDATE as sys_mod_date,
-        SYSMODUSER as sys_mod_user,
-        SYSCREATEDATE as sys_create_date,
-        SYSCREATEUSER as sys_create_user,
-        SYSTAG as sys_tag,
+        SYSMODDATE,
+        SYSMODUSER,
+        SYSCREATEDATE,
+        SYSCREATEUSER,
+        SYSTAG,
         
         -- Fivetran metadata
-        _FIVETRAN_SYNCED as update_date,
-        _FIVETRAN_DELETED as deleted
+        _FIVETRAN_SYNCED as UPDATE_DATE,
+        _FIVETRAN_DELETED as DELETED
 
     from source
 )

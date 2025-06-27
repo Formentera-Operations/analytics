@@ -7,73 +7,73 @@
 
 with pvunitnode as (
     select * from {{ ref('stg_prodview__pvunitnode') }}
-    where deleted = false
+    where DELETED = false
 )
 
 select
     -- Key IDs
-    id_rec as node_id,
-    id_rec_parent as unit_id,
+    IDREC as NODEID,
+    IDRECPARENT as UNITID,
     
     -- Node configuration
-    name,
-    type as typ,
-    dttm_start,
-    dttm_end,
+    NAME,
+    TYP,
+    DTTMSTART,
+    DTTMEND,
     
     -- Component and fluid properties
-    component,
-    component_phase,
-    des_fluid,
-    keep_whole,
-    type_fluid_base_restrict,
+    COMPONENT,
+    COMPONENTPHASE,
+    DESFLUID,
+    KEEPWHOLE,
+    TYPFLUIDBASERESTRICT,
     
     -- Flow diagram configuration
-    sort_flow_diag,
+    SORTFLOWDIAG,
     
     -- Correction and external IDs
-    correction_id_1,
-    correction_id_2,
-    correction_type_1,
-    correction_type_2,
-    other_id,
+    CORRECTIONID1,
+    CORRECTIONID2,
+    CORRECTIONTYP1,
+    CORRECTIONTYP2,
+    OTHERID,
     
     -- Product and facility information
-    fac_product_name,
-    use_virtual_analysis,
+    FACPRODUCTNAME,
+    USEVIRUTALANALYSIS,
     
     -- Disposition configuration
-    disposition_point,
-    disp_product_name,
-    type_disp_1,
-    type_disp_2,
-    type_disp_hc_liq,
-    disp_id_a,
-    disp_id_b,
+    DISPOSITIONPOINT,
+    DISPPRODUCTNAME,
+    TYPDISP1,
+    TYPDISP2,
+    TYPDISPHCLIQ,
+    DISPIDA,
+    DISPIDB,
     
     -- Purchaser information
-    purchaser_name,
-    purchaser_code_1,
-    purchaser_code_2,
+    PURCHASERNAME,
+    PURCHASERCODE1,
+    PURCHASERCODE2,
     
     -- General configuration
-    com,
+    COM,
     
     -- User-defined fields
-    user_txt_1,
-    user_txt_2,
-    user_txt_3,
-    user_num_1,
-    user_num_2,
-    user_num_3,
+    USERTXT1,
+    USERTXT2,
+    USERTXT3,
+    USERNUM1,
+    USERNUM2,
+    USERNUM3,
     
     -- System audit fields
-    sys_create_date,
-    sys_create_user,
-    sys_mod_date,
-    sys_mod_user,
+    SYSCREATEDATE,
+    SYSCREATEUSER,
+    SYSMODDATE,
+    SYSMODUSER,
     
     -- Update tracking
-    update_date
+    UPDATE_DATE
 
 from pvunitnode
