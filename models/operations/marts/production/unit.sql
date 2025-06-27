@@ -1,7 +1,7 @@
 {{
   config(
     materialized='table',
-    alias='unit'
+    alias='pvunit'
   )
 }}
 
