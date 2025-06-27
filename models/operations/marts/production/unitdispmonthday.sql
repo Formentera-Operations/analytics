@@ -1,0 +1,15 @@
+{{
+  config(
+    materialized='incremental',
+    unique_key='id_rec',
+    on_schema_change='fail',
+    alias='pvunitdispmonthday'
+  )
+}}
+
+select * from {{ ref('stg_prodview__pvunitdispmonthday') }}
+
+{% if is_incremental() %}
+  -- this filter will only be applied on an incremental run
+  where update_date > (select max(update_date) from {{ this }})
+{% endif %}
