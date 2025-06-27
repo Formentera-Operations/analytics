@@ -1,4 +1,5 @@
 
+
 with source as (
     select * from {{ source('prodview', 'PVT_PVUNITNODE') }}
 ),
@@ -6,86 +7,86 @@ with source as (
 renamed as (
     select
         -- Primary identifiers
-        IDFLOWNET as id_flow_net,
-        IDRECPARENT as id_rec_parent,
-        IDREC as id_rec,
+        IDFLOWNET,
+        IDRECPARENT,
+        IDREC,
         
         -- Node configuration
-        NAME as name,
-        TYP as type,
-        DTTMSTART as dttm_start,
-        DTTMEND as dttm_end,
+        NAME,
+        TYP,
+        DTTMSTART,
+        DTTMEND,
         
         -- Fluid and component properties
-        COMPONENT as component,
-        COMPONENTPHASE as component_phase,
-        DESFLUID as des_fluid,
-        KEEPWHOLE as keep_whole,
-        TYPFLUIDBASERESTRICT as type_fluid_base_restrict,
+        COMPONENT,
+        COMPONENTPHASE,
+        DESFLUID,
+        KEEPWHOLE,
+        TYPFLUIDBASERESTRICT,
         
         -- Flow diagram and sorting
-        SORTFLOWDIAG as sort_flow_diag,
+        SORTFLOWDIAG,
         
         -- Migration tracking
-        KEYMIGRATIONSOURCE as key_migration_source,
-        TYPMIGRATIONSOURCE as type_migration_source,
+        KEYMIGRATIONSOURCE,
+        TYPMIGRATIONSOURCE,
         
         -- External IDs and corrections
-        OTHERID as other_id,
-        CORRECTIONID1 as correction_id_1,
-        CORRECTIONTYP1 as correction_type_1,
-        CORRECTIONID2 as correction_id_2,
-        CORRECTIONTYP2 as correction_type_2,
+        OTHERID,
+        CORRECTIONID1,
+        CORRECTIONTYP1,
+        CORRECTIONID2,
+        CORRECTIONTYP2,
         
         -- Product and facility information
-        FACPRODUCTNAME as fac_product_name,
-        USEVIRUTALANALYSIS as use_virtual_analysis,
+        FACPRODUCTNAME,
+        USEVIRUTALANALYSIS,
         
         -- Disposition configuration
-        DISPOSITIONPOINT as disposition_point,
-        DISPPRODUCTNAME as disp_product_name,
-        TYPDISP1 as type_disp_1,
-        TYPDISP2 as type_disp_2,
-        TYPDISPHCLIQ as type_disp_hc_liq,
-        DISPIDA as disp_id_a,
-        DISPIDB as disp_id_b,
+        DISPOSITIONPOINT,
+        DISPPRODUCTNAME,
+        TYPDISP1,
+        TYPDISP2,
+        TYPDISPHCLIQ,
+        DISPIDA,
+        DISPIDB,
         
         -- Purchaser information
-        PURCHASERNAME as purchaser_name,
-        PURCHASERCODE1 as purchaser_code_1,
-        PURCHASERCODE2 as purchaser_code_2,
+        PURCHASERNAME,
+        PURCHASERCODE1,
+        PURCHASERCODE2,
         
         -- General configuration
-        COM as com,
-        DTTMHIDE as dttm_hide,
-        REPORTGROUP as report_group,
-        INGATHERED as in_gathered,
+        COM,
+        DTTMHIDE,
+        REPORTGROUP,
+        INGATHERED,
         
         -- User-defined fields
-        USERTXT1 as user_txt_1,
-        USERTXT2 as user_txt_2,
-        USERTXT3 as user_txt_3,
-        USERNUM1 as user_num_1,
-        USERNUM2 as user_num_2,
-        USERNUM3 as user_num_3,
+        USERTXT1,
+        USERTXT2,
+        USERTXT3,
+        USERNUM1,
+        USERNUM2,
+        USERNUM3,
         
         -- System locking fields
-        SYSLOCKMEUI as sys_lock_me_ui,
-        SYSLOCKCHILDRENUI as sys_lock_children_ui,
-        SYSLOCKME as sys_lock_me,
-        SYSLOCKCHILDREN as sys_lock_children,
-        SYSLOCKDATE as sys_lock_date,
+        SYSLOCKMEUI,
+        SYSLOCKCHILDRENUI,
+        SYSLOCKME,
+        SYSLOCKCHILDREN,
+        SYSLOCKDATE,
         
         -- System audit fields
-        SYSMODDATE as sys_mod_date,
-        SYSMODUSER as sys_mod_user,
-        SYSCREATEDATE as sys_create_date,
-        SYSCREATEUSER as sys_create_user,
-        SYSTAG as sys_tag,
+        SYSMODDATE,
+        SYSMODUSER,
+        SYSCREATEDATE,
+        SYSCREATEUSER,
+        SYSTAG,
         
         -- Fivetran metadata
-        _FIVETRAN_SYNCED as update_date,
-        _FIVETRAN_DELETED as deleted
+        _FIVETRAN_SYNCED as UPDATE_DATE,
+        _FIVETRAN_DELETED as DELETED
 
     from source
 )

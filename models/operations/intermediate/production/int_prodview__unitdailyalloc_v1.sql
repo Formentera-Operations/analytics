@@ -1,285 +1,145 @@
 {{
-  config(
-    materialized='view',
-    alias='unitdailyalloc_v1'
-  )
+    config(
+        materialized='view'
+    )
 }}
 
-with pvunitallocmonthday as (
-    select * from {{ ref('stg_prodview__pvunitallocmonthday') }}
-    where deleted = false
-),
-
-pvunitcompdowntm as (
-    select * from {{ ref('stg_prodview__pvunitcompdowntm') }}
-    where deleted = false
-),
-
-pvunitcompparam as (
-    select * from {{ ref('stg_prodview__pvunitcompparam') }}
-    where deleted = false
-),
-
-pvunitcompstatus as (
-    select * from {{ ref('stg_prodview__pvunitcompstatus') }}
-    where deleted = false
-)
-
-select
-    -- Allocation factors (dimensionless ratios)
-    pvunitallocmonthday.alloc_fact_gas,
-    pvunitallocmonthday.alloc_fact_hc_liq,
-    pvunitallocmonthday.alloc_fact_sand,
-    pvunitallocmonthday.alloc_fact_water,
-    
-    -- Time period
-    pvunitallocmonthday.day_of_month,
-    pvunitallocmonthday.dttm,
-    pvunitallocmonthday.month,
-    pvunitallocmonthday.year,
-    
-    -- Duration
-    pvunitallocmonthday.dur_down,
-    pvunitallocmonthday.dur_op,
-    
-    -- Key IDs
-    pvunitallocmonthday.id_rec_downtime as downtime_id,
-    pvunitallocmonthday.id_rec_facility as facility_id,
-    pvunitallocmonthday.id_rec,
-    pvunitallocmonthday.id_rec_unit as unit_id,
-    pvunitallocmonthday.id_rec_param as param_id,
-    pvunitallocmonthday.id_rec_pump_entry as pump_id,
-    pvunitallocmonthday.id_rec_status as status_id,
-    pvunitallocmonthday.id_rec_test as welltest_id,
-    
-    -- Net revenue interest percentages
-    pvunitallocmonthday.nri_gas,
-    pvunitallocmonthday.nri_hc_liq,
-    pvunitallocmonthday.nri_sand,
-    pvunitallocmonthday.nri_water,
-    
-    -- Working interest percentages
-    pvunitallocmonthday.wi_gas,
-    pvunitallocmonthday.wi_hc_liq,
-    pvunitallocmonthday.wi_sand,
-    pvunitallocmonthday.wi_water,
-    
-    -- Pump efficiency
-    pvunitallocmonthday.pump_eff,
-    
-    -- Complex pump token logic
-    case 
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitagreemt' then 'AGREEMENT_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitagreemtpartner' then 'AGREEMENTPARTNER_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompressor' then 'COMPRESSOR_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompressorentry' then 'COMPRESSORENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvfacilitymonthdaycalc' then 'DAILYFACILITY_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitnodemonthdaycalc' then 'DAILYNODE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittankmonthdaycalc' then 'DAILYTANK_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitequip' then 'EQUIPMENT_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitequipservice' then 'EQUIPMENTSERVICE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitequipservicerec' then 'EQUIPMENTSERVICEREC_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitequipdowntm' then 'EQUIPMENTDOWNTIME_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitevent' then 'EVENT_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitevententry' then 'EVENTENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvfacility' then 'FACILITY_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvfacrecdispcalc' then 'FACILITYRECDISP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvflownetheader' then 'FLOWNETWORK_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvgasanalysis' then 'GASANALYSES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvgasanalysiscomp' then 'GASANALYSESCOMP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvgasanaly' then 'GASANALYSISGROUP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvhcliqanalysis' then 'HCLIQANALYSES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvhcliqanalysiscomp' then 'HCLIQANALYSESCOMP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvhcliqanaly' then 'HCLIQANALYSISGROUP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterpdgas' then 'METERGASPD_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterpdgasentry' then 'METERGASPDENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterliquid' then 'METERLIQUID_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterliquidentry' then 'METERLIQUIDENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterliquidfact' then 'METERLIQUIDFACTOR_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterorifice' then 'METERORIFICE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterorificeecf' then 'METERORIFICEECF_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterorificeentry' then 'METERORIFICEENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterrate' then 'METERRATE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeterrateentry' then 'METERRATEENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitnodemonthcalc' then 'MONTHLYNODE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeaspt' then 'OTHERMEASUREMENTPOINT_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitmeasptentry' then 'OTHERMEASUREMENTPOINTENTRY_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumpesp' then 'PUMPESP_V2'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumpespentry' then 'PUMPESPENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumpjet' then 'PUMPJET_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumpjetentry' then 'PUMPJETENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumppcp' then 'PUMPPCP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumppcpentry' then 'PUMPPCPENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumprod' then 'PUMPROD_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomppumprodentry' then 'PUMPRODENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitregbodykey' then 'REGBODYKEYS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitremark' then 'REMARKS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvrespteam' then 'RESPONSIBLETEAMS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvroutesetrouteuserid' then 'ROUTEUSERS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitseal' then 'SEAL_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitsealentry' then 'SEALENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittank' then 'TANK_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittankentry' then 'TANKENTRIES_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittankfactht' then 'TANKHEIGHTFACTOR_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittankstartinv' then 'TANKSTARTINV_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittankstrap' then 'TANKSTRAP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunittankstrapdata' then 'TANKSTRAPDETAILS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvticket' then 'TICKETS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunit' then 'UNIT_V2'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitallocmonthday' then 'UNITDAILYALLOCEXTENDED_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitdispmonthday' then 'UNITDAILYDISP_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitallocmonth' then 'UNITMONTHLYALLOC_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitnode' then 'UNITNODE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitnodeanaly' then 'UNITNODEANALY_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitnodecorr' then 'UNITNODECORR_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitnodenetfact' then 'UNITNODESHRINK_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitothertag' then 'UNITOTHERTAG_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvroutesetrouteunit' then 'UNITROUTE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompgathmonthdaycalc' then 'WELLDAILYGATHERED_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompdowntm' then 'WELLDOWNTIME_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompfluidlevel' then 'WELLFLUIDLEVEL_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompwhcut' then 'WELLHEADCUT_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompmeasmeth' then 'WELLMEASMETHOD_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompgathmonthcalc' then 'WELLMONTHLYGATHERED_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompparam' then 'WELLPARAM_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompratios' then 'WELLRATIOS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomptestreqexcalc' then 'WELLREQUIREDTESTSREMAINING_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompstatus' then 'WELLSTATUS_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomptarget' then 'WELLTARGET_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomptargetday' then 'WELLTARGETDAILY_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomptest' then 'WELLTEST_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcomptestreq' then 'WELLTESTINGREQUIREMENT_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompzone' then 'WELLZONE_V1'
-        when pvunitallocmonthday.id_rec_pump_entry_tk = 'pvunitcompcmnglratio' then 'WELLZONERATIO_V1'
-        else ''
-    end as pump_tk,
-    
-    -- System audit fields
-    pvunitallocmonthday.sys_create_date,
-    pvunitallocmonthday.sys_create_user,
-    pvunitallocmonthday.sys_mod_date,
-    pvunitallocmonthday.sys_mod_user,
-    
-    -- All volume fields (keeping the same names for consistency)
-    pvunitallocmonthday.vol_chg_inv_hc_liq,
-    pvunitallocmonthday.vol_chg_inv_hc_liq_gas_eq,
-    pvunitallocmonthday.vol_chg_inv_sand,
-    pvunitallocmonthday.vol_chg_inv_water,
-    pvunitallocmonthday.vol_diff_target_cond,
-    pvunitallocmonthday.vol_diff_target_gas,
-    pvunitallocmonthday.vol_diff_target_hc_liq,
-    pvunitallocmonthday.vol_diff_target_ngl,
-    pvunitallocmonthday.vol_diff_target_oil,
-    pvunitallocmonthday.vol_diff_target_sand,
-    pvunitallocmonthday.vol_diff_target_water,
-    pvunitallocmonthday.vol_disp_flare_gas,
-    pvunitallocmonthday.vol_disp_fuel_gas,
-    pvunitallocmonthday.vol_disp_incinerate_gas,
-    pvunitallocmonthday.vol_disp_inject_gas,
-    pvunitallocmonthday.vol_disp_inject_water,
-    pvunitallocmonthday.vol_disp_sale_cond,
-    pvunitallocmonthday.vol_disp_sale_gas,
-    pvunitallocmonthday.vol_disp_sale_hc_liq,
-    pvunitallocmonthday.vol_disp_sale_ngl,
-    pvunitallocmonthday.vol_disp_sale_oil,
-    pvunitallocmonthday.vol_disp_vent_gas,
-    pvunitallocmonthday.vol_end_inv_hc_liq,
-    pvunitallocmonthday.vol_end_inv_hc_liq_gas_eq,
-    pvunitallocmonthday.vol_end_inv_sand,
-    pvunitallocmonthday.vol_end_inv_water,
-    pvunitallocmonthday.vol_inject_gas,
-    pvunitallocmonthday.vol_inject_hc_liq,
-    pvunitallocmonthday.vol_inject_recov_gas,
-    pvunitallocmonthday.vol_inject_recov_hc_liq,
-    pvunitallocmonthday.vol_inject_recov_sand,
-    pvunitallocmonthday.vol_inject_recov_water,
-    pvunitallocmonthday.vol_inject_sand,
-    pvunitallocmonthday.vol_inject_water,
-    pvunitallocmonthday.vol_lost_gas,
-    pvunitallocmonthday.vol_lost_hc_liq,
-    pvunitallocmonthday.vol_lost_sand,
-    pvunitallocmonthday.vol_lost_water,
-    pvunitallocmonthday.vol_new_prod_alloc_cond,
-    pvunitallocmonthday.vol_new_prod_alloc_gas,
-    pvunitallocmonthday.vol_new_prod_alloc_hc_liq,
-    pvunitallocmonthday.vol_new_prod_alloc_hc_liq_gas_eq,
-    pvunitallocmonthday.vol_new_prod_alloc_ngl,
-    pvunitallocmonthday.vol_new_prod_alloc_oil,
-    pvunitallocmonthday.vol_new_prod_alloc_sand,
-    pvunitallocmonthday.vol_new_prod_alloc_water,
-    pvunitallocmonthday.vol_prod_alloc_cond,
-    pvunitallocmonthday.vol_prod_alloc_gas,
-    pvunitallocmonthday.vol_prod_alloc_hc_liq,
-    pvunitallocmonthday.vol_prod_alloc_hc_liq_gas_eq,
-    pvunitallocmonthday.vol_prod_alloc_ngl,
-    pvunitallocmonthday.vol_prod_alloc_oil,
-    pvunitallocmonthday.vol_prod_alloc_sand,
-    pvunitallocmonthday.vol_prod_alloc_water,
-    pvunitallocmonthday.vol_prod_cum_cond,
-    pvunitallocmonthday.vol_prod_cum_gas,
-    pvunitallocmonthday.vol_prod_cum_hc_liq,
-    pvunitallocmonthday.vol_prod_cum_ngl,
-    pvunitallocmonthday.vol_prod_cum_oil,
-    pvunitallocmonthday.vol_prod_cum_sand,
-    pvunitallocmonthday.vol_prod_cum_water,
-    pvunitallocmonthday.vol_prod_gath_gas,
-    pvunitallocmonthday.vol_prod_gath_hc_liq,
-    pvunitallocmonthday.vol_prod_gath_sand,
-    pvunitallocmonthday.vol_prod_gath_water,
-    pvunitallocmonthday.vol_recov_gas,
-    pvunitallocmonthday.vol_recov_hc_liq,
-    pvunitallocmonthday.vol_recov_sand,
-    pvunitallocmonthday.vol_recov_water,
-    pvunitallocmonthday.vol_remain_recov_gas,
-    pvunitallocmonthday.vol_remain_recov_hc_liq,
-    pvunitallocmonthday.vol_remain_recov_sand,
-    pvunitallocmonthday.vol_remain_recov_water,
-    pvunitallocmonthday.vol_start_inv_hc_liq,
-    pvunitallocmonthday.vol_start_inv_hc_liq_gas_eq,
-    pvunitallocmonthday.vol_start_inv_sand,
-    pvunitallocmonthday.vol_start_inv_water,
-    pvunitallocmonthday.vol_start_remain_recov_gas,
-    pvunitallocmonthday.vol_start_remain_recov_hc_liq,
-    pvunitallocmonthday.vol_start_remain_recov_sand,
-    pvunitallocmonthday.vol_start_remain_recov_water,
-    
-    -- Joined data from downtime table
-    pvunitcompdowntm.code_downtime_1,
-    pvunitcompdowntm.code_downtime_2,
-    pvunitcompdowntm.code_downtime_3,
-    
-    -- Joined data from parameter table
-    pvunitcompparam.ph,
-    pvunitcompparam.pres_bottomhole as pres_bh,
-    pvunitcompparam.pres_casing as pres_cas,
-    pvunitcompparam.pres_casing_si as pres_cas_si,
-    pvunitcompparam.pres_injection as pres_inj,
-    pvunitcompparam.pres_line,
-    pvunitcompparam.pres_tubing as pres_tub,
-    pvunitcompparam.pres_tubing_si as pres_tub_si,
-    pvunitcompparam.pres_wellhead as pres_wh,
-    pvunitcompparam.salinity,
-    pvunitcompparam.size_choke as sz_choke,
-    pvunitcompparam.temp_bottomhole as temp_bh,
-    pvunitcompparam.temp_wellhead as temp_wh,
-    pvunitcompparam.visc_dynamic,
-    pvunitcompparam.visc_kinematic,
-    
-    -- Joined data from status table
-    pvunitcompstatus.status,
-    
-    -- Update date (maximum of all joined tables)
-    greatest(
-        coalesce(pvunitallocmonthday.update_date, '0000-01-01T00:00:00.000Z'::timestamp_tz),
-        coalesce(pvunitcompdowntm.update_date, '0000-01-01T00:00:00.000Z'::timestamp_tz),
-        coalesce(pvunitcompparam.update_date, '0000-01-01T00:00:00.000Z'::timestamp_tz),
-        coalesce(pvunitcompstatus.update_date, '0000-01-01T00:00:00.000Z'::timestamp_tz)
-    ) as update_date
-
-from pvunitallocmonthday
-left join pvunitcompdowntm 
-    on pvunitallocmonthday.id_rec_downtime = pvunitcompdowntm.id_rec
-left join pvunitcompparam 
-    on pvunitallocmonthday.id_rec_param = pvunitcompparam.id_rec
-left join pvunitcompstatus 
-    on pvunitallocmonthday.id_rec_status = pvunitcompstatus.id_rec
+SELECT
+PVUNITALLOCMONTHDAY.ALLOCFACTGAS AS ALLOCFACTGAS
+,PVUNITALLOCMONTHDAY.ALLOCFACTHCLIQ AS ALLOCFACTHCLIQ
+,PVUNITALLOCMONTHDAY.ALLOCFACTSAND AS ALLOCFACTSAND
+,PVUNITALLOCMONTHDAY.ALLOCFACTWATER AS ALLOCFACTWATER
+,PVUNITALLOCMONTHDAY.DAYOFMONTH AS DAYOFMONTH
+,PVUNITALLOCMONTHDAY.IDRECDOWNTIME AS DOWNTIMEID
+,PVUNITALLOCMONTHDAY.DTTM AS DTTM
+,PVUNITALLOCMONTHDAY.DURDOWN AS DURDOWN
+,PVUNITALLOCMONTHDAY.DUROP AS DUROP
+,PVUNITALLOCMONTHDAY.IDRECFACILITY AS FACILITYID
+,PVUNITALLOCMONTHDAY.IDREC AS IDREC
+,PVUNITALLOCMONTHDAY.MONTH AS MONTH
+,PVUNITALLOCMONTHDAY.NRIGAS AS NRIGAS
+,PVUNITALLOCMONTHDAY.NRIHCLIQ AS NRIHCLIQ
+,PVUNITALLOCMONTHDAY.NRISAND AS NRISAND
+,PVUNITALLOCMONTHDAY.NRIWATER AS NRIWATER
+,PVUNITALLOCMONTHDAY.IDRECPARAM AS PARAMID
+,PVUNITALLOCMONTHDAY.PUMPEFF AS PUMPEFF
+,PVUNITALLOCMONTHDAY.IDRECPUMPENTRY AS PUMPID
+,IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitagreemt', 'AGREEMENT_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitagreemtpartner', 'AGREEMENTPARTNER_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompressor', 'COMPRESSOR_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompressorentry', 'COMPRESSORENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvfacilitymonthdaycalc', 'DAILYFACILITY_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitnodemonthdaycalc', 'DAILYNODE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittankmonthdaycalc', 'DAILYTANK_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitequip', 'EQUIPMENT_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitequipservice', 'EQUIPMENTSERVICE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitequipservicerec', 'EQUIPMENTSERVICEREC_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitequipdowntm', 'EQUIPMENTDOWNTIME_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitevent', 'EVENT_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitevententry', 'EVENTENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvfacility', 'FACILITY_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvfacrecdispcalc', 'FACILITYRECDISP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvflownetheader', 'FLOWNETWORK_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvgasanalysis', 'GASANALYSES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvgasanalysiscomp', 'GASANALYSESCOMP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvgasanaly', 'GASANALYSISGROUP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvhcliqanalysis', 'HCLIQANALYSES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvhcliqanalysiscomp', 'HCLIQANALYSESCOMP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvhcliqanaly', 'HCLIQANALYSISGROUP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterpdgas', 'METERGASPD_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterpdgasentry', 'METERGASPDENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterliquid', 'METERLIQUID_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterliquidentry', 'METERLIQUIDENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterliquidfact', 'METERLIQUIDFACTOR_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterorifice', 'METERORIFICE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterorificeecf', 'METERORIFICEECF_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterorificeentry', 'METERORIFICEENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterrate', 'METERRATE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeterrateentry', 'METERRATEENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitnodemonthcalc', 'MONTHLYNODE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeaspt', 'OTHERMEASUREMENTPOINT_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitmeasptentry', 'OTHERMEASUREMENTPOINTENTRY_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumpesp', 'PUMPESP_V2', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumpespentry', 'PUMPESPENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumpjet', 'PUMPJET_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumpjetentry', 'PUMPJETENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumppcp', 'PUMPPCP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumppcpentry', 'PUMPPCPENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumprod', 'PUMPROD_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomppumprodentry', 'PUMPRODENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitregbodykey', 'REGBODYKEYS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitremark', 'REMARKS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvrespteam', 'RESPONSIBLETEAMS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvroutesetrouteuserid', 'ROUTEUSERS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitseal', 'SEAL_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitsealentry', 'SEALENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittank', 'TANK_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittankentry', 'TANKENTRIES_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittankfactht', 'TANKHEIGHTFACTOR_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittankstartinv', 'TANKSTARTINV_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittankstrap', 'TANKSTRAP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunittankstrapdata', 'TANKSTRAPDETAILS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvticket', 'TICKETS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunit', 'UNIT_V2', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitallocmonthday', 'UNITDAILYALLOCEXTENDED_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitdispmonthday', 'UNITDAILYDISP_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitallocmonth', 'UNITMONTHLYALLOC_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitnode', 'UNITNODE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitnodeanaly', 'UNITNODEANALY_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitnodecorr', 'UNITNODECORR_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitnodenetfact', 'UNITNODESHRINK_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitothertag', 'UNITOTHERTAG_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvroutesetrouteunit', 'UNITROUTE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompgathmonthdaycalc', 'WELLDAILYGATHERED_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompdowntm', 'WELLDOWNTIME_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompfluidlevel', 'WELLFLUIDLEVEL_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompwhcut', 'WELLHEADCUT_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompmeasmeth', 'WELLMEASMETHOD_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompgathmonthcalc', 'WELLMONTHLYGATHERED_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompparam', 'WELLPARAM_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompratios', 'WELLRATIOS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomptestreqexcalc', 'WELLREQUIREDTESTSREMAINING_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompstatus', 'WELLSTATUS_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomptarget', 'WELLTARGET_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomptargetday', 'WELLTARGETDAILY_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomptest', 'WELLTEST_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcomptestreq', 'WELLTESTINGREQUIREMENT_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompzone', 'WELLZONE_V1', IFF(PVUNITALLOCMONTHDAY.IDRECPUMPENTRYTK = 'pvunitcompcmnglratio', 'WELLZONERATIO_V1', '')))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) AS PUMPTK
+,PVUNITALLOCMONTHDAY.IDRECSTATUS AS STATUSID
+,PVUNITALLOCMONTHDAY.SYSCREATEDATE AS SYSCREATEDATE
+,PVUNITALLOCMONTHDAY.SYSCREATEUSER AS SYSCREATEUSER
+,PVUNITALLOCMONTHDAY.SYSMODDATE AS SYSMODDATE
+,PVUNITALLOCMONTHDAY.SYSMODUSER AS SYSMODUSER
+,PVUNITALLOCMONTHDAY.IDRECUNIT AS UNITID
+,PVUNITALLOCMONTHDAY.VOLCHGINVHCLIQ AS VOLCHGINVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLCHGINVHCLIQGASEQ AS VOLCHGINVHCLIQGASEQ
+,PVUNITALLOCMONTHDAY.VOLCHGINVSAND AS VOLCHGINVSAND
+,PVUNITALLOCMONTHDAY.VOLCHGINVWATER AS VOLCHGINVWATER
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETCOND AS VOLDIFFTARGETCOND
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETGAS AS VOLDIFFTARGETGAS
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETHCLIQ AS VOLDIFFTARGETHCLIQ
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETNGL AS VOLDIFFTARGETNGL
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETOIL AS VOLDIFFTARGETOIL
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETSAND AS VOLDIFFTARGETSAND
+,PVUNITALLOCMONTHDAY.VOLDIFFTARGETWATER AS VOLDIFFTARGETWATER
+,PVUNITALLOCMONTHDAY.VOLDISPFLAREGAS AS VOLDISPFLAREGAS
+,PVUNITALLOCMONTHDAY.VOLDISPFUELGAS AS VOLDISPFUELGAS
+,PVUNITALLOCMONTHDAY.VOLDISPINCINERATEGAS AS VOLDISPINCINERATEGAS
+,PVUNITALLOCMONTHDAY.VOLDISPINJECTGAS AS VOLDISPINJECTGAS
+,PVUNITALLOCMONTHDAY.VOLDISPINJECTWATER AS VOLDISPINJECTWATER
+,PVUNITALLOCMONTHDAY.VOLDISPSALECOND AS VOLDISPSALECOND
+,PVUNITALLOCMONTHDAY.VOLDISPSALEGAS AS VOLDISPSALEGAS
+,PVUNITALLOCMONTHDAY.VOLDISPSALEHCLIQ AS VOLDISPSALEHCLIQ
+,PVUNITALLOCMONTHDAY.VOLDISPSALENGL AS VOLDISPSALENGL
+,PVUNITALLOCMONTHDAY.VOLDISPSALEOIL AS VOLDISPSALEOIL
+,PVUNITALLOCMONTHDAY.VOLDISPVENTGAS AS VOLDISPVENTGAS
+,PVUNITALLOCMONTHDAY.VOLENDINVHCLIQ AS VOLENDINVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLENDINVHCLIQGASEQ AS VOLENDINVHCLIQGASEQ
+,PVUNITALLOCMONTHDAY.VOLENDINVSAND AS VOLENDINVSAND
+,PVUNITALLOCMONTHDAY.VOLENDINVWATER AS VOLENDINVWATER
+,PVUNITALLOCMONTHDAY.VOLINJECTGAS AS VOLINJECTGAS
+,PVUNITALLOCMONTHDAY.VOLINJECTHCLIQ AS VOLINJECTHCLIQ
+,PVUNITALLOCMONTHDAY.VOLINJECTRECOVGAS AS VOLINJECTRECOVGAS
+,PVUNITALLOCMONTHDAY.VOLINJECTRECOVHCLIQ AS VOLINJECTRECOVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLINJECTRECOVSAND AS VOLINJECTRECOVSAND
+,PVUNITALLOCMONTHDAY.VOLINJECTRECOVWATER AS VOLINJECTRECOVWATER
+,PVUNITALLOCMONTHDAY.VOLINJECTSAND AS VOLINJECTSAND
+,PVUNITALLOCMONTHDAY.VOLINJECTWATER AS VOLINJECTWATER
+,PVUNITALLOCMONTHDAY.VOLLOSTGAS AS VOLLOSTGAS
+,PVUNITALLOCMONTHDAY.VOLLOSTHCLIQ AS VOLLOSTHCLIQ
+,PVUNITALLOCMONTHDAY.VOLLOSTSAND AS VOLLOSTSAND
+,PVUNITALLOCMONTHDAY.VOLLOSTWATER AS VOLLOSTWATER
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCCOND AS VOLNEWPRODALLOCCOND
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCGAS AS VOLNEWPRODALLOCGAS
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCHCLIQ AS VOLNEWPRODALLOCHCLIQ
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCHCLIQGASEQ AS VOLNEWPRODALLOCHCLIQGASEQ
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCNGL AS VOLNEWPRODALLOCNGL
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCOIL AS VOLNEWPRODALLOCOIL
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCSAND AS VOLNEWPRODALLOCSAND
+,PVUNITALLOCMONTHDAY.VOLNEWPRODALLOCWATER AS VOLNEWPRODALLOCWATER
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCCOND AS VOLPRODALLOCCOND
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCGAS AS VOLPRODALLOCGAS
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCHCLIQ AS VOLPRODALLOCHCLIQ
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCHCLIQGASEQ AS VOLPRODALLOCHCLIQGASEQ
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCNGL AS VOLPRODALLOCNGL
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCOIL AS VOLPRODALLOCOIL
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCSAND AS VOLPRODALLOCSAND
+,PVUNITALLOCMONTHDAY.VOLPRODALLOCWATER AS VOLPRODALLOCWATER
+,PVUNITALLOCMONTHDAY.VOLPRODCUMCOND AS VOLPRODCUMCOND
+,PVUNITALLOCMONTHDAY.VOLPRODCUMGAS AS VOLPRODCUMGAS
+,PVUNITALLOCMONTHDAY.VOLPRODCUMHCLIQ AS VOLPRODCUMHCLIQ
+,PVUNITALLOCMONTHDAY.VOLPRODCUMNGL AS VOLPRODCUMNGL
+,PVUNITALLOCMONTHDAY.VOLPRODCUMOIL AS VOLPRODCUMOIL
+,PVUNITALLOCMONTHDAY.VOLPRODCUMSAND AS VOLPRODCUMSAND
+,PVUNITALLOCMONTHDAY.VOLPRODCUMWATER AS VOLPRODCUMWATER
+,PVUNITALLOCMONTHDAY.VOLPRODGATHGAS AS VOLPRODGATHGAS
+,PVUNITALLOCMONTHDAY.VOLPRODGATHHCLIQ AS VOLPRODGATHHCLIQ
+,PVUNITALLOCMONTHDAY.VOLPRODGATHSAND AS VOLPRODGATHSAND
+,PVUNITALLOCMONTHDAY.VOLPRODGATHWATER AS VOLPRODGATHWATER
+,PVUNITALLOCMONTHDAY.VOLRECOVGAS AS VOLRECOVGAS
+,PVUNITALLOCMONTHDAY.VOLRECOVHCLIQ AS VOLRECOVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLRECOVSAND AS VOLRECOVSAND
+,PVUNITALLOCMONTHDAY.VOLRECOVWATER AS VOLRECOVWATER
+,PVUNITALLOCMONTHDAY.VOLREMAINRECOVGAS AS VOLREMAINRECOVGAS
+,PVUNITALLOCMONTHDAY.VOLREMAINRECOVHCLIQ AS VOLREMAINRECOVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLREMAINRECOVSAND AS VOLREMAINRECOVSAND
+,PVUNITALLOCMONTHDAY.VOLREMAINRECOVWATER AS VOLREMAINRECOVWATER
+,PVUNITALLOCMONTHDAY.VOLSTARTINVHCLIQ AS VOLSTARTINVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLSTARTINVHCLIQGASEQ AS VOLSTARTINVHCLIQGASEQ
+,PVUNITALLOCMONTHDAY.VOLSTARTINVSAND AS VOLSTARTINVSAND
+,PVUNITALLOCMONTHDAY.VOLSTARTINVWATER AS VOLSTARTINVWATER
+,PVUNITALLOCMONTHDAY.VOLSTARTREMAINRECOVGAS AS VOLSTARTREMAINRECOVGAS
+,PVUNITALLOCMONTHDAY.VOLSTARTREMAINRECOVHCLIQ AS VOLSTARTREMAINRECOVHCLIQ
+,PVUNITALLOCMONTHDAY.VOLSTARTREMAINRECOVSAND AS VOLSTARTREMAINRECOVSAND
+,PVUNITALLOCMONTHDAY.VOLSTARTREMAINRECOVWATER AS VOLSTARTREMAINRECOVWATER
+,PVUNITALLOCMONTHDAY.IDRECTEST AS WELLTESTID
+,PVUNITALLOCMONTHDAY.WIGAS AS WIGAS
+,PVUNITALLOCMONTHDAY.WIHCLIQ AS WIHCLIQ
+,PVUNITALLOCMONTHDAY.WISAND AS WISAND
+,PVUNITALLOCMONTHDAY.WIWATER AS WIWATER
+,PVUNITALLOCMONTHDAY.YEAR AS YEAR
+,PVUNITCOMPDOWNTM.CODEDOWNTM1 AS CODEDOWNTM1
+,PVUNITCOMPDOWNTM.CODEDOWNTM2 AS CODEDOWNTM2
+,PVUNITCOMPDOWNTM.CODEDOWNTM3 AS CODEDOWNTM3
+,PVUNITCOMPPARAM.PH AS PH
+,PVUNITCOMPPARAM.PRESBH AS PRESBH
+,PVUNITCOMPPARAM.PRESCAS AS PRESCAS
+,PVUNITCOMPPARAM.PRESCASSI AS PRESCASSI
+,PVUNITCOMPPARAM.PRESINJ AS PRESINJ
+,PVUNITCOMPPARAM.PRESLINE AS PRESLINE
+,PVUNITCOMPPARAM.PRESTUB AS PRESTUB
+,PVUNITCOMPPARAM.PRESTUBSI AS PRESTUBSI
+,PVUNITCOMPPARAM.PRESWH AS PRESWH
+,PVUNITCOMPPARAM.SALINITY AS SALINITY
+,PVUNITCOMPPARAM.SZCHOKE AS SZCHOKE
+,PVUNITCOMPPARAM.TEMPBH AS TEMPBH
+,PVUNITCOMPPARAM.TEMPWH AS TEMPWH
+,PVUNITCOMPPARAM.VISCDYNAMIC AS VISCDYNAMIC
+,PVUNITCOMPPARAM.VISCKINEMATIC AS VISCKINEMATIC
+,PVUNITCOMPSTATUS.STATUS AS STATUS
+,GREATEST(NVL(PVUNITALLOCMONTHDAY.UPDATE_DATE, TO_TIMESTAMP_TZ('0000-01-01T00:00:00.000Z')), NVL(PVUNITCOMPDOWNTM.UPDATE_DATE, TO_TIMESTAMP_TZ('0000-01-01T00:00:00.000Z')), NVL(PVUNITCOMPPARAM.UPDATE_DATE, TO_TIMESTAMP_TZ('0000-01-01T00:00:00.000Z')), NVL(PVUNITCOMPSTATUS.UPDATE_DATE, TO_TIMESTAMP_TZ('0000-01-01T00:00:00.000Z'))) AS UPDATE_DATE
+FROM {{ ref('stg_prodview__pvunitallocmonthday') }} PVUNITALLOCMONTHDAY
+LEFT JOIN {{ ref('stg_prodview__pvunitcompdowntm') }} PVUNITCOMPDOWNTM ON PVUNITALLOCMONTHDAY.IDRECDOWNTIME = PVUNITCOMPDOWNTM.IDREC AND PVUNITCOMPDOWNTM.DELETED = FALSE
+LEFT JOIN {{ ref('stg_prodview__pvunitcompparam') }} PVUNITCOMPPARAM ON PVUNITALLOCMONTHDAY.IDRECPARAM = PVUNITCOMPPARAM.IDREC AND PVUNITCOMPPARAM.DELETED = FALSE
+LEFT JOIN {{ ref('stg_prodview__pvunitcompstatus') }} PVUNITCOMPSTATUS ON PVUNITALLOCMONTHDAY.IDRECSTATUS = PVUNITCOMPSTATUS.IDREC AND PVUNITCOMPSTATUS.DELETED = FALSE
+WHERE PVUNITALLOCMONTHDAY.DELETED = FALSE

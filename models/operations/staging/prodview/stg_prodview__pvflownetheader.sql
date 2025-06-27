@@ -12,72 +12,72 @@ with source as (
 renamed as (
     select
         -- Primary identifiers
-        IDFLOWNET as id_flow_net,
-        NAME as name,
-        TYP as type,
+        IDFLOWNET,
+        NAME,
+        TYP,
         
         -- Primary unit and facility references
-        IDRECUNITPRIMARY as id_rec_unit_primary,
-        IDRECUNITPRIMARYTK as id_rec_unit_primary_tk,
-        IDRECFACILITYPRIMARY as id_rec_facility_primary,
-        IDRECFACILITYPRIMARYTK as id_rec_facility_primary_tk,
+        IDRECUNITPRIMARY,
+        IDRECUNITPRIMARYTK,
+        IDRECFACILITYPRIMARY,
+        IDRECFACILITYPRIMARYTK,
         
         -- General information
-        COM as com,
+        COM,
         
         -- Responsibility assignments
-        IDRECRESP1 as id_rec_resp_1,
-        IDRECRESP1TK as id_rec_resp_1_tk,
-        IDRECRESP2 as id_rec_resp_2,
-        IDRECRESP2TK as id_rec_resp_2_tk,
+        IDRECRESP1,
+        IDRECRESP1TK,
+        IDRECRESP2,
+        IDRECRESP2TK,
         
         -- Reporting configuration flags
-        RPTGATHEREDCALCS as rpt_gathered_calcs,
-        RPTALLOCATIONS as rpt_allocations,
-        RPTDISPOSITIONS as rpt_dispositions,
-        RPTCOMPONENTDISPOSITIONS as rpt_component_dispositions,
-        RPTNODECALCULATIONS as rpt_node_calculations,
+        RPTGATHEREDCALCS,
+        RPTALLOCATIONS,
+        RPTDISPOSITIONS,
+        RPTCOMPONENTDISPOSITIONS,
+        RPTNODECALCULATIONS,
         
         -- Operational settings
-        TRACKDOWNHOLEINVENTORY as track_downhole_inventory,
+        TRACKDOWNHOLEINVENTORY,
         
         -- Allocation and process dates
-        DTTMALLOCPROCESSBEGAN as dttm_alloc_process_began,
-        DTTMSTART as dttm_start,
-        DTTMEND as dttm_end,
-        DTTMLASTALLOCPROCESS as dttm_last_alloc_process,
-        USERLASTALLOCPROCESS as user_last_alloc_process,
+        DTTMALLOCPROCESSBEGAN,
+        DTTMSTART,
+        DTTMEND,
+        DTTMLASTALLOCPROCESS,
+        USERLASTALLOCPROCESS,
         
         -- User-defined text fields
-        USERTXT1 as user_txt_1,
-        USERTXT2 as user_txt_2,
-        USERTXT3 as user_txt_3,
-        USERTXT4 as user_txt_4,
-        USERTXT5 as user_txt_5,
+        USERTXT1,
+        USERTXT2,
+        USERTXT3,
+        USERTXT4,
+        USERTXT5,
         
         -- System locking fields
-        SYSLOCKMEUI as sys_lock_me_ui,
-        SYSLOCKCHILDRENUI as sys_lock_children_ui,
-        SYSLOCKME as sys_lock_me,
-        SYSLOCKCHILDREN as sys_lock_children,
-        SYSLOCKDATE as sys_lock_date,
+        SYSLOCKMEUI,
+        SYSLOCKCHILDRENUI,
+        SYSLOCKME,
+        SYSLOCKCHILDREN,
+        SYSLOCKDATE,
         
         -- System audit fields
-        SYSMODDATE as sys_mod_date,
-        SYSMODUSER as sys_mod_user,
-        SYSCREATEDATE as sys_create_date,
-        SYSCREATEUSER as sys_create_user,
-        SYSTAG as sys_tag,
+        SYSMODDATE,
+        SYSMODUSER,
+        SYSCREATEDATE,
+        SYSCREATEUSER,
+        SYSTAG,
         
         -- Additional system fields
-        SYSMODDATEDB as sys_mod_date_db,
-        SYSMODUSERDB as sys_mod_user_db,
-        SYSSECURITYTYP as sys_security_type,
-        SYSLOCKDATEMASTER as sys_lock_date_master,
+        SYSMODDATEDB,
+        SYSMODUSERDB,
+        SYSSECURITYTYP,
+        SYSLOCKDATEMASTER,
         
         -- Fivetran metadata
-        _FIVETRAN_SYNCED as update_date,
-        _FIVETRAN_DELETED as deleted
+        _FIVETRAN_SYNCED as UPDATE_DATE,
+        _FIVETRAN_DELETED as DELETED
 
     from source
 )
