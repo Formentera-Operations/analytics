@@ -1,8 +1,326 @@
 version: 2
 
 sources:
-  - name: wellview
+  - name: wellview_calcs
     database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_WV120
     schema: FORMENTERAOPS_WV120_CALC
     tables:
-      - name: PVT_PVUNIT
+      - name: WVT_WVCAS
+        description: "Casing string information including run date, set depth, and component details"
+        columns:
+          - name: IDREC
+            description: "Unique record identifier"
+            tests:
+              - unique
+              - not_null
+          
+          - name: IDWELL
+            description: "Well identifier"
+            tests:
+              - not_null
+          
+          - name: COM
+            description: "Comment field"
+          
+          - name: IDRECJOBRUN
+            description: "Run job identifier"
+          
+          - name: LENGTHCALC
+            description: "Calculated string length in meters"
+          
+          - name: SYSCREATEDATE
+            description: "System record creation date"
+            tests:
+              - not_null
+          
+          - name: PULLREASON
+            description: "Reason for pulling the casing string"
+          
+          - name: STRINGWTUP
+            description: "String weight up in newtons"
+          
+          - name: SZIDNOMCOMPMINCALC
+            description: "Calculated minimum component nominal ID in meters"
+          
+          - name: IDRECJOBRUNTK
+            description: "Run job table key"
+          
+          - name: PULLREASONDETAIL
+            description: "Detailed reason for pulling the casing"
+          
+          - name: SZODNOMMAXCALC
+            description: "Calculated maximum nominal OD in meters"
+          
+          - name: REASONCUTPULL
+            description: "Reason for cutting and pulling"
+          
+          - name: IDRECWELLBORETK
+            description: "Wellbore table key"
+          
+          - name: CENTRALIZERS
+            description: "Centralizer information"
+          
+          - name: SZODNOMCOMPMAXCALC
+            description: "Calculated maximum component nominal OD in meters"
+          
+          - name: SYSLOCKCHILDRENUI
+            description: "System lock children UI field"
+          
+          - name: IDRECLASTRIGCALC
+            description: "Calculated last rig identifier"
+          
+          - name: DURRUNTOPULLCALC
+            description: "Calculated duration from run to pull in days"
+          
+          - name: DTTMPICKUP
+            description: "Pick up date and time"
+          
+          - name: DES
+            description: "Casing description"
+          
+          - name: DTTMRUN
+            description: "Run date and time"
+          
+          - name: DTTMCUTPULL
+            description: "Cut and pull date and time"
+          
+          - name: COMPCASDIMSZODNOMCALC
+            description: "Calculated component casing dimension OD nominal"
+          
+          - name: TAPERED
+            description: "Boolean indicating if string is tapered"
+          
+          - name: IDRECJOBPULL
+            description: "Pull job identifier"
+          
+          - name: IDRECLASTFAILURECALC
+            description: "Calculated last failure record identifier"
+          
+          - name: USERTXT1
+            description: "User text field 1"
+          
+          - name: SCRATCHERS
+            description: "Scratcher information"
+          
+          - name: DTTMPULL
+            description: "Pull date and time"
+          
+          - name: USERTXT2
+            description: "User text field 2"
+          
+          - name: TENSION
+            description: "Set tension in newtons"
+          
+          - name: USERTXT3
+            description: "User text field 3"
+          
+          - name: SYSLOCKDATE
+            description: "System lock date"
+          
+          - name: COMPLEXITYINDEX
+            description: "Complexity index rating"
+          
+          - name: CENTRALIZERSSTANDOFFAVG
+            description: "Average centralizer standoff proportion"
+          
+          - name: DEPTHTVDBTMCALC
+            description: "Calculated true vertical depth bottom in meters"
+          
+          - name: TOTALSTRETCHSUMCALC
+            description: "Calculated total stretch sum in meters"
+          
+          - name: WTPERLENGTHCALC
+            description: "Calculated weight per length in kg/m"
+          
+          - name: LATPOSITION
+            description: "Lateral position"
+          
+          - name: SYSLOCKMEUI
+            description: "System lock me UI field"
+          
+          - name: CENTRALIZERSSTANDOFFMIN
+            description: "Minimum centralizer standoff proportion"
+          
+          - name: SYSLOCKCHILDREN
+            description: "System lock children field"
+          
+          - name: SYSTAG
+            description: "System tag"
+          
+          - name: IDRECJOBPROGRAMPHASECALC
+            description: "Calculated job program phase identifier"
+          
+          - name: VOLUMEINTERNALCALC
+            description: "Calculated internal volume in cubic meters"
+          
+          - name: CONNTHRDTOPCALC
+            description: "Calculated top connection thread"
+          
+          - name: COMPCASDIMCALC
+            description: "Calculated component casing dimensions"
+          
+          - name: IDRECLASTFAILURECALCTK
+            description: "Calculated last failure record table key"
+          
+          - name: SYSLOCKME
+            description: "System lock me field"
+          
+          - name: LEAKOFFPRESCALC
+            description: "Calculated leak off pressure in kilopascals"
+          
+          - name: CONTRACTOR
+            description: "Make-up contractor"
+          
+          - name: GRADECALC
+            description: "Calculated string grade"
+          
+          - name: IDRECJOBPROGRAMPHASECALCTK
+            description: "Calculated job program phase table key"
+          
+          - name: PROPOSEDORACTUAL
+            description: "Indicates if record is proposed or actual"
+            tests:
+              - accepted_values:
+                  values: ['Proposed', 'Actual']
+          
+          - name: IDRECJOBPULLTK
+            description: "Pull job table key"
+          
+          - name: DEPTHBTM
+            description: "Set depth bottom in meters"
+          
+          - name: SYSMODUSER
+            description: "System modification user"
+          
+          - name: DTTMOUTOFHOLE
+            description: "Out of hole date and time"
+          
+          - name: PROPVERSIONNO
+            description: "Proposed version number"
+          
+          - name: SZIDNOMMINCALC
+            description: "Calculated minimum nominal ID in meters"
+          
+          - name: IDRECLASTRIGCALCTK
+            description: "Calculated last rig table key"
+          
+          - name: COMPONENTSCALC
+            description: "Calculated string components"
+          
+          - name: DEPTHTOPCALC
+            description: "Calculated top depth in meters"
+          
+          - name: LEAKOFFDENSITYFLUIDCALC
+            description: "Calculated leak off equivalent fluid density in kg/m³"
+          
+          - name: SYSMODDATE
+            description: "System modification date"
+          
+          - name: DTTMONBOTTOM
+            description: "On bottom date and time"
+          
+          - name: DEPTHCUTPULL
+            description: "Depth cut and pull in meters"
+          
+          - name: STICKUPKBCALC
+            description: "Calculated stick up from kelly bushing in meters"
+          
+          - name: DEPTHTVDCUTPULLCALC
+            description: "Calculated true vertical depth cut pull in meters"
+          
+          - name: DEPTHONBTMTOPICKUPCALC
+            description: "Calculated depth on bottom to pickup in meters per day"
+          
+          - name: NOTECUTPULL
+            description: "Cut and pull note"
+          
+          - name: STRINGWTDOWN
+            description: "String weight down in newtons"
+          
+          - name: DTTMPROPCUTPULL
+            description: "Proposed cut and pull date and time"
+          
+          - name: SZDRIFTMINCALC
+            description: "Calculated minimum drift size in meters"
+          
+          - name: CENTRALIZERSNOTALLYCALC
+            description: "Calculated number of centralizers from tally"
+          
+          - name: SYSCREATEUSER
+            description: "System creation user"
+          
+          - name: DTTMPROPPULL
+            description: "Proposed pull date and time"
+          
+          - name: IDRECWELLBORE
+            description: "Wellbore identifier"
+          
+          - name: WELLBORESZCALC
+            description: "Calculated wellbore size in meters"
+          
+          - name: COMPCASLENGTHCALC
+            description: "Calculated component casing length"
+          
+          - name: TRAVELEQUIPWT
+            description: "Travelling equipment weight in newtons"
+          
+          - name: DURONBOTTOMTOPICKUPCALC
+            description: "Calculated duration on bottom to pickup in days"
+          
+          - name: VOLUMESHOETRACK
+            description: "Shoe track volume in cubic meters"
+          
+          - name: OPERATINGPRESSLIMIT
+            description: "Operating pressure limit in kilopascals"
+          
+          - name: _FIVETRAN_DELETED
+            description: "Fivetran deletion flag"
+          
+          - name: _FIVETRAN_SYNCED
+            description: "Fivetran sync timestamp"
+                  
+      - name: WVT_WVCASCOMP
+      - name: WVT_WVCASCOMPTALLY
+      - name: WVT_WVCEMENT
+      - name: WVT_WVCEMENTSTAGE
+      - name: WVT_WVCEMENTSTAGEFLUID
+      - name: WVT_WVJOB
+      - name: WVT_WVJOBAFE
+      - name: WVT_WVJOBINTERVALPROBLEM
+      - name: WVT_WVJOBPROGRAMPHASE
+      - name: WVT_WVJOBREPORT
+      - name: WVT_WVJOBREPORTPERSONNELCOUNT
+      - name: WVT_WVJOBREPORTCOSTGEN
+      - name: WVT_WVJOBREPORTCOSTRENTAL
+      - name: WVT_WVJOBRIG
+      - name: WVT_WVJOBRIGPUMP
+      - name: WVT_WVJOBRIGPUMPOP
+      - name: WVT_WVJOBRIGPUMPCHK
+      - name: WVT_WVJOBSUPPLY
+      - name: WVT_WVJOBSUPPLYAMT
+      - name: WVT_WVJOBTIMELOG
+      - name: WVT_WVOTHERINHOLE
+      - name: WVT_WVPERFORATION
+      - name: WVT_WVPROBLEM
+      - name: WVT_WVROD
+      - name: WVT_WVRODCOMP
+      - name: WVT_WVSTIM
+      - name: WVT_WVSTIMINT
+      - name: WVT_WVSTIMINTFLUID
+      - name: WVT_WVSTIMINTFLUIDADD
+      - name: WVT_WVSTIMINTPROP
+      - name: WVT_WVTUB
+      - name: WVT_WVTUBCOMP
+      - name: WVT_WVTUBCOMPMANDREL
+      - name: WVT_WVTUBCOMPMANDRELINSERT
+      - name: WVT_WVTUBCOMPTALLY
+      - name: WVT_WVWELLBORE
+      - name: WVT_WVWELLBOREDIRSURVEY
+      - name: WVT_WVWELLBOREDIRSURVEYDATA
+      - name: WVT_WVWELLBOREKEYDEPTH
+      - name: WVT_WVWELLHEAD
+      - name: WVT_WVWELLHEADCOMP
+      - name: WVT_WVWELLHEADER
+      - name: WVT_WVWELLSTATUSHISTORY
+      - name: WVT_WVREFWELLS
+      - name: WVT_WVZONE
