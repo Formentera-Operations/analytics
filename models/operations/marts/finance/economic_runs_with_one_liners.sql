@@ -1,19 +1,9 @@
-{{
-    config(
-        materialized='incremental',
-        unique_key='economic_run_well_id',
-        on_schema_change='sync_all_columns',
-        incremental_strategy='merge'
-    )
-}} 
+
 
 with source as (
 
     select * from {{ ref('int_economic_runs_with_one_liners') }}
 
-    {% if is_incremental() %}
-    where economic_run_date >= (select max(economic_run_date) from {{ this }})
-    {% endif %}
 
 ),
 
