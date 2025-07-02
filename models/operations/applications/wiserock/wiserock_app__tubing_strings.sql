@@ -1,6 +1,4 @@
 {{ config(
-    materialized='view',
-    schema='wiserock_app',
     tags=['wiserock', 'wellview']
 ) }}
 
