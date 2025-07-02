@@ -6,7 +6,7 @@
 }}
 
 with pvunitallocmonth as (
-    select * from {{ ref('stg_prodview__pvunitallocmonth') }}
+    select * from {{ ref('stg_prodview__monthly_allocations') }}
     where DELETED = false
 )
 

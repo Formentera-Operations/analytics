@@ -7,7 +7,7 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunitdispmonthday') }}
+select * from {{ ref('stg_prodview__daily_dispositions') }}
 
 {% if is_incremental() %}
   -- this filter will only be applied on an incremental run

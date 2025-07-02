@@ -5,4 +5,4 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvflownetheader') }}
+select * from {{ ref('stg_prodview__networks') }}

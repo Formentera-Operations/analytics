@@ -6,23 +6,23 @@
 }}
 
 with pvunit as (
-    select * from {{ ref('stg_prodview__pvunit') }}
+    select * from {{ ref('stg_prodview__units') }}
     where DELETED = false
 ),
 
 pvroutesetroute as (
-    select * from {{ ref('stg_prodview__pvroutesetroute') }}
+    select * from {{ ref('stg_prodview__routes') }}
     where DELETED = false
 ),
 
 pvunitcomp as (
-    select * from {{ ref('stg_prodview__pvunitcomp') }}
+    select * from {{ ref('stg_prodview__completions') }}
     where DELETED = false
 ),
 
 svintegration as (
     select * 
-    from {{ ref('stg_prodview__pvsysintegration') }}
+    from {{ ref('stg_prodview__system_integrations') }}
     where DELETED = false 
     and AFPRODUCT = 'SiteView' 
     and TBLKEYPARENT = 'pvunit'
@@ -30,7 +30,7 @@ svintegration as (
 
 wvcompintegration as (
     select * 
-    from {{ ref('stg_prodview__pvsysintegration') }}
+    from {{ ref('stg_prodview__system_integrations') }}
     where DELETED = false 
     and AFPRODUCT = 'WellView' 
     and TBLKEYPARENT = 'pvunitcomp'
@@ -38,7 +38,7 @@ wvcompintegration as (
 
 wvintegration as (
     select * 
-    from {{ ref('stg_prodview__pvsysintegration') }}
+    from {{ ref('stg_prodview__system_integrations') }}
     where DELETED = false 
     and AFPRODUCT = 'WellView' 
     and TBLKEYPARENT = 'pvunit'

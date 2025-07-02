@@ -5,4 +5,4 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunitdispmonth') }}
+select * from {{ ref('stg_prodview__monthly_dispositions') }}

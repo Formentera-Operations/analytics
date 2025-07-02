@@ -7,7 +7,7 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunitcompstatus') }}
+select * from {{ ref('stg_prodview__status') }}
 
 {% if is_incremental() %}
   where update_date > (select max(update_date) from {{ this }})

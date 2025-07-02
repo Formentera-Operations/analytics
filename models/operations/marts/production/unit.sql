@@ -5,4 +5,4 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunit') }}
+select * from {{ ref('stg_prodview__units') }}

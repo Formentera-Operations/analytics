@@ -5,4 +5,4 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunitnode') }}
+select * from {{ ref('stg_prodview__unit_nodes') }}

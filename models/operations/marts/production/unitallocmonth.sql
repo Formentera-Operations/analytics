@@ -5,4 +5,4 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunitallocmonth') }}
+select * from {{ ref('stg_prodview__monthly_allocations') }}
