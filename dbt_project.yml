@@ -80,7 +80,8 @@ models:
         +database: FORMENTERA_OPS_DB
 
         wiserock:
-          +schema: wiserock  
+          +schema: wiserock
+          +materialized: table
 
     # Formentera Partners (Tenant 2)
     fp:
