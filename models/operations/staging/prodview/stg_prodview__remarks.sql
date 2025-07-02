@@ -20,20 +20,6 @@ renamed as (
         typ as remark_type,
         com as comments,
         
-        -- AI-powered comment classification
-        case 
-            when com is not null and trim(com) != '' then
-                parse_json(
-                    snowflake.cortex.classify_text(
-                        com,
-                        ['equipment_failure', 'maintenance', 'production_issue', 'chemical_treatment', 
-                         'regulatory_compliance', 'operational_status', 'facility_work', 'waiting_status']
-                    )
-                ):label::string
-            else null
-        end as comment_classification,
-
-        
         -- Link to related item
         idrecitem as link_id,
         idrecitemtk as link_table,
