@@ -6,7 +6,7 @@
 }}
 
 with pvunitdispmonthday as (
-    select * from {{ ref('stg_prodview__pvunitdispmonthday') }}
+    select * from {{ ref('stg_prodview__daily_dispositions') }}
     where deleted = false
 )
 

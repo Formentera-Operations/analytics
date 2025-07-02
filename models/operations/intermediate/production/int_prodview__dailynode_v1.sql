@@ -6,7 +6,7 @@
 }}
 
 with pvunitnodemonthdaycalc as (
-    select * from {{ ref('stg_prodview__pvunitnodemonthdaycalc') }}
+    select * from {{ ref('stg_prodview__node_daily_volumes') }}
     where DELETED = false
 )
 

@@ -7,7 +7,7 @@
   )
 }}
 
-select * from {{ ref('stg_prodview__pvunitcompdowntm') }}
+select * from {{ ref('stg_prodview__completion_downtimes') }}
 
 {% if is_incremental() %}
   where update_date > (select max(update_date) from {{ this }})

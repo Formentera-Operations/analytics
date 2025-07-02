@@ -76,6 +76,12 @@ models:
         +materialized: table
         +tags: ["marts", "fo"]
 
+      applications:
+        +database: FORMENTERA_OPS_DB
+
+        wiserock:
+          +schema: wiserock  
+
     # Formentera Partners (Tenant 2)
     fp:
       # Source/Raw models - minimal transformations

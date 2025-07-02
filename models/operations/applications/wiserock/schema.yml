@@ -1,0 +1,170 @@
+version: 2
+
+models:
+  - name: wiserock_app__casing_components
+    description: Wellview casing components data for Wise Rock application
+
+  - name: wiserock_app__casing_strings
+    description: Wellview casing strings data for Wise Rock application
+
+  - name: wiserock_app__casing_tally
+    description: Wellview casing tally data for Wise Rock application
+
+  - name: wiserock_app__cement_activities
+    description: Wellview cement activities data for Wise Rock application
+
+  - name: wiserock_app__cement_stage_fluids
+    description: Wellview cement stage fluids data for Wise Rock application
+
+  - name: wiserock_app__cement_stages
+    description: Wellview cement stages data for Wise Rock application
+
+  - name: wiserock_app__completion_downtimes
+    description: Wellview completion downtimes data for Wise Rock application
+
+  - name: wiserock_app__completion_parameters
+    description: Wellview completion parameters data for Wise Rock application
+
+  - name: wiserock_app__completions
+    description: Wellview completions data for Wise Rock application
+
+  - name: wiserock_app__daily_allocations
+    description: Wellview daily allocations data for Wise Rock application
+
+  - name: wiserock_app__daily_costs
+    description: Wellview daily costs data for Wise Rock application
+
+  - name: wiserock_app__daily_personnel_logs
+    description: Wellview daily personnel logs data for Wise Rock application
+
+  - name: wiserock_app__daily_recurring_costs
+    description: Wellview daily recurring costs data for Wise Rock application
+
+  - name: wiserock_app__job_afe_definitions
+    description: Wellview job AFE definitions data for Wise Rock application
+
+  - name: wiserock_app__job_interval_problems
+    description: Wellview job interval problems data for Wise Rock application
+
+  - name: wiserock_app__job_program_phases
+    description: Wellview job program phases data for Wise Rock application
+
+  - name: wiserock_app__job_reports
+    description: Wellview job reports data for Wise Rock application
+
+  - name: wiserock_app__job_supplies
+    description: Wellview job supplies data for Wise Rock application
+
+  - name: wiserock_app__job_supply_amounts
+    description: Wellview job supply amounts data for Wise Rock application
+
+  - name: wiserock_app__job_time_log
+    description: Wellview job time log data for Wise Rock application
+
+  - name: wiserock_app__jobs
+    description: Wellview jobs data for Wise Rock application
+
+  - name: wiserock_app__other_in_hole_equipment
+    description: Wellview other in hole equipment data for Wise Rock application
+
+  - name: wiserock_app__perforations
+    description: Wellview perforations data for Wise Rock application
+
+  - name: wiserock_app__production_failures
+    description: Wellview production failures data for Wise Rock application
+
+  - name: wiserock_app__production_tests
+    description: Wellview production tests data for Wise Rock application
+
+  - name: wiserock_app__prodview_system_integrations
+    description: Wellview prodview system integrations data for Wise Rock application
+
+  - name: wiserock_app__reference_wells
+    description: Wellview reference wells data for Wise Rock application
+
+  - name: wiserock_app__remarks
+    description: Wellview remarks data for Wise Rock application
+
+  - name: wiserock_app__rig_mud_pump_checks
+    description: Wellview rig mud pump checks data for Wise Rock application
+
+  - name: wiserock_app__rig_mud_pump_operations
+    description: Wellview rig mud pump operations data for Wise Rock application
+
+  - name: wiserock_app__rig_mud_pumps
+    description: Wellview rig mud pumps data for Wise Rock application
+
+  - name: wiserock_app__rigs
+    description: Wellview rigs data for Wise Rock application
+
+  - name: wiserock_app__rod_components
+    description: Wellview rod components data for Wise Rock application
+
+  - name: wiserock_app__rod_strings
+    description: Wellview rod strings data for Wise Rock application
+
+  - name: wiserock_app__statuses
+    description: Wellview statuses data for Wise Rock application
+
+  - name: wiserock_app__stimulation_fluid_additives
+    description: Wellview stimulation fluid additives data for Wise Rock application
+
+  - name: wiserock_app__stimulation_fluid_systems
+    description: Wellview stimulation fluid systems data for Wise Rock application
+
+  - name: wiserock_app__stimulation_intervals
+    description: Wellview stimulation intervals data for Wise Rock application
+
+  - name: wiserock_app__stimulation_proppant
+    description: Wellview stimulation proppant data for Wise Rock application
+
+  - name: wiserock_app__stimulations
+    description: Wellview stimulations data for Wise Rock application
+
+  - name: wiserock_app__tubing_component_mandrel_inserts
+    description: Wellview tubing component mandrel inserts data for Wise Rock application
+
+  - name: wiserock_app__tubing_component_mandrels
+    description: Wellview tubing component mandrels data for Wise Rock application
+
+  - name: wiserock_app__tubing_components
+    description: Wellview tubing components data for Wise Rock application
+
+  - name: wiserock_app__tubing_run_tallies
+    description: Wellview tubing run tallies data for Wise Rock application
+
+  - name: wiserock_app__tubing_strings
+    description: Wellview tubing strings data for Wise Rock application
+
+  - name: wiserock_app__units
+    description: Wellview units data for Wise Rock application
+
+  - name: wiserock_app__well_header
+    description: Wellview well header data for Wise Rock application
+
+  - name: wiserock_app__well_status_history
+    description: Wellview well status history data for Wise Rock application
+
+  - name: wiserock_app__wellbore_depths
+    description: Wellview wellbore depths data for Wise Rock application
+
+  - name: wiserock_app__wellbore_directional_survey_data
+    description: Wellview wellbore directional survey data for Wise Rock application
+
+  - name: wiserock_app__wellbore_directional_surveys
+    description: Wellview wellbore directional surveys data for Wise Rock application
+
+  - name: wiserock_app__wellbores
+    description: Wellview wellbores data for Wise Rock application
+
+  - name: wiserock_app__wellhead_components
+    description: Wellview wellhead components data for Wise Rock application
+
+  - name: wiserock_app__wellheads
+    description: Wellview wellheads data for Wise Rock application
+
+  - name: wiserock_app__wellview_system_integrations
+    description: Wellview system integrations data for Wise Rock application
+
+  - name: wiserock_app__zones
+    description: Wellview zones data for Wise Rock application
