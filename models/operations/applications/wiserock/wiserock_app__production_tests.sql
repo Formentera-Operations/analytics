@@ -2,4 +2,4 @@
     tags=['wiserock', 'prodview']
 ) }}
 
-select * from {{ ref('stg_prodview__production_tests') }}
+select * from {{ ref('stg_wiserock__pv_production_tests') }}

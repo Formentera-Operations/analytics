@@ -1,0 +1,1462 @@
+models:
+  - name: stg_wiserock__pv_systemt_integration
+    description: "Staging model for ProdView system integration records"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier"
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      - name: tblkeyparent
+        description: "Parent table key"
+      - name: integratordes
+        description: "Integration descriptor"
+      - name: integratorver
+        description: "Integration version"
+      - name: afproduct
+        description: "AF product identifier"
+      - name: afidentity
+        description: "AF identity"
+      - name: afidrec
+        description: "AF record identifier"
+      - name: note
+        description: "Integration notes"
+      - name: syslockmeui
+        description: "UI lock indicator"
+      - name: syslockchildrenui
+        description: "Children UI lock indicator"
+      - name: syslockme
+        description: "Record lock indicator"
+      - name: syslockchildren
+        description: "Children lock indicator"
+      - name: syslockdate
+        description: "Lock date (UTC)"
+      - name: sysmoddate
+        description: "Last modification date (UTC)"
+      - name: sysmoduser
+        description: "Last modification user"
+      - name: syscreatedate
+        description: "Creation date (UTC)"
+      - name: syscreateuser
+        description: "Creation user"
+      - name: systag
+        description: "System tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_remarks
+    description: "Staging model for unit remarks - tracking comments, action items, and imbalance explanations"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier (unit)"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      
+      # Date and comments
+      - name: dttm
+        description: "Entry Date"
+      - name: com
+        description: "Comments"
+      
+      # Remark information
+      - name: typ
+        description: "Type"
+      - name: idrecitem
+        description: "Link"
+      - name: idrecitemtk
+        description: "Link Table"
+      
+      # Flags
+      - name: actionrqd
+        description: "Action Required?"
+      - name: explainedimbalance
+        description: "Explains Imbalance?"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_production_tests
+    description: "Staging model for production tests - capturing well performance measurements and analysis (imperial units)"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier (completion)"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      
+      # Test information
+      - name: typ
+        description: "Type"
+      - name: idrecsep
+        description: "Separator Vessel"
+      - name: idrecseptk
+        description: "Separator Vessel Table"
+      - name: durtest
+        description: "Test Hours (converted from days to hours)"
+      - name: dontuse
+        description: "Invalid Test?"
+      - name: idrecsepunitcalc
+        description: "Separator unit calc"
+      - name: idrecsepunitcalctk
+        description: "Separator unit calc table"
+      - name: com
+        description: "Note"
+      - name: dttm
+        description: "Effective Date"
+      
+      # Test conditions
+      - name: szchoke
+        description: "Choke Size (converted to 1/64 inches)"
+      
+      # Oil/Emulsion measurements
+      - name: readinghcliqstart
+        description: "Start Reading Oil/Emulsion"
+      - name: readinghcliqend
+        description: "End Reading Oil/Emulsion"
+      - name: bsw
+        description: "Oil/Emul BS&W (converted to percentage)"
+      - name: sandcut
+        description: "Oil/Emul Sand Cut (converted to percentage)"
+      - name: leveltankstart
+        description: "Tank Start Level"
+      - name: leveltankend
+        description: "Tank End Level"
+      - name: leveltankfreewaterstart
+        description: "Tank Free Water Start Level"
+      - name: leveltankfreewaterend
+        description: "Tank Free Water End Level"
+      - name: voltankstartcalc
+        description: "Tank Start Volume (converted to barrels, calculated)"
+      - name: voltankendcalc
+        description: "Tank End Volume (converted to barrels, calculated)"
+      - name: volenterhcliq
+        description: "Oil/Emulsion Volume Entry (converted to barrels)"
+      - name: volhcliq
+        description: "Oil/Emulsion Volume Override (converted to barrels)"
+      - name: factgasinsoln
+        description: "Gas In Solution Factor (converted to MCF/BBL)"
+      
+      # Gas measurements
+      - name: duronor
+        description: "Hours On Override (converted from days to hours)"
+      - name: presgasstatic
+        description: "Orifice Static Pressure (gauge)"
+      - name: presgasdiff
+        description: "Orifice Differential Pressure"
+      - name: tempgas
+        description: "Orifice Temperature"
+      - name: szorifice
+        description: "Orifice Size"
+      - name: cprime
+        description: "C'"
+      - name: volentergas
+        description: "Gas Volume Entry (converted to MCF)"
+      - name: volgas
+        description: "Gas Volume Override (converted to MCF)"
+      
+      # Water measurements
+      - name: readingwaterstart
+        description: "Water Start Reading"
+      - name: readingwaterend
+        description: "Water End Reading"
+      - name: volenterwater
+        description: "Water Volume Entry (converted to barrels)"
+      - name: volwater
+        description: "Water Volume Override (converted to barrels)"
+      
+      # Sand measurements
+      - name: volentersand
+        description: "Sand Volume Entry (converted to barrels)"
+      - name: volsand
+        description: "Sand Volume Override (converted to barrels)"
+      
+      # Calculated volumes
+      - name: volfluidtotalcalc
+        description: "Test Total Fluid Volume (converted to barrels, calculated)"
+      - name: volhcliqcalc
+        description: "Test Oil/Condensate Volume (converted to barrels, calculated)"
+      - name: volbeforetpcorrhcliqcalc
+        description: "Oil/Cond Vol before TP Correction (converted to barrels, calculated)"
+      - name: volhcliqgaseqcalc
+        description: "Gas Equivalent of Liquids Volume (converted to MCF, calculated)"
+      - name: volwatercalc
+        description: "Test Water Volume (converted to barrels, calculated)"
+      - name: volgascalc
+        description: "Test Gas Volume (converted to MCF, calculated)"
+      - name: volliftgasrecov
+        description: "Recovered Lift Gas (converted to MCF)"
+      - name: volsandcalc
+        description: "Test Sand Volume (converted to barrels, calculated)"
+      
+      # Calculated rates
+      - name: ratefluidtotalcalc
+        description: "Total Fluid Rate (converted to BBL/day, calculated)"
+      - name: ratehcliqcalc
+        description: "Oil/Cond Rate (converted to BBL/day, calculated)"
+      - name: ratehcliqgaseqcalc
+        description: "Gas Equiv of Oil/Cond Rate (converted to MCF/day, calculated)"
+      - name: ratetotalgascalc
+        description: "Total Gas Rate (converted to MCF/day, calculated)"
+      - name: rateliftgascalc
+        description: "Lift Gas Rate (converted to MCF/day, calculated)"
+      - name: rateprodgascalc
+        description: "Produced Gas Rate (converted to MCF/day, calculated)"
+      - name: ratewatercalc
+        description: "Water Rate (converted to BBL/day, calculated)"
+      - name: ratesandcalc
+        description: "Sand Rate (converted to BBL/day, calculated)"
+      
+      # Calculated totals
+      - name: bswtotalcalc
+        description: "Total BS&W (converted to percentage, calculated)"
+      - name: sandcuttotalcalc
+        description: "Total Sand Cut (converted to percentage, calculated)"
+      - name: gorcalc
+        description: "Gas Oil Ratio (converted to MCF/BBL, calculated)"
+      - name: cgrcalc
+        description: "Condensate Gas Ratio (converted to BBL/MCF, calculated)"
+      - name: wgrcalc
+        description: "Water Gas Ratio (converted to BBL/MCF, calculated)"
+      
+      # Change calculations
+      - name: ratechghcliqcalc
+        description: "Change in Oil/Emulsion Rate (converted to BBL/day, calculated)"
+      - name: pctchghcliqcalc
+        description: "% Change in Oil/Emulsion Rate (converted to percentage, calculated)"
+      - name: ratechggascalc
+        description: "Change in Gas Rate (converted to MCF/day, calculated)"
+      - name: pctchggascalc
+        description: "% Change in Gas Rate (converted to percentage, calculated)"
+      - name: ratechgwatercalc
+        description: "Change in Water Rate (converted to BBL/day, calculated)"
+      - name: pctchgwatercalc
+        description: "% Change in Water Rate (converted to percentage, calculated)"
+      - name: ratechgsandcalc
+        description: "Change in Sand Rate (converted to BBL/day, calculated)"
+      - name: pctchgsandcalc
+        description: "% Change in Sand Rate (converted to percentage, calculated)"
+      - name: chggorcalc
+        description: "Change in GOR (converted to MCF/BBL, calculated)"
+      - name: pctchggorcalc
+        description: "% Change in GOR (converted to percentage, calculated)"
+      - name: chgcgrcalc
+        description: "Change in CGR (converted to BBL/MCF, calculated)"
+      - name: pctchgcgrcalc
+        description: "% Change in CGR (converted to percentage, calculated)"
+      - name: chgwgrcalc
+        description: "Change in WGR (converted to BBL/MCF, calculated)"
+      - name: pctchgwgrcalc
+        description: "% Change in WGR (converted to percentage, calculated)"
+      - name: chgbswcalc
+        description: "Change in BS&W (converted to percentage, calculated)"
+      - name: pctchgbswcalc
+        description: "% Change in BS&W (converted to percentage, calculated)"
+      - name: chgsandcutcalc
+        description: "Change in Sand Cut (converted to percentage, calculated)"
+      - name: pctchgsandcutcalc
+        description: "% Change in Sand Cut (converted to percentage, calculated)"
+      
+      # Reference information
+      - name: reasonvariance
+        description: "Reason For Variance"
+      - name: datasource
+        description: "Data Source"
+      
+      # Pressure conditions (converted from kPa to PSI)
+      - name: presbh
+        description: "Pressure BH (converted to PSI)"
+      - name: prescas
+        description: "Casing Pressure (converted to PSI)"
+      - name: presinjectgasliftgas
+        description: "Pressure Inject Gas Lift Gas (converted to PSI)"
+      - name: presprodsep
+        description: "Pressure Prod Sep (converted to PSI)"
+      - name: prestestsep
+        description: "Pressure Test Separator (converted to PSI)"
+      - name: preswh
+        description: "Pressure WellHead (converted to PSI)"
+      
+      # Test purposes
+      - name: purposealloc
+        description: "Allocation?"
+      - name: purposedeliv
+        description: "Deliverability?"
+      - name: purposereg
+        description: "Regulatory?"
+      
+      # Temperature conditions (converted from °C to °F)
+      - name: tempbh
+        description: "Temperature Bottom Hole (converted to °F)"
+      - name: tempprodsep
+        description: "Temperature Production Separator (converted to °F)"
+      - name: temptestsep
+        description: "Temperature Test Separator (converted to °F)"
+      - name: tempwh
+        description: "Temperature Well Head (converted to °F)"
+      
+      # Test personnel
+      - name: testedby
+        description: "Tested By"
+      
+      # Temperature and pressure correction
+      - name: tempstart
+        description: "Temperature of Opening Level (converted to °F)"
+      - name: presstart
+        description: "Pressure of Opening Level (converted to PSI)"
+      - name: tempend
+        description: "Temperature of Closing Level (converted to °F)"
+      - name: presend
+        description: "Pressure of Closing Level (converted to PSI)"
+      - name: tempsample
+        description: "Temperature of Sample (converted to °F)"
+      - name: pressample
+        description: "Pressure of Sample (converted to PSI)"
+      
+      # Density measurements (converted to API gravity)
+      - name: densitysample
+        description: "Density of Sample (converted to °API)"
+      - name: densitysample60f
+        description: "Density of Sample at 60F (converted to °API, calculated)"
+      
+      # Regulatory properties
+      - name: preswhsi
+        description: "Shut-In Wellhead Pressure (converted to PSI)"
+      - name: preswhflow
+        description: "Flowing Wellhead Pressure (converted to PSI)"
+      - name: presbradenhead
+        description: "Bradenhead Pressure (converted to PSI)"
+      - name: reasonbradenhead
+        description: "Bradenhead Reason"
+      - name: densityrelgas
+        description: "Gas Specific Gravity"
+      - name: densitycond
+        description: "Condensate Gravity (converted to °API)"
+      
+      # Other fields
+      - name: trailerduration
+        description: "Trailer Duration (days)"
+      
+      # User-defined fields
+      - name: usertxt1
+        description: "User Text 1"
+      - name: usertxt2
+        description: "User Text 2"
+      - name: usertxt3
+        description: "User Text 3"
+      - name: usertxt4
+        description: "User Text 4"
+      - name: usertxt5
+        description: "User Text 5"
+      - name: usernum1
+        description: "User Num 1"
+      - name: usernum2
+        description: "User Num 2"
+      - name: usernum3
+        description: "User Num 3"
+      - name: usernum4
+        description: "User Num 4"
+      - name: usernum5
+        description: "User Num 5"
+      - name: userdttm1
+        description: "User Date 1"
+      - name: userdttm2
+        description: "User Date 2"
+      - name: userdttm3
+        description: "User Date 3"
+      - name: userdttm4
+        description: "User Date 4"
+      - name: userdttm5
+        description: "User Date 5"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_status
+    description: "Staging model for completion status - tracking operational states and configurations"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier (completion)"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      
+      # Date and status information
+      - name: dttm
+        description: "Status Date"
+      - name: status
+        description: "Status"
+      - name: primaryfluidtyp
+        description: "Primary Fluid Type"
+      - name: flowdirection
+        description: "Flow Direction"
+      - name: commingled
+        description: "Commingled"
+      - name: typfluidprod
+        description: "Oil or Condensate"
+      - name: typcompletion
+        description: "Completion Type"
+      - name: methodprod
+        description: "Production Method"
+      
+      # Configuration flags
+      - name: calclostprod
+        description: "Calculate Lost Production"
+      - name: wellcountincl
+        description: "Include in Well Count"
+      
+      # User-defined fields
+      - name: usertxt1
+        description: "UserTxt1"
+      - name: usertxt2
+        description: "UserTxt2"
+      - name: usertxt3
+        description: "UserTxt3"
+      - name: usernum1
+        description: "User Num 1"
+      - name: usernum2
+        description: "User Num 2"
+      - name: usernum3
+        description: "User Num 3"
+      
+      # Comments
+      - name: com
+        description: "Comment"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_completion_parameters
+    description: "Staging model for completion parameters - operational measurements and settings (imperial units)"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier (completion)"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      
+      # Date and basic info
+      - name: dttm
+        description: "Date"
+      
+      # Pressure fields (converted from kPa to PSI)
+      - name: prestub
+        description: "Tubing Pressure (converted to PSI)"
+      - name: prescas
+        description: "Casing Pressure (converted to PSI)"
+      - name: presannulus
+        description: "Annulus Pressure (converted to PSI)"
+      - name: presline
+        description: "Line Pressure (converted to PSI)"
+      - name: presinj
+        description: "Injection Pressure (converted to PSI)"
+      - name: preswh
+        description: "Wellhead Pressure (converted to PSI)"
+      - name: presbh
+        description: "Bottomhole Pressure (converted to PSI)"
+      - name: prestubsi
+        description: "Shut-In Tubing Pressure (converted to PSI)"
+      - name: prescassi
+        description: "Shut-In Casing Pressure (converted to PSI)"
+      
+      # Temperature fields (converted from °C to °F)
+      - name: tempwh
+        description: "Wellhead Temperature (converted to °F)"
+      - name: tempbh
+        description: "Bottomhole Temperature (converted to °F)"
+      
+      # Choke size (converted from meters to 1/64")
+      - name: szchoke
+        description: "Choke Size (converted to 1/64 inches)"
+      
+      # Viscosity fields
+      - name: viscdynamic
+        description: "Dynamic Viscosity (pascal seconds)"
+      - name: visckinematic
+        description: "Kinematic Viscosity (converted to IN²/S)"
+      
+      # Other measurements
+      - name: ph
+        description: "Hertz (proportion)"
+      - name: salinity
+        description: "H2S Daily Reading (converted to PPM)"
+      
+      # User pressure fields (converted from kPa to PSI)
+      - name: presuser1
+        description: "Surface Casing Pressure (converted to PSI)"
+      - name: presuser2
+        description: "Intermediate Casing Pressure (converted to PSI)"
+      - name: presuser3
+        description: "Plunger OnPressure (converted to PSI)"
+      - name: presuser4
+        description: "User Pressure 4 (converted to PSI)"
+      - name: presuser5
+        description: "Annulus Pressure (converted to PSI)"
+      
+      # User temperature fields (converted from °C to °F)
+      - name: tempuser1
+        description: "Treater Temperature (converted to °F)"
+      - name: tempuser2
+        description: "User Temperature 2 (converted to °F)"
+      - name: tempuser3
+        description: "User Temperature 3 (converted to °F)"
+      - name: tempuser4
+        description: "Fluid Level Csg P (converted to °F)"
+      - name: tempuser5
+        description: "Fluid Level Tbg P (converted to °F)"
+      
+      # User-defined text fields
+      - name: usertxt1
+        description: "SPCC Inspection Complete?"
+      - name: usertxt2
+        description: "Plunger Model"
+      - name: usertxt3
+        description: "Plunger Make"
+      - name: usertxt4
+        description: "Plunger Size"
+      - name: usertxt5
+        description: "Operational Work"
+      
+      # User-defined numeric fields
+      - name: usernum1
+        description: "Cycles"
+      - name: usernum2
+        description: "Arrivals"
+      - name: usernum3
+        description: "Travel Time (converted to minutes)"
+      - name: usernum4
+        description: "After Flow (converted to minutes)"
+      - name: usernum5
+        description: "Shut In Time (converted to minutes)"
+      
+      # User-defined date fields
+      - name: userdttm1
+        description: "Plunger Inspection Date"
+      - name: userdttm2
+        description: "Plunger Replace Date"
+      - name: userdttm3
+        description: "User Date 3"
+      - name: userdttm4
+        description: "User Date 4"
+      - name: userdttm5
+        description: "User Date 5"
+      
+      # Comments
+      - name: com
+        description: "Note"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_completion_downtimes
+    description: "Staging model for completion downtimes - tracking operational interruptions and maintenance events"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier (completion)"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      
+      # Downtime information
+      - name: typdowntm
+        description: "Type of Downtime Entry"
+      - name: dttmstart
+        description: "First Day"
+      - name: durdownstartday
+        description: "Hours Down (converted from days to hours)"
+      - name: codedowntm1
+        description: "Downtime Code"
+      - name: codedowntm2
+        description: "Downtime Code 2"
+      - name: codedowntm3
+        description: "Downtime Code 3"
+      
+      # End information
+      - name: dttmend
+        description: "Last Day"
+      - name: durdownendday
+        description: "Downtime on Last Day (converted from days to hours)"
+      - name: durdowncalc
+        description: "Total Downtime (converted from days to hours, calculated)"
+      
+      # Planning information
+      - name: dttmplanend
+        description: "Planned End Date"
+      - name: durdownplanend
+        description: "Planned Downtime Duration (converted from days to hours)"
+      
+      # Descriptive fields
+      - name: com
+        description: "Comments"
+      - name: location
+        description: "Location"
+      - name: failflag
+        description: "Failure flag"
+      - name: product
+        description: "Product"
+      
+      # User-defined fields
+      - name: usertxt1
+        description: "User Text 1"
+      - name: usertxt2
+        description: "User Text 2"
+      - name: usertxt3
+        description: "User Text 3"
+      - name: usertxt4
+        description: "User Text 4"
+      - name: usertxt5
+        description: "User Text 5"
+      - name: usernum1
+        description: "User Num 1"
+      - name: usernum2
+        description: "User Num 2"
+      - name: usernum3
+        description: "User Num 3"
+      - name: usernum4
+        description: "User Num 4"
+      - name: usernum5
+        description: "User Num 5"
+      - name: userdttm1
+        description: "User Date 1"
+      - name: userdttm2
+        description: "User Date 2"
+      - name: userdttm3
+        description: "User Date 3"
+      - name: userdttm4
+        description: "User Date 4"
+      - name: userdttm5
+        description: "User Date 5"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_completions
+    description: "Staging model for completions - licensed producing or injecting intervals in wells"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier (unit)"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      
+      # Date fields
+      - name: dttmstartalloc
+        description: "Start Allocating Date in ProdView"
+      - name: dttmend
+        description: "Expiry Date"
+      - name: dttmonprod
+        description: "POP Date"
+      - name: dttmfirstsale
+        description: "First Sale Date"
+      - name: dttmflowbackstart
+        description: "Flowback Start Date"
+      - name: dttmflowbackend
+        description: "Flowback End Date"
+      - name: dttmabandon
+        description: "Abandon Date"
+      - name: dttmlastproducedcalc
+        description: "Last Produced Date (calculated)"
+      - name: dttmlastproducedhcliqcalc
+        description: "Last Produced Oil Date (calculated)"
+      - name: dttmlastproducedgascalc
+        description: "Last Produced Gas Date (calculated)"
+      
+      # Completion identifiers
+      - name: completionname
+        description: "Completion Name"
+      - name: permanentid
+        description: "Permanent Completion ID"
+      - name: compidregulatory
+        description: "GHG Report Basin"
+      - name: compidpa
+        description: "Production Accounting Identifier for Completion"
+      - name: completionlicensee
+        description: "Completion Licensee"
+      - name: completionlicenseno
+        description: "Federal Lease #"
+      - name: dttmlicense
+        description: "Completion License Date"
+      - name: compida
+        description: "Well Number"
+      - name: compidb
+        description: "Gas POP ID"
+      - name: compidc
+        description: "Gas Meter No."
+      - name: compidd
+        description: "Gas Alloc Meter No."
+      - name: completionide
+        description: "Gas Alloc Group No."
+      - name: completioncode
+        description: "Surface Commingle Number"
+      
+      # Well information
+      - name: wellname
+        description: "Well Name"
+      - name: heldbyproductionthreshold
+        description: "Held by Production Threshold (days)"
+      
+      # Well identifiers
+      - name: wellidregulatory
+        description: "Regulatory ID of Well"
+      - name: wellidpa
+        description: "Production Accounting Identifier of Well"
+      - name: welllicenseno
+        description: "LA - Serial #, ND - Well File #, TX-MS-OK- API 14"
+      - name: wellida
+        description: "API10"
+      - name: wellidb
+        description: "CostCenter"
+      - name: wellidc
+        description: "EID"
+      - name: wellidd
+        description: "Producing Formation"
+      - name: wellide
+        description: "Legal Well Name"
+      
+      # Import/Export identifiers
+      - name: importid1
+        description: "Import ID 1"
+      - name: importtyp1
+        description: "Import Type 1"
+      - name: importid2
+        description: "Import ID 2"
+      - name: importtyp2
+        description: "Import Type 2"
+      - name: exportid1
+        description: "Export ID 1"
+      - name: exporttyp1
+        description: "Export Type 1"
+      - name: exportid2
+        description: "Export ID 2"
+      - name: exporttyp2
+        description: "Export Type 2"
+      
+      # Location coordinates
+      - name: latitude
+        description: "Bottomhole Latitude (degrees of angle)"
+      - name: longitude
+        description: "Bottomhole Longitude (degrees of angle)"
+      - name: latlongsource
+        description: "Lat Long Data Source"
+      - name: latlongdatum
+        description: "Lat/Long Datum"
+      
+      # Entry requirements
+      - name: entryreqperiodfluidlevel
+        description: "Entry Requirement Period Fluid Level"
+      - name: entryreqperiodparam
+        description: "Entry Requirement Period Parameters"
+      
+      # User-defined fields
+      - name: usertxt1
+        description: "BHA Type PAGA/SAGA/RPGA"
+      - name: usertxt2
+        description: "RESCAT"
+      - name: usertxt3
+        description: "Electric Vendor Name"
+      - name: usertxt4
+        description: "Electric Meter Name"
+      - name: usertxt5
+        description: "Working Interest Partner"
+      - name: usernum1
+        description: "Surface Casing"
+      - name: usernum2
+        description: "Prod Casing"
+      - name: usernum3
+        description: "Prod Liner"
+      - name: usernum4
+        description: "Purchaser CTB Lease ID"
+      - name: usernum5
+        description: "Purchaser Well Lease ID"
+      - name: userdttm1
+        description: "Spud Date"
+      - name: userdttm2
+        description: "Spud Date"
+      - name: userdttm3
+        description: "Rig Release Date"
+      - name: userdttm4
+        description: "User Date 4"
+      - name: userdttm5
+        description: "User Date 5"
+      
+      # Migration tracking
+      - name: keymigrationsource
+        description: "Migration Source Key"
+      - name: typmigrationsource
+        description: "Migration Source Type"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_daily_allocations
+    description: "Staging model for daily allocations with production volumes and operational data (imperial units)"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrecparent
+        description: "Parent record identifier"
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      - name: idrecunit
+        description: "Unit identifier"
+      - name: idrecunittk
+        description: "Unit table key"
+      - name: idreccomp
+        description: "Completion identifier"
+      - name: idreccomptk
+        description: "Completion table key"
+      - name: idreccompzone
+        description: "Reporting/Contact Interval identifier"
+      - name: idreccompzonetk
+        description: "Reporting/Contact Interval table key"
+      - name: dttm
+        description: "Date"
+      - name: year
+        description: "Year"
+      - name: month
+        description: "Month"
+      - name: dayofmonth
+        description: "Day of month"
+      - name: durdown
+        description: "Downtime (converted to hours)"
+      - name: durop
+        description: "Operating time (converted to hours)"
+      
+      # Gathered volumes (imperial units)
+      - name: volprodgathhcliq
+        description: "Gathered HCLiq (converted to barrels)"
+      - name: volprodgathgas
+        description: "Gathered Gas (converted to MCF)"
+      - name: volprodgathwater
+        description: "Gathered Water (converted to barrels)"
+      - name: volprodgathsand
+        description: "Gathered Sand (converted to barrels)"
+      
+      # Allocated volumes (imperial units)
+      - name: volprodallochcliq
+        description: "Allocated HCLiq (converted to barrels)"
+      - name: volprodallocoil
+        description: "Allocated Oil (converted to barrels)"
+      - name: volprodalloccond
+        description: "Allocated Cond (converted to barrels)"
+      - name: volprodallocngl
+        description: "Allocated NGL (converted to barrels)"
+      - name: volprodallochcliqgaseq
+        description: "Allocated Gas Equivalent of HCLiq (converted to MCF)"
+      - name: volprodallocgas
+        description: "Allocated Gas (converted to MCF)"
+      - name: volprodallocwater
+        description: "Allocated Water (converted to barrels)"
+      - name: volprodallocsand
+        description: "Allocated Sand (converted to barrels)"
+      
+      # Allocation factors (no conversion - M³/M³)
+      - name: allocfacthcliq
+        description: "Allocation Factor HCLiq (M³/M³)"
+      - name: allocfactgas
+        description: "Allocation Factor Gas (M³/M³)"
+      - name: allocfactwater
+        description: "Allocation Factor Water (M³/M³)"
+      - name: allocfactsand
+        description: "Allocation Factor Sand (M³/M³)"
+      
+      # Working interest (converted to percentage)
+      - name: wihcliq
+        description: "Working Interest Oil/Cond (converted to percentage)"
+      - name: wigas
+        description: "Working Interest Gas (converted to percentage)"
+      - name: wiwater
+        description: "Working Interest Water (converted to percentage)"
+      - name: wisand
+        description: "Working Interest Sand (converted to percentage)"
+      
+      # Net revenue interest (converted to percentage)
+      - name: nrihcliq
+        description: "Net Revenue Interest Oil/Cond (converted to percentage)"
+      - name: nrigas
+        description: "Net Revenue Interest Gas (converted to percentage)"
+      - name: nriwater
+        description: "Net Revenue Interest Water (converted to percentage)"
+      - name: nrisand
+        description: "Net Revenue Interest Sand (converted to percentage)"
+      
+      # Cumulative production (imperial units)
+      - name: volprodcumhcliq
+        description: "Cumulated HCLiq (converted to barrels)"
+      - name: volprodcumoil
+        description: "Cumulated Oil (converted to barrels)"
+      - name: volprodcumcond
+        description: "Cumulated Cond (converted to barrels)"
+      - name: volprodcumngl
+        description: "Cumulated NGL (converted to barrels)"
+      - name: volprodcumgas
+        description: "Cumulated Gas (converted to MCF)"
+      - name: volprodcumwater
+        description: "Cumulated Water (converted to barrels)"
+      - name: volprodcumsand
+        description: "Cumulated Sand (converted to barrels)"
+      
+      # Heat values (imperial units)
+      - name: heatprodgath
+        description: "Gathered Heat (converted to MMBTU)"
+      - name: factheatgath
+        description: "Gathered Heat Factor (converted to BTU/FT³)"
+      - name: heatprodalloc
+        description: "Allocated Heat (converted to MMBTU)"
+      - name: factheatalloc
+        description: "Allocated Heat Factor (converted to BTU/FT³)"
+      - name: heatnewprodalloc
+        description: "New Production Heat (converted to MMBTU)"
+      - name: heatdispsale
+        description: "Disposed Sales Heat (converted to MMBTU)"
+      - name: heatdispfuel
+        description: "Disposed Fuel Heat (converted to MMBTU)"
+      - name: heatdispflare
+        description: "Disposed Flare Heat (converted to MMBTU)"
+      - name: heatdispvent
+        description: "Disposed Vent Heat (converted to MMBTU)"
+      - name: heatdispincinerate
+        description: "Disposed Incinerate Heat (converted to MMBTU)"
+      
+      # Density (converted to API gravity)
+      - name: densityalloc
+        description: "Allocated Density (converted to °API)"
+      - name: densitysale
+        description: "Sales Density (converted to °API)"
+      
+      # Reference identifiers
+      - name: idrecmeasmeth
+        description: "Last Measurement Method"
+      - name: idrecmeasmethtk
+        description: "Last Measurement Method Table"
+      - name: idrecfluidlevel
+        description: "Last Fluid Level"
+      - name: idrecfluidleveltk
+        description: "Last Fluid Level Table"
+      - name: idrectest
+        description: "Last Test"
+      - name: idrectesttk
+        description: "Last Test Table"
+      - name: idrecparam
+        description: "Last Param"
+      - name: idrecparamtk
+        description: "Last Param Table"
+      - name: idrecdowntime
+        description: "Downtime"
+      - name: idrecdowntimetk
+        description: "Downtime Table"
+      - name: idrecgasanalysis
+        description: "Gas Analysis"
+      - name: idrecgasanalysistk
+        description: "Gas Analysis Table"
+      - name: idrechcliqanalysis
+        description: "HC Liquid Analysis"
+      - name: idrechcliqanalysistk
+        description: "HC Liquid Analysis Table"
+      - name: idrecoilanalysis
+        description: "Oil Properties"
+      - name: idrecoilanalysistk
+        description: "Oil Properties Table"
+      - name: idrecwateranalysis
+        description: "Water Properties"
+      - name: idrecwateranalysistk
+        description: "Water Properties Table"
+      - name: idrecstatus
+        description: "Status"
+      - name: idrecstatustk
+        description: "Status Table"
+      - name: idrecpumpentry
+        description: "Last Pump Entry"
+      - name: idrecpumpentrytk
+        description: "Last Pump Entry Table"
+      - name: idrecfacility
+        description: "Reporting Facility"
+      - name: idrecfacilitytk
+        description: "Reporting Facility Table"
+      
+      # Operational metrics
+      - name: pumpeff
+        description: "Pump Efficiency (converted to percentage)"
+      
+      # Calculation settings
+      - name: idreccalcset
+        description: "Calc Settings"
+      - name: idreccalcsettk
+        description: "Calc Settings Table"
+      - name: idrecdeferment
+        description: "Deferment"
+      - name: idrecdefermenttk
+        description: "Deferment Table"
+      
+      # System lock fields
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      
+      # System metadata
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: stg_wiserock__pv_units
+    description: "Staging model for ProdView units - building blocks of the flow network"
+    columns:
+      - name: idflownet
+        description: "Flow network identifier"
+        tests:
+          - not_null
+      - name: idrec
+        description: "Unique record identifier"
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Unit Name"
+      - name: nameshort
+        description: "Display Name"
+      - name: typ1
+        description: "Unit Type"
+      - name: typ2
+        description: "Unit Sub Type"
+      - name: typdisphcliq
+        description: "HCLiq Inventory Type"
+      - name: typdispngl
+        description: "NGL Inventory Type"
+      - name: dispproductname
+        description: "HCLiq Disposition Method"
+      - name: idrecroutesetroutecalc
+        description: "Current Route (calculated)"
+      - name: idrecroutesetroutecalctk
+        description: "Current Route Table (calculated)"
+      - name: idrecfacilitycalc
+        description: "Current Facility (calculated)"
+      - name: idrecfacilitycalctk
+        description: "Current Facility Table (calculated)"
+      - name: idreccompstatuscalc
+        description: "Current Completion Status (calculated)"
+      - name: idreccompstatuscalctk
+        description: "Current Completion Status Table (calculated)"
+      - name: typregulatory
+        description: "Regulatory Unit Type"
+      - name: typpa
+        description: "Comimingle Permit No."
+      - name: displaysizefactor
+        description: "Display Size Factor"
+      - name: dttmstart
+        description: "Start Displaying Unit On"
+      - name: dttmend
+        description: "Stop Displaying Unit After"
+      - name: dttmhide
+        description: "Hide Record As Of"
+      - name: elevation
+        description: "Ground Elevation (converted to feet)"
+      - name: unitidregulatory
+        description: "Regulatory ID"
+      - name: unitidpa
+        description: "EID"
+      - name: stopname
+        description: "Stop Name"
+      - name: unitida
+        description: "API 10"
+      - name: unitidb
+        description: "Property Number"
+      - name: unitidc
+        description: "Combo Curve ID"
+      - name: purchaser
+        description: "Purchaser flag"
+      - name: operated
+        description: "Operated flag"
+      - name: operator
+        description: "Operator"
+      - name: operatorida
+        description: "Operated Descriptor"
+      - name: com
+        description: "Comment"
+      - name: legalsurfloc
+        description: "Surface Legal Location"
+      - name: division
+        description: "Division"
+      - name: divisioncode
+        description: "Company Code"
+      - name: district
+        description: "District"
+      - name: country
+        description: "Country"
+      - name: area
+        description: "AssetCo"
+      - name: field
+        description: "Foreman Area"
+      - name: fieldcode
+        description: "Regulatory Field Name"
+      - name: fieldoffice
+        description: "Field Office"
+      - name: fieldofficecode
+        description: "District Office"
+      - name: stateprov
+        description: "State/Province"
+      - name: county
+        description: "County"
+      - name: latitude
+        description: "Surface Latitude (degrees of angle)"
+      - name: longitude
+        description: "Surface Longitude (degrees of angle)"
+      - name: latlongsource
+        description: "LatLong Source"
+      - name: latlongdatum
+        description: "Lat/Long Datum"
+      - name: utmgridzone
+        description: "UTM Grid Zone"
+      - name: utmsource
+        description: "Location (UTM Source)"
+      - name: utmx
+        description: "UTM Easting (meters)"
+      - name: utmy
+        description: "UTM Northing (meters)"
+      - name: lease
+        description: "Lease Name"
+      - name: leaseida
+        description: "TX - Lease Number, LA - LUW, ND-MS-OK - N/A"
+      - name: locationtyp
+        description: "SWD System"
+      - name: platform
+        description: "Route"
+      - name: padcode
+        description: "Facility Name"
+      - name: padname
+        description: "Pad Name"
+      - name: slot
+        description: "DSU"
+      - name: govauthority
+        description: "Government Authority"
+      - name: costcenterida
+        description: "Cost Center"
+      - name: costcenteridb
+        description: "Gas Gathering System Name"
+      - name: sortbyuser
+        description: "Unit Sort"
+      - name: priority
+        description: "Cycled flag"
+      - name: timezone
+        description: "Timezone"
+      - name: idrecresp1
+        description: "Oil Purchaser"
+      - name: idrecresp1tk
+        description: "Primary Responsible Table"
+      - name: idrecresp2
+        description: "Gas Purchaser"
+      - name: idrecresp2tk
+        description: "Secondary Responsible Table"
+      - name: keymigrationsource
+        description: "Migration Source Key"
+      - name: typmigrationsource
+        description: "Migration Source Type"
+      - name: usertxt1
+        description: "UserTxt1"
+      - name: usertxt2
+        description: "Completion Status"
+      - name: usertxt3
+        description: "Producing Method"
+      - name: usertxt4
+        description: "Stripper Type"
+      - name: usertxt5
+        description: "Chemical Provider"
+      - name: usernum1
+        description: "Electric Allocation Meter Number"
+      - name: usernum2
+        description: "Electric Meter ID"
+      - name: usernum3
+        description: "Electric Acct. No."
+      - name: usernum4
+        description: "Electric Vendor No."
+      - name: usernum5
+        description: "User Num 5"
+      - name: userdttm1
+        description: "Stripper Date"
+      - name: userdttm2
+        description: "BHA Change 1"
+      - name: userdttm3
+        description: "BHA Change 2"
+      - name: userdttm4
+        description: "User Date 4"
+      - name: userdttm5
+        description: "User Date 5"
+      - name: syslockmeui
+        description: "Lock Me (UI)"
+      - name: syslockchildrenui
+        description: "Lock My Children (UI)"
+      - name: syslockme
+        description: "Lock Me"
+      - name: syslockchildren
+        description: "Lock My Children"
+      - name: syslockdate
+        description: "Lock Date (UTC)"
+      - name: sysmoddate
+        description: "Last Mod Date (UTC)"
+      - name: sysmoduser
+        description: "Last Mod By"
+      - name: syscreatedate
+        description: "Create Date (UTC)"
+      - name: syscreateuser
+        description: "Created By"
+      - name: systag
+        description: "Record Tag"
+      - name: updatedate
+        description: "Record update timestamp (mapped from _fivetran_synced)"
+      - name: deleted
+        description: "Deletion flag (mapped from _fivetran_deleted)"
+        tests:
+          - accepted_values:
+              values: [true, false]

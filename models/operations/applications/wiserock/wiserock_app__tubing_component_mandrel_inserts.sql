@@ -2,4 +2,4 @@
     tags=['wiserock', 'wellview']
 ) }}
 
-select * from {{ ref('stg_wellview__tubing_component_mandrel_inserts') }}
+select * from {{ ref('stg_wiserock__wv_tubing_component_mandrel_inserts') }}

@@ -2,4 +2,4 @@
     tags=['wiserock', 'wellview']
 ) }}
 
-select * from {{ ref('stg_wellview__tubing_run_tallies') }}
+select * from {{ ref('stg_wiserock__wv_tubing_run_tallies') }}
