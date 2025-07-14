@@ -2,4 +2,4 @@
     tags=['wiserock', 'wellview']
 ) }}
 
-select * from {{ ref('stg_wellview__jobs') }}
+select * from {{ ref('stg_wiserock__wv_jobs') }}
