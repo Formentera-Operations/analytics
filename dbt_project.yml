@@ -62,6 +62,11 @@ models:
           +schema: stg_wellview
           +materialized: view
 
+        enverus:
+
+          +schema: stg_enverus
+          +materialized: view
+
       # Intermediate models - business logic layers
       intermediate:
         +database: FO_STAGE_DB

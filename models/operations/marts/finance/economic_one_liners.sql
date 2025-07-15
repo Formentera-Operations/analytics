@@ -4,17 +4,23 @@ with economic_data as (
 
 ),
 
+econ_parameters as (
+
+    select * from {{ ref('stg_cc__economic_run_parameters')}}
+),
+
 final as (
 
     select
         -- ids
-        economic_one_liner_id,
-        economic_run_id,
-        project_id,
-        scenario_id,
+        data.economic_one_liner_id,
+        data.economic_run_id,
+        data.project_id,
+        data.scenario_id,
         well_id,
         combo_name,
         economic_group,
+        parameters.econ_run_date as economic_run_date,
         
         -- categorization
         prms_reserves_category,
@@ -79,8 +85,11 @@ final as (
         round((irr - reference_irr) / nullif(reference_irr, 0) * 100, 2) as irr_pct_change,
         round((capex - reference_capex) / nullif(reference_capex, 0) * 100, 2) as capex_pct_change
 
-    from economic_data
+    from economic_data data
+    left join econ_parameters parameters
+    on data.economic_run_id = parameters.econ_run_id
 
 )
 
 select * from final
+order by economic_run_date desc

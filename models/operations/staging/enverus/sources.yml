@@ -1,0 +1,251 @@
+# =============================================================================
+# SOURCES CONFIGURATION
+# models/staging/enverus/_enverus__sources.yml
+# =============================================================================
+
+version: 2
+
+sources:
+  - name: enverus
+    description: >
+      Enverus oil and gas industry data from database share.
+      Contains comprehensive upstream energy data including wells, production,
+      completions, infrastructure, and M&A transactions.
+    database: ENVERUS_DB
+    schema: ENV
+    
+    # Source freshness configuration
+    freshness:
+      warn_after: {count: 12, period: hour}
+      error_after: {count: 24, period: hour}
+    
+    # Global source configurations
+    meta:
+      external_location: "Enverus Database Share (ENVERUS_DB.ENV)"
+      owner: "data_engineering"
+      
+    tables:
+      # =============================================================================
+      # FOUNDATIONS TABLES - Core Oil & Gas Data
+      # =============================================================================
+      
+      - name: FOUNDATIONS_WELLS
+        description: >
+          Master well table containing core well information including location,
+          operator classification, and key identifiers. Central table for joining
+          to other well-related data.
+        columns:
+          - name: wellid
+            description: "Unique well identifier (primary key)"
+            tests:
+              - not_null
+              - unique
+          - name: completionid
+            description: "Completion identifier"
+          - name: api_uwi
+            description: "API Unique Well Identifier (formatted)"
+          - name: api_uwi_unformatted
+            description: "API UWI without formatting"
+          - name: api_uwi_12_unformatted
+            description: "12-digit API UWI"
+          - name: api_uwi_14_unformatted
+            description: "14-digit API UWI"
+          - name: envoperator
+            description: "Enverus standardized operator name"
+          - name: envbasin
+            description: "Enverus basin classification"
+          - name: envplay
+            description: "Enverus play classification"
+          - name: envregion
+            description: "Enverus region classification"
+          - name: completiondate
+            description: "Well completion date"
+          - name: firstprodmonth
+            description: "First production month"
+          - name: lastproducingmonth
+            description: "Last known production month"
+          - name: deleteddate
+            description: "Soft delete timestamp"
+          - name: updateddate
+            description: "Last update timestamp"
+            
+      - name: FOUNDATIONS_PRODUCTION
+        description: >
+          Monthly production data by well. Large table with production volumes
+          and metadata. Consider incremental loading strategy.
+        columns:
+          - name: productionid
+            description: "Unique production record identifier"
+            tests:
+              - not_null
+              - unique
+          - name: wellid
+            description: "Foreign key to wells table"
+            tests:
+              - not_null
+          - name: completionid
+            description: "Completion identifier"
+          - name: producingmonth
+            description: "Production month (YYYY-MM-DD format)"
+          - name: api_uwi_14_unformatted
+            description: "14-digit API UWI"
+          - name: envbasin
+            description: "Enverus basin classification"
+          - name: envplay
+            description: "Enverus play classification"
+          - name: deleteddate
+            description: "Soft delete timestamp"
+          - name: updateddate
+            description: "Last update timestamp"
+            
+      - name: FOUNDATIONS_COMPLETIONHEADER
+        description: "Completion header information including service providers"
+        columns:
+          - name: completionid
+            description: "Unique completion identifier"
+            tests:
+              - not_null
+              - unique
+          - name: envwellserviceprovider
+            description: "Well service provider"
+          - name: envoperator
+            description: "Enverus standardized operator"
+            
+      - name: FOUNDATIONS_RIGS
+        description: "Rig information and drilling activity"
+        columns:
+          - name: wellid
+            description: "Well identifier"
+          - name: completionid
+            description: "Completion identifier"
+          - name: rigname_number
+            description: "Rig name and number"
+          - name: spuddate
+            description: "Spud date"
+          - name: envoperator
+            description: "Operator name"
+          - name: initialoperator
+            description: "Initial operator"
+            
+      # Additional Foundations tables
+      - name: FOUNDATIONS_FRACCLUSTERS
+        description: "Frac cluster data"
+      - name: FOUNDATIONS_FRACSTAGES  
+        description: "Frac stage information"
+      - name: FOUNDATIONS_FRACPROPPANTFLUIDS
+        description: "Frac proppant and fluid data"
+      - name: FOUNDATIONS_CASING
+        description: "Well casing information"
+      - name: FOUNDATIONS_FORMATIONTOPS
+        description: "Formation top depths"
+      - name: FOUNDATIONS_PERMITS
+        description: "Well permits and approvals"
+      - name: FOUNDATIONS_INJECTION
+        description: "Injection well data"
+      - name: FOUNDATIONS_LANDTRACUNITS
+        description: "Land tracking units"
+      - name: FOUNDATIONS_LANDTRACLEASES
+        description: "Land tracking leases"
+      - name: FOUNDATIONS_DOWNHOLECONSUMABLE  
+        
+      # =============================================================================
+      # INFRASTRUCTURE TABLES
+      # =============================================================================
+      
+      - name: INFRA_FACILITIES
+        description: "Oil and gas facilities including processing plants and terminals"
+        columns:
+          - name: uniqueid
+            description: "Unique facility identifier"
+            tests:
+              - not_null
+              - unique
+          - name: envoperator
+            description: "Facility operator"
+          - name: facilitystatus
+            description: "Current facility status"
+          - name: owner
+            description: "Facility owner"
+            
+      - name: INFRA_PIPELINES
+        description: "Pipeline infrastructure data"
+        columns:
+          - name: uniqueid
+            description: "Unique pipeline identifier"
+            tests:
+              - not_null
+              - unique
+          - name: commodity
+            description: "Pipeline commodity (oil, gas, etc.)"
+          - name: finaloperator
+            description: "Pipeline operator"
+          - name: systemname
+            description: "Pipeline system name"
+          - name: status
+            description: "Pipeline status"
+            
+      # =============================================================================
+      # MERGERS & ACQUISITIONS TABLES
+      # =============================================================================
+      
+      - name: MA_TRANSACTIONS
+        description: "M&A transaction data"
+        columns:
+          - name: uniquedealid
+            description: "Unique deal identifier"
+            tests:
+              - not_null
+              - unique
+          - name: dealtype
+            description: "Type of transaction"
+          - name: dealstatus
+            description: "Current deal status"
+          - name: envoperatorbuyer
+            description: "Acquiring company"
+          - name: envoperatorseller
+            description: "Target company"
+          - name: dateannounced
+            description: "Deal announcement date"
+          - name: dateclosed
+            description: "Deal closing date"
+            
+      - name: MA_DEALSFORSALE
+        description: "Assets currently for sale"
+        columns:
+          - name: dealid
+            description: "Deal identifier"
+          - name: dealtype
+            description: "Type of asset sale"
+          - name: biddeadline
+            description: "Bid deadline"
+          - name: envoperatorseller
+            description: "Selling entity"
+            
+      - name: MA_OPERATORLAND
+        description: "Operator land holdings"
+      - name: MA_COMPANYEVENTS
+        description: "Company events and announcements"
+      - name: MA_COMPANYINDEX
+        description: "Company index and classifications"
+        
+      # =============================================================================
+      # SPACING TABLES
+      # =============================================================================
+      
+      - name: SPACING_SUMMARYSPACING
+        description: "Well spacing summary analysis"
+        columns:
+          - name: wellid
+            description: "Well identifier"
+          - name: field
+            description: "Field classification"
+          - name: api_uwi
+            description: "API well identifier"
+            
+      - name: SPACING_FULLSPACING
+        description: "Detailed spacing analysis"
+        columns:
+          - name: api_uwi_12_unformatted
+            description: "12-digit API UWI"
+          - name: nnsapi_uwi_12_unformatted
+            description: "Nearest neighbor API UWI"
