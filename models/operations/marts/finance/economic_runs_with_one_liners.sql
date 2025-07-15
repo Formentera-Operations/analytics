@@ -17,6 +17,7 @@ final as (
         scenario_id,
         well_id,
         combo_name,
+        economic_run_date,
         economic_month as date,
         company_name as unified_company_name,
         reserves_category as unified_rsv_cat,

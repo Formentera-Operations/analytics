@@ -2102,7 +2102,7 @@ sources:
           warn_after: {count: 24, period: hour}
           error_after: {count: 48, period: hour}
 
-      - name: project_scenario_econ_runs
+      - name: econ_runs
         description: Contains economic run information for project scenarios
 
       - name: econ_run_monthly_export_results
