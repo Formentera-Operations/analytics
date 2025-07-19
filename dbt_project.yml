@@ -25,6 +25,7 @@ models:
   formentera_analytics:
     # Config applied to all models
     +materialized: view  # Default materialization
+    +copy_grants: true
 
     # Formentera Operations (Tenant 1)
     operations:
