@@ -1,9 +1,26 @@
 
+{{
+    config(
+        materialized='incremental',
+        unique_key=['economic_run_id', 'well_id', 'date'],
+        on_schema_change='fail',
+        partition_by={
+            "field": "date",
+            "data_type": "date",
+            "granularity": "month"
+        },
+        cluster_by=['project_id', 'scenario_id', 'economic_run_id', 'well_id']
+    )
+}}
 
 with source as (
 
     select * from {{ ref('int_economic_runs_with_one_liners') }}
 
+    {% if is_incremental() %}
+        -- Only process records from runs that happened after the latest run date in our target table
+        where economic_run_date > (select max(economic_run_date) from {{ this }})
+    {% endif %}
 
 ),
 
@@ -62,6 +79,7 @@ final as (
         gas_gt_deduct as gas_trans,
         oil_opc_expense as variable_oil_expense,
         gas_opc_expense as variable_gas_expense,
+        total_water_disposal_expense as water_disposal_expense,
         
         -- Fixed expense fields with redistributed leftover
         fixed_expense_1 as fixed_expense_1,

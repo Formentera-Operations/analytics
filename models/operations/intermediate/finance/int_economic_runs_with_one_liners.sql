@@ -142,6 +142,7 @@ joined as (
         runs.total_gas_variable_expense,
         runs.total_ngl_variable_expense,
         runs.total_drip_condensate_variable_expense,
+        runs.water_disposal as total_water_disposal_expense,
         
         
         -- Fixed expense fields
