@@ -1,10 +1,10 @@
 {{ config(
     materialized='view',
-    tags=['prodview', 'nodes', 'calculations', 'daily', 'staging']
+    tags=['prodview', 'nodes', 'calculations', 'monthly', 'staging']
 ) }}
 
 with source_data as (
-    select * from {{ source('prodview', 'PVT_PVUNITNODEMONTHDAYCALC') }}
+    select * from {{ source('prodview', 'PVT_PVUNITNODEMONTHCALC') }}
     where _fivetran_deleted = false
 ),
 
@@ -14,29 +14,27 @@ renamed as (
         idrec as node_calculation_id,
         idrecparent as parent_unit_id,
         idflownet as flow_network_id,
-        idrecnode as node_id,
-        idrecnodetk as node_table,
         
         -- Date/Time information
-        dttm as calculation_date,
+        dttmstart as period_start_date,
+        dttmend as period_end_date,
         year as calculation_year,
         month as calculation_month,
-        dayofmonth as day_of_month,
         
-        -- Volume data (converted to US units)
-        volhcliq / 0.158987294928 as hcliq_volume_bbl,
-        volhcliqgaseq / 28.316846592 as hcliq_gas_equivalent_mcf,
-        volgas / 28.316846592 as gas_volume_mcf,
-        volwater / 0.158987294928 as water_volume_bbl,
-        volsand / 0.158987294928 as sand_volume_bbl,
+        -- Gathered volumes (converted to US units)
+        volhcliq / 0.158987294928 as gathered_hcliq_bbl,
+        volhcliqgaseq / 28.316846592 as gathered_gas_equivalent_hcliq_mcf,
+        volgas / 28.316846592 as gathered_gas_mcf,
+        volwater / 0.158987294928 as gathered_water_bbl,
+        volsand / 0.158987294928 as gathered_sand_bbl,
         
         -- Heat content (converted to US units)
-        heat / 1055055852.62 as heat_content_mmbtu,
-        factheat / 37258.9458078313 as heat_factor_btu_per_ft3,
+        heat / 1055055852.62 as gathered_heat_mmbtu,
+        factheat / 37258.9458078313 as gathered_heat_factor_btu_per_ft3,
         
         -- Facility reference
-        idrecfacility as facility_id,
-        idrecfacilitytk as facility_table,
+        idrecfacility as current_facility_id,
+        idrecfacilitytk as current_facility_table,
         
         -- System fields
         syscreatedate as created_at,

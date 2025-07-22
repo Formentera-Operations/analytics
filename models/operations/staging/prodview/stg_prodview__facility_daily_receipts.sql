@@ -1,42 +1,43 @@
 {{ config(
     materialized='view',
-    tags=['prodview', 'nodes', 'calculations', 'daily', 'staging']
+    tags=['prodview', 'facilities', 'receipts_dispositions', 'daily', 'staging']
 ) }}
 
 with source_data as (
-    select * from {{ source('prodview', 'PVT_PVUNITNODEMONTHDAYCALC') }}
+    select * from {{ source('prodview', 'PVT_PVFACRECDISPCALC') }}
     where _fivetran_deleted = false
 ),
 
 renamed as (
     select
         -- Primary identifiers
-        idrec as node_calculation_id,
-        idrecparent as parent_unit_id,
+        idrec as facility_receipt_disposition_id,
         idflownet as flow_network_id,
-        idrecnode as node_id,
-        idrecnodetk as node_table,
         
         -- Date/Time information
-        dttm as calculation_date,
-        year as calculation_year,
-        month as calculation_month,
+        dttm as transaction_date,
+        year as transaction_year,
+        month as transaction_month,
         dayofmonth as day_of_month,
         
-        -- Volume data (converted to US units)
+        -- Sending entity references
+        idrecunitsend as sending_unit_id,
+        idrecunitnodesend as sending_unit_node_id,
+        idrecfacilitysend as sending_facility_id,
+        idflownetsend as sending_flow_network_id,
+        
+        -- Receiving entity references
+        idrecunitrec as receiving_unit_id,
+        idrecunitnoderec as receiving_unit_node_id,
+        idrecfacilityrec as receiving_facility_id,
+        idflownetrec as receiving_flow_network_id,
+        
+        -- Volume measurements (converted to US units)
         volhcliq / 0.158987294928 as hcliq_volume_bbl,
-        volhcliqgaseq / 28.316846592 as hcliq_gas_equivalent_mcf,
         volgas / 28.316846592 as gas_volume_mcf,
+        volgasplusgaseq / 28.316846592 as gas_plus_gas_equivalent_mcf,
         volwater / 0.158987294928 as water_volume_bbl,
         volsand / 0.158987294928 as sand_volume_bbl,
-        
-        -- Heat content (converted to US units)
-        heat / 1055055852.62 as heat_content_mmbtu,
-        factheat / 37258.9458078313 as heat_factor_btu_per_ft3,
-        
-        -- Facility reference
-        idrecfacility as facility_id,
-        idrecfacilitytk as facility_table,
         
         -- System fields
         syscreatedate as created_at,
