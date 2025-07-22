@@ -1,10 +1,10 @@
 {{ config(
     materialized='view',
-    tags=['prodview', 'meters', 'liquid', 'configuration', 'staging']
+    tags=['prodview', 'meters', 'gas_pd', 'configuration', 'staging']
 ) }}
 
 with source_data as (
-    select * from {{ source('prodview', 'PVT_PVUNITMETERLIQUID') }}
+    select * from {{ source('prodview', 'PVT_PVUNITMETERPDGAS') }}
     where _fivetran_deleted = false
 ),
 
@@ -17,19 +17,20 @@ renamed as (
         
         -- Meter configuration
         name as meter_name,
-        entrysource as entry_source,
-        typ as meter_type,
+        uomvol as reading_units,
         typrecording as recording_type,
-        uomvol as volume_unit_of_measure,
-        productname as product_name,
+        locprovtap as proving_tap_location,
         
-        -- Meter settings and calibration
-        rezerostart as rezero_start_value,
+        -- Base conditions (converted to US units)
+        tempbase / 0.555555555555556 + 32 as meter_base_temperature_f,
+        presbase / 6.894757 as meter_base_pressure_psi,
+        corrprestemp as correct_to_network_pres_and_temp,
+        
+        -- Meter settings
+        rezerostart as zero_start,
         readingrollover as reading_rollover_value,
         estmissingday as estimate_missing_days,
-        
-        -- Initial quality measurement (converted to percentage)
-        initialbsw / 0.01 as initial_bsw_pct,
+        idealgas as assume_ideal_gas,
         
         -- Identification numbers
         serialnum as serial_number,
@@ -37,10 +38,13 @@ renamed as (
         regulatoryid as regulatory_id,
         otherid as other_id,
         
-        -- Location and references
-        locprovtap as proving_tap_location,
-        idrecunitnodecalc as unit_node_id,
-        idrecunitnodecalctk as unit_node_table,
+        -- Operational settings
+        entryreqperiod as entry_requirement_period,
+        dttmhide as hide_record_date,
+        
+        -- Node and data entry references
+        idrecunitnodecalc as node_id,
+        idrecunitnodecalctk as node_table,
         idrecunitdataentryor as data_entry_unit_id,
         idrecunitdataentryortk as data_entry_unit_table,
         
@@ -53,10 +57,6 @@ renamed as (
         exporttyp1 as export_type_1,
         exportid2 as export_id_2,
         exporttyp2 as export_type_2,
-        
-        -- Operational settings
-        entryreqperiod as entry_requirement_period,
-        dttmhide as hide_record_date,
         
         -- Migration tracking
         keymigrationsource as migration_source_key,

@@ -1,28 +1,31 @@
 {{ config(
     materialized='view',
-    tags=['prodview', 'routes', 'configuration', 'staging']
+    tags=['prodview', 'nodes', 'corrections', 'daily', 'staging']
 ) }}
 
 with source_data as (
-    select * from {{ source('prodview', 'PVT_PVROUTESETROUTE') }}
+    select * from {{ source('prodview', 'PVT_PVUNITNODECORRDAY') }}
     where _fivetran_deleted = false
 ),
 
 renamed as (
     select
         -- Primary identifiers
-        idrec as route_id,
-        idrecparent as parent_route_set_id,
+        idrec as node_correction_id,
+        idrecparent as parent_node_id,
         idflownet as flow_network_id,
         
-        -- Route information
-        name as route_name,
-        com as comments,
+        -- Date/Time information
+        dttm as correction_date,
         
-        -- User-defined fields
-        usertxt1 as user_text_1,
-        usertxt2 as user_text_2,
-        usertxt3 as user_text_3,
+        -- Volume corrections (converted to US units)
+        volhcliq / 0.158987294928 as final_hcliq_bbl,
+        volgas / 28.316846592 as final_gas_mcf,
+        volwater / 0.158987294928 as final_water_bbl,
+        volsand / 0.158987294928 as final_sand_bbl,
+        
+        -- Heat content (converted to US units)
+        heat / 1055055852.62 as final_heat_mmbtu,
         
         -- System fields
         syscreatedate as created_at,

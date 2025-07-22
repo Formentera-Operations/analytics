@@ -1,154 +1,121 @@
-{{
-  config(
+{{ config(
     materialized='view',
-    alias='pvunitmeterliquidentry'
-  )
-}}
+    tags=['prodview', 'meters', 'liquid', 'daily', 'staging']
+) }}
 
-with source as (
+with source_data as (
     select * from {{ source('prodview', 'PVT_PVUNITMETERLIQUIDENTRY') }}
+    where _fivetran_deleted = false
 ),
 
 renamed as (
     select
         -- Primary identifiers
-        IDFLOWNET,
-        IDRECPARENT,
-        IDREC,
-        DTTM,
+        idrec as meter_entry_id,
+        idrecparent as parent_meter_id,
+        idflownet as flow_network_id,
+        
+        -- Date/Time information
+        dttm as reading_date,
         
         -- Meter readings
-        READINGEND,
-        READINGSTART,
+        readingstart as reading_start,
+        readingend as reading_end,
         
-        -- Quality measurements (decimal to percentage)
-        BSW / 0.01 as BSW,
-        case when BSW is not null then '%' else null end as BSWUNITLABEL,
-        SANDCUT / 0.01 as SANDCUT,
-        case when SANDCUT is not null then '%' else null end as SANDCUTUNITLABEL,
+        -- Quality measurements (converted to percentages)
+        bsw / 0.01 as basic_sediment_water_pct,
+        sandcut / 0.01 as sand_cut_pct,
         
-        -- General information
-        COM,
-        REASONOR,
+        -- Uncorrected volumes (converted to US units)
+        voluncorrtotalcalc / 0.158987294928 as uncorrected_total_volume_bbl,
+        voluncorrhcliqcalc / 0.158987294928 as uncorrected_hcliq_volume_bbl,
         
-        -- Uncorrected volumes (cubic meters to barrels)
-        VOLUNCORRTOTALCALC / 0.158987294928 as VOLUNCORRTOTALCALC,
-        case when VOLUNCORRTOTALCALC is not null then 'BBL' else null end as VOLUNCORRTOTALCALCUNITLABEL,
-        VOLUNCORRHCLIQCALC / 0.158987294928 as VOLUNCORRHCLIQCALC,
-        case when VOLUNCORRHCLIQCALC is not null then 'BBL' else null end as VOLUNCORRHCLIQCALCUNITLABEL,
+        -- Sample conditions (converted to US units)
+        tempofvol / 0.555555555555556 + 32 as volume_temperature_f,
+        presofvol / 6.894757 as volume_pressure_psi,
+        tempsample / 0.555555555555556 + 32 as sample_temperature_f,
+        pressample / 6.894757 as sample_pressure_psi,
         
-        -- Sample conditions (temperature: Celsius to Fahrenheit, pressure: kPa to PSI)
-        TEMPOFVOL / 0.555555555555556 + 32 as TEMPOFVOL,
-        case when TEMPOFVOL is not null then '°F' else null end as TEMPOFVOLUNITLABEL,
-        PRESOFVOL / 6.894757 as PRESOFVOL,
-        case when PRESOFVOL is not null then 'PSI' else null end as PRESOFVOLUNITLABEL,
-        TEMPSAMPLE / 0.555555555555556 + 32 as TEMPSAMPLE,
-        case when TEMPSAMPLE is not null then '°F' else null end as TEMPSAMPLEUNITLABEL,
-        PRESSAMPLE / 6.894757 as PRESSAMPLE,
-        case when PRESSAMPLE is not null then 'PSI' else null end as PRESSAMPLEUNITLABEL,
+        -- Density measurements (converted to API gravity)
+        power(nullif(densitysample, 0), -1) / 7.07409872233005E-06 + -131.5 as sample_density_api,
+        power(nullif(densitysample60f, 0), -1) / 7.07409872233005E-06 + -131.5 as sample_density_60f_api,
         
-        -- Density measurements (complex formula to API gravity)
-        power(nullif(DENSITYSAMPLE, 0), -1) / 7.07409872233005E-06 + -131.5 as DENSITYSAMPLE,
-        case when DENSITYSAMPLE is not null then '°API' else null end as DENSITYSAMPLEUNITLABEL,
-        power(nullif(DENSITYSAMPLE60F, 0), -1) / 7.07409872233005E-06 + -131.5 as DENSITYSAMPLE60F,
-        case when DENSITYSAMPLE60F is not null then '°API' else null end as DENSITYSAMPLE60FUNITLABEL,
+        -- Corrected volumes (converted to US units)
+        volcorrtotalcalc / 0.158987294928 as corrected_total_volume_bbl,
+        volcorrhcliqcalc / 0.158987294928 as corrected_hcliq_volume_bbl,
         
-        -- Corrected volumes
-        VOLCORRTOTALCALC / 0.158987294928 as VOLCORRTOTALCALC,
-        case when VOLCORRTOTALCALC is not null then 'BBL' else null end as VOLCORRTOTALCALCUNITLABEL,
-        VOLCORRHCLIQCALC / 0.158987294928 as VOLCORRHCLIQCALC,
-        case when VOLCORRHCLIQCALC is not null then 'BBL' else null end as VOLCORRHCLIQCALCUNITLABEL,
+        -- Corrected quality measurements (converted to percentages)
+        bswcorrcalc / 0.01 as corrected_bsw_pct,
+        sandcutcorrcalc / 0.01 as corrected_sand_cut_pct,
         
-        -- Corrected quality measurements
-        BSWCORRCALC / 0.01 as BSWCORRCALC,
-        case when BSWCORRCALC is not null then '%' else null end as BSWCORRCALCUNITLABEL,
-        SANDCUTCORRCALC / 0.01 as SANDCUTCORRCALC,
-        case when SANDCUTCORRCALC is not null then '%' else null end as SANDCUTCORRCALCUNITLABEL,
+        -- Override conditions (converted to US units)
+        tempor / 0.555555555555556 + 32 as override_temperature_f,
+        presor / 6.894757 as override_pressure_psi,
+        power(nullif(densityor, 0), -1) / 7.07409872233005E-06 + -131.5 as override_density_api,
+        reasonor as override_reason,
         
-        -- Override conditions
-        TEMPOR / 0.555555555555556 + 32 as TEMPOR,
-        case when TEMPOR is not null then '°F' else null end as TEMPORUNITLABEL,
-        PRESOR / 6.894757 as PRESOR,
-        case when PRESOR is not null then 'PSI' else null end as PRESORUNITLABEL,
-        power(nullif(DENSITYOR, 0), -1) / 7.07409872233005E-06 + -131.5 as DENSITYOR,
-        case when DENSITYOR is not null then '°API' else null end as DENSITYORUNITLABEL,
+        -- Override volumes (converted to US units)
+        volorhcliq / 0.158987294928 as override_hcliq_volume_bbl,
+        volorwater / 0.158987294928 as override_water_volume_bbl,
+        volorsand / 0.158987294928 as override_sand_volume_bbl,
         
-        -- Reference and tracking
-        REFID,
-        ORIGSTATEMENTID,
-        SOURCE,
-        VERIFIED,
+        -- Final calculated volumes (converted to US units)
+        voltotalcalc / 0.158987294928 as total_volume_bbl,
+        volhcliqcalc / 0.158987294928 as hcliq_volume_bbl,
+        volhcliqgaseqcalc / 28.316846592 as hcliq_gas_equivalent_mcf,
+        volwatercalc / 0.158987294928 as water_volume_bbl,
+        volsandcalc / 0.158987294928 as sand_volume_bbl,
         
-        -- Override volumes
-        VOLORHCLIQ / 0.158987294928 as VOLORHCLIQ,
-        case when VOLORHCLIQ is not null then 'BBL' else null end as VOLORHCLIQUNITLABEL,
-        VOLORWATER / 0.158987294928 as VOLORWATER,
-        case when VOLORWATER is not null then 'BBL' else null end as VOLORWATERUNITLABEL,
-        VOLORSAND / 0.158987294928 as VOLORSAND,
-        case when VOLORSAND is not null then 'BBL' else null end as VOLORSANDUNITLABEL,
-        
-        -- Final calculated volumes
-        VOLTOTALCALC / 0.158987294928 as VOLTOTALCALC,
-        case when VOLTOTALCALC is not null then 'BBL' else null end as VOLTOTALCALCUNITLABEL,
-        VOLHCLIQCALC / 0.158987294928 as VOLHCLIQCALC,
-        case when VOLHCLIQCALC is not null then 'BBL' else null end as VOLHCLIQCALCUNITLABEL,
-        VOLHCLIQGASEQCALC / 28.316846592 as VOLHCLIQGASEQCALC,
-        case when VOLHCLIQGASEQCALC is not null then 'MCF' else null end as VOLHCLIQGASEQCALCUNITLABEL,
-        VOLWATERCALC / 0.158987294928 as VOLWATERCALC,
-        case when VOLWATERCALC is not null then 'BBL' else null end as VOLWATERCALCUNITLABEL,
-        VOLSANDCALC / 0.158987294928 as VOLSANDCALC,
-        case when VOLSANDCALC is not null then 'BBL' else null end as VOLSANDCALCUNITLABEL,
-        
-        -- Final calculated quality
-        BSWCALC / 0.01 as BSWCALC,
-        case when BSWCALC is not null then '%' else null end as BSWCALCUNITLABEL,
-        SANDCUTCALC / 0.01 as SANDCUTCALC,
-        case when SANDCUTCALC is not null then '%' else null end as SANDCUTCALCUNITLABEL,
+        -- Final calculated quality (converted to percentages)
+        bswcalc / 0.01 as final_bsw_pct,
+        sandcutcalc / 0.01 as final_sand_cut_pct,
         
         -- Ticket information
-        TICKETNO,
-        TICKETSUBNO,
+        ticketno as ticket_number,
+        ticketsubno as ticket_sub_number,
+        
+        -- Reference and tracking
+        refid as reference_id,
+        origstatementid as original_statement_id,
+        source as data_source,
+        verified as is_verified,
         
         -- Analysis and seal references
-        IDRECHCLIQANALYSISCALC,
-        IDRECHCLIQANALYSISCALCTK,
-        IDRECSEALENTRY,
-        IDRECSEALENTRYTK,
+        idrechcliqanalysiscalc as hc_liquid_analysis_id,
+        idrechcliqanalysiscalctk as hc_liquid_analysis_table,
+        idrecsealentry as seal_entry_id,
+        idrecsealentrytk as seal_entry_table,
         
-        -- User-defined text fields
-        USERTXT1,
-        USERTXT2,
-        USERTXT3,
+        -- Comments
+        com as comments,
         
-        -- User-defined numeric fields
-        USERNUM1,
-        USERNUM2,
-        USERNUM3,
+        -- User-defined fields
+        usertxt1 as user_text_1,
+        usertxt2 as user_text_2,
+        usertxt3 as user_text_3,
+        usernum1 as user_number_1,
+        usernum2 as user_number_2,
+        usernum3 as user_number_3,
+        userdttm1 as user_date_1,
+        userdttm2 as user_date_2,
+        userdttm3 as user_date_3,
         
-        -- User-defined datetime fields
-        USERDTTM1,
-        USERDTTM2,
-        USERDTTM3,
+        -- System fields
+        syscreatedate as created_at,
+        syscreateuser as created_by,
+        sysmoddate as modified_at,
+        sysmoduser as modified_by,
+        systag as system_tag,
+        syslockdate as system_lock_date,
+        syslockme as system_lock_me,
+        syslockchildren as system_lock_children,
+        syslockmeui as system_lock_me_ui,
+        syslockchildrenui as system_lock_children_ui,
         
-        -- System locking fields
-        SYSLOCKMEUI,
-        SYSLOCKCHILDRENUI,
-        SYSLOCKME,
-        SYSLOCKCHILDREN,
-        SYSLOCKDATE,
-        
-        -- System audit fields
-        SYSMODDATE,
-        SYSMODUSER,
-        SYSCREATEDATE,
-        SYSCREATEUSER,
-        SYSTAG,
-        
-        -- Fivetran metadata
-        _FIVETRAN_SYNCED as UPDATE_DATE,
-        _FIVETRAN_DELETED as DELETED
- 
-    from source
+        -- Fivetran fields
+        _fivetran_synced as fivetran_synced_at
+
+    from source_data
 )
 
 select * from renamed
