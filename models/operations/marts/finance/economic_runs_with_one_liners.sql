@@ -3,7 +3,7 @@
     config(
         materialized='incremental',
         unique_key=['economic_run_id', 'well_id', 'date'],
-        on_schema_change='fail',
+        on_schema_change='sync_all_columns',
         partition_by={
             "field": "date",
             "data_type": "date",
