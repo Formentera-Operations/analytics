@@ -1,5 +1,6 @@
 {{
   config(
+    full_refresh=false,
     materialized='view',
     alias='unit_v2'
   )
@@ -46,10 +47,10 @@ wvintegration as (
 
 select
     -- Route information
-    r.NAME as ROUTENAME,
-    r.USERTXT1 as ROUTEUSERTXT1,
-    r.USERTXT2 as ROUTEUSERTXT2,
-    r.USERTXT3 as ROUTEUSERTXT3,
+    r.route_name as "Route Name",
+    r.USERTXT1 as user_text_1,
+    r.USERTXT2 as user_text_2,
+    r.USERTXT3 as user_text_3,
 
     -- Unit information
     u.AREA,
