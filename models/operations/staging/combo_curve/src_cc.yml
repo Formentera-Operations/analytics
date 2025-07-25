@@ -2824,6 +2824,27 @@ sources:
           - name: well
             description: Well identifier
 
+      - name: forecasted_daily_volumes_by_project
+        description: Raw forecasted daily volumes by well from Combo Curve API
+        columns:
+          - name: _id
+            description: Unique identifier for the raw record
+          - name: _portable_extracted
+            description: Timestamp when the data was extracted from the API
+          - name: forecast
+            description: Forecast ID from Combo Curve
+          - name: forecasttype
+            description: Type of forecast (e.g., deterministic)
+          - name: phases
+            description: Snowflake VARIANT column containing daily volumes by phase (gas, oil, water)
+          - name: project
+            description: Project ID
+          - name: resolution
+            description: Time resolution of the forecast (e.g., daily)
+          - name: well
+            description: Well ID
+      
+
       - name: project_econ_model_general_options
         description: Table containing general options for project economic models
         columns:
