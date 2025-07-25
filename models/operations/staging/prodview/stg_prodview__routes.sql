@@ -11,25 +11,25 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as route_id,
-        idrecparent as parent_route_set_id,
-        idflownet as flow_network_id,
+        idrec as "Route ID",
+        idrecparent as "Parent Route Set ID",
+        idflownet as "Flow Network ID",
         
         -- Route information
-        name as route_name,
-        com as comments,
+        name as "Route Name",
+        com as Notes,
         
         -- User-defined fields
-        usertxt1 as user_text_1,
-        usertxt2 as user_text_2,
-        usertxt3 as user_text_3,
+        usertxt1 as "Foreman",
+        usertxt2 as "Primary Lease Operator",
+        usertxt3 as "Backup Lease Operator",
         
         -- System fields
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
+        syscreatedate as "Created Date",
+        syscreateuser as "Created By",
+        sysmoddate as "Last Modified Date (UTC)",
+        sysmoduser as "Last Modified By",
+        systag as "Record Tag",
         syslockdate as system_lock_date,
         syslockme as system_lock_me,
         syslockchildren as system_lock_children,

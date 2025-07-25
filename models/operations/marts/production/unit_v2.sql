@@ -1,5 +1,6 @@
 {{
   config(
+    full_refresh=false,
     materialized='table',
     alias='unit_v2'
   )
