@@ -16,7 +16,7 @@ with staged_volumes as (
   
   {% if is_incremental() %}
     -- Only process data extracted after the last run
-    and extracted_at > (select max(extracted_at) from {{ this }})
+    where extracted_at > (select max(extracted_at) from {{ this }})
   {% endif %}
 ),
 
