@@ -11,39 +11,40 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as integration_id,
-        idrecparent as parent_record_id,
-        idflownet as flow_network_id,
-        tblkeyparent as table_key_parent,
+        idrec as "Record ID",
+        idrecparent as "Parent Record ID",
+        idflownet as "Flow Net ID",
+        tblkeyparent as "Table Key",
         
         -- Integration system information
-        integratordes as integrator_description,
-        integratorver as integrator_version,
-        afproduct as product_description,
+        integratordes as "Integrator Description",
+        integratorver as "Integrator Version",
+        afproduct as "Product Description",
         
         -- External system references
-        afidentity as af_id_entity,
-        afidrec as af_id_rec,
+        afidentity as "AF ID Entity",
+        afidrec as "AF ID Rec",
         
         -- Notes and documentation
-        note as note,
+        note as "Note",
         
         -- System fields
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
+        syscreatedate as "Create Date (UTC)",
+        syscreateuser as "Created By",
+        sysmoddate as "Last Mod Date (UTC)",
+        sysmoduser as "Last Mod By",
+        systag as "Record Tag",
+        syslockdate as "Lock Date (UTC)",
+        syslockme as "Lock Me",
+        syslockchildren as "Lock My Children",
+        syslockmeui as "Lock Me (UI)",
+        syslockchildrenui as "Lock My Children (UI)",
         
         -- Fivetran fields
         _fivetran_synced as fivetran_synced_at
         
     from source_data
 )
+
 
 select * from renamed

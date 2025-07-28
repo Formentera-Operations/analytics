@@ -6,4 +6,4 @@
   )
 }}
 
-select * from {{ ref('int_prodview__unit_v2') }}
+select * from {{ ref('int_prodview__well_header') }}
