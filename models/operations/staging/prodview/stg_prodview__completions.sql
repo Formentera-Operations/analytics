@@ -50,8 +50,8 @@ renamed as (
         wellidregulatory as "Regulatory ID of Well",
         wellidpa as "Production Accounting Identifier of Well",
         welllicenseno as "LA - Serial #, ND - Well File #, TX-MS-OK- API 14",
-        wellida as "API10",
-        wellidb as "CostCenter",
+        wellida as "API 10",
+        wellidb as "Cost Center",
         wellidc as "EID",
         wellidd as "Producing Formation",
         wellide as "Legal Well Name",
@@ -69,7 +69,7 @@ renamed as (
         -- Location information
         latitude as "Bottomhole Latitude",
         longitude as "Bottomhole Longitude",
-        latlongsource as "Lat Long Data Source",
+        latlongsource as "Lat/Long Data Source",
         latlongdatum as "Lat/Long Datum",
         
         -- Entry requirements
@@ -92,7 +92,7 @@ renamed as (
         
         -- User-defined fields - Datetime
         userdttm1 as "Spud Date",
-        userdttm2 as "Spud Date",
+        userdttm2 as "userdttm2",
         userdttm3 as "Rig Release Date",
         userdttm4 as "User Date 4",
         userdttm5 as "User Date 5",
@@ -119,3 +119,4 @@ renamed as (
 )
 
 select * from renamed
+--where not "Spud Date" = null

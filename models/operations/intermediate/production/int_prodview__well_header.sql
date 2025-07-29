@@ -41,10 +41,10 @@ wvintegration as (
 
 select
     -- Route information
-    r."Route Name",
+    r."Backup Lease Operator",
     r."Foreman",
     r."Primary Lease Operator",
-    r."Backup Lease Operator",
+    r."Route Name",
 
     -- Unit information
     u."API 10",
@@ -58,17 +58,17 @@ select
     u."Company Code",
     u."Cost Center",
     u."Country",
-    u."Create Date (UTC)",
+    u."Create Date (UTC)" as "Unit Create Date (UTC)",
     u."Current Facility",
     u."DSU",
+    u."Display Name",
     u."District",
     u."District Office",
-    u."Display Name",
+    u."EID",
     u."Electric Acct. No.",
     u."Electric Allocation Meter Number",
     u."Electric Meter ID",
     u."Electric Vendor No.",
-    u."EID",
     u."Facility Name",
     u."Field Office",
     u."Foreman Area",
@@ -82,18 +82,17 @@ select
     u."Is Cycled",
     u."Is Operated",
     u."Is Purchaser",
-    u."Last Mod By",
-    u."Last Mod Date (UTC)",
+    u."Last Mod By" as "Unit Last Mod By",
+    u."Last Mod Date (UTC)" as "Unit Last Mod By",
+    u."Lat/Long Data Source",
     u."Lat/Long Datum",
-    u."LatLong Source",
     u."Lease Name",
-    u."Migration Source Key",
-    u."Migration Source Type",
+    --u."Migration Source Key",
+    --u."Migration Source Type",
     u."Operated Descriptor",
     u."Operator",
     u."Pad Name",
     u."Parent Record ID",
-    u."Route",
     u."Producing Method",
     u."Property Number",
     u."Record ID",
@@ -111,20 +110,20 @@ select
     u."Surface Longitude",
     u."SWD System",
     u."TX - Lease Number, LA - LUW, ND-MS-OK - N/A",
-    u."Unit Name",
-    u."Unit Sub Type",
-    u."Unit Type",
-    u."User Date 4",
-    u."User Date 5",
-    u."User Num 5",
-    u."UserTxt1",
     u."UTM Easting",
     u."UTM Grid Zone",
     u."UTM Northing",
+    u."Unit Name",
+    u."Unit Sub Type",
+    u."Unit Type",
+    --u."User Date 4",
+    --u."User Date 5",
+    --u."User Num 5",
+    --u."UserTxt1",
 
 
     -- Completion information
-    c."API10",
+    --c."API 10",
     c."Abandon Date",
     c."BHA Type PAGA/SAGA/RPGA",
     c."Bottomhole Latitude",
@@ -132,10 +131,10 @@ select
     c."Completion License Date",
     c."Completion Licensee",
     c."Completion Name",
-    c."CostCenter",
-    c."Create Date (UTC)",
+    --c."Cost Center",
+    c."Create Date (UTC)" AS "Completion Create Date (UTC)",
     c."Created By",
-    c."EID",
+    --c."EID",
     c."Electric Meter Name",
     c."Electric Vendor Name",
     c."Entry Requirement Period Fluid Level",
@@ -160,16 +159,16 @@ select
     c."Import Type 1",
     c."Import Type 2",
     c."LA - Serial #, ND - Well File #, TX-MS-OK- API 14",
-    c."Last Mod By",
-    c."Last Mod Date (UTC)",
+    c."Last Mod By" as "Completion Last Mod By",
+    c."Last Mod Date (UTC)" as "Completion Last Mod Date (UTC)",
     c."Last Produced Date",
     c."Last Produced Gas Date",
     c."Last Produced Oil Date",
-    c."Lat Long Data Source",
-    c."Lat/Long Datum",
+    --c."Lat Long Data Source",
+    --c."Lat/Long Datum",
     c."Legal Well Name",
-    c."Migration Source Key",
-    c."Migration Source Type",
+    --c."Migration Source Key",
+    --c."Migration Source Type",
     c."POP Date",
     c."Prod Casing",
     c."Prod Liner",
@@ -182,15 +181,15 @@ select
     c."Regulatory ID of Well",
     c."Rig Release Date",
     c."Spud Date",
-    c."Spud Date",
     c."Start Allocating Date in ProdView",
     c."Surface Casing",
     c."Surface Commingle Number",
-    c."User Date 4",
-    c."User Date 5",
+    --c."User Date 4",
+    --c."User Date 5",
     c."Well Name",
     c."Well Number",
     c."Working Interest Partner",
+    c."userdttm2",
 
 
     -- Integration IDs
@@ -210,15 +209,15 @@ select
 
 from pvunit u
 left join pvroutesetroute r 
-    on u."Current Route" = r."AF ID Rec"
+    on u."Current Route" = r."Record ID"
 left join pvunitcomp c 
-    on u."AF ID Rec" = c."Parent Record ID"
+    on u."Record ID" = c."Parent Record ID"
 left join svintegration si 
-    on u."AF ID Rec"= si."Parent Record ID" 
-    and si."Flow Net ID" = u."Flow Net ID"
+    on u."Record ID"= si."Parent Record ID" 
+    and si."Flow Net ID" = u."Parent Record ID"
 left join wvcompintegration wci 
-    on u."AF ID Rec"= wci."Parent Record ID" 
-    and wci."Flow Net ID" = u."Flow Net ID"
+    on u."Record ID"= wci."Parent Record ID" 
+    and wci."Flow Net ID" = u."Parent Record ID"
 left join wvintegration wi 
-    on u."AF ID Rec"= wi."Parent Record ID" 
-    and wi."Flow Net ID" = u."Flow Net ID"
+    on u."Record ID"= wi."Parent Record ID" 
+    and wi."Flow Net ID" = u."Parent Record ID"

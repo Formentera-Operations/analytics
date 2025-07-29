@@ -41,7 +41,7 @@ renamed as (
         -- Location - Geographic coordinates
         latitude as "Surface Latitude",
         longitude as "Surface Longitude",
-        latlongsource as "LatLong Source",
+        latlongsource as "Lat/Long Data Source",
         latlongdatum as "Lat/Long Datum",
         
         -- Location - UTM coordinates (keeping in meters)
