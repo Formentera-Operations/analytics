@@ -27,8 +27,8 @@ renamed as (
         -- System fields
         syscreatedate as "Created Date (UTC)",
         syscreateuser as "Created By",
-        sysmoddate as "Last Modified Date (UTC)",
-        sysmoduser as "Last Modified By",
+        sysmoddate as "Last Mod Date (UTC)",
+        sysmoduser as "Last Mod By",
         systag as "Record Tag",
         syslockdate as "Lock Date (UTC)",
         syslockme as "Lock Me",
