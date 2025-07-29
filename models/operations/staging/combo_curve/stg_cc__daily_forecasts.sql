@@ -20,6 +20,10 @@ with source_data as (
     resolution,
     well as well_id
   from {{ source('combo_curve', 'forecasted_daily_volumes_by_project') }}
+  where project_id in (
+        select project_id 
+        from {{ ref('corporate_reserve_scenarios') }}
+    )
 ),
 
 -- Parse the phases variant column
