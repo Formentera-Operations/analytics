@@ -13,6 +13,13 @@
 with staged_volumes as (
   select * 
   from {{ ref('stg_cc__daily_forecasts') }}
+  where forecast_id in (
+        select forecast_id 
+        from {{ ref('reserve_forecasts') }}
+        where forecast_name = '2Q25 Reserves'
+        
+    )
+
   
   {% if is_incremental() %}
     -- Only process data extracted after the last run

@@ -2844,7 +2844,8 @@ sources:
           - name: well
             description: Well ID
       
-
+      - name: forecasts
+        description: The table contains records of forecast runs. Each record represents a single forecast and includes details about the forecast type, project, and date.
       - name: project_econ_model_general_options
         description: Table containing general options for project economic models
         columns:
