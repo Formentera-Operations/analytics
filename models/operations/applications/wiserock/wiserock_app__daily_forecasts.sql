@@ -17,13 +17,10 @@ with staged_volumes as (
         select forecast_id 
         from {{ ref('reserve_forecasts') }}
         where forecast_name = '2Q25 Reserves'
-        
     )
-
-  
   {% if is_incremental() %}
     -- Only process data extracted after the last run
-    where extracted_at > (select max(extracted_at) from {{ this }})
+    and extracted_at > (select max(extracted_at) from {{ this }})
   {% endif %}
 ),
 
