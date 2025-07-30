@@ -11,8 +11,8 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Record ID",
-        idrecparent as "Parent Record ID",
+        idrec as "Route Record ID",
+        idrecparent as "Route Parent Record ID",
         idflownet as "Flow Net ID",
         
         -- Route information

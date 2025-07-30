@@ -11,8 +11,8 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Record ID",
-        idrecparent as "Parent Record ID",
+        idrec as "Allocation Record ID",
+        idrecparent as "Allocation Parent Record ID",
         idflownet as "Flow Net ID",
         idrecunit as "Unit ID",
         idrecunittk as "Unit Table",

@@ -11,10 +11,10 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Record ID",
-        idrecparent as "Parent Record ID",
+        idrec as "System Integration Record ID",
+        idrecparent as "System Integration Parent Record ID",
         idflownet as "Flow Net ID",
-        tblkeyparent as "Table Key",
+        tblkeyparent as "System Integration Table Key",
         
         -- Integration system information
         integratordes as "Integrator Description",

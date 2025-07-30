@@ -20,21 +20,21 @@ svintegration as (
     select * 
     from {{ ref('stg_prodview__system_integrations') }}
     where "Product Description" = 'SiteView' 
-    and "Table Key" = 'pvunit'
+    and "System Integration Table Key" = 'pvunit'
 ),
 
 wvcompintegration as (
     select * 
     from {{ ref('stg_prodview__system_integrations') }}
     where "Product Description" = 'WellView' 
-    and "Table Key" = 'pvunitcomp'
+    and "System Integration Table Key" = 'pvunitcomp'
 ),
 
 wvintegration as (
     select * 
     from {{ ref('stg_prodview__system_integrations') }}
     where "Product Description" = 'WellView' 
-    and "Table Key" = 'pvunit'
+    and "System Integration Table Key" = 'pvunit'
 )
 
 select
@@ -59,7 +59,6 @@ select
     u."Create Date (UTC)" as "Unit Create Date (UTC)",
     u."Current Facility",
     u."DSU",
-    u."Display Name",
     u."District",
     u."District Office",
     u."EID",
@@ -69,6 +68,7 @@ select
     u."Electric Vendor No.",
     u."Facility Name",
     u."Field Office",
+    u."Flow Net ID",
     u."Foreman Area",
     u."Gas Gathering System Name",
     u."Gas Purchaser",
@@ -90,10 +90,8 @@ select
     u."Operated Descriptor",
     u."Operator",
     u."Pad Name",
-    u."Parent Record ID",
     u."Producing Method",
     u."Property Number",
-    u."Record ID",
     u."Regulatory Field Name",
     u."Regulatory ID",
     u."Regulatory Unit Type",
@@ -111,7 +109,9 @@ select
     u."UTM Easting",
     u."UTM Grid Zone",
     u."UTM Northing",
+    u."Unit Display Name",
     u."Unit Name",
+    u."Unit Record ID",
     u."Unit Sub Type",
     u."Unit Type",
     --u."User Date 4",
@@ -207,15 +207,15 @@ select
 
 from pvunit u
 left join pvroutesetroute r 
-    on u."Current Route" = r."Record ID"
+    on u."Current Route" = r."Route Record ID"
 left join pvunitcomp c 
-    on u."Record ID" = c."Parent Record ID"
+    on u."Unit Record ID" = c."Completion Parent Record ID"
 left join svintegration si 
-    on u."Record ID"= si."Parent Record ID" 
-    and si."Flow Net ID" = u."Parent Record ID"
+    on u."Unit Record ID"= si."System Integration Parent Record ID" 
+    and si."Flow Net ID" = u."Flow Net ID"
 left join wvcompintegration wci 
-    on u."Record ID"= wci."Parent Record ID" 
-    and wci."Flow Net ID" = u."Parent Record ID"
+    on u."Unit Record ID"= wci."System Integration Parent Record ID" 
+    and wci."Flow Net ID" = u."Flow Net ID"
 left join wvintegration wi 
-    on u."Record ID"= wi."Parent Record ID" 
-    and wi."Flow Net ID" = u."Parent Record ID"
+    on u."Unit Record ID"= wi."System Integration Parent Record ID" 
+    and wi."Flow Net ID" = u."Flow Net ID"
