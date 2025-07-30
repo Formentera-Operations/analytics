@@ -11,8 +11,8 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Record ID",
-        idrecparent as "Parent Record ID",
+        idrec as "Completion Record ID",
+        idrecparent as "Completion Parent Record ID",
         idflownet as "Flow Net ID",
         
         -- Completion lifecycle dates

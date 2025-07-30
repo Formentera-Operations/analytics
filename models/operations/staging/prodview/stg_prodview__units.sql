@@ -11,10 +11,10 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Record ID",
-        idflownet as "Parent Record ID",
+        idrec as "Unit Record ID",
+        idflownet as "Flow Net ID",
         name as "Unit Name",
-        nameshort as "Display Name",
+        nameshort as "Unit Display Name",
         
         -- Unit classification
         typ1 as "Unit Type",
