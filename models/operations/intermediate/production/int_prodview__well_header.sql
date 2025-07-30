@@ -1,7 +1,6 @@
 {{
   config(
-    materialized='view',
-    alias='unit_v2'
+    materialized='view'
   )
 }}
 
@@ -82,7 +81,7 @@ select
     u."Is Operated",
     u."Is Purchaser",
     u."Last Mod By" as "Unit Last Mod By",
-    u."Last Mod Date (UTC)" as "Unit Last Mod By",
+    u."Last Mod Date (UTC)" as "Unit Last Date (UTC)",
     u."Lat/Long Data Source",
     u."Lat/Long Datum",
     u."Lease Name",
