@@ -81,12 +81,12 @@ renamed as (
         com as "Note",
 
         -- System fields
-        syscreatedate as "Created At",
+        syscreatedate as "Created At (UTC)",
         syscreateuser as "Created By",
-        sysmoddate as "Last Mod At",
+        sysmoddate as "Last Mod At (UTC)",
         sysmoduser as "Last Mod By",
         systag as "System Tag",
-        syslockdate as "System Lock Date",
+        syslockdate as "System Lock Date (UTC)",
         syslockme as "System Lock Me",
         syslockchildren as "System Lock Children",
         syslockmeui as "System Lock Me UI",

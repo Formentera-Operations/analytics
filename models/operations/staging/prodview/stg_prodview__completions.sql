@@ -114,7 +114,7 @@ renamed as (
         syslockchildrenui as "Lock My Children (UI)",
         
         -- Fivetran fields
-        _fivetran_synced as fivetran_synced_at
+        _fivetran_synced as "Fivetran Synced At"
     from source_data
 )
 
