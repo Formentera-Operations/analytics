@@ -203,7 +203,7 @@ select
         coalesce(si."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(wci."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(wi."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z')
-    ) as UPDATE_DATE
+    ) as "Last Mod Date (UTC)"
 
 from pvunit u
 left join pvroutesetroute r 
