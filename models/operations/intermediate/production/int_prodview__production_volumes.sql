@@ -89,7 +89,7 @@ source AS (
         ,d."Downtime Code 3"
         ,d."Downtime Code"
         ,a."Downtime Hours"
-        ,a."Downtime ID"
+        ,a."Downtime Record ID"
         ,p."Dynamic Viscosity Pascal Seconds"
         ,a."Gathered Gas mcf"
         ,a."Gathered HCLiq bbl"
@@ -113,10 +113,10 @@ source AS (
             ,NVL(s."Last Mod At (UTC)", TO_TIMESTAMP_TZ('0000-01-01T00:00:00.000Z'))
             ) AS "Last Mod At (UTC)"
         ,a."Last Mod By"
-        ,a."Last Param ID"
-        ,a."Last Pump Entry ID"
+        ,a."Last Completion Parameter Record ID"
+        ,a."Last Pump Entry Record ID"
         ,a."Last Pump Entry Table"
-        ,a."Last Test ID"
+        ,a."Last Test Record ID"
         ,p."Line Pressure psi"
         ,a."Net Revenue Interest Gas pct"
         ,a."Net Revenue Interest Oil Cond pct"
@@ -145,17 +145,17 @@ source AS (
         ,a."Remaining Load Oil Condensate bbl"
         ,a."Remaining Load Water bbl"
         ,a."Remaining Sand bbl"
-        ,a."Reporting Facility ID"
+        ,a."Reporting Facility Record ID"
         ,p."Shut In Casing Pressure psi"
         ,p."Shut In Tubing Pressure psi"
         ,a."Starting Lift Gas mcf"
         ,a."Starting Load Oil Condensate bbl"
         ,a."Starting Load Water bbl"
         ,a."Starting Sand bbl"
-        ,a."Status ID"
+        ,a."Status Record ID"
         ,s."Status"
         ,p."Tubing Pressure psi"
-        ,a."Unit ID"
+        ,a."Unit Record ID"
         ,p."Wellhead Pressure psi"
         ,p."Wellhead Temperature F"
         ,a."Working Interest Gas pct"
@@ -250,11 +250,11 @@ source AS (
         END AS "Last Pump Entry Table"*/
     FROM  unitalloc a
     LEFT JOIN  compdowntime d 
-        ON a."Downtime ID" = d."Completion Downtime ID"
+        ON a."Downtime Record ID" = d."Completion Downtime Record ID"
     LEFT JOIN compparam p 
-        ON a."Last Param ID" = p."Completion Parameter ID"
+        ON a."Last Completion Parameter Record ID" = p."Completion Parameter Record ID"
     LEFT JOIN unitstatus s 
-        ON a."Status ID" = s."Status Record ID"
+        ON a."Status Record ID" = s."Status Record ID"
 )
 
 SELECT *

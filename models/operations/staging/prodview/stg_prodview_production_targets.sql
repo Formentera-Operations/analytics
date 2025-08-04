@@ -12,11 +12,11 @@ renamed as (
     select
         -- Primary identifiers
         idrec as "Target Record ID",
-        idrecparent as "Target Parent ID",
+        idrecparent as "Unit Record ID",
         idflownet as "Flow Net ID",
         
         -- Date/Time information
-        dttmstart as "Target Start Date",
+        CAST(dttmstart AS DATE) as "Target Start Date",
         
         -- Target Fields
         typ as "Target Type",
@@ -26,7 +26,7 @@ renamed as (
         usertxt3 as "User Text 3",
 
         -- System fields
-        syscreatedate as "Created At",
+        syscreatedate as "Created At (UTC)",
         syscreateuser as "Created By",
         sysmoddate as "Last Mod At (UTC)",
         sysmoduser as "Last Mod By",
