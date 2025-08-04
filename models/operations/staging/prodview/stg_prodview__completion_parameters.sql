@@ -11,7 +11,7 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Completion Parameter ID",
+        idrec as "Completion Parameter Record ID",
         idrecparent as "Completion Parameter Parent ID",
         idflownet as "Flow Net ID",
 

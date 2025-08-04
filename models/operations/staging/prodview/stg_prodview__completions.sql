@@ -12,7 +12,7 @@ renamed as (
     select
         -- Primary identifiers
         idrec as "Completion Record ID",
-        idrecparent as "Completion Parent Record ID",
+        idrecparent as "Unit Record ID",
         idflownet as "Flow Net ID",
         
         -- Completion lifecycle dates

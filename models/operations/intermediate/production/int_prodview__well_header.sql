@@ -131,7 +131,7 @@ select
     c."Completion Name",
     --c."Cost Center",
     c."Create Date (UTC)" AS "Completion Create Date (UTC)",
-    c."Created By",
+    c."Created By" AS "Completion Created by",
     --c."EID",
     c."Electric Meter Name",
     c."Electric Vendor Name",
@@ -209,7 +209,7 @@ from pvunit u
 left join pvroutesetroute r 
     on u."Current Route" = r."Route Record ID"
 left join pvunitcomp c 
-    on u."Unit Record ID" = c."Completion Parent Record ID"
+    on u."Unit Record ID" = c."Unit Record ID"
 left join svintegration si 
     on u."Unit Record ID"= si."System Integration Parent Record ID" 
     and si."Flow Net ID" = u."Flow Net ID"

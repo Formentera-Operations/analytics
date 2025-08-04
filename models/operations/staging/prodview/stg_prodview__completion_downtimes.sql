@@ -11,7 +11,7 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Completion Downtime ID",
+        idrec as "Completion Downtime Record ID",
         idrecparent as "Completion Downtime Parent ID",
         idflownet as "Flow Net ID",
         
