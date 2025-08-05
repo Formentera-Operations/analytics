@@ -180,7 +180,7 @@ renamed as (
         userdttm1 as "First Sales Date",
         userdttm2 as "Ops Effective Date",
         userdttm3 as "Regulatory Effective Date",
-        userdttm4 as "Last Approved Mit Date",
+        userdttm4 as "Last Approved MIT Date",
         userdttm5 as "JOA Date",
 
         -- Comments
