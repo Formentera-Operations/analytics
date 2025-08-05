@@ -54,6 +54,7 @@ select
     u."Comimingle Permit No.",
     u."Comment",
     u."Company Code",
+    u."Completion Status",
     u."Cost Center",
     u."Country",
     u."Create Date (UTC)" as "Unit Create Date (UTC)",
