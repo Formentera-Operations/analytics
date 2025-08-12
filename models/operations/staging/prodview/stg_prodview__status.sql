@@ -11,55 +11,56 @@ with source_data as (
 renamed as (
     select
         -- Primary identifiers
-        idrec as status_id,
-        idrecparent as completion_id,
-        idflownet as flow_network_id,
-        
+        idrec as "Status Record ID",
+        idrecparent as "Status Parent Record ID",
+        idflownet as "Flow Net ID",
+
         -- Status information
-        dttm as status_date,
-        status as status,
-        
+        dttm as "Status Date",
+        status as "Status",
+
         -- Fluid and flow characteristics
-        primaryfluidtyp as primary_fluid_type,
-        flowdirection as flow_direction,
-        commingled as commingled,
-        typfluidprod as oil_or_condensate,
-        
+        primaryfluidtyp as "Primary Fluid Type",
+        flowdirection as "Flow Direction",
+        commingled as "Commingled",
+        typfluidprod as "Oil Or Condensate",
+
         -- Completion characteristics
-        typcompletion as completion_type,
-        methodprod as production_method,
-        
+        typcompletion as "Completion Type",
+        methodprod as "Production Method",
+
         -- Calculation and reporting flags
-        calclostprod as calculate_lost_production,
-        wellcountincl as include_in_well_count,
-        
+        calclostprod as "Calculate Lost Production",
+        wellcountincl as "Include In Well Count",
+
         -- User-defined fields - Text
-        usertxt1 as user_text_1,
-        usertxt2 as user_text_2,
-        usertxt3 as user_text_3,
-        
+        usertxt1 as "User Text 1",
+        usertxt2 as "User Text 2",
+        usertxt3 as "User Text 3",
+
         -- User-defined fields - Numeric
-        usernum1 as user_num_1,
-        usernum2 as user_num_2,
-        usernum3 as user_num_3,
-        
+        usernum1 as "User Num 1",
+        usernum2 as "User Num 2",
+        usernum3 as "User Num 3",
+
         -- Comments
-        com as comment,
-        
+        com as "Comment",
+
         -- System fields
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        
+        syscreatedate as "Created At (UTC)",
+        syscreateuser as "Created By",
+        sysmoddate as "Last Mod At (UTC)",
+        sysmoduser as "Last Mod By",
+        systag as "System Tag",
+        syslockdate as "System Lock Date",
+        syslockme as "System Lock Me",
+        syslockchildren as "System Lock Children",
+        syslockmeui as "System Lock Me UI",
+        syslockchildrenui as "System Lock Children UI",
+
         -- Fivetran fields
-        _fivetran_synced as fivetran_synced_at
+        _fivetran_synced as "Fivetran Synced At"
+
         
     from source_data
 )

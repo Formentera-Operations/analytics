@@ -14,11 +14,11 @@ renamed as (
         idrec as "Allocation Record ID",
         idrecparent as "Allocation Parent Record ID",
         idflownet as "Flow Net ID",
-        idrecunit as "Unit ID",
+        idrecunit as "Unit Record ID",
         idrecunittk as "Unit Table",
-        idreccomp as "Completion ID",
+        idreccomp as "Completion Record ID",
         idreccomptk as "Completion Table",
-        idreccompzone as "Reporting/Contact Interval ID",
+        idreccompzone as "Reporting/Contact Interval Record ID",
         idreccompzonetk as "Reporting/Contact Interval Table",
         
         -- Date/Time information
@@ -55,177 +55,177 @@ renamed as (
         
         -- New production volumes (converted to US units)
         volnewprodallochcliq / 0.158987294928 as "New Production HCLiq bbl",
-        volnewprodallocoil / 0.158987294928 as "new production oil bbl",
-        volnewprodalloccond / 0.158987294928 as "new production condensate bbl",
-        volnewprodallocngl / 0.158987294928 as "new production ngl bbl",
-        volnewprodallochcliqgaseq / 28.316846592 as "new production hcliq gas equivalent mcf",
-        volnewprodallocgas / 28.316846592 as "new production gas mcf",
-        volnewprodallocwater / 0.158987294928 as "new production water bbl",
-        volnewprodallocsand / 0.158987294928 as "new production_sand_bbl",
+        volnewprodallocoil / 0.158987294928 as "New Production Oil bbl",
+        volnewprodalloccond / 0.158987294928 as "New Production Condensate bbl",
+        volnewprodallocngl / 0.158987294928 as "New Production Ngl bbl",
+        volnewprodallochcliqgaseq / 28.316846592 as "New Production Hcliq Gas Equivalent mcf",
+        volnewprodallocgas / 28.316846592 as "New Production Gas mcf",
+        volnewprodallocwater / 0.158987294928 as "New Production Water bbl",
+        volnewprodallocsand / 0.158987294928 as "New Production Sand bbl",
+
         
-        -- Working interest (converted to percentages)
-        wihcliq / 0.01 as working_interest_oil_cond_pct,
-        wigas / 0.01 as working_interest_gas_pct,
-        wiwater / 0.01 as working_interest_water_pct,
-        wisand / 0.01 as working_interest_sand_pct,
-        
+        wihcliq / 0.01 as "Working Interest Oil Cond pct",
+        wigas / 0.01 as "Working Interest Gas pct",
+        wiwater / 0.01 as "Working Interest Water pct",
+        wisand / 0.01 as "Working Interest Sand pct",
+
         -- Net revenue interest (converted to percentages)
-        nrihcliq / 0.01 as net_revenue_interest_oil_cond_pct,
-        nrigas / 0.01 as net_revenue_interest_gas_pct,
-        nriwater / 0.01 as net_revenue_interest_water_pct,
-        nrisand / 0.01 as net_revenue_interest_sand_pct,
-        
+        nrihcliq / 0.01 as "Net Revenue Interest Oil Cond pct",
+        nrigas / 0.01 as "Net Revenue Interest Gas pct",
+        nriwater / 0.01 as "Net Revenue Interest Water pct",
+        nrisand / 0.01 as "Net Revenue Interest Sand pct",
+
         -- Lost production due to downtime (converted to US units)
-        vollosthcliq / 0.158987294928 as deferred_oil_condensate_production_bbl,
-        vollostgas / 28.316846592 as deferred_gas_production_mcf,
-        vollostwater / 0.158987294928 as deferred_water_production_bbl,
-        vollostsand / 0.158987294928 as deferred_sand_production_bbl,
-        
+        vollosthcliq / 0.158987294928 as "Deferred Oil Condensate Production bbl",
+        vollostgas / 28.316846592 as "Deferred Gas Production mcf",
+        vollostwater / 0.158987294928 as "Deferred Water Production bbl",
+        vollostsand / 0.158987294928 as "Deferred Sand Production bbl",
+
         -- Difference from target (converted to US units)
-        voldifftargethcliq / 0.158987294928 as difference_from_target_hcliq_bbl,
-        voldifftargetoil / 0.158987294928 as difference_from_target_oil_bbl,
-        voldifftargetcond / 0.158987294928 as difference_from_target_condensate_bbl,
-        voldifftargetngl / 0.158987294928 as difference_from_target_ngl_bbl,
-        voldifftargetgas / 28.316846592 as difference_from_target_gas_mcf,
-        voldifftargetwater / 0.158987294928 as difference_from_target_water_bbl,
-        voldifftargetsand / 0.158987294928 as difference_from_target_sand_bbl,
-        
+        voldifftargethcliq / 0.158987294928 as "Difference From Target Hcliq bbl",
+        voldifftargetoil / 0.158987294928 as "Difference From Target Oil bbl",
+        voldifftargetcond / 0.158987294928 as "Difference From Target Condensate bbl",
+        voldifftargetngl / 0.158987294928 as "Difference From Target Ngl bbl",
+        voldifftargetgas / 28.316846592 as "Difference From Target Gas mcf",
+        voldifftargetwater / 0.158987294928 as "Difference From Target Water bbl",
+        voldifftargetsand / 0.158987294928 as "Difference From Target Sand bbl",
+
         -- Recoverable load/lift - Starting volumes (converted to US units)
-        volstartremainrecovhcliq / 0.158987294928 as starting_load_oil_condensate_bbl,
-        volstartremainrecovgas / 28.316846592 as starting_lift_gas_mcf,
-        volstartremainrecovwater / 0.158987294928 as starting_load_water_bbl,
-        volstartremainrecovsand / 0.158987294928 as starting_sand_bbl,
-        
+        volstartremainrecovhcliq / 0.158987294928 as "Starting Load Oil Condensate bbl",
+        volstartremainrecovgas / 28.316846592 as "Starting Lift Gas mcf",
+        volstartremainrecovwater / 0.158987294928 as "Starting Load Water bbl",
+        volstartremainrecovsand / 0.158987294928 as "Starting Sand bbl",
+
         -- Recoverable load/lift - Recovered volumes (converted to US units)
-        volrecovhcliq / 0.158987294928 as recovered_load_oil_condensate_bbl,
-        volrecovgas / 28.316846592 as recovered_lift_gas_mcf,
-        volrecovwater / 0.158987294928 as recovered_load_water_bbl,
-        volrecovsand / 0.158987294928 as recovered_sand_bbl,
-        
+        volrecovhcliq / 0.158987294928 as "Recovered Load Oil Condensate bbl",
+        volrecovgas / 28.316846592 as "Recovered Lift Gas mcf",
+        volrecovwater / 0.158987294928 as "Recovered Load Water bbl",
+        volrecovsand / 0.158987294928 as "Recovered Sand bbl",
+
         -- Recoverable load/lift - Injected volumes (converted to US units)
-        volinjectrecovgas / 28.316846592 as injected_lift_gas_bbl,
-        volinjectrecovhcliq / 0.158987294928 as injected_load_oil_condensate_bbl,
-        volinjectrecovwater / 0.158987294928 as injected_load_water_bbl,
-        volinjectrecovsand / 0.158987294928 as injected_sand_bbl,
-        
+        volinjectrecovgas / 28.316846592 as "Injected Lift Gas bbl",
+        volinjectrecovhcliq / 0.158987294928 as "Injected Load Oil Condensate bbl",
+        volinjectrecovwater / 0.158987294928 as "Injected Load Water bbl",
+        volinjectrecovsand / 0.158987294928 as "Injected Sand bbl",
+
         -- Recoverable load/lift - Remaining volumes (converted to US units)
-        volremainrecovhcliq / 0.158987294928 as remaining_load_oil_condensate_bbl,
-        volremainrecovgas / 28.316846592 as remaining_lift_gas_mcf,
-        volremainrecovwater / 0.158987294928 as remaining_load_water_bbl,
-        volremainrecovsand / 0.158987294928 as remaining_sand_bbl,
-        
+        volremainrecovhcliq / 0.158987294928 as "Remaining Load Oil Condensate bbl",
+        volremainrecovgas / 28.316846592 as "Remaining Lift Gas mcf",
+        volremainrecovwater / 0.158987294928 as "Remaining Load Water bbl",
+        volremainrecovsand / 0.158987294928 as "Remaining Sand bbl",
+
         -- Opening inventory (converted to US units)
-        volstartinvhcliq / 0.158987294928 as opening_inventory_oil_condensate_bbl,
-        volstartinvhcliqgaseq / 28.316846592 as opening_inventory_gas_equivalent_oil_cond_mcf,
-        volstartinvwater / 0.158987294928 as opening_inventory_water_bbl,
-        volstartinvsand / 0.158987294928 as opening_inventory_sand_bbl,
-        
+        volstartinvhcliq / 0.158987294928 as "Opening Inventory Oil Condensate bbl",
+        volstartinvhcliqgaseq / 28.316846592 as "Opening Inventory Gas Equivalent Oil Cond mcf",
+        volstartinvwater / 0.158987294928 as "Opening Inventory Water bbl",
+        volstartinvsand / 0.158987294928 as "Opening Inventory Sand bbl",
+
         -- Closing inventory (converted to US units)
-        volendinvhcliq / 0.158987294928 as closing_inventory_oil_condensate_bbl,
-        volendinvhcliqgaseq / 28.316846592 as closing_inventory_gas_equiv_oil_condensate_mcf,
-        volendinvwater / 0.158987294928 as closing_inventory_water_bbl,
-        volendinvsand / 0.158987294928 as closing_inventory_sand_bbl,
-        
+        volendinvhcliq / 0.158987294928 as "Closing Inventory Oil Condensate bbl",
+        volendinvhcliqgaseq / 28.316846592 as "Closing Inventory Gas Equiv Oil Condensate mcf",
+        volendinvwater / 0.158987294928 as "Closing Inventory Water bbl",
+        volendinvsand / 0.158987294928 as "Closing Inventory Sand bbl",
+
         -- Change in inventory (converted to US units)
-        volchginvhcliq / 0.158987294928 as change_in_inventory_oil_condensate_bbl,
-        volchginvhcliqgaseq / 28.316846592 as change_in_inventory_gas_equivalent_oil_cond_mcf,
-        volchginvwater / 0.158987294928 as change_in_inventory_water_bbl,
-        volchginvsand / 0.158987294928 as change_in_inventory_sand_bbl,
-        
+        volchginvhcliq / 0.158987294928 as "Change In Inventory Oil Condensate bbl",
+        volchginvhcliqgaseq / 28.316846592 as "Change In Inventory Gas Equivalent Oil Cond mcf",
+        volchginvwater / 0.158987294928 as "Change In Inventory Water bbl",
+        volchginvsand / 0.158987294928 as "Change In Inventory Sand bbl",
+
         -- Dispositions - Sales (converted to US units)
-        voldispsalehcliq / 0.158987294928 as disposed_allocated_sales_hcliq_bbl,
-        voldispsaleoil / 0.158987294928 as disposed_allocated_sales_oil_bbl,
-        voldispsalecond / 0.158987294928 as disposed_allocated_sales_condensate_bbl,
-        voldispsalengl / 0.158987294928 as disposed_allocated_sales_ngl_bbl,
-        voldispsalegas / 28.316846592 as disposed_allocated_sales_gas_mcf,
-        
+        voldispsalehcliq / 0.158987294928 as "Disposed Allocated Sales Hcliq bbl",
+        voldispsaleoil / 0.158987294928 as "Disposed Allocated Sales Oil bbl",
+        voldispsalecond / 0.158987294928 as "Disposed Allocated Sales Condensate bbl",
+        voldispsalengl / 0.158987294928 as "Disposed Allocated Sales Ngl bbl",
+        voldispsalegas / 28.316846592 as "Disposed Allocated Sales Gas mcf",
+
         -- Dispositions - Gas uses (converted to US units)
-        voldispfuelgas / 28.316846592 as disposed_allocated_fuel_gas_mcf,
-        voldispflaregas / 28.316846592 as disposed_allocated_flare_gas_mcf,
-        voldispincinerategas / 28.316846592 as disposed_allocated_incineration_gas_mcf,
-        voldispventgas / 28.316846592 as disposed_allocated_vent_gas_mcf,
-        voldispinjectgas / 28.316846592 as disposed_allocated_injected_gas_mcf,
-        voldispinjectwater / 0.158987294928 as disposed_allocated_injected_water_bbl,
-        
+        voldispfuelgas / 28.316846592 as "Disposed Allocated Fuel Gas mcf",
+        voldispflaregas / 28.316846592 as "Disposed Allocated Flare Gas mcf",
+        voldispincinerategas / 28.316846592 as "Disposed Allocated Incineration Gas mcf",
+        voldispventgas / 28.316846592 as "Disposed Allocated Vent Gas mcf",
+        voldispinjectgas / 28.316846592 as "Disposed Allocated Injected Gas mcf",
+        voldispinjectwater / 0.158987294928 as "Disposed Allocated Injected Water bbl",
+
         -- Injection well volumes (converted to US units)
-        volinjecthcliq / 0.158987294928 as injection_well_oil_cond_bbl,
-        volinjectgas / 28.316846592 as injection_well_gas_mcf,
-        volinjectwater / 0.158987294928 as injection_well_water_bbl,
-        volinjectsand / 0.158987294928 as injection_well_sand_bbl,
-        
+        volinjecthcliq / 0.158987294928 as "Injection Well Oil Cond bbl",
+        volinjectgas / 28.316846592 as "Injection Well Gas mcf",
+        volinjectwater / 0.158987294928 as "Injection Well Water bbl",
+        volinjectsand / 0.158987294928 as "Injection Well Sand bbl",
+
         -- Cumulative production (converted to US units)
-        volprodcumhcliq / 0.158987294928 as cumulated_hcliq_bbl,
-        volprodcumoil / 0.158987294928 as cumulated_oil_bbl,
-        volprodcumcond / 0.158987294928 as cumulated_condensate_bbl,
-        volprodcumngl / 0.158987294928 as cumulated_ngl_bbl,
-        volprodcumgas / 28.316846592 as cumulated_gas_mcf,
-        volprodcumwater / 0.158987294928 as cumulated_water_bbl,
-        volprodcumsand / 0.158987294928 as cumulated_sand_bbl,
-        
+        volprodcumhcliq / 0.158987294928 as "Cumulated Hcliq bbl",
+        volprodcumoil / 0.158987294928 as "Cumulated Oil bbl",
+        volprodcumcond / 0.158987294928 as "Cumulated Condensate bbl",
+        volprodcumngl / 0.158987294928 as "Cumulated Ngl bbl",
+        volprodcumgas / 28.316846592 as "Cumulated Gas mcf",
+        volprodcumwater / 0.158987294928 as "Cumulated Water bbl",
+        volprodcumsand / 0.158987294928 as "Cumulated Sand bbl",
+
         -- Heat content (converted to US units)
-        heatprodgath / 1055055852.62 as gathered_heat_mmbtu,
-        factheatgath / 37258.9458078313 as gathered_heat_factor_btu_per_ft3,
-        heatprodalloc / 1055055852.62 as allocated_heat_mmbtu,
-        factheatalloc / 37258.9458078313 as allocated_heat_factor_btu_per_ft3,
-        heatnewprodalloc / 1055055852.62 as new_production_heat_mmbtu,
-        heatdispsale / 1055055852.62 as disposed_sales_heat_mmbtu,
-        heatdispfuel / 1055055852.62 as disposed_fuel_heat_mmbtu,
-        heatdispflare / 1055055852.62 as disposed_flare_heat_mmbtu,
-        heatdispvent / 1055055852.62 as disposed_vent_heat_mmbtu,
-        heatdispincinerate / 1055055852.62 as disposed_incinerate_heat_mmbtu,
-        
+        heatprodgath / 1055055852.62 as "Gathered Heat mmbtu",
+        factheatgath / 37258.9458078313 as "Gathered Heat Factor btu Per ft3",
+        heatprodalloc / 1055055852.62 as "Allocated Heat mmbtu",
+        factheatalloc / 37258.9458078313 as "Allocated Heat Factor btu Per ft3",
+        heatnewprodalloc / 1055055852.62 as "New Production Heat mmbtu",
+        heatdispsale / 1055055852.62 as "Disposed Sales Heat mmbtu",
+        heatdispfuel / 1055055852.62 as "Disposed Fuel Heat mmbtu",
+        heatdispflare / 1055055852.62 as "Disposed Flare Heat mmbtu",
+        heatdispvent / 1055055852.62 as "Disposed Vent Heat mmbtu",
+        heatdispincinerate / 1055055852.62 as "Disposed Incinerate Heat mmbtu",
+
         -- Density (converted to API gravity)
-        power(nullif(densityalloc, 0), -1) / 7.07409872233005E-06 + -131.5 as allocated_density_api,
-        power(nullif(densitysale, 0), -1) / 7.07409872233005E-06 + -131.5 as sales_density_api,
-        
+        power(nullif(densityalloc, 0), -1) / 7.07409872233005E-06 + -131.5 as "Allocated Density api",
+        power(nullif(densitysale, 0), -1) / 7.07409872233005E-06 + -131.5 as "Sales Density api",
+
         -- Reference IDs for related records
-        idrecmeasmeth as last_measurement_method_id,
-        idrecmeasmethtk as last_measurement_method_table,
-        idrecfluidlevel as last_fluid_level_id,
-        idrecfluidleveltk as last_fluid_level_table,
-        idrectest as last_test_id,
-        idrectesttk as last_test_table,
-        idrecparam as last_param_id,
-        idrecparamtk as last_param_table,
-        idrecdowntime as downtime_id,
-        idrecdowntimetk as downtime_table,
-        idrecdeferment as deferment_id,
-        idrecdefermenttk as deferment_table,
-        idrecgasanalysis as gas_analysis_id,
-        idrecgasanalysistk as gas_analysis_table,
-        idrechcliqanalysis as hc_liquid_analysis_id,
-        idrechcliqanalysistk as hc_liquid_analysis_table,
-        idrecoilanalysis as oil_properties_id,
-        idrecoilanalysistk as oil_properties_table,
-        idrecwateranalysis as water_properties_id,
-        idrecwateranalysistk as water_properties_table,
-        idrecstatus as status_id,
-        idrecstatustk as status_table,
-        idrecpumpentry as last_pump_entry_id,
-        idrecpumpentrytk as last_pump_entry_table,
-        idrecfacility as reporting_facility_id,
-        idrecfacilitytk as reporting_facility_table,
-        idreccalcset as calc_settings_id,
-        idreccalcsettk as calc_settings_table,
-        
+        idrecmeasmeth as "Last Measurement Method Record ID",
+        idrecmeasmethtk as "Last Measurement Method Table",
+        idrecfluidlevel as "Last Fluid Level Record ID",
+        idrecfluidleveltk as "Last Fluid Level Table",
+        idrectest as "Last Test Record ID",
+        idrectesttk as "Last Test Table",
+        idrecparam as "Last Completion Parameter Record ID",
+        idrecparamtk as "Completion Parameter Record ID Table",
+        idrecdowntime as "Downtime Record ID",
+        idrecdowntimetk as "Downtime Table",
+        idrecdeferment as "Deferment Record ID",
+        idrecdefermenttk as "Deferment Table",
+        idrecgasanalysis as "Gas Analysis Record ID",
+        idrecgasanalysistk as "Gas Analysis Table",
+        idrechcliqanalysis as "Hc Liquid Analysis Record ID",
+        idrechcliqanalysistk as "Hc Liquid Analysis Table",
+        idrecoilanalysis as "Oil Properties Record ID",
+        idrecoilanalysistk as "Oil Properties Table",
+        idrecwateranalysis as "Water Properties Record ID",
+        idrecwateranalysistk as "Water Properties Table",
+        idrecstatus as "Status Record ID",
+        idrecstatustk as "Status Table",
+        idrecpumpentry as "Last Pump Entry Record ID",
+        idrecpumpentrytk as "Last Pump Entry Table",
+        idrecfacility as "Reporting Facility Record ID",
+        idrecfacilitytk as "Reporting Facility Table",
+        idreccalcset as "Calc Settings Record ID",
+        idreccalcsettk as "Calc Settings Table",
+
         -- Other operational metrics
-        pumpeff / 0.01 as pump_efficiency_pct,
-        
+        pumpeff / 0.01 as "Pump Efficiency pct",
+
         -- System fields
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        
+        syscreatedate as "Created At (UTC)",
+        syscreateuser as "Created By",
+        sysmoddate as "Last Mod At (UTC)",
+        sysmoduser as "Last Mod By",
+        systag as "System Tag",
+        syslockdate as "System Lock Date (UTC)",
+        syslockme as "System Lock Me",
+        syslockchildren as "System Lock Children",
+        syslockmeui as "System Lock Me UI",
+        syslockchildrenui as "System Lock Children UI",
+
         -- Fivetran fields
-        _fivetran_synced as fivetran_synced_at
-        
+        _fivetran_synced as "Fivetran Synced At"
+
     from source_data
 )
 

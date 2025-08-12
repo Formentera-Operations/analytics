@@ -12,7 +12,7 @@ renamed as (
     select
         -- Primary identifiers
         idrec as "Completion Record ID",
-        idrecparent as "Completion Parent Record ID",
+        idrecparent as "Unit Record ID",
         idflownet as "Flow Net ID",
         
         -- Completion lifecycle dates
@@ -114,7 +114,7 @@ renamed as (
         syslockchildrenui as "Lock My Children (UI)",
         
         -- Fivetran fields
-        _fivetran_synced as fivetran_synced_at
+        _fivetran_synced as "Fivetran Synced At"
     from source_data
 )
 

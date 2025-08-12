@@ -54,6 +54,7 @@ select
     u."Comimingle Permit No.",
     u."Comment",
     u."Company Code",
+    u."Completion Status",
     u."Cost Center",
     u."Country",
     u."Create Date (UTC)" as "Unit Create Date (UTC)",
@@ -131,7 +132,7 @@ select
     c."Completion Name",
     --c."Cost Center",
     c."Create Date (UTC)" AS "Completion Create Date (UTC)",
-    c."Created By",
+    c."Created By" AS "Completion Created by",
     --c."EID",
     c."Electric Meter Name",
     c."Electric Vendor Name",
@@ -203,13 +204,13 @@ select
         coalesce(si."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(wci."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(wi."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z')
-    ) as UPDATE_DATE
+    ) as "Last Mod Date (UTC)"
 
 from pvunit u
 left join pvroutesetroute r 
     on u."Current Route" = r."Route Record ID"
 left join pvunitcomp c 
-    on u."Unit Record ID" = c."Completion Parent Record ID"
+    on u."Unit Record ID" = c."Unit Record ID"
 left join svintegration si 
     on u."Unit Record ID"= si."System Integration Parent Record ID" 
     and si."Flow Net ID" = u."Flow Net ID"
