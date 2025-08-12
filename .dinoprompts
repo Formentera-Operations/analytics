@@ -1,0 +1,124 @@
+# DinoAI Prompts Collection
+# --------------------------------
+# This file contains a collection of prompts designed to assist with your development workflows.
+# These prompts are available in DinoAI by using the "[" hotkey or clicking on the "prompts" button in the DinAI input
+#
+# PRO TIPS:
+# * You can update or create new prompt templates using the same format to customize available prompts in DinoAI
+# * Use DinoAI to help you write new templates based on your own use case. For example: 
+# * Tell DinoAI "Can you add a prompt template in my .dinoprompts to help me migrate a dbt model to incremental"
+# * You can built in variables in your prompts to access context on the fly
+# * Check our docs and tutorials here -> https://docs.paradime.io/app-help/documentation/dino-ai/dino-prompts
+#
+# How to use:
+# 1. Select the appropriate prompt based on your current task
+# 2. Provide any required information (file paths, database details, etc.)
+# 3. The assistant will guide you through the process or generate the requested content
+#
+# Included prompt categories:
+# - Pull request documentation
+# - Source configuration management
+# - Model generation and refactoring
+# - Documentation and testing
+# - Jira/Linear Issue helper
+
+
+prompts:
+- name: 'Generate pull request description'
+  prompt: |
+    Write a pull request description for the following code changes using markdown:
+    {{ git.diff.withOriginDefaultBranch }}
+    Include the following sections:
+    - Summary of changes
+    - Motivation for the changes
+    - How to test the changes
+    
+- name: 'Generate a dbt sources file'
+  prompt: |
+    Generate a complete dbt sources.yml file following this step-by-step process:
+    1. LIST ALL AVAILABLE DATABASES for me to select from (Skip if I specify: [DATABASE])
+    2. After database selection, LIST ALL SCHEMAS in that database (Skip if I specify: [DATABASE].[SCHEMA])
+    3. Configure ALL sources with standardized freshness checks using database metadata:
+       - Warning threshold: 24 hours
+       - Error threshold: 48 hours
+       - No loaded_at_field (use database metadata)
+    4. Include ALL tables in the selected schema(s) with:
+       - Clear business descriptions for each table
+       - Appropriate tags based on table naming patterns or content
+       - Do NOT list individual columns
+    5. Include example source() usage
+
+- name: 'Update a dbt sources file'
+  prompt: |
+    Check and update my dbt sources.yml {{ editor.currentFile.path }}:
+    1. Compare tables in my sources.yml against actual tables in the corresponding database schema
+    2. Remove any deprecated tables that no longer exist in the database
+    3. Preserve all existing configurations and descriptions for unchanged tables
+    4. Provide a brief summary of changes made (tables added/removed)
+    
+- name: 'Generate base dbt model from source'
+  prompt: |
+    Generate standardized dbt staging models from my sources.yml {{ editor.currentFile.path }}:
+    1. First, analyze my sources.yml file:
+       - If it contains MORE THAN 10 tables: LIST ALL TABLES and prompt me to select specific ones   
+       - If it contains 10 OR FEWER tables: Proceed with all tables unless I specify otherwise
+    2. For each selected table, create a staging model file following pattern: stg_[source_name]__[table_name].sql that:
+       - References the source using {{ source('source_name', 'table_name') }}
+       - Includes all columns from source (SELECT *)
+       - Renames columns to follow snake_case naming convention
+       - Applies appropriate data type casting
+       - Adds minimal comments for business context
+    3. Organize all generated models in subdirectories under models/staging/[source_name]
+    Optional: Specify tables to focus on: [TABLE1,TABLE2,...]
+  
+- name: 'Refactor my dbt model to follow dbt best practices'
+  prompt: |
+    Refactor my dbt model {{ editor.currentFile.path }} according to best practices:
+    1. Analyze the provided SQL model for:
+       - Code quality issues (readability, complexity, structure)
+       - Performance optimization opportunities
+       - dbt best practice violations
+       - SQL anti-patterns
+    2. Refactor the model to implement:
+       - Clear CTEs with descriptive names and comments
+       - Appropriate materialization strategy
+       - Proper documentation and testing
+       - Efficient joins and filtering logic
+       - Consistent column naming conventions (snake_case)
+       - Simplified logic where possible
+    3. Include a brief explanation of key changes made and why they align with dbt best practices
+    
+- name: 'Document and test dbt model'
+  prompt: |
+    Document and test my dbt model {{ editor.currentFile.path }}:
+    1. Generate:
+       - Clear model description with business purpose
+       - Column-level documentation with definitions and data types
+       - Appropriate metadata tags
+    2. Implement tests for:
+       - Data integrity (uniqueness, not_null)
+       - Relationships (referential integrity) 
+       - Data quality (ranges, formats, business rules)
+    3. Organize in schema.yml following dbt best practices
+    If needed, ask me only about critical business rules or value constraints that aren't clear from the model.
+
+- name: 'Implement Jira Issue' # We also support Linear! Just replace Jira -> Linear
+  prompt: |
+    Help me implement Jira Issue. Break down this task into manageable steps:
+    1. Analyze requirements:
+       - Extract key deliverables from ticket description
+       - Identify required tables/data sources
+       - Outline business logic to implement
+    2. Develop implementation plan:
+       - Determine models to create or modify
+       - Map dependencies between models
+       - Define testing approach
+    3. Suggest SQL implementation for each component:
+       - Starting with source/staging models
+       - Building intermediate transformations
+       - Creating final output model(s)
+    4. Include:
+       - Model documentation
+       - Essential tests
+       - Example queries to validate results
+    Please provide ticket details [ISSUE-ID] or [URL] below or paste the ticket description.

@@ -180,3 +180,4 @@ renamed as (
 )
 
 select * from renamed
+where operation_type <> 'd' --remove soft deletes

@@ -7,36 +7,39 @@ with source as (
 renamed as (
 
     select
-        -- Primary key
+        -- Primary Identifiers
         ID as id,
+        ACCOUNTV2IDENTITY as account_v2_identity,
+        NID as n_id,
         
-        -- Account identifiers
+        -- Account Information
         CODE as code,
         NAME as name,
         FULLNAME as full_name,
         MAINACCOUNT as main_account,
         SUBACCOUNT as sub_account,
+        
+        -- Sorting and Organization
         ACCOUNTSORT as account_sort,
         KEYSORT as key_sort,
         
-        -- Account type information
+        -- Account Classification
         ACCOUNTTYPEID as account_type_id,
         ACCOUNTSUBTYPEID as account_subtype_id,
-        ACCOUNTV2IDENTITY as account_v2_identity,
         
-        -- Account properties
-        ACTIVE as active,
-        NORMALLYDEBIT as normally_debit,
-        SUMMARIZEINGLREPORTS as summarize_in_gl_reports,
-        SUMMARIZEINJIBINVOICE as summarize_in_jib_invoice,
+        -- Account Properties
+        cast(ACTIVE as boolean) as active,
+        cast(NORMALLYDEBIT as boolean) as normally_debit,
+        cast(SUMMARIZEINGLREPORTS as boolean) as summarize_in_gl_reports,
+        cast(SUMMARIZEINJIBINVOICE as boolean) as summarize_in_jib_invoice,
         JIBSUMMARYID as jib_summary_id,
-        BANKRECONPERFORMED as bank_recon_performed,
-        CHANGEDSINCEPRINTED as changed_since_printed,
-        GENERATEFIXEDASSETCANDIDATES as generate_fixed_asset_candidates,
-        REMEASUREATCURRENT as remeasure_at_current,
-        TRANSLATEATCURRENT as translate_at_current,
+        cast(BANKRECONPERFORMED as boolean) as bank_recon_performed,
+        cast(CHANGEDSINCEPRINTED as boolean) as changed_since_printed,
+        cast(GENERATEFIXEDASSETCANDIDATES as boolean) as generate_fixed_asset_candidates,
+        cast(REMEASUREATCURRENT as boolean) as remeasure_at_current,
+        cast(TRANSLATEATCURRENT as boolean) as translate_at_current,
         
-        -- Usage type IDs
+        -- Usage Types
         AFEUSAGETYPEID as afe_usage_type_id,
         ALTERNATEREFERENCEUSAGETYPEID as alternate_reference_usage_type_id,
         ENTRYCLASSIFICATIONUSAGETYPEID as entry_classification_usage_type_id,
@@ -44,12 +47,11 @@ renamed as (
         MANUALENTRYUSAGETYPEID as manual_entry_usage_type_id,
         WELLUSAGETYPEID as well_usage_type_id,
         
-        -- Other fields
+        -- Additional Classifications
         LOCATIONGROUPINGID as location_grouping_id,
-        NID as n_id,
         LASTCHANGECODE as last_change_code,
         
-        -- Metadata and timestamps
+        -- Metadata and Audit Fields
         CREATEDATE as create_date,
         CREATEEVENTID as create_event_id,
         UPDATEDATE as update_date,
@@ -58,7 +60,7 @@ renamed as (
         RECORDUPDATEDATE as record_update_date,
         FLOW_PUBLISHED_AT as flow_published_at,
         
-        -- Full document JSON for reference
+        -- Raw JSON Document
         FLOW_DOCUMENT as flow_document
 
     from source
