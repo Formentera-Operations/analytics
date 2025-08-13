@@ -74,7 +74,7 @@ renamed as (
         
         -- Business identifiers
         unitidregulatory as "Regulatory ID",
-        unitidpa as "EID",
+        unitidpa as "Property EID",
         unitida as "API 10",
         unitidb as "Property Number",
         unitidc as "Combo Curve ID",
