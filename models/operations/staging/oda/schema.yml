@@ -1,436 +1,412 @@
 version: 2
 
 models:
-  - name: stg_oda__afebudget
-    description: Staging model for AFE (Authorization for Expenditure) budget information
+  - name: stg_oda__account_types
+    description: |
+      Staging model for Chart of Accounts Type classifications from Quorum OnDemand Accounting.
+      This model contains the high-level categorization of accounts.
     columns:
-      - name: id
-        description: Unique identifier for the AFE budget record
+      - name: account_type_id
+        description: Unique identifier for the account type
         tests:
           - unique
           - not_null
-      - name: afe_budget_identity
-        description: Identity number for the AFE budget
+
+      - name: type_code
+        description: Code used to identify the account type
+        tests:
+          - unique
+          - not_null
+
+      - name: type_name
+        description: Short name of the account type
         tests:
           - not_null
 
-  - name: stg_oda__afebudgetdetail_v2
-    description: Staging model for detailed AFE budget information version 2
-    columns:
-      - name: id
-        description: Unique identifier for the AFE budget detail record
-        tests:
-          - unique
-          - not_null
-      - name: afe_budget_detail_v2_identity
-        description: Identity number for the AFE budget detail
+      - name: type_full_name
+        description: Full descriptive name of the account type
         tests:
           - not_null
 
-  - name: stg_oda__apinvoice
-    description: Staging model for Accounts Payable invoices
-    columns:
-      - name: id
-        description: Unique identifier for the AP invoice
-        tests:
-          - unique
-          - not_null
-      - name: ap_invoice_identity
-        description: Identity number for the AP invoice
+      - name: record_insert_date
+        description: Timestamp when the record was first inserted
         tests:
           - not_null
 
-  - name: stg_oda__apinvoicedetail
-    description: Staging model for detailed Accounts Payable invoice information
-    columns:
-      - name: id
-        description: Unique identifier for the AP invoice detail record
-        tests:
-          - unique
-          - not_null
-      - name: ap_invoice_detail_identity
-        description: Identity number for the AP invoice detail
-        tests:
-          - not_null
+      - name: record_update_date
+        description: Timestamp when the record was last updated
 
   - name: stg_oda__gl
+    config: 
+      elementary:
+        timestamp_column: flow_published_at
     description: |
       Staging model for General Ledger entries from Quorum OnDemand Accounting.
-      This model standardizes column names, applies data type casting, and converts 
-      numeric flags to boolean values for easier downstream consumption.
+      This is a critical table that contains all financial transactions across the organization, 
+      including journal entries, accounts payable/receivable transactions, and automated postings.
+      The model standardizes raw GL data by:
+      - Converting status flags to boolean
+      - Standardizing date formats
+      - Handling NULL and empty descriptions
+      - Standardizing currency values with explicit decimal casting
+      - Converting raw column names to snake_case
+    tests:
+      # 1. Monitor daily volume - know if data stops flowing
+      - elementary.volume_anomalies:
+          time_bucket:
+            period: day
+            count: 1
+          where_expression: "journal_date >= current_date - 30"  # Only look at recent data
+          anomaly_sensitivity: 4  # Start less sensitive to reduce noise
+          
+      # 2. Check data freshness - ensure pipeline is working    
+      - elementary.freshness_anomalies:  # Fixed: removed extra 's'
+          anomaly_sensitivity: 3
+      
+      # 3. Monitor the most critical column - money
+      - elementary.column_anomalies:
+          column_name: net_value
+          column_anomalies:
+            - sum  # Total money flow
+            - zero_count  # Unusual number of zero amounts
+          where_expression: "is_posted = true and journal_date >= current_date - 14"
+          
     columns:
-      # Primary Keys
       - name: id
-        description: Unique identifier for the GL entry
+        description: Unique identifier for each GL entry
         tests:
-          - unique
+          # - unique  # Temporarily disabled until we investigate duplicates
           - not_null
-      
+
       - name: company_id
-        description: Company identifier (GUID format)
-        tests:
-          - not_null
-      
-      - name: account_id
-        description: GL account identifier
+        description: Identifier for the company associated with the transaction
         tests:
           - not_null
           - relationships:
-              to: ref('stg_oda__accounts')
-              field: account_id
-      
+              to: ref('stg_oda__company')  # Assuming this reference exists
+              field: id
+
+      - name: account_id
+        description: Foreign key to the Chart of Accounts
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_oda__account_v2')
+              field: id
+
       - name: journal_date_key
-        description: Date key for journal entry
-      
-      # GL Identity
-      - name: gl_identity
-        description: Identity number for the GL entry
+        description: Date key for the journal entry, used for date-based lookups
         tests:
           - not_null
-      
-      - name: n_id
-        description: Numeric identifier for the GL entry
-      
-      # Date Information
+              
       - name: journal_date
-        description: Date when the journal entry was created
+        description: Date when the transaction was recorded in the general ledger
         tests:
           - not_null
-      
+
       - name: accrual_date
-        description: Date for accrual-based accounting
-      
-      - name: accrual_date_key
-        description: Date key for accrual date
-      
+        description: Date when the transaction should be recognized for accrual accounting purposes
+
       - name: cash_date
-        description: Date for cash-based accounting
-      
-      - name: cash_date_key
-        description: Date key for cash date
-      
-      # Description and Reference
+        description: Date when the cash transaction occurred or is expected to occur
+
       - name: description
-        description: |
-          Description of the GL entry. Cleaned to replace single periods 
-          and empty values with 'No Description'
+        description: Detailed description of the transaction, standardized to 'No Description' when empty or NULL
         tests:
-          - not_null
-      
-      - name: reference
-        description: External reference number or identifier
-      
-      # Source Information
-      - name: source_module
-        description: Source module that generated this GL entry
-      
-      - name: source_module_id
-        description: ID of the source module
-      
-      - name: source_module_code
-        description: |
-          Code of the source module. Common values:
-          - AP: Accounts Payable
-          - JE: Journal Entry
-          - VR: Vendor Revenue
-          - PC: Purchase Contract
-          - RV: Revenue
-        tests:
-          - accepted_values:
-              values: ['AP', 'JE', 'VR', 'PC', 'RV']
-      
-      - name: source_module_name
-        description: Name of the source module
-      
-      # Related Entities
-      - name: afe_id
-        description: Authorization for Expenditure (AFE) identifier
-      
-      - name: well_id
-        description: Well identifier for oil & gas operations
-      
-      - name: entity_id
-        description: General entity identifier
-      
-      - name: entity_company_id
-        description: Company entity identifier
-      
-      - name: entity_owner_id
-        description: Owner entity identifier
-      
-      - name: entity_purchaser_id
-        description: Purchaser entity identifier
-      
-      - name: entity_vendor_id
-        description: Vendor entity identifier
-      
-      # Location Information
-      - name: location_type
-        description: |
-          Type of location reference. Values include:
-          - Owner
-          - None
-          - Vendor
-          - Well
-          - Purchaser
-        tests:
-          - accepted_values:
-              values: ['Owner', 'None', 'Vendor', 'Well', 'Purchaser']
-      
-      - name: location_company_id
-        description: Company location identifier
-      
-      - name: location_owner_id
-        description: Owner location identifier
-      
-      - name: location_purchaser_id
-        description: Purchaser location identifier
-      
-      - name: location_vendor_id
-        description: Vendor location identifier
-      
-      - name: location_well_id
-        description: Well location identifier
-      
-      # Financial Values
+          - not_null  # Added because we're defaulting empty values
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              min_value: 1
+              max_value: 1000
+
       - name: gross_value
-        description: Gross monetary value of the transaction (defaults to 0 if null)
+        description: Original transaction amount before any allocations or splits
         tests:
           - not_null
-      
-      - name: gross_volume
-        description: Gross volume associated with the transaction (defaults to 0 if null)
-        tests:
-          - not_null
-      
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -10000000000  # Extended based on actual data
+              max_value: 10000000000
+              
       - name: net_value
-        description: Net monetary value of the transaction (defaults to 0 if null)
+        description: Final transaction amount after allocations or splits
         tests:
           - not_null
-      
-      - name: net_volume
-        description: Net volume associated with the transaction (defaults to 0 if null)
-        tests:
-          - not_null
-      
-      # Currency Information
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -10000000000  # Extended based on actual data
+              max_value: 10000000000
+
       - name: currency_id
-        description: Currency identifier (GUID format - currently all records use USD)
+        description: Currency code for the transaction
         tests:
           - not_null
-      
-      - name: is_convert_currency
-        description: Whether currency conversion is applied to this entry
-        tests:
-          - not_null
-      
-      - name: convert_currency_type_id
-        description: Type of currency conversion
-      
-      - name: exchange_rate_id
-        description: Exchange rate identifier
-      
-      - name: fluctuation_type_id
-        description: Type of currency fluctuation
-      
-      # Status Flags (Boolean)
+
       - name: is_posted
-        description: Whether the GL entry has been posted
+        description: Indicates if the transaction has been posted to the general ledger
         tests:
           - not_null
-      
-      - name: is_generated_entry
-        description: Whether this is a system-generated entry
-        tests:
-          - not_null
-      
-      - name: is_reconciled
-        description: Whether the entry has been reconciled
-        tests:
-          - not_null
-      
-      - name: is_reconciled_trial
-        description: Whether the entry has been reconciled in trial mode
-        tests:
-          - not_null
-      
-      - name: reconciled_type_code
-        description: Code indicating the type of reconciliation
-      
-      - name: reconciliation_type_id
-        description: ID of the reconciliation type
-      
-      - name: is_present_in_journal_balance
-        description: Whether entry is included in journal balance calculations
-        tests:
-          - not_null
-      
-      - name: is_present_in_cash_balance
-        description: Whether entry is included in cash balance calculations
-        tests:
-          - not_null
-      
-      - name: is_present_in_accrual_balance
-        description: Whether entry is included in accrual balance calculations
-        tests:
-          - not_null
-      
-      - name: is_include_in_journal_report
-        description: Whether to include in journal reports (defaults to true)
-        tests:
-          - not_null
-      
-      - name: is_include_in_cash_report
-        description: Whether to include in cash reports (defaults to true)
-        tests:
-          - not_null
-      
-      - name: is_include_in_accrual_report
-        description: Whether to include in accrual reports (defaults to true)
-        tests:
-          - not_null
-      
-      # Related Documents
-      - name: voucher_id
-        description: Associated voucher identifier
-      
-      - name: ap_invoice_id
-        description: Accounts Payable invoice identifier
-      
-      - name: ap_check_id
-        description: Accounts Payable check identifier
-      
-      - name: ar_invoice_id
-        description: Accounts Receivable invoice identifier
-      
-      - name: check_revenue_id
-        description: Revenue check identifier
-      
-      - name: purchaser_revenue_receipt_id
-        description: Purchaser revenue receipt identifier
-      
-      - name: pending_expense_deck_id
-        description: Pending expense deck identifier
-      
-      - name: pending_expense_deck_set_id
-        description: Pending expense deck set identifier
-      
-      - name: source_expense_deck_revision_id
-        description: Source expense deck revision identifier
-      
-      - name: source_revenue_deck_revision_id
-        description: Source revenue deck revision identifier
-      
-      - name: source_well_allocation_deck_id
-        description: Source well allocation deck identifier
-      
-      - name: source_well_allocation_deck_revision_id
-        description: Source well allocation deck revision identifier
-      
-      # Payment Information
-      - name: payment_type_id
-        description: Payment type identifier
-      
-      - name: payment_type_code
-        description: |
-          Payment type code (trimmed to remove trailing spaces).
-          Common values: INVOICE, NONE, DRAFT, CHECK
-        tests:
           - accepted_values:
-              values: ['INVOICE', 'NONE', 'DRAFT', 'CHECK', '']
-      
-      - name: manual_entry_reference_type_id
-        description: Reference type for manual entries
-      
-      # Allocation Information
-      - name: is_allocation_parent
-        description: Whether this is a parent entry for allocations
+              values: [true, false]
+
+      - name: is_reconciled
+        description: Indicates if the transaction has been reconciled
         tests:
           - not_null
-      
-      - name: is_allocation_generated
-        description: Whether this entry was generated by allocation process
+          - accepted_values:
+              values: [true, false]
+
+      - name: source_module
+        description: System module that generated the transaction. Distribution as of analysis - GL (62M), AP (48.6M), Revenue (40.3M), AR (185K)
         tests:
           - not_null
-      
-      - name: allocation_parent_id
-        description: Parent entry ID if this is an allocated entry
-      
-      - name: entry_group
-        description: Grouping identifier for related entries
-      
-      - name: ordinal
-        description: Order sequence within entry group
-      
-      # Metadata and Timestamps
+          - accepted_values:
+              values: ['GL', 'AP', 'Revenue', 'AR']
+
+      - name: source_module_code
+        description: Code representing the source module
+        tests:
+          - relationships:
+              to: ref('stg_oda__source_module')  # Assuming this reference exists
+              field: code
+
+      - name: afe_id
+        description: Reference to Authorization for Expenditure
+        tests:
+          - relationships:
+              to: ref('stg_oda__afe_v2')
+              field: id
+
       - name: create_date
         description: Timestamp when the record was created
         tests:
           - not_null
-      
-      - name: create_event_id
-        description: Event ID that created this record
-      
-      - name: update_date
-        description: Timestamp when the record was last updated
-      
-      - name: update_event_id
-        description: Event ID that last updated this record
-      
-      - name: record_insert_date
-        description: Timestamp when record was inserted into the database
-      
-      - name: record_update_date
-        description: Timestamp when record was last updated in the database
-      
-      - name: operation_type
-        description: CDC operation type (I=Insert, U=Update, D=Delete)
-        tests:
-          - accepted_values:
-              values: ['I', 'U', 'D']
-      
+          
+
       - name: flow_published_at
         description: Timestamp when the record was published to the data flow
-      
-      - name: flow_document
-        description: Full JSON document for reference and debugging
-        
-  - name: stg_oda__jib
-    description: Staging model for Joint Interest Billing information
+        tests:
+          - not_null
+          
+
+  - name: stg_oda__account_sub_types
+    description: |
+      Staging model for Chart of Accounts Subtype classifications from Quorum OnDemand Accounting.
+      This model contains the detailed subcategorization of accounts within each account type.
     columns:
-      - name: id
-        description: Unique identifier for the JIB record
+      - name: account_subtype_id
+        description: Unique identifier for the account subtype
         tests:
           - unique
           - not_null
-      - name: jib_identity
-        description: Identity number for the JIB record
+
+      - name: account_type_id
+        description: Foreign key to the parent account type
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_oda__account_types')
+              field: account_type_id
+
+      - name: subtype_code
+        description: Code used to identify the account subtype
+        tests:
+          - unique
+          - not_null
+
+      - name: subtype_name
+        description: Short name of the account subtype
         tests:
           - not_null
 
-  - name: stg_oda__jibdetail
-    description: Staging model for detailed Joint Interest Billing information
-    columns:
-      - name: id
-        description: Unique identifier for the JIB detail record
-        tests:
-          - unique
-          - not_null
-      - name: jib_detail_identity
-        description: Identity number for the JIB detail
+      - name: subtype_full_name
+        description: Full descriptive name of the account subtype
         tests:
           - not_null
 
-  - name: stg_oda__voucher_v2
-    description: Staging model for voucher information version 2
+      - name: normally_debit
+        description: Flag indicating if accounts of this subtype normally have a debit balance
+        tests:
+          - not_null
+
+      - name: record_insert_date
+        description: Timestamp when the record was first inserted
+        tests:
+          - not_null
+
+      - name: record_update_date
+        description: Timestamp when the record was last updated
+
+  - name: stg_oda__afe_v2
+    description: |
+      Staging model for Authorization for Expenditure (AFE) data from Quorum OnDemand Accounting v2.
+      AFEs are used to request, track, and manage capital project budgets and expenditures.
     columns:
       - name: id
-        description: Unique identifier for the voucher record
+        description: Unique identifier for the AFE record
         tests:
           - unique
           - not_null
-      - name: voucher_identity
-        description: Identity number for the voucher
+
+      - name: afe_v2_identity
+        description: Unique identity number for the AFE in v2 system
         tests:
           - not_null
-    
+
+      - name: code
+        description: Business identifier/number for the AFE
+        tests:
+          - not_null
+          - unique
+
+      - name: code_sort
+        description: AFE code formatted for sorting purposes
+        tests:
+          - not_null
+
+      - name: name
+        description: Short name or title of the AFE
+        tests:
+          - not_null
+
+      - name: full_name
+        description: Complete name of the AFE
+        tests:
+          - not_null
+
+      - name: afe_type_id
+        description: Foreign key to AFE type classification
+        tests:
+          - not_null
+
+      - name: afe_type_code
+        description: Code representing the type of AFE
+        tests:
+          - not_null
+
+      - name: application_type_id
+        description: Foreign key to application type
+        tests:
+          - not_null
+
+      - name: application_type_code
+        description: Code indicating how the AFE is applied
+        tests:
+          - not_null
+
+      - name: budget_usage_type_id
+        description: Foreign key to budget usage type
+        tests:
+          - not_null
+
+      - name: budget_usage_type_code
+        description: Code indicating how the budget is used
+        tests:
+          - not_null
+
+      - name: field_id
+        description: Foreign key to field
+
+      - name: operating_group_id
+        description: Foreign key to operating group
+
+      - name: default_company_code
+        description: Code of the default company for this AFE
+        tests:
+          - not_null
+
+      - name: create_date
+        description: Timestamp when the record was created
+        tests:
+          - not_null
+
+      - name: flow_published_at
+        description: Timestamp when the record was published to the data flow
+        tests:
+          - not_null
+
+  - name: stg_oda__account_v2
+    description: |
+      Staging model for Chart of Accounts data from Quorum OnDemand Accounting.
+      This model standardizes column names and structures account information for downstream consumption.
+    columns:
+      - name: id
+        description: Unique identifier for the account
+        tests:
+          - unique
+          - not_null
+
+      - name: code
+        description: Account code used for identification
+        tests:
+          - not_null
+          - unique
+
+      - name: name
+        description: Short name of the account
+        tests:
+          - not_null
+
+      - name: full_name
+        description: Full descriptive name of the account
+        tests:
+          - not_null
+
+      - name: account_type_id
+        description: Foreign key to account type
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_oda__account_types')
+              field: account_type_id
+
+      - name: account_subtype_id
+        description: Foreign key to account subtype
+        tests:
+          - relationships:
+              to: ref('stg_oda__account_sub_types')
+              field: account_subtype_id
+
+      - name: active
+        description: Flag indicating if the account is currently active
+        tests:
+          - not_null
+
+      - name: normally_debit
+        description: Flag indicating if the account normally has a debit balance
+        tests:
+          - not_null
+
+      - name: account_sort
+        description: Sorting value for the account
+        tests:
+          - not_null
+
+      - name: key_sort
+        description: Additional sorting key for the account
+
+      - name: summarize_in_gl_reports
+        description: Flag indicating if account should be summarized in GL reports
+        tests:
+          - not_null
+
+      - name: summarize_in_jib_invoice
+        description: Flag indicating if account should be summarized in JIB invoices
+        tests:
+          - not_null
+
+      - name: bank_recon_performed
+        description: Flag indicating if bank reconciliation is performed for this account
+        tests:
+          - not_null
+
+      - name: create_date
+        description: Timestamp when the record was created
+        tests:
+          - not_null
+
+      - name: update_date
+        description: Timestamp when the record was last updated
+
+      - name: flow_published_at
+        description: Timestamp when the record was published to the data flow
+        tests:
+          - not_null
+

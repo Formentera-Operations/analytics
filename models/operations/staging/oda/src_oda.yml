@@ -10,6 +10,31 @@ sources:
       - name: APINVOICE
       - name: APINVOICEDETAIL
       - name: GL
+        description: |
+          Raw general ledger entries from Quorum OnDemand Accounting system containing all financial transactions.
+          This table is the source of truth for all financial transactions and includes:
+          - Journal entries
+          - Accounts payable/receivable transactions
+          - Automated postings
+          - Accrual and cash-basis accounting entries
+        columns:
+          - name: ID
+            description: Unique identifier for each GL entry
+            tests:
+              - unique
+              - not_null
+          - name: COMPANYID
+            description: Identifier for the company associated with the transaction
+          - name: ACCOUNTID
+            description: Foreign key to the Chart of Accounts
+          - name: JOURNALDATE
+            description: Date when the transaction was recorded in the general ledger
+          - name: GROSSVALUE
+            description: Original transaction amount before allocations
+          - name: NETVALUE
+            description: Final transaction amount after allocations
+          - name: POSTED
+            description: Flag indicating if the transaction is posted (1=yes, 0=no)
       - name: JIB
       - name: JIBDETAIL
       - name: VOUCHER_V2
@@ -20,6 +45,20 @@ sources:
       - name: ODA_BATCH_ODA_COMPANY_V2
       - name: ODA_BATCH_ODA_ACCOUNT
       - name: ODA_BATCH_ODA_ACCOUNT_V2
+        description: Source table containing Chart of Accounts data from Quorum OnDemand Accounting
+        columns:
+          - name: ID
+            description: Unique identifier for the account
+          - name: CODE
+            description: Account code used for identification
+          - name: NAME
+            description: Short name of the account
+          - name: FULLNAME
+            description: Full descriptive name of the account
+          - name: ACCOUNTTYPEID
+            description: Foreign key to account type
+          - name: ACCOUNTSUBTYPEID
+            description: Foreign key to account subtype
       - name: ODA_BATCH_ODA_ACCOUNTTYPE
       - name: ODA_BATCH_ODA_ACCOUNTSUBTYPE
       - name: ODA_BATCH_ODA_VENDOR_V2
