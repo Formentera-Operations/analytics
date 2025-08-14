@@ -50,7 +50,7 @@ source AS (
         ,a."Change In Inventory Water bbl"
         ,p."Choke Size 64ths"
         ,a."Closing Inventory Gas Equiv Oil Condensate mcf"
-        ,a."Closing Inventory Oil Condensate bbl"  --weeklyOpsReportv2025 calls this Tank INV.
+        ,a."Closing Inventory Oil Condensate bbl" as "Tank Oil INV."
         ,a."Closing Inventory Sand bbl"
         ,a."Closing Inventory Water bbl"
         ,a."Created At (UTC)"
@@ -79,8 +79,8 @@ source AS (
         ,a."Disposed Allocated Injected Gas mcf"
         ,a."Disposed Allocated Injected Water bbl"
         ,a."Disposed Allocated Sales Condensate bbl"
-        ,a."Disposed Allocated Sales Gas mcf"   --WeeklyOpsReportv2025 calls this "Gross Allocated Sales Gas"
-        ,a."Disposed Allocated Sales Hcliq bbl" --WeeklyOpsReportv2025 calls this "Gross Allocated Sales Oil"
+        ,a."Disposed Allocated Sales Gas mcf" as "Gross Allocated Sales Gas"
+        ,a."Disposed Allocated Sales Hcliq bbl" as "Gross Allocated Sales Oil"
         ,a."Disposed Allocated Sales Ngl bbl"
         ,a."Disposed Allocated Sales Oil bbl"
         ,a."Disposed Allocated Vent Gas mcf"
@@ -94,6 +94,7 @@ source AS (
         ,a."Gathered HCLiq bbl"
         ,a."Gathered Sand bbl"
         ,a."Gathered Water bbl"
+        ,a."New Production Hcliq Gas Equivalent mcf" + (a."New Production Gas mcf"/6) as "Gross Allocated BOE"
         ,p."H2s Daily Reading ppm"
         ,a."Injected Lift Gas bbl"
         ,a."Injected Load Oil Condensate bbl"
@@ -117,14 +118,17 @@ source AS (
         ,a."Last Pump Entry Table"
         ,a."Last Test Record ID"
         ,p."Line Pressure psi"
+        ,(a."Disposed Allocated Sales Gas mcf" * a."Net Revenue Interest Gas pct") / 100 as "Net Gas Sales"
+        ,(a."New Production Hcliq Gas Equivalent mcf" * a."Net Revenue Interest Oil Cond pct") / 100 as "Net Oil Prod"
         ,a."Net Revenue Interest Gas pct"
         ,a."Net Revenue Interest Oil Cond pct"
         ,a."Net Revenue Interest Sand pct"
         ,a."Net Revenue Interest Water pct"
+
         ,a."New Production Condensate bbl"
-        ,a."New Production Gas mcf" -- WeeklyOpsReportv2025 calls this "Gross Allocated WH New Gas"
+        ,a."New Production Gas mcf" as "Gross Allocated WH New Gas"
         ,a."New Production HCLiq bbl"
-        ,a."New Production Hcliq Gas Equivalent mcf" -- WeeklyOpsReportv2025 calls this "Gross Allocated WH Oil"
+        ,a."New Production Hcliq Gas Equivalent mcf" as "Gross Allocated WH Oil"
         ,a."New Production Ngl bbl"
         ,a."New Production Oil bbl"
         ,a."New Production Sand bbl"
@@ -257,5 +261,7 @@ source AS (
         ON a."Status Record ID" = s."Status Record ID"
 )
 
-SELECT *
+SELECT 
+    *
+    ,("Net Oil Prod" + ("Net Gas Sales"/6)) as "Net 2-Stream Sales BOE"
 FROM source
