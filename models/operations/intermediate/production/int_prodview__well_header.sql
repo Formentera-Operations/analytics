@@ -43,6 +43,7 @@ select
     r."Foreman",
     r."Primary Lease Operator",
     r."Route Name",
+    r."Route Record ID",
 
     -- Unit information
     u."API 10",
