@@ -17,7 +17,19 @@ unit as (
 )
 
 Select
-       r.*
-    FROM unitroute r 
-        LEFT JOIN unit u 
-        ON u."Route Record ID"= r."Route Record ID"
+    r."Backup Lease Operator"
+    ,r."Created By"
+    ,r."Created Date (UTC)"
+    ,r."Flow Net ID"
+    ,r."Foreman"
+    ,r."Last Mod By"
+    ,r."Last Mod Date (UTC)"
+    ,r."NOTES"
+    ,r."Primary Lease Operator"
+    ,r."Route Name" as "Route"
+    ,r."Route Name Clean" as "Route Name"
+    ,r."Route Parent Record ID"
+    ,r."Route Record ID"
+FROM unitroute r 
+    LEFT JOIN unit u 
+    ON u."Route Record ID"= r."Route Record ID"
