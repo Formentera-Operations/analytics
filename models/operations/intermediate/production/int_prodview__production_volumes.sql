@@ -124,7 +124,6 @@ source AS (
         ,a."Net Revenue Interest Oil Cond pct"
         ,a."Net Revenue Interest Sand pct"
         ,a."Net Revenue Interest Water pct"
-
         ,a."New Production Condensate bbl"
         ,a."New Production Gas mcf" as "Gross Allocated WH New Gas"
         ,a."New Production HCLiq bbl"
@@ -140,6 +139,7 @@ source AS (
         ,a."Operating Time Hours"
         ,p."PH Level"
         ,a."Allocation Date" as "Prod Date"
+        ,s."Status Record ID"
         ,s."Status" as "Prod Status"
         ,a."Pump Efficiency pct"
         ,a."Recovered Lift Gas mcf"

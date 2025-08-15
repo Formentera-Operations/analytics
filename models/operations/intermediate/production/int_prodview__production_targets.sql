@@ -24,7 +24,7 @@ source AS (
         ,i."Is Use in Diff from Target Calculations"
         ,t."Last Mod At (UTC)"
         ,t."Last Mod By"
-        ,t."Target Daily Date"
+        ,t."Target Daily Date" as "Prod Date"
         --,t."Target Record ID"
         ,t."Target Daily Record ID"
         ,t."Target Daily Rate Condensate bbl per Day"
@@ -45,5 +45,6 @@ source AS (
  
 )
 
-select * from source
-order by "Target Daily Date" Desc
+select  *
+ from source
+--order by "Prod Date" Desc
