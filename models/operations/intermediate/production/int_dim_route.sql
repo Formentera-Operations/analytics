@@ -1,6 +1,6 @@
 {{ config(
     enable= true,
-    materialized='table'
+    materialized='view'
 ) }}
 
 WITH unitroute as (
