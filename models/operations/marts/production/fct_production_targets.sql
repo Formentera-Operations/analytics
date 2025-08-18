@@ -13,7 +13,7 @@ WITH prodtarget as (
         --,"Is Use in Diff from Target Calculations"
         --,"Last Mod At (UTC)"
         --,"Last Mod By"
-        ,"Target Daily Date" as "Prod Date"
+        ,"Prod Date"
         ,YEAR("Target Daily Date") as "Budget Year"
         --,"Target Daily Record ID"
         --,"Target Daily Rate Condensate bbl per Day"
