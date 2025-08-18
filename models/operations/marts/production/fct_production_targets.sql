@@ -14,7 +14,7 @@ WITH prodtarget as (
         --,"Last Mod At (UTC)"
         --,"Last Mod By"
         ,"Prod Date"
-        ,YEAR("Target Daily Date") as "Budget Year"
+        ,YEAR("Prod Date") as "Budget Year"
         --,"Target Daily Record ID"
         --,"Target Daily Rate Condensate bbl per Day"
         ,("Target Daily Rate Hcliq bbl per Day" + ("Target Daily Rate Gas mcf per Day"/6)) as "Budget - Gross BOE"
