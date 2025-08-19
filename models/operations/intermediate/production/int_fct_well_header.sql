@@ -66,6 +66,7 @@ tbl as (
         ,w."System Lock Date"
         ,p."Unit Record ID"
         ,p."Unit Type"
+        ,p."Cost Center" as "Well Code"
         ,w."Well ID"
         ,w."Well Name"
     from prodview p

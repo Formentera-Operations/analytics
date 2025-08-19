@@ -1,4 +1,5 @@
 {{ config(
+    enable=false
     materialized='table',
     tags=['marts', 'facts', 'jobs', 'performance']
 ) }}
