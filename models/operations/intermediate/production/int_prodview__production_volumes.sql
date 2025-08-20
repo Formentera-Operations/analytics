@@ -94,7 +94,7 @@ source AS (
         ,a."Gathered HCLiq bbl"
         ,a."Gathered Sand bbl"
         ,a."Gathered Water bbl"
-        ,a."New Production Hcliq Gas Equivalent mcf" + (a."New Production Gas mcf"/6) as "Gross Allocated BOE"
+        ,COALESCE(a."New Production Hcliq Gas Equivalent mcf", 0 ) + (COALESCE(a."New Production Gas mcf", 0)/ 6) as "Gross Allocated BOE"
         ,p."H2s Daily Reading ppm"
         ,a."Injected Lift Gas bbl"
         ,a."Injected Load Oil Condensate bbl"
@@ -263,5 +263,5 @@ source AS (
 
 SELECT 
     *
-    ,("Net Oil Prod" + ("Net Gas Sales"/6)) as "Net 2-Stream Sales BOE"
+    ,COALESCE("Net Oil Prod", 0) + (COALESCE("Net Gas Sales", 0)/6) as "Net 2-Stream Sales BOE"
 FROM source
