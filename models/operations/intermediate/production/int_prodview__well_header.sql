@@ -43,6 +43,7 @@ select
     r."Foreman",
     r."Primary Lease Operator",
     r."Route Name",
+    r."Route Record ID",
 
     -- Unit information
     u."API 10",
@@ -62,7 +63,6 @@ select
     u."DSU",
     u."District",
     u."District Office",
-    u."EID",
     u."Electric Acct. No.",
     u."Electric Allocation Meter Number",
     u."Electric Meter ID",
@@ -92,6 +92,7 @@ select
     u."Operator",
     u."Pad Name",
     u."Producing Method",
+    u."Property EID",
     u."Property Number",
     u."Regulatory Field Name",
     u."Regulatory ID",
