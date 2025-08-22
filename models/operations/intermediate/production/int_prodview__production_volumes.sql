@@ -119,7 +119,7 @@ source AS (
         ,a."Last Test Record ID"
         ,p."Line Pressure psi"
         ,(a."Disposed Allocated Sales Gas mcf" * a."Net Revenue Interest Gas pct") / 100 as "Net Gas Sales"
-        ,(a."New Production Hcliq Gas Equivalent mcf" * a."Net Revenue Interest Oil Cond pct") / 100 as "Net Oil Prod"
+        ,(a."New Production HCLiq bbl" * a."Net Revenue Interest Oil Cond pct") / 100 as "Net Oil Prod"
         ,a."Net Revenue Interest Gas pct"
         ,a."Net Revenue Interest Oil Cond pct"
         ,a."Net Revenue Interest Sand pct"
