@@ -15,24 +15,23 @@ wellview as (
     from {{ ref('int_wellview__well_header') }}
 ),
 
-/*company as (
+company as (
     Select *
     from {{ ref('dim_companies') }} c
-    left join from {{ ref('dim_wells') }} w
-    on c.company_id = 
-)
-*/
+),
+
 tbl as (
     Select
         w."Abandon Date"
         ,p."API 10"
-        --,c.company_code as "Asset Company Code"
-        --,c.company_name as "Asset Company Name"
-        ,case
+        /*,case
             when p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
             when w."Asset Company" is null and not p."AssetCo" is null then p."AssetCo"
             else p."AssetCo"
-        end as "Asset Company"
+        end as "Asset Company"*/
+        ,c.company_code as "Asset company Code"
+        ,c.company_name as "Asset Company"
+        ,c.company_full_name as "Asset Company full Name"
         --,w."Asset Company"
         --,p."AssetCo"
         ,p."District" AS "Business Unit"
@@ -81,6 +80,8 @@ tbl as (
     from prodview p
     left join wellview w 
     on p."WellView Well ID" = w."Well ID"
+    left join company c
+    on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
 )
 
 select*
