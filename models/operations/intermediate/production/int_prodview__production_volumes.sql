@@ -94,7 +94,7 @@ source AS (
         ,a."Gathered HCLiq bbl"
         ,a."Gathered Sand bbl"
         ,a."Gathered Water bbl"
-        ,a."New Production Hcliq Gas Equivalent mcf" + (a."New Production Gas mcf"/6) as "Gross Allocated BOE"
+        ,COALESCE(a."New Production HCLiq bbl", 0 ) + (COALESCE(a."New Production Gas mcf", 0)/ 6) as "Gross Allocated BOE"
         ,p."H2s Daily Reading ppm"
         ,a."Injected Lift Gas bbl"
         ,a."Injected Load Oil Condensate bbl"
@@ -119,15 +119,15 @@ source AS (
         ,a."Last Test Record ID"
         ,p."Line Pressure psi"
         ,(a."Disposed Allocated Sales Gas mcf" * a."Net Revenue Interest Gas pct") / 100 as "Net Gas Sales"
-        ,(a."New Production Hcliq Gas Equivalent mcf" * a."Net Revenue Interest Oil Cond pct") / 100 as "Net Oil Prod"
+        ,(a."New Production HCLiq bbl" * a."Net Revenue Interest Oil Cond pct") / 100 as "Net Oil Prod"
         ,a."Net Revenue Interest Gas pct"
         ,a."Net Revenue Interest Oil Cond pct"
         ,a."Net Revenue Interest Sand pct"
         ,a."Net Revenue Interest Water pct"
         ,a."New Production Condensate bbl"
         ,a."New Production Gas mcf" as "Gross Allocated WH New Gas"
-        ,a."New Production HCLiq bbl"
-        ,a."New Production Hcliq Gas Equivalent mcf" as "Gross Allocated WH Oil"
+        ,a."New Production HCLiq bbl" as "Gross Allocated WH Oil"
+        ,a."New Production Hcliq Gas Equivalent mcf"
         ,a."New Production Ngl bbl"
         ,a."New Production Oil bbl"
         ,a."New Production Sand bbl"
@@ -263,5 +263,5 @@ source AS (
 
 SELECT 
     *
-    ,("Net Oil Prod" + ("Net Gas Sales"/6)) as "Net 2-Stream Sales BOE"
+    ,COALESCE("Net Oil Prod", 0) + (COALESCE("Net Gas Sales", 0)/6) as "Net 2-Stream Sales BOE"
 FROM source
