@@ -65,7 +65,17 @@ tbl as (
         --,w."First Sales Date"
         --,p."First Sale Date"
         ,p."Foreman Area"
-        ,p."Is Operated"
+        ,case
+            when p."Operator" like 'Fromentera%' then 1
+            when w."Operator Name" like 'Fromentera%' then 1
+            when p."Is Operated" is null then 0
+            else p."Is Operated"
+        end as "Is Operated"
+        ,p."Is Operated" as "PV Is Operated"
+       /* ,p."Operated Descriptor" as "PV Operated Descriptor"
+        ,w."Operated Descriptor" as "WV Operated Descriptor"
+        ,p."Operator" as "PV Operator"
+        ,w."Operator Name" as "WV Operator"*/
         ,w."Last Approved MIT Date"
         ,w."Last Mod At (UTC)"
         ,w."Last Write To Database"
@@ -103,5 +113,14 @@ tbl as (
     on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
 )
 
-select*
+select 
+    *
+    /*"Is Operated"
+    ,"PV Is Operated"
+    ,"PV Operated Descriptor"
+    ,"WV Operated Descriptor"
+    ,"PV Operator"
+    ,"WV Operator"
+    ,COUNT("Is Operated")*/
 from tbl
+--group by 1,2,3,4,5,6
