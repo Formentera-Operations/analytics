@@ -24,15 +24,34 @@ tbl as (
     Select
         w."Abandon Date"
         ,p."API 10"
-        /*,case
-            when p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
-            when w."Asset Company" is null and not p."AssetCo" is null then p."AssetCo"
-            else p."AssetCo"
-        end as "Asset Company"*/
+        ,case
+            when c.company_name is null then 
+                (case
+                    when lower(p."AssetCo") = 'fp south texas' then 'Formentera South Texas, LP'
+                    when lower(p."AssetCo") = 'fp balboa la' then 'FP Balboa LA LLC'
+                    when lower(p."AssetCo") = 'fp balboa ms' then 'FP Balboa MS LLC'
+                    when lower(p."AssetCo") = 'fp balboa nd' then 'FP Balboa ND LLC'
+                    when lower(p."AssetCo") = 'fp divide' then 'FP Divide LLC'
+                    when lower(p."AssetCo") = 'fp drake' then 'FP Drake LLC'
+                    when lower(p."AssetCo") = 'fp goldsmith' then 'FP Goldsmith LP'
+                    when lower(p."AssetCo") = 'fp lariat' then 'FP Lariat, LLC'
+                    when lower(p."AssetCo") = 'fp maverick' then 'FP Maverick LP'
+                    when lower(p."AssetCo") = 'fp meramec' then 'FP Meramec LLC'
+                    when lower(p."AssetCo") = 'fp overlook' then 'FP Overlook LLC'
+                    when lower(p."AssetCo") = 'fp pronghorn' then 'FP Pronghorn LLC'
+                    when lower(p."AssetCo") = 'fp wheeler' then 'FP Wheeler Upstream LLC'
+                    when lower(p."AssetCo") = 'fp wheeler midstream' then 'FP Wheeler Upstream LLC'
+                    when lower(p."AssetCo") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
+                    when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
+                    else c.company_name end)
+            when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
+            when c.company_name is null and w."Asset Company" is null and not p."AssetCo" is null then CONCAT(SPLIT_PART(p."AssetCo", ' ', 1), ' ', INITCAP(SPLIT_PART(p."AssetCo", ' ', 2)), ' ', SPLIT_PART(p."AssetCo", ' ', 3))
+            else c.company_name
+        end as "Asset Company clean"
         ,c.company_code as "Asset company Code"
         ,c.company_name as "Asset Company"
         ,c.company_full_name as "Asset Company full Name"
-        --,w."Asset Company"
+        --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
         ,p."District" AS "Business Unit"
         --,w."District"
