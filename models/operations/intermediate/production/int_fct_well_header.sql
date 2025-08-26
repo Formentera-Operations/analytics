@@ -47,9 +47,9 @@ tbl as (
             when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
             when c.company_name is null and w."Asset Company" is null and not p."AssetCo" is null then CONCAT(SPLIT_PART(p."AssetCo", ' ', 1), ' ', INITCAP(SPLIT_PART(p."AssetCo", ' ', 2)), ' ', SPLIT_PART(p."AssetCo", ' ', 3))
             else c.company_name
-        end as "Asset Company clean"
+        end as "Asset Company"
         ,c.company_code as "Asset company Code"
-        ,c.company_name as "Asset Company"
+        --,c.company_name as "Asset Company"
         ,c.company_full_name as "Asset Company full Name"
         --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
