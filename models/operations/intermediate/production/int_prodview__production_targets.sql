@@ -26,7 +26,7 @@ source AS (
         ,t."Last Mod By"
         ,t."Target Daily Date" as "Prod Date"
         --,t."Target Record ID"
-        ,t."Target Daily Record ID"
+        --,t."Target Daily Record ID"
         ,t."Target Daily Rate Condensate bbl per Day"
         ,t."Target Daily Rate Gas mcf per Day"
         ,t."Target Daily Rate Hcliq bbl per Day"
@@ -34,14 +34,15 @@ source AS (
         ,t."Target Daily Rate Oil bbl per Day"
         ,t."Target Daily Rate Sand bbl per Day"
         ,t."Target Daily Rate Water bbl per Day"
-        ,i."Unit Record ID"
+        ,t."Target Daily Record ID"
         ,i."Target Record ID"
-        ,i."Target Start Date"
         ,i."Target Type"
+        ,i."Unit Record ID"
+        ,i."Target Start Date"
     FROM targetdaily t
     LEFT JOIN targetintegration i
     ON t."Target Record ID" = i."Target Record ID"
-       where not i."Target Record ID" is null
+       --where not i."Target Record ID" is null
  
 )
 
