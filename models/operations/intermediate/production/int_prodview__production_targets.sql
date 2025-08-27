@@ -7,12 +7,12 @@
 
 WITH targetdaily AS (
     SELECT*
-    FROM {{ ref('stg_prodview_production_targets_daily') }}
+    FROM {{ ref('stg_prodview__production_targets_daily') }}
 ),
 
 targetintegration AS (
     SELECT*
-    FROM {{ ref('stg_prodview_production_targets') }}
+    FROM {{ ref('stg_prodview__production_targets') }}
 ),
 
 source AS (
