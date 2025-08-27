@@ -131,6 +131,7 @@ select
     c."Completion License Date",
     c."Completion Licensee",
     c."Completion Name",
+    c."Completion Record ID",
     --c."Cost Center",
     c."Create Date (UTC)" AS "Completion Create Date (UTC)",
     c."Created By" AS "Completion Created by",

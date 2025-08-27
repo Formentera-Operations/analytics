@@ -12,7 +12,7 @@ renamed as (
     select
         -- Primary identifiers
         idrec as "Target Record ID",
-        idrecparent as "Unit Record ID",
+        idrecparent as "Parent Target Record ID",
         idflownet as "Flow Net ID",
         
         -- Date/Time information
