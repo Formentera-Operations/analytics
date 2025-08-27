@@ -129,7 +129,6 @@ tbl as (
         ,CAST(w."Spud Date" AS date) as "Spud Date"
         --,p."Spud Date"
         ,w."System Lock Date"
-        ,p."Unit Name"
         ,p."Unit Record ID"
         ,p."Unit Type"
         ,p."Cost Center" as "Well Code"
