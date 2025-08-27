@@ -1,10 +1,11 @@
 {{ config(
+    enable = false,
     materialized='view',
     tags=['prodview', 'completions', 'targets', 'daily', 'staging']
 ) }}
 
 with source_data as (
-    select * from {{ source('prodview', 'PVT_PVUNITCOMPTARGET') }}
+    select * from {{ source('prodview', 'PVT_PVFLOWNETHEADER') }}
     where _fivetran_deleted = false
 ),
 
@@ -12,7 +13,7 @@ renamed as (
     select
         -- Primary identifiers
         idrec as "Target Record ID",
-        idrecparent as "Unit Record ID",
+        idrecparent as "Parent Target Record ID",
         idflownet as "Flow Net ID",
         
         -- Date/Time information
