@@ -45,17 +45,37 @@ tbl as (
                     when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
                     else c.company_name end)
             when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
-            when c.company_name is null and w."Asset Company" is null and not p."AssetCo" is null then CONCAT(SPLIT_PART(p."AssetCo", ' ', 1), ' ', INITCAP(SPLIT_PART(p."AssetCo", ' ', 2)), ' ', SPLIT_PART(p."AssetCo", ' ', 3))
             else c.company_name
         end as "Asset Company"
-        ,c.company_code as "Asset company Code"
+        ,case
+            when c.company_code is null then 
+                (case
+                    when lower(p."AssetCo") = 'fp south texas' then 810
+                    when lower(p."AssetCo") = 'fp balboa la' then 707
+                    when lower(p."AssetCo") = 'fp balboa ms' then 708
+                    when lower(p."AssetCo") = 'fp balboa nd' then 709
+                    when lower(p."AssetCo") = 'fp divide' then 701
+                    when lower(p."AssetCo") = 'fp drake' then 813
+                    when lower(p."AssetCo") = 'fp goldsmith' then 807
+                    when lower(p."AssetCo") = 'fp lariat' then 811
+                    when lower(p."AssetCo") = 'fp maverick' then 703
+                    when lower(p."AssetCo") = 'fp meramec' then 804
+                    when lower(p."AssetCo") = 'fp overlook' then 800
+                    when lower(p."AssetCo") = 'fp pronghorn' then 809
+                    when lower(p."AssetCo") = 'fp wheeler' then 300
+                    when lower(p."AssetCo") = 'fp wheeler midstream' then 300
+                    when lower(p."AssetCo") = 'fp wheeler upstream' then 300
+                    when lower(p."AssetCo") = 'snyder drillco' then 500
+                    else c.company_name end)
+            else c.company_code end
+        as "Asset company Code"
         --,c.company_name as "Asset Company"
         ,c.company_full_name as "Asset Company full Name"
         --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
         ,p."District" AS "Business Unit"
         --,w."District"
-        ,w."Created At (UTC)"
+        ,p."Unit Create Date (UTC)"
         ,CAST(w."On Production Date" AS date) AS "First Prod Date"
         ,case
             when p."First Sale Date" is null and not w."First Sales Date" is null then CAST(w."First Sales Date" AS date)
@@ -76,9 +96,17 @@ tbl as (
         ,w."Operated Descriptor" as "WV Operated Descriptor"
         ,p."Operator" as "PV Operator"
         ,w."Operator Name" as "WV Operator"*/
+        ,greatest(
+            coalesce(p."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
+            coalesce(w."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z')
+            ) as "Last Mod Date (UTC)"
         ,w."Last Approved MIT Date"
-        ,w."Last Mod At (UTC)"
         ,w."Last Write To Database"
+        ,w."Lat/Long Datum"
+        ,w."Latitude Degrees"
+        ,w."Longitude Degrees"
+        ,w."UTM Easting Meters"
+        ,w."UTM Northing Meters"
         ,w."Master Lock Date"
         ,cast(w."Ops Effective Date" as date) as "Ops Effective Date"
         ,w."Permit Date"
@@ -101,26 +129,32 @@ tbl as (
         ,CAST(w."Spud Date" AS date) as "Spud Date"
         --,p."Spud Date"
         ,w."System Lock Date"
+        ,p."Unit Name"
         ,p."Unit Record ID"
         ,p."Unit Type"
         ,p."Cost Center" as "Well Code"
         ,w."Well ID"
         ,w."Well Name"
+        ,p."Legal Well Name" as "Well Name Legal"
     from prodview p
     left join wellview w 
     on p."WellView Well ID" = w."Well ID"
     left join company c
-    on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
+    on p."Company Code" = c.company_code
+    --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
+),
+
+ranked AS (
+    SELECT
+        t.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY "Unit Record ID"
+            ORDER BY "Last Mod Date (UTC)" DESC
+        ) AS rn
+    FROM tbl t
 )
 
-select 
-    *
-    /*"Is Operated"
-    ,"PV Is Operated"
-    ,"PV Operated Descriptor"
-    ,"WV Operated Descriptor"
-    ,"PV Operator"
-    ,"WV Operator"
-    ,COUNT("Is Operated")*/
-from tbl
---group by 1,2,3,4,5,6
+SELECT *
+FROM ranked
+WHERE rn = 1
+--order by rn desc
