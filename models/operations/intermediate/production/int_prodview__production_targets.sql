@@ -10,18 +10,23 @@ WITH targetdaily AS (
     FROM {{ ref('stg_prodview__production_targets_daily') }}
 ),
 
-targetintegration AS (
+parenttarget AS (
     SELECT*
     FROM {{ ref('stg_prodview__production_targets') }}
 ),
 
+header AS (
+    SELECT*
+    FROM {{ ref('int_prodview__well_header') }}
+),
+
 source AS (
     SELECT
-         i."CC Forecast Name"
+         p."CC Forecast Name"
         ,t."Created At (UTC)"
         ,t."Created By"
         ,t."Flow Net ID"
-        ,i."Is Use in Diff from Target Calculations"
+        ,p."Is Use in Diff from Target Calculations"
         ,t."Last Mod At (UTC)"
         ,t."Last Mod By"
         ,t."Target Daily Date" as "Prod Date"
@@ -35,13 +40,15 @@ source AS (
         ,t."Target Daily Rate Sand bbl per Day"
         ,t."Target Daily Rate Water bbl per Day"
         ,t."Target Daily Record ID"
-        ,i."Target Record ID"
-        ,i."Target Type"
-        ,i."Unit Record ID"
-        ,i."Target Start Date"
+        ,p."Target Record ID"
+        ,p."Target Start Date"        
+        ,p."Target Type"
+        ,h."Unit Record ID"
     FROM targetdaily t
-    LEFT JOIN targetintegration i
-    ON t."Target Record ID" = i."Target Record ID"
+    LEFT JOIN parenttarget p
+    ON p."Target Record ID" = t."Target Record ID"
+    LEFT JOIN header h 
+    on p."Parent Target Record ID" = h."Completion Record ID"
        --where not i."Target Record ID" is null
  
 )

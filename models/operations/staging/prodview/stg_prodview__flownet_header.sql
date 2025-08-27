@@ -1,5 +1,5 @@
 {{ config(
-    enable = false
+    enable = false,
     materialized='view',
     tags=['prodview', 'completions', 'targets', 'daily', 'staging']
 ) }}
