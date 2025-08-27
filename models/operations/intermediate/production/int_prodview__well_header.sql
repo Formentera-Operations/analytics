@@ -58,7 +58,7 @@ select
     u."Completion Status",
     u."Cost Center",
     u."Country",
-    u."Create Date (UTC)" as "Unit Create Date (UTC)",
+    CAST(u."Create Date (UTC)" as datetime) as "Unit Create Date (UTC)",
     u."Current Facility",
     u."DSU",
     u."District",
