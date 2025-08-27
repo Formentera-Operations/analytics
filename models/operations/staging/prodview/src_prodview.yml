@@ -55,5 +55,6 @@ sources:
       - name: PVT_PVUNITNODEFLOWTO
       - name: PVT_PVUNITAGREEMT
       - name: PVT_PVUNITAGREEMTPARTNER
+      - name: PVT_PVUNITCOMPFLUIDLEVEL
 
 
