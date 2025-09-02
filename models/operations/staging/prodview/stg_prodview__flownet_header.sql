@@ -1,41 +1,45 @@
 {{ config(
-    enable = false,
     materialized='view',
     tags=['prodview', 'completions', 'targets', 'daily', 'staging']
 ) }}
 
 with source_data as (
     select * from {{ source('prodview', 'PVT_PVFLOWNETHEADER') }}
-    where _fivetran_deleted = false
+    where "_FIVETRAN_DELETED" = false
 ),
 
 renamed as (
     select
         -- Primary identifiers
-        idrec as "Target Record ID",
-        idrecparent as "Parent Target Record ID",
-        idflownet as "Flow Net ID",
+        IDFLOWNET as "Flow Net ID",
+        NAME as "Network Name",
         
         -- Date/Time information
-        CAST(dttmstart AS DATE) as "Target Start Date",
+        CAST(DTTMSTART AS DATE) as "Start Date",
+        CAST(DTTMEND AS DATE) as "End Date",
         
-        -- Target Fields
-        typ as "Target Type",
-        usecalcdiff as "Is Use in Diff from Target Calculations",
-        usertxt1 as "CC Forecast Name",
-        usertxt2 as "User Text 2",
-        usertxt3 as "User Text 3",
-
+        -- Network Fields
+        TYP as "Type",
+        COM as "Comment",
+        IDRECUNITPRIMARY as "Primary Unit ID",
+        IDRECFACILITYPRIMARY as "Primary Facility ID",
+        
+        -- User fields
+        USERTXT1 as "User Text 1",
+        USERTXT2 as "User Text 2",
+        USERTXT3 as "User Text 3",
+        USERTXT4 as "User Text 4",
+        USERTXT5 as "User Text 5",
+        
         -- System fields
-        syscreatedate as "Created At (UTC)",
-        syscreateuser as "Created By",
-        sysmoddate as "Last Mod At (UTC)",
-        sysmoduser as "Last Mod By",
-        systag as "System Tag",
+        SYSCREATEDATE as "Created At (UTC)",
+        SYSCREATEUSER as "Created By",
+        SYSMODDATE as "Last Mod At (UTC)",
+        SYSMODUSER as "Last Mod By",
+        SYSTAG as "System Tag",
         
         -- Fivetran fields
-        _fivetran_synced as "Fivetran Synced At"
-
+        "_FIVETRAN_SYNCED" as "Fivetran Synced At"
     from source_data
 )
 
