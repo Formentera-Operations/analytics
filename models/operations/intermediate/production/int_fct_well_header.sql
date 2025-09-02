@@ -20,6 +20,19 @@ company as (
     from {{ ref('dim_companies') }} c
 ),
 
+prodstatus as (
+    SELECT
+        "Unit Record ID"
+        ,"Status Record ID"
+        ,"Last Mod At (UTC)"
+        ,ROW_NUMBER() OVER (
+            PARTITION BY "Unit Record ID"
+            ORDER BY "Last Mod At (UTC)" DESC
+        ) AS rn
+    from {{ ref('int_prodview__production_volumes') }}
+    --where rn = 1
+),
+
 tbl as (
     Select
         w."Abandon Date"
@@ -71,6 +84,7 @@ tbl as (
         as "Asset company Code"
         --,c.company_name as "Asset Company"
         ,c.company_full_name as "Asset Company full Name"
+        ,p."Completion Status"
         --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
         ,p."District" AS "Business Unit"
@@ -110,7 +124,7 @@ tbl as (
         ,w."Master Lock Date"
         ,cast(w."Ops Effective Date" as date) as "Ops Effective Date"
         ,w."Permit Date"
-        ,p."Completion Status" AS "Prod Status"
+        ,s."Status Record ID" as "Prod Status Record ID"
         ,p."Producing Method"
         ,p."Property EID"
         ,p."Unit Name" AS "Property Name"
@@ -140,6 +154,8 @@ tbl as (
     on p."WellView Well ID" = w."Well ID"
     left join company c
     on p."Company Code" = c.company_code
+    left join prodstatus s
+    on p."Unit Record ID" = s."Unit Record ID" WHERE s.rn = 1
     --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
 ),
 
