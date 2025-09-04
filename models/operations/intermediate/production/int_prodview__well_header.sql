@@ -8,10 +8,6 @@ with pvunit as (
     select * from {{ ref('stg_prodview__units') }}
 ),
 
-pvroutesetroute as (
-    select * from {{ ref('stg_prodview__routes') }}
-),
-
 pvunitcomp as (
     select * from {{ ref('stg_prodview__completions') }}
 ),
@@ -38,13 +34,7 @@ wvintegration as (
 )
 
 select
-    -- Route information
-    r."Backup Lease Operator",
-    r."Foreman",
-    r."Primary Lease Operator",
-    r."Route Name",
-    r."Route Record ID",
-
+    -- Route information --moving to int_fct_header to remove cycle error
     -- Unit information
     u."API 10",
     u."AssetCo",
@@ -58,6 +48,7 @@ select
     u."Completion Status",
     u."Cost Center",
     u."Country",
+    u."Current Route",
     CAST(u."Create Date (UTC)" as datetime) as "Unit Create Date (UTC)",
     u."Current Facility",
     u."DSU",
@@ -97,7 +88,6 @@ select
     u."Regulatory Field Name",
     u."Regulatory ID",
     u."Regulatory Unit Type",
-    u."Route",
     u."Start Displaying Unit On",
     u."State/Province",
     u."Stop Displaying Unit After",
@@ -200,7 +190,7 @@ select
 
     -- Update tracking
     greatest(
-        coalesce(r."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
+        --coalesce(r."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(u."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(c."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
         coalesce(si."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
@@ -209,8 +199,8 @@ select
     ) as "Last Mod Date (UTC)"
 
 from pvunit u
-left join pvroutesetroute r 
-    on u."Current Route" = r."Route Record ID"
+--left join pvroutesetroute r 
+--    on u."Current Route" = r."Route Record ID"
 left join pvunitcomp c 
     on u."Unit Record ID" = c."Unit Record ID"
 left join svintegration si 
