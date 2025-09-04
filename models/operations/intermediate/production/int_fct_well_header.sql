@@ -33,6 +33,12 @@ prodstatus as (
     --where rn = 1
 ),
 
+route as (
+    select
+        *
+    from {{ ref('int_dim_route') }}
+),
+
 tbl as (
     Select
         w."Abandon Date"
@@ -98,6 +104,7 @@ tbl as (
         end as "First Sales Date"           
         --,w."First Sales Date"
         --,p."First Sale Date"
+        ,r."Foreman"
         ,p."Foreman Area"
         ,case
             when p."Operator" like 'Fromentera%' then 1
@@ -138,8 +145,8 @@ tbl as (
         end as "Rig Release Date"    
         --,w."Rig Release Date"
         --,p."Rig Release Date"
-        ,p."Route"
-        --,p."Route Name"
+        ,r."Route Record ID"
+        ,r."Route Name"
         ,CAST(w."Spud Date" AS date) as "Spud Date"
         --,p."Spud Date"
         ,w."System Lock Date"
@@ -155,7 +162,9 @@ tbl as (
     left join company c
     on p."Company Code" = c.company_code
     left join prodstatus s
-    on p."Unit Record ID" = s."Unit Record ID" WHERE s.rn = 1
+    on p."Unit Record ID" = s."Unit Record ID" and s.rn = 1
+    left join route r
+    on p."Current Route" = r."Route Record ID"
     --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
 ),
 
