@@ -11,7 +11,7 @@
 with staging as (
     
     select * from {{ ref('stg_cc__forecast_outputs') }}
-    where best_forecast_params is not null
+    
 
 ),
 
