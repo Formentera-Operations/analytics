@@ -85,11 +85,12 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler midstream' then 300
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 300
                     when lower(p."AssetCo") = 'snyder drillco' then 500
-                    else c.company_name end)
+                    else c.company_code end)
+                when c.company_code is null and p."AssetCo" is null and not w."Company Code" is null then w."Company Code"
             else c.company_code end
-        as "Asset company Code"
+        as "Asset Company Code"
         --,c.company_name as "Asset Company"
-        ,c.company_full_name as "Asset Company full Name"
+        --,c.company_full_name as "Asset Company full Name"
         ,p."Completion Status"
         --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
@@ -179,6 +180,7 @@ ranked AS (
 )
 
 SELECT *
+    ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
 FROM ranked
 WHERE rn = 1
 --order by rn desc
