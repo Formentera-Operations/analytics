@@ -27,7 +27,8 @@ WITH prodstatus as (
     ELSE "Status" END 
         AS "Status Clean"
     FROM {{ ref('stg_prodview__status') }}  --, "Status Record ID"
-),
+)
+/*,
 
 allocation as (
     select distinct
@@ -35,8 +36,9 @@ allocation as (
     from {{ ref('int_prodview__production_volumes') }}
     
 )
+*/
 Select
        s.*
     FROM prodstatus s 
-        LEFT JOIN allocation a 
-        ON a."Status Record ID" = s."Status Record ID"
+ --       LEFT JOIN allocation a 
+ --       ON a."Status Record ID" = s."Status Record ID"

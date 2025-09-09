@@ -160,6 +160,14 @@ source AS (
        -- ,a."Status Record ID"
         ,p."Tubing Pressure psi"
         ,a."Unit Record ID"
+        ,((COALESCE(a."New Production Gas mcf", 0) - COALESCE(a."Difference From Target Gas mcf", 0))
+            /24)
+            * COALESCE(a."Downtime Hours", 0)
+        as "Volume Lost Target Gas"
+        ,((COALESCE(a."New Production HCLiq bbl", 0 ) - COALESCE(a."Difference From Target Hcliq bbl", 0))
+                /24)
+            * COALESCE(a."Downtime Hours", 0)
+        as "Volume Lost Target hcliq"
         ,p."Wellhead Pressure psi"
         ,p."Wellhead Temperature F"
         ,a."Working Interest Gas pct"
@@ -264,4 +272,5 @@ source AS (
 SELECT 
     *
     ,COALESCE("Net Oil Prod", 0) + (COALESCE("Net Gas Sales", 0)/6) as "Net 2-Stream Sales BOE"
+    ,(COALESCE("Volume Lost Target hcliq", 0) + (COALESCE("Volume Lost Target Gas", 0)/ 6))*-1 as "Gross Downtime BOE"
 FROM source

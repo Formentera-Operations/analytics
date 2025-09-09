@@ -8,13 +8,8 @@ WITH unitroute as (
     Select
         *
     FROM {{ ref('int_dim_route') }}
-),
-
-unit as (
-    select distinct
-    "Route Record ID"
-    from {{ ref('int_prodview__well_header') }}
 )
+
 
 Select
     r."Backup Lease Operator"
@@ -31,5 +26,3 @@ Select
     ,r."Route Parent Record ID"
     ,r."Route Record ID"
 FROM unitroute r 
-    LEFT JOIN unit u 
-    ON u."Route Record ID"= r."Route Record ID"

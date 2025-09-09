@@ -20,6 +20,25 @@ company as (
     from {{ ref('dim_companies') }} c
 ),
 
+prodstatus as (
+    SELECT
+        "Unit Record ID"
+        ,"Status Record ID"
+        ,"Last Mod At (UTC)"
+        ,ROW_NUMBER() OVER (
+            PARTITION BY "Unit Record ID"
+            ORDER BY "Last Mod At (UTC)" DESC
+        ) AS rn
+    from {{ ref('int_prodview__production_volumes') }}
+    --where rn = 1
+),
+
+route as (
+    select
+        *
+    from {{ ref('int_dim_route') }}
+),
+
 tbl as (
     Select
         w."Abandon Date"
@@ -66,11 +85,13 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler midstream' then 300
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 300
                     when lower(p."AssetCo") = 'snyder drillco' then 500
-                    else c.company_name end)
+                    else c.company_code end)
+                when c.company_code is null and p."AssetCo" is null and not w."Company Code" is null then w."Company Code"
             else c.company_code end
-        as "Asset company Code"
+        as "Asset Company Code"
         --,c.company_name as "Asset Company"
-        ,c.company_full_name as "Asset Company full Name"
+        --,c.company_full_name as "Asset Company full Name"
+        ,p."Completion Status"
         --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
         ,p."District" AS "Business Unit"
@@ -84,6 +105,7 @@ tbl as (
         end as "First Sales Date"           
         --,w."First Sales Date"
         --,p."First Sale Date"
+        ,r."Foreman"
         ,p."Foreman Area"
         ,case
             when p."Operator" like 'Fromentera%' then 1
@@ -110,7 +132,7 @@ tbl as (
         ,w."Master Lock Date"
         ,cast(w."Ops Effective Date" as date) as "Ops Effective Date"
         ,w."Permit Date"
-        ,p."Completion Status" AS "Prod Status"
+        ,s."Status Record ID" as "Prod Status Record ID"
         ,p."Producing Method"
         ,p."Property EID"
         ,p."Unit Name" AS "Property Name"
@@ -124,8 +146,8 @@ tbl as (
         end as "Rig Release Date"    
         --,w."Rig Release Date"
         --,p."Rig Release Date"
-        ,p."Route"
-        --,p."Route Name"
+        ,r."Route Record ID"
+        ,r."Route Name"
         ,CAST(w."Spud Date" AS date) as "Spud Date"
         --,p."Spud Date"
         ,w."System Lock Date"
@@ -140,6 +162,10 @@ tbl as (
     on p."WellView Well ID" = w."Well ID"
     left join company c
     on p."Company Code" = c.company_code
+    left join prodstatus s
+    on p."Unit Record ID" = s."Unit Record ID" and s.rn = 1
+    left join route r
+    on p."Current Route" = r."Route Record ID"
     --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
 ),
 
@@ -154,6 +180,7 @@ ranked AS (
 )
 
 SELECT *
+    ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
 FROM ranked
 WHERE rn = 1
 --order by rn desc
