@@ -53,6 +53,7 @@ tbl as (
                     when lower(p."AssetCo") = 'fp divide' then 'FP Divide LLC'
                     when lower(p."AssetCo") = 'fp drake' then 'FP Drake LLC'
                     when lower(p."AssetCo") = 'fp goldsmith' then 'FP Goldsmith LP'
+                    when lower(p."AssetCo") = 'fp kingfisher' then 'FP Kingfisher LLC'
                     when lower(p."AssetCo") = 'fp lariat' then 'FP Lariat, LLC'
                     when lower(p."AssetCo") = 'fp maverick' then 'FP Maverick LP'
                     when lower(p."AssetCo") = 'fp meramec' then 'FP Meramec LLC'
@@ -62,7 +63,7 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler midstream' then 'FP Wheeler Upstream LLC'
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
                     when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
-                    else c.company_name end)
+                    else p."AssetCo" end)
             when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
             else c.company_name
         end as "Asset Company"
@@ -77,6 +78,7 @@ tbl as (
                     when lower(p."AssetCo") = 'fp drake' then 813
                     when lower(p."AssetCo") = 'fp goldsmith' then 807
                     when lower(p."AssetCo") = 'fp lariat' then 811
+                    when lower(p."AssetCo") = 'fp kingfisher' then 704
                     when lower(p."AssetCo") = 'fp maverick' then 703
                     when lower(p."AssetCo") = 'fp meramec' then 804
                     when lower(p."AssetCo") = 'fp overlook' then 800
@@ -85,7 +87,7 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler midstream' then 300
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 300
                     when lower(p."AssetCo") = 'snyder drillco' then 500
-                    else c.company_code end)
+                    else left(p."Property Number", 3) end)
                 when c.company_code is null and p."AssetCo" is null and not w."Company Code" is null then w."Company Code"
             else c.company_code end
         as "Asset Company Code"
@@ -183,4 +185,4 @@ SELECT *
     ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
 FROM ranked
 WHERE rn = 1
---order by rn desc
+--and "Asset Company" LIKE '%King%'

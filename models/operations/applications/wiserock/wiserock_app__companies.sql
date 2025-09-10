@@ -56,6 +56,7 @@ tbl as (
                     when lower(p.area) = 'fp drake' then 'FP Drake LLC'
                     when lower(p.area) = 'fp goldsmith' then 'FP Goldsmith LP'
                     when lower(p.area) = 'fp lariat' then 'FP Lariat, LLC'
+                    when lower(p.area) = 'fp kingfisher' then 'FP Kingfisher LLC'
                     when lower(p.area) = 'fp maverick' then 'FP Maverick LP'
                     when lower(p.area) = 'fp meramec' then 'FP Meramec LLC'
                     when lower(p.area) = 'fp overlook' then 'FP Overlook LLC'
@@ -64,7 +65,7 @@ tbl as (
                     when lower(p.area) = 'fp wheeler midstream' then 'FP Wheeler Upstream LLC'
                     when lower(p.area) = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
                     when lower(p.area) = 'snyder drillco' then 'Snyder Drill Co LP'
-                    else c.name end)
+                    else p.area end)
             when c.name is null and p.area is null and not w.area is null then w.area
             else c.name
         end as "Asset Company"
@@ -81,13 +82,14 @@ tbl as (
                     when lower(p.area) = 'fp lariat' then 811
                     when lower(p.area) = 'fp maverick' then 703
                     when lower(p.area) = 'fp meramec' then 804
+                    when lower(p.area) = 'fp kingfisher' then 704
                     when lower(p.area) = 'fp overlook' then 800
                     when lower(p.area) = 'fp pronghorn' then 809
                     when lower(p.area) = 'fp wheeler' then 300
                     when lower(p.area) = 'fp wheeler midstream' then 300
                     when lower(p.area) = 'fp wheeler upstream' then 300
                     when lower(p.area) = 'snyder drillco' then 500
-                    else c.code end)
+                    else p.divisioncode end)
                 when c.code is null and p.area is null and not w.divisioncode is null then w.divisioncode
             else c.code end
         as "Asset Company Code"
