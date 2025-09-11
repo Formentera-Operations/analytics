@@ -16,6 +16,8 @@ WITH gl as (
         ,Posted
         ,journal_date as "Journal Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
+        ,include_in_accrual_report as "In Accrual Report"
+        ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
         ,net_amount as "Net Value"
         ,well_code as "Well Code"
