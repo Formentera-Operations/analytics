@@ -122,4 +122,5 @@ final as (
 )
 
 select * from final
+where is_forecasted = true
 order by project_id, forecast_id, well_id, forecasted_at desc
