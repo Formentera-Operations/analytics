@@ -269,21 +269,13 @@ joined as (
         end as ngl_basis_diff_price_2,
 
         -- Net Operating Income (using all 9 fixed expense fields with fixed_expense_1 including leftover expenses)
+    
+
         (
-            runs.oil_revenue + runs.gas_revenue + runs.ngl_revenue
+            net_oil_sales_revenue + net_gas_sales_revenue + net_ngl_sales_revenue
             - oil_gt_deduct - gas_gt_deduct - ngl_gt_deduct
             - oil_opc_expense - gas_opc_expense - runs.water_disposal
-            - (coalesce(runs.fixed_expense_1, 0) + 
-               (runs.total_fixed_expense - 
-                coalesce(runs.fixed_expense_1, 0) - 
-                coalesce(runs.fixed_expense_2, 0) - 
-                coalesce(runs.fixed_expense_3, 0) - 
-                coalesce(runs.fixed_expense_4, 0) - 
-                coalesce(runs.fixed_expense_5, 0) - 
-                coalesce(runs.fixed_expense_6, 0) - 
-                coalesce(runs.fixed_expense_7, 0) - 
-                coalesce(runs.fixed_expense_8, 0) - 
-                coalesce(runs.fixed_expense_9, 0))) -- fixed_expense_1 with leftover
+            - coalesce(runs.fixed_expense_1, 0)
             - coalesce(runs.fixed_expense_2, 0)
             - coalesce(runs.fixed_expense_3, 0)
             - coalesce(runs.fixed_expense_4, 0)
@@ -293,7 +285,7 @@ joined as (
             - coalesce(runs.fixed_expense_8, 0)
             - coalesce(runs.fixed_expense_9, 0)
             - runs.ad_valorem_tax - runs.oil_severance_tax - runs.gas_severance_tax
-            - runs.ngl_severance_tax - runs.drip_condensate_severance_tax
+            - runs.ngl_severance_tax
         ) as net_operating_income,
 
         -- Net Cashflow (Net Operating Income - Total Net Investment)
