@@ -138,6 +138,7 @@ tbl as (
         ,p."Producing Method"
         ,p."Property EID"
         ,p."Unit Name" AS "Property Name"
+        ,p."Well Name" as "Prodview Well Name"
         ,p."Property Number"
         ,w."Regulatory Effective Date"
         ,p."Regulatory Field Name"
