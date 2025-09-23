@@ -6,13 +6,18 @@
 
 WITH jobs as (
     Select
-        "Job ID"
-        ,"Job End Datetime"
+        "Duration Start To End Days"
+        ,"Final Actual Cost"
         ,CAST("Job End Datetime" as date) AS "Job End Date"
-        ,"Job Start Datetime"
+        ,CAST("Calculated End Datetime" as date) AS "Job End Date Calculated"
+        ,"Job End Datetime"
+        ,"Calculated End Datetime" as "Job End Date Calculated"
+        ,"Job ID"
         ,CAST("Job Start Datetime" as date) AS "Job Start Date"
+        ,"Job Start Datetime"
         ,"Planned Start Datetime"
         ,"Primary Job Type"
+        ,"Secondary Job Type"
         ,"Well ID"
         ,"Wellview Job Category"
     FROM {{ ref('int_wellview_job') }}
