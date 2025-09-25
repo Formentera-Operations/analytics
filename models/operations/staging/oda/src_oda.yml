@@ -76,3 +76,4 @@ sources:
       - name: ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW
       - name: ODA_BATCH_ODA_AFE_V2
       - name: ODA_BATCH_ODA_WELL
+      - name: ODA_BATCH_ODA_USERFIELD
