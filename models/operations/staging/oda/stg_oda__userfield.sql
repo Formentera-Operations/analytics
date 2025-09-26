@@ -6,17 +6,18 @@ with source as (
 
 renamed as (
     select
-        "Id", 
-        "UserFieldIdentity", 
-        "EntityName", 
-        "UserFieldValueString", 
-        "EntityCode", 
-        "EntityTypeId", 
-        "RecordInsertDate", 
-        "UserFieldName", 
-        "RecordUpdateDate", 
-        "_fivetran_deleted", 
-        "_fivetran_synced"
+        USERFIELDIDENTITY AS "UserFieldIdentity"
+        ,ID AS "Id"
+        ,ENTITYCODE AS "EntityCode"
+        ,ENTITYNAME AS "EntityName"
+        ,ENTITYTYPEID AS "EntityTypeId"
+        ,RECORDINSERTDATE AS "RecordInsertDate"
+        ,RECORDUPDATEDATE AS "RecordUpdateDate"
+        ,USERFIELDNAME AS "UserFieldName"
+        ,USERFIELDVALUESTRING AS "UserFieldValueString"
+        ,"_meta/op"
+        ,FLOW_PUBLISHED_AT
+        ,FLOW_DOCUMENT
     from source
 )
 
