@@ -27,6 +27,8 @@ WITH gl as (
             WHEN main_account IN (701,702,703) AND sub_account IN (1, 2, 3, 4, 5) THEN net_volume
             else net_amount
         END as "Net Value"
+        ,net_amount
+        ,net_volume
         ,well_code as "Well Code"
         ,well_name as "Well Name"
         ,CASE
@@ -40,6 +42,6 @@ Select *
 from gl
 WHERE Posted = 'Y'
 AND "Journal Date" > '2021-12-31'
-AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
-AND NOT "Combined Account" in ('850-35', '850-36')
-  AND NOT "Company Code" IN (705, 801, 900)
+--AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
+--AND NOT "Combined Account" in ('850-35', '850-36')
+  --AND NOT "Company Code" IN (705, 801, 900)
