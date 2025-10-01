@@ -23,11 +23,11 @@ WITH gl as (
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
-        ,CASE
+        /*,CASE
             WHEN main_account IN (701,702,703) AND sub_account IN (1, 2, 3, 4, 5) THEN net_volume
             else net_amount
-        END as "Net Value"
-        ,net_amount
+        END as "Net Value"*/
+        ,net_amount as "Net Value"
         ,net_volume
         ,well_code as "Well Code"
         ,well_name as "Well Name"
