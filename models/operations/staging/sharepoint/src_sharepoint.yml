@@ -1,0 +1,6 @@
+sources:
+  - name: sharepoint
+    database: FO_RAW_DB
+    schema: SHAREPOINT_RAW
+    tables:
+      - name: MASTER_ACCOUNT_TABLE_MAIN
