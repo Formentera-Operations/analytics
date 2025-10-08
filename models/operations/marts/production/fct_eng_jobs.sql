@@ -6,8 +6,9 @@
 
 WITH jobs as (
     Select
-        "Duration Start To End Days"
-        ,"Final Actual Cost"
+        "AFE Number"
+        ,"AFE Amount"
+        ,"Duration Start To End Days"
         ,CAST("Job End Datetime" as date) AS "Job End Date"
         ,CAST("Calculated End Datetime" as date) AS "Job End Date Calculated"
         ,"Job End Datetime"
@@ -18,6 +19,7 @@ WITH jobs as (
         ,"Planned Start Datetime"
         ,"Primary Job Type"
         ,"Secondary Job Type"
+        ,"Total Cost"
         ,"Well ID"
         ,"Wellview Job Category"
     FROM {{ ref('int_wellview_job') }}
