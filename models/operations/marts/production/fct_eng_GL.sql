@@ -7,6 +7,7 @@
 WITH gl as (
     Select
         gl_id as "GL ID"
+        ,afe_code as "AFE Number"
         ,company_code as "Company Code"
         ,company_name as "Company Name"
         ,main_account as "Main Account"
@@ -28,7 +29,7 @@ WITH gl as (
             else net_amount
         END as "Net Value"*/
         ,net_amount as "Net Value"
-        ,net_volume
+        ,net_volume as "Net Volume"
         ,well_code as "Well Code"
         ,well_name as "Well Name"
         ,CASE
