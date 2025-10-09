@@ -6,8 +6,10 @@
 
 WITH jobs as (
     Select
-        "AFE Number"
-        ,"AFE Amount"
+        "AFE Amount"
+        ,"AFE Cost Type"
+        ,"AFE Number"
+        ,"AFE Total Amount"
         ,"Duration Start To End Days"
         ,CAST("Job End Datetime" as date) AS "Job End Date"
         ,CAST("Calculated End Datetime" as date) AS "Job End Date Calculated"
