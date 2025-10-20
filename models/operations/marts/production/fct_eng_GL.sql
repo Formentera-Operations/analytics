@@ -18,9 +18,9 @@ WITH gl as (
                 CONCAT(main_account, '-', sub_account, '-Vol') 
             ELSE CONCAT(main_account,'-', sub_account)
         END as "Account Key"
-        --,afe_type_code AS "AFE Type Code"
-        ,afe_type_label AS "AFE Type Label"
-        ,afe_type_full_name AS "AFE Type Full Name"
+       -- ,afe_type_code AS "AFE Type Code"
+       -- ,afe_type_label AS "AFE Type Label"
+       -- ,afe_type_full_name AS "AFE Type Full Name"
         ,Posted
         ,journal_date as "Journal Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
