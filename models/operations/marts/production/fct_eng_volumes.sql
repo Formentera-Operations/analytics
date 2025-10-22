@@ -19,7 +19,7 @@ WITH prodvolume as (
     ,"Status Record ID"
     ,TO_DATE(MIN("Prod Date")) AS start_date
     ,TO_DATE(MAX("Prod Date")) AS end_date
-    ,DATEDIFF(DAY, MIN("Prod Date"), MAX("Prod Date")) AS num_days
+    ,(DATEDIFF(DAY, MIN("Prod Date"), MAX("Prod Date")) + 30) AS num_days
   FROM prodvolume
   GROUP BY 
     "Unit Record ID"
@@ -61,7 +61,7 @@ WITH prodvolume as (
 ,totalboe as (
     SELECT
         *
-        ,(coalesce("Gross Allocated WH New Gas", 0) + (coalesce("Gross Allocated WH Oil", 0)/6)) AS "Total BOE"
+        ,(coalesce("Gross Allocated WH Oil", 0) + (coalesce("Gross Allocated WH New Gas", 0)/6)) AS "Total BOE"
     FROM prodjoin
     order by "Unit Record ID Fill", "Prod Date Fill"
 
@@ -71,23 +71,23 @@ WITH prodvolume as (
     SELECT
     *
   -- Rolling sum of the PRIOR 7 calendar days (excludes current day)
-  ,sum("Total BOE") OVER (PARTITION BY "Unit Record ID Fill"
+  ,CAST(sum("Total BOE")  OVER (PARTITION BY "Unit Record ID Fill"
     ORDER BY "Prod Date"
     ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING
-  ) AS "Total BOE last 7 Days"
+  ) AS DECIMAL(38,3)) AS "Total BOE last 7 Days"
     -- Rolling sum of the PRIOR 30 calendar days (excludes current day)
-  ,sum("Total BOE") OVER (PARTITION BY "Unit Record ID Fill"
+  ,CAST(sum("Total BOE")  OVER (PARTITION BY "Unit Record ID Fill"
     ORDER BY "Prod Date"
     ROWS BETWEEN 30 PRECEDING AND 1 PRECEDING
-  ) AS "Total BOE last 30 Days"
+  ) AS DECIMAL(38,3)) AS "Total BOE last 30 Days"
 FROM totalboe
 ORDER BY "Unit Record ID", "Prod Date Fill" desc
 )
 
 Select 
     *
-    ,CASE WHEN "Total BOE last 7 Days" <= 0 THEN false ELSE true END AS "Has Prod Last 7 Days"
-    ,CASE WHEN "Total BOE last 30 Days" <= 0 THEN false ELSE true END AS "Has Prod Last 30 Days"
+    ,CASE WHEN "Total BOE last 7 Days" < 1 THEN false ELSE true END AS "Has Prod Last 7 Days"
+    ,CASE WHEN "Total BOE last 30 Days" < 1 THEN false ELSE true END AS "Has Prod Last 30 Days"
 from totalboerange
 where "Prod Date" > '2022-12-31' and "Prod Date" < CAST(GETDATE() AS date) - 1
 ORDER BY "Unit Record ID", "Prod Date Fill" desc
