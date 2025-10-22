@@ -86,8 +86,8 @@ ORDER BY "Unit Record ID", "Prod Date Fill" desc
 
 Select 
     *
-    ,CASE WHEN "Total BOE last 7 Days" = 0 THEN false ELSE true END AS "Has Prod Last 7 Days"
-    ,CASE WHEN "Total BOE last 30 Days" = 0 THEN false ELSE true END AS "Has Prod Last 30 Days"
+    ,CASE WHEN "Total BOE last 7 Days" <= 0 THEN false ELSE true END AS "Has Prod Last 7 Days"
+    ,CASE WHEN "Total BOE last 30 Days" <= 0 THEN false ELSE true END AS "Has Prod Last 30 Days"
 from totalboerange
 where "Prod Date" > '2022-12-31' and "Prod Date" < CAST(GETDATE() AS date) - 1
 ORDER BY "Unit Record ID", "Prod Date Fill" desc
