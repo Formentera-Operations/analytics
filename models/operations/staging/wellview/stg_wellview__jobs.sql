@@ -136,7 +136,7 @@ renamed as (
 
         -- Other cost fields (no conversion)
         costfinalactual as "Final Actual Cost",
-        costtotalcalc as "Total Cost",
+        costtotalcalc as "Total Field Estimate",
         costmaxtotalcalc as "Max Total Cost",
         costmintotalcalc as "min Total Cost",
         costmltotalcalc as "Ml Total Cost",
