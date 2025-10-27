@@ -12,7 +12,7 @@ renamed as (
     select
         -- Primary identifiers
         idrec as "Completion Downtime Record ID",
-        idrecparent as "Completion Downtime Parent ID",
+        idrecparent as "Completion Record ID",
         idflownet as "Flow Net ID",
         
         -- Downtime classification
@@ -22,11 +22,11 @@ renamed as (
         failflag as "Is failure",
         
         -- Downtime period - Start
-        dttmstart as "First Day",
+        TO_DATE(dttmstart) as "First Day",
         durdownstartday / 0.0416666666666667 as "Hours Down",
         
         -- Downtime period - End
-        dttmend as "Last Day",
+        TO_DATE(dttmend) as "Last Day",
         durdownendday / 0.0416666666666667 as "Downtime on Last Day",
         
         -- Total downtime calculation
