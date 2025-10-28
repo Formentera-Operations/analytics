@@ -93,6 +93,7 @@ tbl as (
         as "Asset Company Code"
         --,c.company_name as "Asset Company"
         --,c.company_full_name as "Asset Company full Name"
+        ,p."Completion Record ID"
         ,p."Completion Status"
         --,w."Asset Company" as "WV Asset Company"
         --,p."AssetCo"
