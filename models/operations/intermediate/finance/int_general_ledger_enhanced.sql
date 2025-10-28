@@ -2,6 +2,7 @@
     config(
         materialized='incremental',
         unique_key='gl_id',
+        on_schema_change='sync_all_columns',
         incremental_strategy='merge',
         cluster_by=['company_code', 'journal_date', 'main_account', 'sub_account']
     )
