@@ -91,6 +91,7 @@ Select
     ,c."Total Consecutive Downtime Hours"
     ,c."Downtime First Day"
     ,c."Downtime Last Day"
+    ,DATEDIFF(DAY, c."Downtime First Day", COALESCE(c."Downtime Last Day", CURRENT_DATE()-1)) AS "Days Down"
     ,c."Downtime Code"
     ,c."Downtime Code 2"
     ,c."Downtime Code 3"
