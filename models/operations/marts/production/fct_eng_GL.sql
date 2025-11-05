@@ -33,6 +33,7 @@ WITH gl as (
         END as "Net Value"*/
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
+        ,gross_volume as "Gross Volume"
         ,well_code as "Well Code"
         ,well_name as "Well Name"
         ,CASE
