@@ -8,6 +8,8 @@ WITH gl as (
     Select
         gl_id as "GL ID"
         ,afe_code as "AFE Number"
+        ,location_name as "Location Name"
+        ,location_type as "Location Type"
         ,company_code as "Company Code"
         ,company_name as "Company Name"
         ,main_account as "Main Account"
@@ -27,10 +29,6 @@ WITH gl as (
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
-        /*,CASE
-            WHEN main_account IN (701,702,703) AND sub_account IN (1, 2, 3, 4, 5) THEN net_volume
-            else net_amount
-        END as "Net Value"*/
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
         ,gross_volume as "Gross Volume"
