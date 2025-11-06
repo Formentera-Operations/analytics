@@ -8,6 +8,7 @@ WITH gl as (
     Select
         gl_id as "GL ID"
         ,afe_code as "AFE Number"
+        ,voucher_type_id as "Voucher Type Code"
         ,location_name as "Location Name"
         ,location_type as "Location Type"
         ,company_code as "Company Code"
