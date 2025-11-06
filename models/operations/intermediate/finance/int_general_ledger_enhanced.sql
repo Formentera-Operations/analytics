@@ -284,6 +284,7 @@ SELECT
     CAST(gld.source_module_code AS VARCHAR) AS source_module_code,
     CAST(source_modules.name AS VARCHAR) AS source_module_name,
     CAST(vouchers.code AS VARCHAR) AS voucher_code,
+    CAST(vouchers.voucher_type_id AS VARCHAR) AS voucher_type_id,
     CAST(wells.code AS VARCHAR) AS well_code,
     wells.id as well_id,
     CAST(wells.name AS VARCHAR) AS well_name,
