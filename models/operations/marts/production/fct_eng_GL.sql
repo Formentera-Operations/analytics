@@ -8,6 +8,8 @@ WITH gl as (
     Select
         gl_id as "GL ID"
         ,afe_code as "AFE Number"
+        ,location_name as "Location Name"
+        ,location_type as "Location Type"
         ,company_code as "Company Code"
         ,company_name as "Company Name"
         ,main_account as "Main Account"
@@ -18,18 +20,18 @@ WITH gl as (
                 CONCAT(main_account, '-', sub_account, '-Vol') 
             ELSE CONCAT(main_account,'-', sub_account)
         END as "Account Key"
+        ,afe_type_code AS "AFE Type Code"
+        ,afe_type_label AS "AFE Type Label"
+        ,afe_type_full_name AS "AFE Type Full Name"
         ,Posted
         ,journal_date as "Journal Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
-        /*,CASE
-            WHEN main_account IN (701,702,703) AND sub_account IN (1, 2, 3, 4, 5) THEN net_volume
-            else net_amount
-        END as "Net Value"*/
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
+        ,gross_volume as "Gross Volume"
         ,well_code as "Well Code"
         ,well_name as "Well Name"
         ,CASE

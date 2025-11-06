@@ -2,6 +2,7 @@
     config(
         materialized='incremental',
         unique_key='gl_id',
+        on_schema_change='sync_all_columns',
         incremental_strategy='merge',
         cluster_by=['company_code', 'journal_date', 'main_account', 'sub_account']
     )
@@ -222,6 +223,12 @@ SELECT
     acct.main_account AS main_account,
     acct.sub_account AS sub_account,
     acct.name AS account_name,
+
+    -- AFE Type Classification
+    CAST(afes.afe_type_id AS VARCHAR) AS afe_type_id,
+    CAST(afes.afe_type_code AS VARCHAR) AS afe_type_code,
+    CAST(afes.afe_type_label AS VARCHAR) AS afe_type_label,
+    CAST(afes.afe_type_full_name AS VARCHAR) AS afe_type_full_name,
     
     -- Location information with CASE logic
     CASE
