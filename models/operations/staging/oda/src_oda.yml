@@ -38,6 +38,7 @@ sources:
       - name: JIB
       - name: JIBDETAIL
       - name: VOUCHER_V2
+      - name: ODA_BATCH_ODA_VOUCHERTYPE
       - name: ODA_BATCH_MDM_CALENDAR
       - name: ODA_BATCH_ODA_ENTITY
       - name: ODA_BATCH_ODA_ENTITY_V2
