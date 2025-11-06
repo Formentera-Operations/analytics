@@ -74,6 +74,11 @@ models:
           +schema: stg_enverus
           +materialized: view
 
+        procount:
+
+          +schema: stg_procount
+          +materialized: view
+
       # Intermediate models - business logic layers
       intermediate:
         +database: FO_STAGE_DB
