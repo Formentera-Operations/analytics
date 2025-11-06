@@ -187,27 +187,3 @@ models:
               values: ['OIL', 'GAS', 'NGL', 'BOE', 'OTHER']
               config:
                 severity: warn
-
-semantic_models:
-  - name: los_mapping
-    description: Semantic model for LOS report mapping and account structure
-    model: ref('stg_sharepoint__los_account_map')
-    
-    dimensions:
-      - name: line_number
-        type: categorical
-      - name: report_header_category
-        type: categorical
-      - name: account_code
-        type: categorical
-      - name: key_sort_category
-        type: categorical
-      - name: product_type
-        type: categorical
-      - name: unit_of_measure
-        type: categorical
-    
-    measures:
-      - name: account_count
-        agg: count
-        description: Count of account line items
