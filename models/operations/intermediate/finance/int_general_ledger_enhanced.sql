@@ -339,6 +339,14 @@ SELECT
     CAST(recon_types.code AS VARCHAR) AS reconciliation_type,
     gld.is_reconciled_trial AS reconciled_trial,
     gld.is_reconciled AS reconciled,
+
+        -- AFE Type Classification
+    CAST(afes.afe_type_id AS VARCHAR) AS afe_type_id,
+    CAST(afes.afe_type_code AS VARCHAR) AS afe_type_code,
+    CAST(afes.afe_type_label AS VARCHAR) AS afe_type_label,
+    CAST(afes.afe_type_full_name AS VARCHAR) AS afe_type_full_name,
+
+
     
     -- Entry metadata
     gld.is_generated_entry AS generated_entry,

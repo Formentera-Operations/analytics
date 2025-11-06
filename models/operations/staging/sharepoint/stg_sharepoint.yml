@@ -1,0 +1,213 @@
+version: 2
+
+models:
+  - name: stg_sharepoint__los_account_map
+    description: >
+      Staging model for LOS mapping master data from SharePoint. This model transforms the raw 
+      hierarchical Excel structure into a relational format by filling down category headers 
+      (LINE and REPORT_HEADER) to detail rows. Each row represents either a category header or 
+      an account line item with its associated calculations and classifications.
+      
+      **Key Transformations:**
+      - Fills down hierarchical LINE numbers and REPORT_HEADER values to detail rows
+      - Parses account codes into prefix and suffix components
+      - Derives product type (OIL, GAS, NGL, BOE) from report headers
+      - Adds classification flags (category headers, calculated rows, hidden rows, etc.)
+      - Determines unit of measure based on value type and product
+      - Filters out title-only rows that don't have associated accounts
+      
+      **Data Quality Notes:**
+      - Some rows represent calculation logic rather than actual accounts
+      - Hidden rows are flagged but retained for calculation reference
+      - Subtraction operations are explicitly flagged via is_subtraction
+    
+    columns:
+      - name: los_mapping_id
+        description: >
+          Primary key. Corresponds to Fivetran's _line field which maintains the original 
+          sequential order from the source Excel document.
+        tests:
+          - unique:
+              config:
+                severity: error
+          - not_null:
+              config:
+                severity: error
+      
+      - name: loaded_at
+        description: Timestamp when this record was last synced by Fivetran from SharePoint
+        tests:
+          - not_null:
+              config:
+                severity: error
+      
+      - name: line_number
+        description: >
+          Hierarchical line number from the LOS report structure. This value is filled down 
+          from category header rows (e.g., 3 for "OIL BARRELS", 4 for "GAS MCF") to all 
+          associated detail rows.
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      
+      - name: report_header_category
+        description: >
+          Category header name that groups related line items together. Values include production 
+          categories (OIL BARRELS, GAS MCF, NGL GALLONS) and financial categories (REVENUE, 
+          OPERATING EXPENSES, etc.). This value is filled down from header rows to detail rows.
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      
+      - name: account_code
+        description: >
+          Full account code from Quorum OnDemand in format "prefix / suffix" (e.g., "701 / 1", 
+          "702 / 3"). Null for category header rows and calculation rows.
+      
+      - name: main_account
+        description: >
+          First part of the account code before the slash (e.g., "701", "702", "930"). 
+          Generally represents the account series or major category.
+      
+      - name: sub_account
+        description: >
+          Second part of the account code after the slash (e.g., "1", "2", "990"). 
+          Represents the specific account within the series.
+      
+      - name: key_sort_category
+        description: >
+          High-level classification used for sorting and grouping line items in reports. 
+          Examples: OIL SALES, GAS SALES, NGL SALES, OPERATING EXPENSE, etc.
+        tests:
+          - accepted_values:
+              values: ['OIL SALES', 'GAS SALES', 'NGL SALES', 'OIL REV DEDUCT', 'GAS REV DEDUCT', 
+                       'NGL REV DEDUCT', 'OPERATING EXPENSE', 'LOE', 'PRODUCTION TAX', 
+                       'COMPRESSION', 'TRANSPORTATION', 'LEASE OPERATING', 'AUDIT', 
+                       'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'CORP FEES', 'CORP INSURANCE',
+                       'DALY WATERS', 'HARDWR & SOFTWR', 'LEGAL', 'MISCELLANEOUS', 
+                       'OFFICE RENT', 'REAL PROP TAX', 'SUPPLIES & EQP', 'TRAVEL', 
+                       'UTIL & INTERNET', 'VEHICLES']
+              config:
+                severity: warn
+      
+      - name: line_item_name
+        description: >
+          Descriptive name of the line item or account. Examples: "OIL SALES - WI", 
+          "GAS HEDGING", "WORKOVER - W/O EQUIPMENT", "PAYROLL"
+        tests:
+          - not_null:
+              config:
+                severity: warn
+                where: "account_code is not null"
+      
+      - name: value_type
+        description: >
+          Indicates whether the line represents a quantity or a value. 
+          - NET QTY AMT: Quantity (barrels, MCF, gallons)
+          - NET VALUE AMT: Dollar value
+          Null for header and calculation rows.
+        tests:
+          - accepted_values:
+              values: ['NET QTY AMT', 'NET VALUE AMT']
+              config:
+                severity: warn
+                where: "value_type is not null"
+      
+      - name: calculation_logic
+        description: >
+          Formula or calculation logic for computed rows. Examples include:
+          - "SUBTRACT": This line should be subtracted in calculations
+          - "CALC LINE 4 / 57": Divide line 4 by line 57
+          - "SUM OF LINES 3 + 5 + 7": Add specified lines
+          - "TITLE ONLY": Display as section header only
+          - "HIDDEN ROW": Include in calculations but hide in reports
+          - "BLANK": Empty placeholder row
+      
+      - name: unit_of_measure
+        description: >
+          Unit of measure for the line item, derived from value_type and product_type:
+          - BARRELS: Oil production volumes
+          - MCF: Gas production volumes (thousand cubic feet)
+          - GALLONS: NGL/liquids volumes
+          - DOLLARS: Financial values
+      
+      - name: is_category_header
+        description: >
+          Boolean flag indicating if this row is a category header (has line_number but no account_code). 
+          These rows define the hierarchical structure.
+        tests:
+          - not_null
+      
+      - name: is_title_only
+        description: >
+          Boolean flag indicating rows that are display titles only (e.g., "LOS STATEMENT", 
+          "--PRODUCTION--", "--REVENUE--")
+        tests:
+          - not_null
+      
+      - name: is_hidden_row
+        description: >
+          Boolean flag indicating rows that should be hidden in reports but included in calculations 
+          (e.g., "DAYS IN MONTH" used for BOEPD calculations)
+        tests:
+          - not_null
+      
+      - name: is_blank_row
+        description: Boolean flag indicating intentional blank rows used for spacing in reports
+        tests:
+          - not_null
+      
+      - name: is_calculated_row
+        description: >
+          Boolean flag indicating rows that contain calculated values rather than raw data 
+          (e.g., totals, averages, derived metrics)
+        tests:
+          - not_null
+      
+      - name: is_subtraction
+        description: >
+          Boolean flag indicating if this line item should be subtracted in calculations 
+          (typically used for deducts and expenses)
+        tests:
+          - not_null
+      
+      - name: product_type
+        description: >
+          Derived product category based on report_header_category:
+          - OIL: Oil-related line items
+          - GAS: Gas-related line items  
+          - NGL: Natural gas liquids
+          - BOE: Barrel of oil equivalent
+          - OTHER: Non-product categories (financials, G&A, etc.)
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['OIL', 'GAS', 'NGL', 'BOE', 'OTHER']
+              config:
+                severity: warn
+
+semantic_models:
+  - name: los_mapping
+    description: Semantic model for LOS report mapping and account structure
+    model: ref('stg_sharepoint__los_account_map')
+    
+    dimensions:
+      - name: line_number
+        type: categorical
+      - name: report_header_category
+        type: categorical
+      - name: account_code
+        type: categorical
+      - name: key_sort_category
+        type: categorical
+      - name: product_type
+        type: categorical
+      - name: unit_of_measure
+        type: categorical
+    
+    measures:
+      - name: account_count
+        agg: count
+        description: Count of account line items

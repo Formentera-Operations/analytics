@@ -219,7 +219,7 @@ los_classifications as (
         
     from accounts_hierarchy ah
     left join los_mapping lm 
-        on ah.account_code = lm.account_code
+        on ah.account_code = lm."full_account"
 )
 
 select * from los_classifications

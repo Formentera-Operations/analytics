@@ -1,0 +1,823 @@
+version: 2
+
+sources:
+  - name: seeds_raw
+    description: |
+      Raw seed data from IFS Procount application database dumps.
+      This source contains production accounting data including wells, completions, 
+      tanks, meters, equipment, and their interconnections for oil & gas operations.
+      
+      Data loaded via: CSV seeds → Snowflake
+      Source system: IFS Procount
+      Update frequency: Manual/on-demand
+      Owner: Accounting Team
+      
+    database: fo_raw_db
+    schema: seeds_raw
+    
+    tables:
+      # ==========================================================================
+      # CORE PRODUCTION ENTITIES
+      # ==========================================================================
+      
+      - name: completion_tb_barnett_sheet_1
+        description: |
+          Primary completion/well production entity containing operational and 
+          configuration data for 1,157 completions. This is the central fact table 
+          for production operations with 253 attributes covering allocation, testing, 
+          production methods, reserves, and operational parameters.
+        identifier: completion_tb_barnett_sheet_1
+        columns:
+          - name: merrickid
+            description: Primary key - unique identifier for completion records
+            tests:
+              - unique
+              - not_null
+          - name: prorationmeter
+            description: Meter used for proration calculations
+          - name: longitude
+            description: Geographic longitude coordinate
+          - name: latitude
+            description: Geographic latitude coordinate
+          - name: reservoirid
+            description: Foreign key to reservoir classification
+          - name: operatorentityid
+            description: Operating entity responsible for this completion
+          - name: gatheringsystemid
+            description: Foreign key to gathering system network
+          - name: facilityid
+            description: Foreign key to associated facility
+          - name: accountingteamid
+            description: Team responsible for accounting activities
+          - name: divisionid
+            description: Organizational division
+          - name: producingstatusmerrickid
+            description: Foreign key to producing status reference
+          - name: producingmethodsmerrickid
+            description: Foreign key to producing methods reference
+          - name: allocationtypeid
+            description: Foreign key to completion allocation type
+          - name: stripperqualifiedwellflag
+            description: Indicates if completion qualifies as stripper well
+          - name: outsideoperatedflag
+            description: Indicates if operated by external party
+          - name: activeflag
+            description: Indicates if completion is currently active
+          - name: deleteflag
+            description: Soft delete flag
+          
+      - name: property_well_info_tb_barnett_sheet_1
+        description: |
+          Well property and regulatory information for 1,157 wells. Contains legal 
+          descriptions, API numbers, regulatory IDs, acquisition/disposition dates, 
+          and well classification data.
+        identifier: property_well_info_tb_barnett_sheet_1
+        columns:
+          - name: propertywellmerrickid
+            description: Primary key matching completion merrickid
+            tests:
+              - unique
+              - not_null
+          - name: propertynumber
+            description: Property identification number
+          - name: wellnumber
+            description: Well number within property
+          - name: apiwellnumber
+            description: API (American Petroleum Institute) well identification number
+          - name: uwidisplay
+            description: Unique Well Identifier for regulatory reporting
+          - name: stateid
+            description: State jurisdiction identifier
+          - name: countyid
+            description: County jurisdiction identifier
+          - name: dateabandoned
+            description: Date well was permanently abandoned
+          - name: datewellsold
+            description: Date well ownership was transferred
+          - name: datewellacquired
+            description: Date well was acquired by current operator
+          - name: wellfluidtype
+            description: Type of fluid produced (oil/gas/water)
+          - name: outsideoperatedflag
+            description: External operation indicator
+            
+      - name: tank_tb_barnett_sheet_1
+        description: |
+          Tank configuration and operational parameters for 2,546 tanks. Includes 
+          156 columns covering tank specifications, allocation settings, measurement 
+          points, and production/disposition tracking.
+        identifier: tank_tb_barnett_sheet_1
+        columns:
+          - name: merrickid
+            description: Primary key - unique tank identifier
+            tests:
+              - unique
+              - not_null
+          - name: tankid
+            description: Business identifier for tank (may be duplicated for historical records)
+          - name: routeid
+            description: Foreign key to route assignment
+          - name: gatheringsystemid
+            description: Foreign key to gathering system
+          - name: allocationgroupid
+            description: Group for allocation calculations
+          - name: allocationtypeid
+            description: Foreign key to tank allocation type
+          - name: countyid
+            description: County location
+          - name: divisionid
+            description: Organizational division
+          - name: activeflag
+            description: Current operational status
+          - name: deleteflag
+            description: Soft delete indicator
+            
+      - name: meter_tb_barnett_sheet_1
+        description: |
+          Meter configurations and measurement settings for 4,338 meters. Contains 
+          175 columns with detailed meter specifications, allocation rules, product 
+          codes, and measurement parameters for production and disposition.
+        identifier: meter_tb_barnett_sheet_1
+        columns:
+          - name: merrickid
+            description: Primary key - unique meter identifier
+            tests:
+              - unique
+              - not_null
+          - name: meterid
+            description: Business meter identification
+          - name: divisionid
+            description: Organizational division
+          - name: gatheringsystemid
+            description: Foreign key to gathering system
+          - name: allocationtypeid
+            description: Foreign key to meter allocation type
+          - name: purchasermeterid
+            description: Purchaser's meter identifier for custody transfer
+          - name: fieldgroupid
+            description: Field group classification
+          - name: activeflag
+            description: Operational status flag
+          - name: deleteflag
+            description: Soft delete flag
+            
+      - name: equipment_tb_barnett_sheet_1
+        description: |
+          Equipment inventory and configuration for 106 equipment items. Tracks 
+          148 attributes including equipment specifications, allocation settings, 
+          rental information, and operational parameters.
+        identifier: equipment_tb_barnett_sheet_1
+        columns:
+          - name: merrickid
+            description: Primary key - unique equipment identifier
+            tests:
+              - unique
+              - not_null
+          - name: equipmentid
+            description: Business equipment identification
+          - name: facilityid
+            description: Foreign key to facility location
+          - name: gatheringsystemid
+            description: Foreign key to gathering system
+          - name: allocationtypeid
+            description: Foreign key to equipment allocation type
+          - name: rentdate
+            description: Equipment rental start date
+          - name: activeflag
+            description: Equipment operational status
+          - name: deleteflag
+            description: Soft delete indicator
+          - name: _fivetran_synced
+            description: Fivetran sync timestamp
+          - name: _fivetran_deleted
+            description: Fivetran deletion flag
+            
+      # ==========================================================================
+      # ALLOCATION TYPE REFERENCE TABLES
+      # ==========================================================================
+      
+      - name: completion_allocation_type_tb_sheet_1
+        description: |
+          Reference table defining 14 allocation type configurations for completions.
+          Controls how production and disposition are calculated and allocated across 
+          different completion types with 69 configuration parameters.
+        identifier: completion_allocation_type_tb_sheet_1
+        columns:
+          - name: allocationtype
+            description: Primary key - allocation type code
+            tests:
+              - unique
+              - not_null
+          - name: allocationname
+            description: Descriptive name for allocation type
+          - name: description
+            description: Detailed explanation of allocation methodology
+          - name: activeflag
+            description: Indicates if allocation type is currently in use
+          - name: d_allocationmethod
+            description: Daily allocation calculation method
+          - name: m_allocationmethod
+            description: Monthly allocation calculation method
+          - name: s_testsenabledflag
+            description: Indicates if well testing is enabled
+          - name: s_unitstype flag
+            description: Units of measure flag
+          - name: s_carryforwardflag
+            description: Carry forward configuration for periods
+            
+      - name: tank_allocation_type_tb_sheet_1
+        description: |
+          Reference table with 35 tank allocation type configurations. Defines 
+          how tank volumes are measured, allocated, and accounted for with 29 
+          configuration parameters covering FIFO, BSW handling, and inventory methods.
+        identifier: tank_allocation_type_tb_sheet_1
+        columns:
+          - name: allocationtype
+            description: Primary key - tank allocation type code
+            tests:
+              - unique
+              - not_null
+          - name: allocationname
+            description: Allocation type descriptive name
+          - name: activeflag
+            description: Active status indicator
+          - name: s_tanktype
+            description: Physical tank type classification
+          - name: s_tankgaugetype
+            description: Gauging/measurement method
+          - name: s_productcode
+            description: Product stored in tank
+          - name: s_fifoallocationflag
+            description: First-in-first-out allocation method flag
+          - name: s_ignorebswvolumeflag
+            description: Basic sediment & water handling flag
+          - name: d_allocationmethod
+            description: Daily allocation calculation method
+          - name: m_allocationmethod
+            description: Monthly allocation calculation method
+          - name: tankcompbeginvsource
+            description: Source for beginning comparative inventory
+          - name: tankmonthlyinvsource
+            description: Source for monthly inventory values
+            
+      - name: meter_allocation_type_tb_sheet_1
+        description: |
+          Reference table defining 158 meter allocation types. Most comprehensive 
+          allocation configuration with 88 parameters controlling measurement, 
+          allocation logic, product handling, and reporting for various meter types.
+        identifier: meter_allocation_type_tb_sheet_1
+        columns:
+          - name: allocationtype
+            description: Primary key - meter allocation type code
+            tests:
+              - unique
+              - not_null
+          - name: allocationname
+            description: Meter allocation type name
+          - name: activeflag
+            description: Active usage flag
+          - name: s_metertype
+            description: Physical meter type classification
+          - name: s_measurementpointrole
+            description: Meter's role in measurement network
+          - name: s_productcode
+            description: Product measured by meter
+          - name: d_allocationmethod
+            description: Daily allocation methodology
+          - name: m_allocationmethod
+            description: Monthly allocation methodology
+            
+      - name: equipment_allocation_type_tb_sheet_1
+        description: |
+          Reference table with 12 equipment allocation types. Defines allocation 
+          logic for various equipment categories with 26 configuration parameters.
+        identifier: equipment_allocation_type_tb_sheet_1
+        columns:
+          - name: allocationtype
+            description: Primary key - equipment allocation type code
+            tests:
+              - unique
+              - not_null
+          - name: allocationname
+            description: Equipment allocation type name
+          - name: activeflag
+            description: Active flag
+          - name: s_equipmenttype
+            description: Equipment category classification
+          - name: s_measurementpointrole
+            description: Equipment measurement role
+          - name: s_productcode
+            description: Associated product code
+          - name: d_allocationmethod
+            description: Daily allocation method
+          - name: m_allocationmethod
+            description: Monthly allocation method
+            
+      # ==========================================================================
+      # TANK GAUGING & MEASUREMENT
+      # ==========================================================================
+      
+      - name: tank_strapping_tb_barnett_sheet_1
+        description: |
+          Tank strapping header records (98 records) containing tank calibration 
+          metadata, purchaser information, and effective dates for tank capacity 
+          measurements.
+        identifier: tank_strapping_tb_barnett_sheet_1
+        columns:
+          - name: tankid
+            description: Foreign key to tank table
+            tests:
+              - not_null
+          - name: recorddate
+            description: Date of strapping record
+            tests:
+              - not_null
+          - name: description
+            description: Strapping description/notes
+          - name: purchaserbeid
+            description: Purchaser business entity ID
+          - name: totaltankcapacity
+            description: Total tank capacity in barrels
+          - name: effectivedate
+            description: Date strapping becomes effective
+          - name: datetimestamp
+            description: Record creation/modification timestamp
+          - name: userdatestamp
+            description: User action date
+          - name: userid
+            description: User who created/modified record
+          - name: rowuid
+            description: Unique row identifier (GUID)
+            tests:
+              - unique
+              
+      - name: tank_strapping_detail_tb_barnett_sheet_1
+        description: |
+          Tank strapping detail measurements (177 records) providing inch-by-inch 
+          or quarter-inch calibration data for tank volume calculations. Links to 
+          strapping header via TankID and RecordDate.
+        identifier: tank_strapping_detail_tb_barnett_sheet_1
+        columns:
+          - name: tankid
+            description: Foreign key to tank and strapping header
+            tests:
+              - not_null
+          - name: recorddate
+            description: Foreign key to strapping header record date
+            tests:
+              - not_null
+          - name: totalinches
+            description: Height measurement in total inches
+          - name: totalquarterinches
+            description: Height in quarter-inch increments
+          - name: feet
+            description: Feet component of height
+          - name: inches
+            description: Inches component of height
+          - name: quarterinches
+            description: Quarter-inch component
+          - name: barrels
+            description: Volume in barrels at this height
+          - name: barrelsperinch
+            description: Incremental volume per inch
+          - name: barrelsperquarterinch
+            description: Incremental volume per quarter-inch
+          - name: height
+            description: Total height measurement
+          - name: datetimestamp
+            description: Record timestamp
+          - name: rowuid
+            description: Unique row identifier
+            tests:
+              - unique
+              
+      # ==========================================================================
+      # ROUTING & OPERATIONS
+      # ==========================================================================
+      
+      - name: route_tb_barnett_sheet_1
+        description: |
+          Route master table defining 14 operational routes with 48 attributes 
+          including personnel assignments, meter sources, division assignments, 
+          and route activity tracking.
+        identifier: route_tb_barnett_sheet_1
+        columns:
+          - name: routemerrickid
+            description: Primary key - unique route identifier
+            tests:
+              - unique
+              - not_null
+          - name: routename
+            description: Route name/description
+          - name: routedescription
+            description: Detailed route description
+          - name: divisionid
+            description: Organizational division assignment
+          - name: activeflag
+            description: Route active status
+          - name: startactivedate
+            description: Route activation date
+          - name: endactivedate
+            description: Route deactivation date
+          - name: foremanid
+            description: Primary foreman assignment
+          - name: pumperid
+            description: Primary pumper assignment
+          - name: accountantid
+            description: Primary accountant assignment
+          - name: productionteamid
+            description: Production team assignment
+          - name: accountingteamid
+            description: Accounting team assignment
+          - name: sourcemeteroil
+            description: Source meter for oil allocation
+          - name: sourcemetergas
+            description: Source meter for gas allocation
+          - name: sourcemeterwater
+            description: Source meter for water allocation
+            
+      - name: route_stop_tb_sheet_1
+        description: |
+          Route stop definitions (3,795 stops) representing physical locations 
+          visited on routes. Links routes to production points with sequencing 
+          and activity tracking.
+        identifier: route_stop_tb_sheet_1
+        columns:
+          - name: routestopmerrickid
+            description: Primary key - unique route stop identifier
+            tests:
+              - unique
+              - not_null
+          - name: routemerrickid
+            description: Foreign key to route master
+            tests:
+              - not_null
+          - name: stopname
+            description: Stop location name
+          - name: stoporder
+            description: Sequence order of stop on route
+          - name: stoptype
+            description: Type/classification of stop
+          - name: stopcomment
+            description: Notes about the stop
+          - name: activeflag
+            description: Stop active status (1=active, 0=inactive, -1=deleted)
+          - name: locationmerrickid
+            description: Geographic location reference
+          - name: datetimestamp
+            description: Record creation/modification timestamp
+          - name: userdatestamp
+            description: User action date
+          - name: userid
+            description: User who modified record
+            
+      - name: route_stop_item_tb_sheet_1
+        description: |
+          Route stop items (32,043 items) linking specific production objects 
+          (tanks, meters, completions, equipment) to route stops. Enables field 
+          operations and data collection workflows.
+        identifier: route_stop_item_tb_sheet_1
+        columns:
+          - name: routestopmerrickid
+            description: Foreign key to route stop
+            tests:
+              - not_null
+          - name: objectmerrickid
+            description: Foreign key to production object (tank/meter/completion/equipment)
+            tests:
+              - not_null
+          - name: objectmerricktype
+            description: Type code indicating object type (1=completion, 2=meter, 3=tank, 4=equipment)
+            tests:
+              - not_null
+          - name: displaymessage
+            description: Display text for mobile/field device
+          - name: displaygas
+            description: Display gas volumes flag
+          - name: displayoil
+            description: Display oil volumes flag
+          - name: displaywater
+            description: Display water volumes flag
+          - name: datetimestamp
+            description: Record timestamp
+          - name: userdatestamp
+            description: User action date
+          - name: userid
+            description: User identifier
+            
+      # ==========================================================================
+      # NETWORK CONNECTIVITY & GATHERING SYSTEMS
+      # ==========================================================================
+      
+      - name: connect_tb_sheet_1
+        description: |
+          Universal network connectivity table (61,076 connections) defining 
+          upstream/downstream relationships between all production objects. 
+          Largest table tracking the flow network with date-effective relationships.
+        identifier: connect_tb_sheet_1
+        columns:
+          - name: upstreamid
+            description: Source object merrick ID
+            tests:
+              - not_null
+          - name: upstreamtype
+            description: Source object type code
+            tests:
+              - not_null
+          - name: downstreamid
+            description: Destination object merrick ID
+            tests:
+              - not_null
+          - name: downstreamtype
+            description: Destination object type code
+            tests:
+              - not_null
+          - name: startdate
+            description: Connection effective start date
+            tests:
+              - not_null
+          - name: enddate
+            description: Connection effective end date
+          - name: startmonth
+            description: Start period in months
+          - name: endmonth
+            description: End period in months
+          - name: description
+            description: Connection description/purpose
+          - name: deleteflag
+            description: Soft delete indicator
+          - name: datetimestamp
+            description: Record timestamp
+          - name: userdatestamp
+            description: User action date
+          - name: userid
+            description: User identifier
+          - name: rowuid
+            description: Unique row identifier
+          - name: _fivetran_synced
+            description: Fivetran synchronization timestamp
+          - name: _fivetran_deleted
+            description: Fivetran deletion flag
+            
+      - name: completion_connect_cross_tb_barnett_sheet_1
+        description: |
+          Completion-specific connectivity table (10,835 connections) tracking 
+          relationships between completions and gathering systems over time with 
+          date-effective periods.
+        identifier: completion_connect_cross_tb_barnett_sheet_1
+        columns:
+          - name: merrickid
+            description: Completion merrick ID
+            tests:
+              - not_null
+          - name: sourceid
+            description: Connected source object ID
+            tests:
+              - not_null
+          - name: sourcetype
+            description: Source object type classification
+            tests:
+              - not_null
+          - name: gatheringsystemid
+            description: Foreign key to gathering system
+          - name: startdate
+            description: Connection start date
+            tests:
+              - not_null
+          - name: enddate
+            description: Connection end date
+          - name: userdatestamp
+            description: User action date
+          - name: usertimestamp
+            description: User action time
+          - name: userid
+            description: User identifier
+            
+      - name: gathering_systemtb_barnett_sheet_1
+        description: |
+          Gathering system master data (1,033 systems) defining production 
+          gathering networks with organizational hierarchies, personnel assignments, 
+          and 44 operational parameters.
+        identifier: gathering_systemtb_barnett_sheet_1
+        columns:
+          - name: gatheringsystemmerrickid
+            description: Primary key - unique gathering system identifier
+            tests:
+              - unique
+              - not_null
+          - name: gatheringsystemid
+            description: Business identifier for gathering system
+          - name: batteryid
+            description: Battery/facility classification
+          - name: divisionid
+            description: Organizational division
+          - name: allocationprocess
+            description: Allocation calculation process setting
+          - name: engineerpersonid
+            description: Assigned engineer
+          - name: pumperpersonid
+            description: Assigned field pumper
+          - name: drillingteamid
+            description: Drilling team assignment
+          - name: activeflag
+            description: System active status
+          - name: deleteflag
+            description: Soft delete flag
+          - name: rowuid
+            description: Unique row identifier
+            tests:
+              - unique
+              
+      # ==========================================================================
+      # REFERENCE & LOOKUP TABLES
+      # ==========================================================================
+      
+      - name: producing_status_tb_sheet_1
+        description: |
+          Reference table of 42 producing status codes with state-specific 
+          regulatory codes and descriptions for well/completion status classification.
+        identifier: producing_status_tb_sheet_1
+        columns:
+          - name: producingstatusmerrickid
+            description: Primary key - unique status code
+            tests:
+              - unique
+              - not_null
+          - name: producingdescriptionshort
+            description: Short status description
+          - name: producingdescriptionlong
+            description: Full status description
+          - name: activeflag
+            description: Status currently in use
+          - name: texasstatecode
+            description: Texas regulatory status code
+          - name: alabamastatecode
+            description: Alabama regulatory status code
+          - name: wyomingstatecode
+            description: Wyoming regulatory status code
+          - name: accountingid
+            description: Accounting system reference
+          - name: userid
+            description: User who last modified
+            
+      - name: producing_methods_tb_sheet_1
+        description: |
+          Reference table of 53 production method classifications with state-specific 
+          regulatory codes defining lift and recovery methods.
+        identifier: producing_methods_tb_sheet_1
+        columns:
+          - name: producingmethodsmerrickid
+            description: Primary key - unique method code
+            tests:
+              - unique
+              - not_null
+          - name: producingmethodsshort
+            description: Short method description
+          - name: producingmethodslong
+            description: Full method description
+          - name: californiastatecode
+            description: California regulatory method code
+          - name: texasstatecode
+            description: Texas regulatory method code
+          - name: wyomingstatecode
+            description: Wyoming regulatory method code
+          - name: activeflag
+            description: Method currently in use
+          - name: userid
+            description: User who last modified
+            
+      - name: cross_reference_tb_barnett_sheet_1
+        description: |
+          Universal cross-reference table (7,923 records) providing alternate 
+          identifiers and organizational hierarchies for all objects across the 
+          system with 26 classification dimensions.
+        identifier: cross_reference_tb_barnett_sheet_1
+        columns:
+          - name: merrickid
+            description: Object merrick ID being referenced
+            tests:
+              - not_null
+          - name: merricktype
+            description: Object type classification
+            tests:
+              - not_null
+          - name: uniqueid
+            description: Alternate unique identifier
+          - name: objectname
+            description: Object name/description
+          - name: objectnumber
+            description: Business object number
+          - name: objecttype
+            description: Additional type classification
+          - name: accountingid
+            description: Accounting system identifier
+          - name: productionid
+            description: Production system identifier
+          - name: engineeringid
+            description: Engineering system identifier
+          - name: divisionid
+            description: Division assignment
+          - name: accountingteamid
+            description: Accounting team assignment
+          - name: drillingteamid
+            description: Drilling team assignment
+          - name: productionteamid
+            description: Production team assignment
+          - name: groupid
+            description: Group classification
+          - name: fieldgroupid
+            description: Field group classification
+          - name: areaid
+            description: Area classification
+          - name: batteryid
+            description: Battery classification
+          - name: stateid
+            description: State location
+          - name: countyid
+            description: County location
+          - name: activeflag
+            description: Active record flag
+          - name: recordcompletionflag
+            description: Data completeness indicator
+            
+      # ==========================================================================
+      # BUSINESS LOGIC & FORMULAS
+      # ==========================================================================
+      
+      - name: object_formula_tb_barnett_sheet_1
+        description: |
+          Business logic formulas (1,791 formulas) defining calculated fields 
+          and allocation rules applied to objects over date-effective periods. 
+          Contains 16 columns with formula definitions and their application scope.
+        identifier: object_formula_tb_barnett_sheet_1
+        columns:
+          - name: objectid
+            description: Object merrick ID formula applies to
+            tests:
+              - not_null
+          - name: objecttype
+            description: Type of object (completion/tank/meter/equipment)
+            tests:
+              - not_null
+          - name: objectformulatype
+            description: Type/category of formula calculation
+            tests:
+              - not_null
+          - name: startdate
+            description: Formula effective start date
+            tests:
+              - not_null
+          - name: enddate
+            description: Formula effective end date
+          - name: formula
+            description: Calculation formula expression
+          - name: activeflag
+            description: Formula currently active
+          - name: deleteflag
+            description: Soft delete flag
+          - name: datetimestamp
+            description: Record timestamp
+          - name: userdatestamp
+            description: User action date
+          - name: userid
+            description: User identifier
+
+# =============================================================================
+# SOURCE-LEVEL NOTES & DATA QUALITY CONSIDERATIONS
+# =============================================================================
+
+# Data Quality Notes:
+# - Many tables contain _fivetran_synced and _fivetran_deleted columns indicating
+#   this data was synced via Fivetran CDC process
+# - Audit columns are consistent: UserDateStamp, UserTimeStamp, UserID, DateTimeStamp
+# - Soft deletes used throughout: DeleteFlag and ActiveFlag patterns
+# - Date handling varies: Excel serial dates in some tables, ISO dates in others
+# - RowUID (GUID) used for technical primary keys in most tables
+# - MerrickID appears to be the business key pattern throughout
+
+# Recommended Model Architecture:
+# 
+# STAGING LAYER (stg_):
+#   - stg_ifs_procount__completions - Clean completion/well data
+#   - stg_ifs_procount__tanks - Tank master data
+#   - stg_ifs_procount__meters - Meter master data  
+#   - stg_ifs_procount__equipment - Equipment master data
+#   - stg_ifs_procount__connections - Network connectivity
+#   - stg_ifs_procount__routes - Route operations data
+#   - stg_ifs_procount__allocation_types - All allocation type refs
+#   - stg_ifs_procount__reference_data - Status, methods, cross-refs
+#
+# INTERMEDIATE LAYER (int_):
+#   - int_production_network__nodes - All production points as nodes
+#   - int_production_network__edges - All connections as edges
+#   - int_allocation__rules - Flattened allocation logic
+#   - int_routes__stop_inventory - Route stops with object inventory
+#
+# MARTS LAYER:
+#   - dim_completions - Completion dimension (SCD Type 2)
+#   - dim_tanks - Tank dimension
+#   - dim_meters - Meter dimension
+#   - dim_routes - Route dimension
+#   - fct_connections - Connection facts with date effectiveness
+#   - fct_tank_gauges - Tank measurement facts
+#   - bridge_route_objects - Bridge table for route to objects

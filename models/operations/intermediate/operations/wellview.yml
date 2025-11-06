@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: int_wellview__canonical_wells
+    description: "Canonicalized well grain enriched with latest wellbore details and current/prior status rollups from WellView."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ['well_id']
+    columns:
+      - name: well_sk
+        description: "Surrogate key generated from the WellView well identifier."
+        tests:
+          - not_null
+      - name: well_id
+        description: "Native WellView well identifier (IDWELL)."
+        tests:
+          - not_null
+      - name: well_bore_sk
+        description: "Surrogate key representing the active wellbore record for the well."
+      - name: latest_status_date
+        description: "Most recent status effective date captured in WellView status history."
+      - name: prior_status_date
+        description: "Previous status effective date captured in WellView status history."
+
+  - name: int_wellview__well_status_history_bridge
+    description: "History bridge retaining the chronological status changes for each WellView well."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ['well_id', 'record_id']
+    columns:
+      - name: well_status_sk
+        description: "Surrogate key generated from the status history record."
+        tests:
+          - not_null
+      - name: well_id
+        description: "Native WellView well identifier associated with the status event."
+        tests:
+          - not_null
+      - name: status_date
+        description: "Effective date of the status record."
+      - name: next_status_date
+        description: "Start date of the subsequent status record for the same well, if known."
+      - name: status_end_date
+        description: "Derived end date for the status period using the next known status change."
+      - name: is_current_status
+        description: "Flag identifying whether the record represents the most recent status."
