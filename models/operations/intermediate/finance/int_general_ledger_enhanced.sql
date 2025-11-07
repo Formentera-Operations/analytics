@@ -340,12 +340,12 @@ SELECT
     gld.is_reconciled_trial AS reconciled_trial,
     gld.is_reconciled AS reconciled,
 
-        -- AFE Type Classification
+    /*    -- AFE Type Classification
     CAST(afes.afe_type_id AS VARCHAR) AS afe_type_id,
     CAST(afes.afe_type_code AS VARCHAR) AS afe_type_code,
     CAST(afes.afe_type_label AS VARCHAR) AS afe_type_label,
     CAST(afes.afe_type_full_name AS VARCHAR) AS afe_type_full_name,
-
+*/
 
     
     -- Entry metadata
