@@ -50,7 +50,7 @@ models:
       - Handling NULL and empty descriptions
       - Standardizing currency values with explicit decimal casting
       - Converting raw column names to snake_case
-    tests:
+    data_tests:
       # 1. Monitor daily volume - know if data stops flowing
       - elementary.volume_anomalies:
           time_bucket:
@@ -75,7 +75,7 @@ models:
       - name: id
         description: Unique identifier for each GL entry
         tests:
-          # - unique  # Temporarily disabled until we investigate duplicates
+          - unique
           - not_null
 
       - name: company_id
