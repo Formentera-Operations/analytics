@@ -660,11 +660,6 @@ sources:
               - unique
               - not_null
           
-          - name: ihsId
-            description: "IHS ID"
-            tests:
-              - unique
-          
           - name: initialRespress
             description: "Initial Reservoir Pressure"
           
@@ -920,11 +915,6 @@ sources:
           - name: rs
             description: "RS"
           
-          - name: rsegId
-            description: "RSEG ID"
-            tests:
-              - unique
-          
           - name: scope
             description: "Scope"
           
@@ -936,11 +926,6 @@ sources:
           
           - name: so
             description: "SO"
-          
-          - name: spgciId
-            description: "SPGCI ID"
-            tests:
-              - unique
           
           - name: spudDate
             description: "Spud Date"
@@ -971,11 +956,6 @@ sources:
           
           - name: targetFormation
             description: "Target Formation"
-          
-          - name: tgsId
-            description: "TGS ID"
-            tests:
-              - unique
           
           - name: thickness
             description: "Thickness"
@@ -1411,9 +1391,6 @@ sources:
           - name: drillStartDate
             description: "Drill Start Date"
           
-          - name: drillinginfoId
-            description: "DrillingInfo ID"
-          
           - name: elevation
             description: "Elevation"
           
@@ -1673,11 +1650,6 @@ sources:
               - unique
               - not_null
           
-          - name: ihsId
-            description: "IHS ID"
-            tests:
-              - unique
-          
           - name: initialRespress
             description: "Initial Reservoir Pressure"
           
@@ -1933,11 +1905,6 @@ sources:
           - name: rs
             description: "RS"
           
-          - name: rsegId
-            description: "RSEG ID"
-            tests:
-              - unique
-          
           - name: scope
             description: "Scope"
           
@@ -1949,11 +1916,6 @@ sources:
           
           - name: so
             description: "SO"
-          
-          - name: spgciId
-            description: "SPGCI ID"
-            tests:
-              - unique
           
           - name: spudDate
             description: "Spud Date"
@@ -1984,11 +1946,6 @@ sources:
           
           - name: targetFormation
             description: "Target Formation"
-          
-          - name: tgsId
-            description: "TGS ID"
-            tests:
-              - unique
           
           - name: thickness
             description: "Thickness"
