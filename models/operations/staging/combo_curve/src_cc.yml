@@ -80,13 +80,9 @@ sources:
           
           - name: api14
             description: "API 14"
-            tests:
-              - unique
           
           - name: ariesId
             description: "Aries ID"
-            tests:
-              - unique
           
           - name: azimuth
             description: "Azimuth"
@@ -116,13 +112,9 @@ sources:
           
           - name: chosenID
             description: "Chosen ID"
-            tests:
-              - unique
           
           - name: chosenKeyID
             description: "Chosen ID Key"
-            tests:
-              - unique
           
           - name: completionDesign
             description: "Completion Design"
@@ -828,8 +820,6 @@ sources:
           
           - name: phdwinId
             description: "PHDWIN ID"
-            tests:
-              - unique
           
           - name: play
             description: "Play"
@@ -1085,13 +1075,9 @@ sources:
           
           - name: api14
             description: "API 14"
-            tests:
-              - unique
           
           - name: ariesId
             description: "Aries ID"
-            tests:
-              - unique
           
           - name: azimuth
             description: "Azimuth"
@@ -1121,13 +1107,9 @@ sources:
           
           - name: chosenID
             description: "Chosen ID"
-            tests:
-              - unique
           
           - name: chosenKeyID
             description: "Chosen ID Key"
-            tests:
-              - unique
           
           - name: completionDesign
             description: "Completion Design"
@@ -1828,8 +1810,6 @@ sources:
           
           - name: phdwinId
             description: "PHDWIN ID"
-            tests:
-              - unique
           
           - name: play
             description: "Play"
