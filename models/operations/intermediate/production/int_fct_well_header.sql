@@ -108,6 +108,8 @@ tbl as (
         end as "First Sales Date"           
         --,w."First Sales Date"
         --,p."First Sale Date"
+        ,p."Current Facility"
+        ,p."Facility Name"
         ,r."Foreman"
         ,p."Foreman Area"
         ,case
