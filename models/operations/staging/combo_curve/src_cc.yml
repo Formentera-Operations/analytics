@@ -80,13 +80,9 @@ sources:
           
           - name: api14
             description: "API 14"
-            tests:
-              - unique
           
           - name: ariesId
             description: "Aries ID"
-            tests:
-              - unique
           
           - name: azimuth
             description: "Azimuth"
@@ -116,13 +112,9 @@ sources:
           
           - name: chosenID
             description: "Chosen ID"
-            tests:
-              - unique
           
           - name: chosenKeyID
             description: "Chosen ID Key"
-            tests:
-              - unique
           
           - name: completionDesign
             description: "Completion Design"
@@ -668,11 +660,6 @@ sources:
               - unique
               - not_null
           
-          - name: ihsId
-            description: "IHS ID"
-            tests:
-              - unique
-          
           - name: initialRespress
             description: "Initial Reservoir Pressure"
           
@@ -833,8 +820,6 @@ sources:
           
           - name: phdwinId
             description: "PHDWIN ID"
-            tests:
-              - unique
           
           - name: play
             description: "Play"
@@ -930,11 +915,6 @@ sources:
           - name: rs
             description: "RS"
           
-          - name: rsegId
-            description: "RSEG ID"
-            tests:
-              - unique
-          
           - name: scope
             description: "Scope"
           
@@ -946,11 +926,6 @@ sources:
           
           - name: so
             description: "SO"
-          
-          - name: spgciId
-            description: "SPGCI ID"
-            tests:
-              - unique
           
           - name: spudDate
             description: "Spud Date"
@@ -981,11 +956,6 @@ sources:
           
           - name: targetFormation
             description: "Target Formation"
-          
-          - name: tgsId
-            description: "TGS ID"
-            tests:
-              - unique
           
           - name: thickness
             description: "Thickness"
@@ -1105,13 +1075,9 @@ sources:
           
           - name: api14
             description: "API 14"
-            tests:
-              - unique
           
           - name: ariesId
             description: "Aries ID"
-            tests:
-              - unique
           
           - name: azimuth
             description: "Azimuth"
@@ -1141,13 +1107,9 @@ sources:
           
           - name: chosenID
             description: "Chosen ID"
-            tests:
-              - unique
           
           - name: chosenKeyID
             description: "Chosen ID Key"
-            tests:
-              - unique
           
           - name: completionDesign
             description: "Completion Design"
@@ -1429,11 +1391,6 @@ sources:
           - name: drillStartDate
             description: "Drill Start Date"
           
-          - name: drillinginfoId
-            description: "DrillingInfo ID"
-            tests:
-              - unique
-          
           - name: elevation
             description: "Elevation"
           
@@ -1693,11 +1650,6 @@ sources:
               - unique
               - not_null
           
-          - name: ihsId
-            description: "IHS ID"
-            tests:
-              - unique
-          
           - name: initialRespress
             description: "Initial Reservoir Pressure"
           
@@ -1858,8 +1810,6 @@ sources:
           
           - name: phdwinId
             description: "PHDWIN ID"
-            tests:
-              - unique
           
           - name: play
             description: "Play"
@@ -1955,11 +1905,6 @@ sources:
           - name: rs
             description: "RS"
           
-          - name: rsegId
-            description: "RSEG ID"
-            tests:
-              - unique
-          
           - name: scope
             description: "Scope"
           
@@ -1971,11 +1916,6 @@ sources:
           
           - name: so
             description: "SO"
-          
-          - name: spgciId
-            description: "SPGCI ID"
-            tests:
-              - unique
           
           - name: spudDate
             description: "Spud Date"
@@ -2006,11 +1946,6 @@ sources:
           
           - name: targetFormation
             description: "Target Formation"
-          
-          - name: tgsId
-            description: "TGS ID"
-            tests:
-              - unique
           
           - name: thickness
             description: "Thickness"

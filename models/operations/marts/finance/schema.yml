@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: wells
+    description: Unified wells data combining project wells and company wells.
+    columns:
+      - name: well_id
+        description: Unique identifier for the well.
+        data_tests:
+          - unique
+          - not_null
