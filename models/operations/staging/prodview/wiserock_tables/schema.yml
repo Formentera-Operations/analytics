@@ -57,6 +57,11 @@ models:
 
   - name: stg_wiserock__pv_remarks
     description: "Staging model for unit remarks - tracking comments, action items, and imbalance explanations"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -70,7 +75,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       
       # Date and comments
       - name: dttm
@@ -125,6 +129,11 @@ models:
 
   - name: stg_wiserock__pv_production_tests
     description: "Staging model for production tests - capturing well performance measurements and analysis (imperial units)"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -138,7 +147,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       
       # Test information
       - name: typ
@@ -457,6 +465,11 @@ models:
 
   - name: stg_wiserock__pv_status
     description: "Staging model for completion status - tracking operational states and configurations"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -470,7 +483,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       
       # Date and status information
       - name: dttm
@@ -547,6 +559,11 @@ models:
 
   - name: stg_wiserock__pv_completion_parameters
     description: "Staging model for completion parameters - operational measurements and settings (imperial units)"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -560,7 +577,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       
       # Date and basic info
       - name: dttm
@@ -705,6 +721,11 @@ models:
 
   - name: stg_wiserock__pv_completion_downtimes
     description: "Staging model for completion downtimes - tracking operational interruptions and maintenance events"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -718,7 +739,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       
       # Downtime information
       - name: typdowntm
@@ -823,6 +843,11 @@ models:
 
   - name: stg_wiserock__pv_completions
     description: "Staging model for completions - licensed producing or injecting intervals in wells"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -836,7 +861,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       
       # Date fields
       - name: dttmstartalloc
@@ -1017,6 +1041,11 @@ models:
 
   - name: stg_wiserock__pv_daily_allocations
     description: "Staging model for daily allocations with production volumes and operational data (imperial units)"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -1024,11 +1053,12 @@ models:
           - not_null
       - name: idrecparent
         description: "Parent record identifier"
+        tests:
+          - not_null
       - name: idrec
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       - name: idrecunit
         description: "Unit identifier"
       - name: idrecunittk
@@ -1253,6 +1283,11 @@ models:
 
   - name: stg_wiserock__pv_units
     description: "Staging model for ProdView units - building blocks of the flow network"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - idrec
+            - updatedate
     columns:
       - name: idflownet
         description: "Flow network identifier"
@@ -1262,7 +1297,6 @@ models:
         description: "Unique record identifier"
         tests:
           - not_null
-          - unique
       - name: name
         description: "Unit Name"
       - name: nameshort
