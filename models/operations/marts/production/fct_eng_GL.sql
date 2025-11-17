@@ -32,6 +32,7 @@ WITH gl as (
         ,accrual_date as "Accrual Date"
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
+        ,gross_amount as "Gross Value"
         ,gross_volume as "Gross Volume"
         ,well_code as "Well Code"
         ,well_name as "Well Name"
