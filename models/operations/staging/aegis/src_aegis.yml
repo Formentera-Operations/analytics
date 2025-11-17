@@ -1,0 +1,397 @@
+version: 2
+
+sources:
+  - name: aegis_raw
+    description: Raw data from Aegis system
+    database: FO_RAW_DB
+    schema: AEGIS_RAW
+    tables:
+      - name: ENTITIES
+        description: Entity information and platform data
+        columns:
+          - name: COMPANY_SLASH_PE
+            description: Company/PE identifier
+            data_type: varchar
+          - name: LONGNAME
+            description: Full entity name
+            data_type: varchar
+          - name: NAME
+            description: Entity name
+            data_type: varchar
+          - name: PLATFORMID
+            description: Platform identifier
+            data_type: number
+          - name: _PORTABLE_EXTRACTED
+            description: Extraction timestamp
+            data_type: timestamp_ntz
+
+      - name: CONTRACTS_INFO
+        description: Contract information and details
+        columns:
+          - name: AEGISCONTRACTID
+            description: Aegis contract identifier
+            data_type: number
+          - name: BASIN
+            description: Geographic basin
+            data_type: varchar
+          - name: BUSINESSUNITTAG
+            description: Business unit tag
+            data_type: varchar
+          - name: CONSENTTOASSIGN
+            description: Consent to assign flag
+            data_type: boolean
+          - name: CONSENTTODISCLOSE
+            description: Consent to disclose flag
+            data_type: boolean
+          - name: CONTRACTDATE
+            description: Contract date
+            data_type: timestamp_ntz
+          - name: CONTRACTDESCRIPTION
+            description: Contract description
+            data_type: varchar
+          - name: CONTRACTEFFECTIVEDATE
+            description: Contract effective date
+            data_type: varchar
+          - name: CONTRACTNUMBER
+            description: Contract number
+            data_type: varchar
+          - name: CONTRACTPRESSUREBASE
+            description: Contract pressure base
+            data_type: float
+          - name: CONTRACTSTATUS
+            description: Contract status
+            data_type: varchar
+          - name: COUNTERPARTY
+            description: Counterparty name
+            data_type: varchar
+          - name: ENTITY
+            description: Entity name
+            data_type: varchar
+          - name: ETHANEELECTION
+            description: Ethane election flag
+            data_type: boolean
+          - name: ETHANENOTICEREQ
+            description: Ethane notice requirement
+            data_type: varchar
+          - name: FULLYEXECUTED
+            description: Fully executed flag
+            data_type: boolean
+          - name: GEOGRAPHICAREANAME
+            description: Geographic area name
+            data_type: varchar
+          - name: HASATTACHMENT
+            description: Has attachment flag
+            data_type: boolean
+          - name: INITIALTERM
+            description: Initial term
+            data_type: timestamp_ntz
+          - name: NOTICEREQUIREMENTS
+            description: Notice requirements
+            data_type: varchar
+          - name: PLAY
+            description: Play name
+            data_type: varchar
+          - name: REGIONTAG
+            description: Region tag
+            data_type: varchar
+          - name: TAKEINKINDOPTION
+            description: Take in kind option flag
+            data_type: boolean
+          - name: TERMDESCRIPTION
+            description: Term description
+            data_type: varchar
+          - name: TERMINATIONDATE
+            description: Termination date
+            data_type: timestamp_ntz
+          - name: TIKTYPEDESCRIPTION
+            description: TIK type description
+            data_type: varchar
+          - name: _PORTABLE_EXTRACTED
+            description: Extraction timestamp
+            data_type: timestamp_ntz
+
+      - name: UNDERLYINGS
+        description: Underlying instruments and products
+        columns:
+          - name: CODE
+            description: Underlying code
+            data_type: varchar
+          - name: ID
+            description: Underlying identifier
+            data_type: number
+          - name: NAME
+            description: Underlying name
+            data_type: varchar
+          - name: PRODUCT
+            description: Product type
+            data_type: varchar
+          - name: _PORTABLE_EXTRACTED
+            description: Extraction timestamp
+            data_type: timestamp_ntz
+
+      - name: MARKET_DATA
+        description: Market data and pricing information
+        columns:
+          - name: ASOFDATE
+            description: As of date
+            data_type: timestamp_ntz
+          - name: CODE
+            description: Market data code
+            data_type: varchar
+          - name: DELIVERYDATE
+            description: Delivery date
+            data_type: varchar
+          - name: NAME
+            description: Market data name
+            data_type: varchar
+          - name: PRICE
+            description: Price
+            data_type: float
+          - name: PRODUCT
+            description: Product type
+            data_type: varchar
+          - name: _ID
+            description: Record identifier
+            data_type: varchar
+          - name: _PORTABLE_EXTRACTED
+            description: Extraction timestamp
+            data_type: timestamp_ntz
+
+      - name: METER_STATEMENTS
+        description: Detailed meter statements and production data
+        columns:
+          - name: ACCOUNTINGDATE
+            description: Accounting date
+            data_type: timestamp_ntz
+          - name: ALLOCATED_RESIDUE_MCF
+            description: Allocated residue in MCF
+            data_type: float
+          - name: ALLOCATED_RESIDUE_MMBTU
+            description: Allocated residue in MMBTU
+            data_type: float
+          - name: ALLOCATION_DECIMAL
+            description: Allocation decimal
+            data_type: float
+          - name: BUYBACK_FEE_BASIS
+            description: Buyback fee basis
+            data_type: number
+          - name: BUYBACK_FEE_RATE
+            description: Buyback fee rate
+            data_type: number
+          - name: BUYBACK_FEE_VALUE
+            description: Buyback fee value
+            data_type: number
+          - name: BYPASS_MCF
+            description: Bypass in MCF
+            data_type: number
+          - name: BYPASS_MMBTU
+            description: Bypass in MMBTU
+            data_type: number
+          - name: C1_MOL
+            description: C1 molecular composition
+            data_type: float
+          - name: C2_ALLOCATED_GALLONS
+            description: C2 allocated gallons
+            data_type: float
+          - name: C2_CONTRACT_PERCENTAGE
+            description: C2 contract percentage
+            data_type: float
+          - name: C2_FIXED_RECOVERY
+            description: C2 fixed recovery
+            data_type: float
+          - name: C2_GPM
+            description: C2 gallons per MCF
+            data_type: float
+          - name: C2_GROSS_PRICE
+            description: C2 gross price
+            data_type: float
+          - name: C2_MOL
+            description: C2 molecular composition
+            data_type: float
+          - name: C2_PRICE
+            description: C2 price
+            data_type: float
+          - name: C2_SETTLEMENT_GALLONS
+            description: C2 settlement gallons
+            data_type: float
+          - name: C2_SHRINK_MMBTU
+            description: C2 shrink in MMBTU
+            data_type: float
+          - name: C2_T_AMP_F_PRICE
+            description: C2 transportation and fractionation price
+            data_type: float
+          - name: C2_THEORETICAL_GALLONS
+            description: C2 theoretical gallons
+            data_type: float
+          - name: C2_VALUE___STATEMENT
+            description: C2 value on statement
+            data_type: float
+          - name: C2_VALUE___TIK
+            description: C2 value take-in-kind
+            data_type: float
+          - name: C3_ALLOCATED_GALLONS
+            description: C3 allocated gallons
+            data_type: float
+          - name: C3_CONTRACT_PERCENTAGE
+            description: C3 contract percentage
+            data_type: float
+          - name: C3_FIXED_RECOVERY
+            description: C3 fixed recovery
+            data_type: float
+          - name: C3_GPM
+            description: C3 gallons per MCF
+            data_type: float
+          - name: C3_GROSS_PRICE
+            description: C3 gross price
+            data_type: float
+          - name: C3_MOL
+            description: C3 molecular composition
+            data_type: float
+          - name: C3_PRICE
+            description: C3 price
+            data_type: float
+          - name: C3_SETTLEMENT_GALLONS
+            description: C3 settlement gallons
+            data_type: float
+          - name: C3_SHRINK_MMBTU
+            description: C3 shrink in MMBTU
+            data_type: float
+          - name: C3_T_AMP_F_PRICE
+            description: C3 transportation and fractionation price
+            data_type: float
+          - name: C3_THEORETICAL_GALLONS
+            description: C3 theoretical gallons
+            data_type: float
+          - name: C3_VALUE___STATEMENT
+            description: C3 value on statement
+            data_type: float
+          - name: C3_VALUE___TIK
+            description: C3 value take-in-kind
+            data_type: float
+          - name: CONTRACTNUMBER
+            description: Contract number
+            data_type: varchar
+          - name: DOCUMENTNAME
+            description: Document name
+            data_type: varchar
+          - name: FACILITY_NAME
+            description: Facility name
+            data_type: varchar
+          - name: GROSS_WELLHEAD_MCF
+            description: Gross wellhead in MCF
+            data_type: float
+          - name: GROSS_WELLHEAD_MMBTU
+            description: Gross wellhead in MMBTU
+            data_type: float
+          - name: ID
+            description: Record identifier
+            data_type: number
+          - name: LIQUID_ALLOCATED_GALLONS
+            description: Total liquid allocated gallons
+            data_type: float
+          - name: LIQUID_SETTLEMENT_GALLONS
+            description: Total liquid settlement gallons
+            data_type: float
+          - name: LIQUID_SETTLEMENT_VALUE___STATEMENT
+            description: Total liquid settlement value on statement
+            data_type: float
+          - name: LIQUID_SETTLEMENT_VALUE___TIK
+            description: Total liquid settlement value take-in-kind
+            data_type: float
+          - name: METERNAME
+            description: Meter name
+            data_type: varchar
+          - name: METERNUMBER
+            description: Meter number
+            data_type: varchar
+          - name: NET_DELIVERED_MCF
+            description: Net delivered in MCF
+            data_type: float
+          - name: NET_DELIVERED_MMBTU
+            description: Net delivered in MMBTU
+            data_type: float
+          - name: NET_WELLHEAD_MCF
+            description: Net wellhead in MCF
+            data_type: float
+          - name: NET_WELLHEAD_MMBTU
+            description: Net wellhead in MMBTU
+            data_type: float
+          - name: PRESSUREBASE
+            description: Pressure base
+            data_type: float
+          - name: PRIMARYCONTRACTNUMBER
+            description: Primary contract number
+            data_type: varchar
+          - name: PROCESSOR
+            description: Processor name
+            data_type: varchar
+          - name: PRODUCER
+            description: Producer name
+            data_type: varchar
+          - name: PRODUCTIONDATE
+            description: Production date
+            data_type: timestamp_ntz
+          - name: RESIDUE_CONTRACT_PERCENT
+            description: Residue contract percentage
+            data_type: float
+          - name: RESIDUE_GROSS_PRICE
+            description: Residue gross price
+            data_type: float
+          - name: RESIDUE_TRANSPORT_PRICE
+            description: Residue transport price
+            data_type: float
+          - name: SETTLEMENT_RESIDUE_MCF
+            description: Settlement residue in MCF
+            data_type: float
+          - name: SETTLEMENT_RESIDUE_MMBTU
+            description: Settlement residue in MMBTU
+            data_type: float
+          - name: SETTLEMENT_RESIDUE_PRICE
+            description: Settlement residue price
+            data_type: float
+          - name: SETTLEMENT_RESIDUE_VALUE___STATEMENT
+            description: Settlement residue value on statement
+            data_type: float
+          - name: SETTLEMENT_RESIDUE_VALUE___TIK
+            description: Settlement residue value take-in-kind
+            data_type: float
+          - name: STATEMENT_NET_VALUE
+            description: Statement net value
+            data_type: float
+          - name: TOTAL_FEES
+            description: Total fees
+            data_type: float
+          - name: TOTAL_GPM
+            description: Total gallons per MCF
+            data_type: float
+          - name: TOTAL_NET_VALUE
+            description: Total net value
+            data_type: float
+          - name: TOTAL_TAXES
+            description: Total taxes
+            data_type: float
+          - name: _PORTABLE_EXTRACTED
+            description: Extraction timestamp
+            data_type: timestamp_ntz
+
+      - name: SETTLEMENTS
+        description: Settlement data and pricing indices
+        columns:
+          - name: DAILYMONTHLY
+            description: Daily/Monthly indicator
+            data_type: number
+          - name: DATE
+            description: Settlement date
+            data_type: timestamp_ntz
+          - name: PRICINGINDEXCODE
+            description: Pricing index code
+            data_type: varchar
+          - name: PRICINGINDEXNAME
+            description: Pricing index name
+            data_type: varchar
+          - name: VALUE
+            description: Settlement value
+            data_type: float
+          - name: _PORTABLE_EXTRACTED
+            description: Extraction timestamp
+            data_type: timestamp_ntz
