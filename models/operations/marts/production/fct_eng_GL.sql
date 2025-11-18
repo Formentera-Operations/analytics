@@ -13,6 +13,7 @@ WITH gl as (
         ,location_type as "Location Type"
         ,company_code as "Company Code"
         ,company_name as "Company Name"
+        ,search_key as "Company Asset"
         ,main_account as "Main Account"
         ,sub_account as "Sub Account"
         ,CONCAT(main_account,'-', sub_account) as "Combined Account"
