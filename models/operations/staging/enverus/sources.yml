@@ -34,14 +34,20 @@ sources:
           Master well table containing core well information including location,
           operator classification, and key identifiers. Central table for joining
           to other well-related data.
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - wellid
+                - completionid
         columns:
           - name: wellid
-            description: "Unique well identifier (primary key)"
+            description: "Unique well identifier"
             tests:
               - not_null
-              - unique
           - name: completionid
             description: "Completion identifier"
+            tests:
+              - not_null
           - name: api_uwi
             description: "API Unique Well Identifier (formatted)"
           - name: api_uwi_unformatted

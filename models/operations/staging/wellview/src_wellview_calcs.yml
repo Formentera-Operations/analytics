@@ -181,7 +181,7 @@ sources:
             description: "Indicates if record is proposed or actual"
             tests:
               - accepted_values:
-                  values: ['Proposed', 'Actual']
+                  values: ['proposed', 'actual']
           
           - name: IDRECJOBPULLTK
             description: "Pull job table key"

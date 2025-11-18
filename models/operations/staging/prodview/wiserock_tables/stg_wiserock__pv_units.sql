@@ -7,6 +7,7 @@
 with source as (
 
     select * from {{ source('prodview', 'PVT_PVUNIT') }}
+    qualify 1 = row_number() over (partition by idrec order by _fivetran_synced desc)
 
 ),
 
