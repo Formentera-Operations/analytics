@@ -44,7 +44,31 @@ WITH gl as (
     FROM {{ ref('int_general_ledger_enhanced') }}
 )
 
-Select *
+Select
+    "Account Key"
+    ,"Accrual Date"
+    ,"AFE Number"
+    ,"AFE Type Code"
+    ,"AFE Type Full Name"
+    ,"AFE Type Label"
+    ,"Closed"
+    ,"Combined Account"
+    ,"Company Asset"
+    ,"Company Code"
+    ,"Company Name"
+    ,"GL ID"
+    ,"Gross Value"
+    ,"Gross Volume"
+    ,"In Accrual Balance"
+    ,"In Accrual Report"
+    ,"Jordan-Key"
+    ,"Journal Date"
+    ,"Location Name"
+    ,"Location Type"
+    ,"Main Account"
+    ,"Net Value"
+    ,"Net Volume"
+    ,"POSTED"
 from gl
 WHERE Posted = 'Y'
 AND "Journal Date" > '2021-12-31'
