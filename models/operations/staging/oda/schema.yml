@@ -83,7 +83,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('stg_oda__company_v2')  # Assuming this reference exists
+              to: ref('stg_oda__company_v2')
               field: id
 
       - name: account_id
