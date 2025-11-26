@@ -1,5 +1,5 @@
 models:
-  - name: stg_wiserock__pv_systemt_integration
+  - name: stg_wiserock__pv_system_integration
     description: "Staging model for ProdView system integration records"
     columns:
       - name: idflownet
