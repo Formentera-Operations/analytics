@@ -1,0 +1,22 @@
+name: run-orchestra-pipelines
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Run Seed files pipeline
+        uses: orchestra-hq/run-pipeline@9b4dcd57072d67b428877d4dd34caf70a905fe58  # v1.3.0
+        with:
+          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
+          pipeline_id: dfca15a3-668b-448c-93e7-c76490da67e3
