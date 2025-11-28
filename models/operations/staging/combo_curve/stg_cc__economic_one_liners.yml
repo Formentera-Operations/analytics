@@ -3,7 +3,7 @@ version: 2
 models:
   - name: stg_cc__economic_one_liners
     description: Cleaned and standardized version of economic one-liners data from Combo Curve, with parsed economic metrics from the JSON output
-    
+
     columns:
       - name: economic_one_liner_id
         description: Unique identifier for the economic one-liner record
@@ -158,8 +158,8 @@ models:
           - 'FP Drake': From 'FP_DRAKE'
         tests:
           - accepted_values:
-              values: ['FP Meramec', 'FP Goldsmith (Saddleback)', 'FP Goldsmith (SLANT)', 
-                      'FP Green', 'FP Lakefork', 'FP Overlook', 'FP Rio Grande', 
+              values: ['FP Meramec', 'FP Goldsmith (Saddleback)', 'FP Goldsmith (SLANT)',
+                      'FP Green', 'FP Lakefork', 'FP Overlook', 'FP Rio Grande',
                       'FP Balboa LA', 'FP Balboa MS', 'FP Balboa ND', 'FP Divide',
                       'FP Kingfisher', 'FP Maverick', 'FP Wheeler', 'Snyder Drillco',
                       'FP Pronghorn', 'FP Drake']

@@ -18,8 +18,8 @@ models:
         description: "Company name"
         tests:
           - not_null:
-              severity: warn
-
+              config:
+                severity: warn
       - name: is_archived
         description: "Flag indicating if the company record is archived"
         tests:
@@ -31,21 +31,21 @@ models:
         description: "Current status of the company"
         tests:
           - not_null:
-              severity: warn
-
+              config:
+                severity: warn
       - name: lifecyclestage
         description: "Current lifecycle stage of the company"
         tests:
           - not_null:
-              severity: warn
-
+              config:
+                severity: warn
       - name: email
         description: "Primary email address for the company"
         tests:
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-              severity: warn
-
+              config:
+                severity: warn
       - name: raw_created_at
         description: "Timestamp when the record was created"
         tests:
@@ -53,7 +53,6 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: '1900-01-01'
               max_value: "{{ current_timestamp() }}"
-
       - name: raw_updated_at
         description: "Timestamp when the record was last updated"
         tests:
@@ -61,43 +60,41 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: '1900-01-01'
               max_value: "{{ current_timestamp() }}"
-
       - name: is_active
         description: "Flag indicating if the company is currently active"
         tests:
           - not_null
           - accepted_values:
               values: [true, false]
-
       - name: hubspot_owner_id
         description: "ID of the Hubspot owner for this company"
         tests:
           - not_null:
-              severity: warn
-
+              config:
+                severity: warn
       - name: country
         description: "Country where the company is located"
         tests:
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set: ['US', 'CA', 'GB', 'AU']  # Add more country codes as needed
-              severity: warn
-
+              config:
+                severity: warn
       - name: page_views
         description: "Number of page views"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
-              severity: warn
-
+              config:
+                severity: warn
       - name: total_visits
         description: "Total number of visits"
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
-              severity: warn
-
+              config:
+                severity: warn
       - name: tax_exempt
         description: "Flag indicating if the company is tax exempt"
         tests:

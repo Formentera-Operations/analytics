@@ -5,17 +5,15 @@ sources:
     database: fo_raw_db
     schema: cc_raw
     loader: portable
-    loaded_at_field: _portable_extracted
-
-    meta:
-      contains_pii: True
-      owner: "@emartinez"
-
-    tags:
-      - reserves
-      - economics
-      - pii
-    
+    config:
+      loaded_at_field: _portable_extracted
+      tags:
+        - reserves
+        - economics
+        - pii
+      meta:
+        contains_pii: true
+        owner: "@emartinez"
     quoting:
       database: false
       schema: false
@@ -48,1996 +46,1385 @@ sources:
           - name: updated_at
             description: Timestamp when the record was last updated
           - name: _portable_extracted
-            description: Timestamp when the record was extracted  
+            description: Timestamp when the record was extracted
           - name: project
             description: The project ID that the scenario belongs to
-      
+
       - name: wells
         description: "Contains detailed information about company wells in Combo Curve"
-        
+        config:
+          # Freshness configuration
+          loaded_at_field: "{{ var('loaded_at_field', '_portable_extracted') }}"
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
         columns:
           # Required Field
           - name: dataSource
             description: "Data Source"
             tests:
               - not_null
-          
+
           # Optional Fields - A
           - name: abstract
             description: "Abstract"
-          
           - name: acreSpacing
             description: "Acre Same Zone Spacing (ACRE)"
-          
           - name: allocationType
             description: "Allocation Type"
-          
           - name: api10
             description: "API 10"
-          
           - name: api12
             description: "API 12"
-          
           - name: api14
             description: "API 14"
-          
           - name: ariesId
             description: "Aries ID"
-          
           - name: azimuth
             description: "Azimuth"
-          
+
           # Optional Fields - B
           - name: basin
             description: "Basin"
-          
           - name: bg
             description: "Gas Formation Volume Factor"
-          
           - name: block
             description: "Block"
-          
           - name: bo
             description: "Oil Formation Volume Factor"
-          
           - name: bubblePointPress
             description: "Bubble Point Pressure"
-          
+
           # Optional Fields - C
           - name: casingId
             description: "Casing ID (IN)"
-          
           - name: chokeSize
             description: "Choke Size (IN)"
-          
           - name: chosenID
             description: "Chosen ID"
-          
           - name: chosenKeyID
             description: "Chosen ID Key"
-          
           - name: completionDesign
             description: "Completion Design"
-          
           - name: completionEndDate
             description: "Completion End Date"
-          
           - name: completionStartDate
             description: "Completion Start Date"
-          
           - name: copied
             description: "Copied Well"
-          
           - name: copiedFrom
             description: "Copied from"
-          
           - name: country
             description: "Country"
-          
           - name: county
             description: "County/Parish"
-          
           - name: createdAt
             description: "Well Creation Date"
-          
           - name: cumBoe
             description: "Cum BOE (MBOE)"
-          
           - name: cumBoePerPerforatedInterval
             description: "Cum BOE/Perf LL (BOE/FT)"
-          
           - name: cumGas
             description: "Cum Gas (MMCF)"
-          
           - name: cumGasPerPerforatedInterval
             description: "Cum Gas/Perf LL (MCF/FT)"
-          
           - name: cumGor
             description: "Cum GOR"
-          
           - name: cumMmcfge
             description: "Cum MMCFGE"
-          
           - name: cumMmcfgePerPerforatedInterval
             description: "Cum MMCFGE/Perf LL"
-          
           - name: cumOil
             description: "Cum Oil (MBBL)"
-          
           - name: cumOilPerPerforatedInterval
             description: "Cum Oil/Perf LL (BBL/FT)"
-          
           - name: cumWater
             description: "Cum Water (MBBL)"
-          
           - name: cumWaterPerPerforatedInterval
             description: "Cum Water/Perf LL (BBL/FT)"
-          
           - name: currentOperator
             description: "Current Operator"
-          
           - name: currentOperatorAlias
             description: "Current Operator Alias"
-          
           - name: currentOperatorCode
             description: "Current Operator Code"
-          
           - name: currentOperatorTicker
             description: "Current Operator Ticker"
-          
+
           # Custom Fields
           - name: customBool0
             description: "Custom Boolean 0"
-          
           - name: customBool1
             description: "Custom Boolean 1"
-          
           - name: customBool2
             description: "Custom Boolean 2"
-          
           - name: customBool3
             description: "Custom Boolean 3"
-          
           - name: customBool4
             description: "Custom Boolean 4"
-          
           - name: customDate0
             description: "Custom Date 0"
-          
           - name: customDate1
             description: "Custom Date 1"
-          
           - name: customDate2
             description: "Custom Date 2"
-          
           - name: customDate3
             description: "Custom Date 3"
-          
           - name: customDate4
             description: "Custom Date 4"
-          
           - name: customDate5
             description: "Custom Date 5"
-          
           - name: customDate6
             description: "Custom Date 6"
-          
           - name: customDate7
             description: "Custom Date 7"
-          
           - name: customDate8
             description: "Custom Date 8"
-          
           - name: customDate9
             description: "Custom Date 9"
-          
           - name: customNumber0
             description: "Custom Number 0"
-          
           - name: customNumber1
             description: "Custom Number 1"
-          
           - name: customNumber10
             description: "Custom Number 10"
-          
           - name: customNumber11
             description: "Custom Number 11"
-          
           - name: customNumber12
             description: "Custom Number 12"
-          
           - name: customNumber13
             description: "Custom Number 13"
-          
           - name: customNumber14
             description: "Custom Number 14"
-          
           - name: customNumber15
             description: "Custom Number 15"
-          
           - name: customNumber16
             description: "Custom Number 16"
-          
           - name: customNumber17
             description: "Custom Number 17"
-          
           - name: customNumber18
             description: "Custom Number 18"
-          
           - name: customNumber19
             description: "Custom Number 19"
-          
           - name: customNumber2
             description: "Custom Number 2"
-          
           - name: customNumber3
             description: "Custom Number 3"
-          
           - name: customNumber4
             description: "Custom Number 4"
-          
           - name: customNumber5
             description: "Custom Number 5"
-          
           - name: customNumber6
             description: "Custom Number 6"
-          
           - name: customNumber7
             description: "Custom Number 7"
-          
           - name: customNumber8
             description: "Custom Number 8"
-          
           - name: customNumber9
             description: "Custom Number 9"
-          
           - name: customString0
             description: "Custom String 0"
-          
           - name: customString1
             description: "Custom String 1"
-          
           - name: customString10
             description: "Custom String 10"
-          
           - name: customString11
             description: "Custom String 11"
-          
           - name: customString12
             description: "Custom String 12"
-          
           - name: customString13
             description: "Custom String 13"
-          
           - name: customString14
             description: "Custom String 14"
-          
           - name: customString15
             description: "Custom String 15"
-          
           - name: customString16
             description: "Custom String 16"
-          
           - name: customString17
             description: "Custom String 17"
-          
           - name: customString18
             description: "Custom String 18"
-          
           - name: customString19
             description: "Custom String 19"
-          
           - name: customString2
             description: "Custom String 2"
-          
           - name: customString20
             description: "Custom String 20"
-          
           - name: customString21
             description: "Custom String 21"
-          
           - name: customString22
             description: "Custom String 22"
-          
           - name: customString23
             description: "Custom String 23"
-          
           - name: customString24
             description: "Custom String 24"
-          
           - name: customString3
             description: "Custom String 3"
-          
           - name: customString4
             description: "Custom String 4"
-          
           - name: customString5
             description: "Custom String 5"
-          
           - name: customString6
             description: "Custom String 6"
-          
           - name: customString7
             description: "Custom String 7"
-          
           - name: customString8
             description: "Custom String 8"
-          
           - name: customString9
             description: "Custom String 9"
-          
           - name: dataPool
             description: "Data Pool"
-          
           - name: dataSourceCustomName
             description: "Data Source Custom Name"
-          
           - name: dateRigRelease
             description: "Date Rig Release"
-          
           - name: dewPointPress
             description: "Dew Point Press"
-          
           - name: distanceFromBaseOfZone
             description: "Distance From Base Of Zone"
-          
           - name: distanceFromTopOfZone
             description: "Distance From Top Of Zone"
-          
           - name: district
             description: "District"
-          
           - name: drainageArea
             description: "Drainage Area"
-          
           - name: drillEndDate
             description: "Drill End Date"
-          
           - name: drillStartDate
             description: "Drill Start Date"
-          
           - name: elevation
             description: "Elevation"
-          
           - name: elevationType
             description: "Elevation Type"
-          
           - name: field
             description: "Field"
-          
+
           # First 12 Metrics
           - name: first12Boe
             description: "First 12 BOE"
-          
           - name: first12BoePerPerforatedInterval
             description: "First 12 BOE Per Perforated Interval"
-          
           - name: first12Gas
             description: "First 12 Gas"
-          
           - name: first12GasPerPerforatedInterval
             description: "First 12 Gas Per Perforated Interval"
-          
           - name: first12Gor
             description: "First 12 GOR"
-          
           - name: first12Mmcfge
             description: "First 12 MMCFGE"
-          
           - name: first12MmcfgePerPerforatedInterval
             description: "First 12 MMCFGE Per Perforated Interval"
-          
           - name: first12Oil
             description: "First 12 Oil"
-          
           - name: first12OilPerPerforatedInterval
             description: "First 12 Oil Per Perforated Interval"
-          
           - name: first12Water
             description: "First 12 Water"
-          
           - name: first12WaterPerPerforatedInterval
             description: "First 12 Water Per Perforated Interval"
-          
+
           # First 6 Metrics
           - name: first6Boe
             description: "First 6 BOE"
-          
           - name: first6BoePerPerforatedInterval
             description: "First 6 BOE Per Perforated Interval"
-          
           - name: first6Gas
             description: "First 6 Gas"
-          
           - name: first6GasPerPerforatedInterval
             description: "First 6 Gas Per Perforated Interval"
-          
           - name: first6Gor
             description: "First 6 GOR"
-          
           - name: first6Mmcfge
             description: "First 6 MMCFGE"
-          
           - name: first6MmcfgePerPerforatedInterval
             description: "First 6 MMCFGE Per Perforated Interval"
-          
           - name: first6Oil
             description: "First 6 Oil"
-          
           - name: first6OilPerPerforatedInterval
             description: "First 6 Oil Per Perforated Interval"
-          
           - name: first6Water
             description: "First 6 Water"
-          
           - name: first6WaterPerPerforatedInterval
             description: "First 6 Water Per Perforated Interval"
-          
+
           # First Completion Metrics
           - name: firstAdditiveVolume
             description: "First Additive Volume"
-          
           - name: firstClusterCount
             description: "First Cluster Count"
-          
           - name: firstFluidPerPerforatedInterval
             description: "First Fluid Per Perforated Interval"
-          
           - name: firstFluidVolume
             description: "First Fluid Volume"
-          
           - name: firstFracVendor
             description: "First Frac Vendor"
-          
           - name: firstMaxInjectionPressure
             description: "First Max Injection Pressure"
-          
           - name: firstMaxInjectionRate
             description: "First Max Injection Rate"
-          
           - name: firstProdDate
             description: "First Production Date"
-          
           - name: firstProdDateDailyCalc
             description: "First Production Date Daily Calc"
-          
           - name: firstProdDateMonthlyCalc
             description: "First Production Date Monthly Calc"
-          
           - name: firstPropWeight
             description: "First Prop Weight"
-          
           - name: firstProppantPerFluid
             description: "First Proppant Per Fluid"
-          
           - name: firstProppantPerPerforatedInterval
             description: "First Proppant Per Perforated Interval"
-          
           - name: firstStageCount
             description: "First Stage Count"
-          
           - name: firstTestFlowTbgPress
             description: "First Test Flow TBG Press"
-          
           - name: firstTestGasVol
             description: "First Test Gas Vol"
-          
           - name: firstTestGor
             description: "First Test GOR"
-          
           - name: firstTestOilVol
             description: "First Test Oil Vol"
-          
           - name: firstTestWaterVol
             description: "First Test Water Vol"
-          
           - name: firstTreatmentType
             description: "First Treatment Type"
-          
           - name: flowPath
             description: "Flow Path"
-          
           - name: fluidType
             description: "Fluid Type"
-          
           - name: footageInLandingZone
             description: "Footage In Landing Zone"
-          
           - name: formationThicknessMean
             description: "Formation Thickness Mean"
-          
           - name: fractureConductivity
             description: "Fracture Conductivity"
-          
+
           # Gas Analysis Fields
           - name: gasAnalysisDate
             description: "Gas Analysis Date"
-          
           - name: gasC1
             description: "Gas C1"
-          
           - name: gasC2
             description: "Gas C2"
-          
           - name: gasC3
             description: "Gas C3"
-          
           - name: gasCo2
             description: "Gas CO2"
-          
           - name: gasGatherer
             description: "Gas Gatherer"
-          
           - name: gasH2
             description: "Gas H2"
-          
           - name: gasH2o
             description: "Gas H2O"
-          
           - name: gasH2s
             description: "Gas H2S"
-          
           - name: gasHe
             description: "Gas He"
-          
           - name: gasIc4
             description: "Gas IC4"
-          
           - name: gasIc5
             description: "Gas IC5"
-          
           - name: gasN2
             description: "Gas N2"
-          
           - name: gasNc10
             description: "Gas NC10"
-          
           - name: gasNc4
             description: "Gas NC4"
-          
           - name: gasNc5
             description: "Gas NC5"
-          
           - name: gasNc6
             description: "Gas NC6"
-          
           - name: gasNc7
             description: "Gas NC7"
-          
           - name: gasNc8
             description: "Gas NC8"
-          
           - name: gasNc9
             description: "Gas NC9"
-          
           - name: gasO2
             description: "Gas O2"
-          
           - name: gasSpecificGravity
             description: "Gas Specific Gravity"
-          
           - name: generic
             description: "Generic"
-          
           - name: grossPerforatedInterval
             description: "Gross Perforated Interval"
-          
           - name: groundElevation
             description: "Ground Elevation"
-          
           - name: hasDaily
             description: "Has Daily"
-          
           - name: hasMonthly
             description: "Has Monthly"
-          
           - name: heelLatitude
             description: "Heel Latitude"
-          
           - name: heelLongitude
             description: "Heel Longitude"
-          
           - name: holeDirection
             description: "Hole Direction"
-          
           - name: horizontalSpacing
             description: "Horizontal Spacing"
-          
           - name: hzWellSpacingAnyZone
             description: "Hz Well Spacing Any Zone"
-          
           - name: hzWellSpacingSameZone
             description: "Hz Well Spacing Same Zone"
-          
           - name: id
             description: "ID"
             tests:
               - unique
               - not_null
-          
           - name: initialRespress
             description: "Initial Reservoir Pressure"
-          
           - name: initialRestemp
             description: "Initial Reservoir Temperature"
-          
           - name: inptID
             description: "INPT ID"
             tests:
               - unique
-          
+
           # Landing Zone Information
           - name: landingZone
             description: "Landing Zone"
-          
           - name: landingZoneBase
             description: "Landing Zone Base"
-          
           - name: landingZoneTop
             description: "Landing Zone Top"
-          
+
           # Last 12 Production Metrics
           - name: last12Boe
             description: "Last 12 BOE"
-          
           - name: last12BoePerPerforatedInterval
             description: "Last 12 BOE Per Perforated Interval"
-          
           - name: last12Gas
             description: "Last 12 Gas"
-          
           - name: last12GasPerPerforatedInterval
             description: "Last 12 Gas Per Perforated Interval"
-          
           - name: last12Gor
             description: "Last 12 GOR"
-          
           - name: last12Mmcfge
             description: "Last 12 MMCFGE"
-          
           - name: last12MmcfgePerPerforatedInterval
             description: "Last 12 MMCFGE Per Perforated Interval"
-          
           - name: last12Oil
             description: "Last 12 Oil"
-          
           - name: last12OilPerPerforatedInterval
             description: "Last 12 Oil Per Perforated Interval"
-          
           - name: last12Water
             description: "Last 12 Water"
-          
           - name: last12WaterPerPerforatedInterval
             description: "Last 12 Water Per Perforated Interval"
-          
+
           # Last Month Production Metrics
           - name: lastMonthBoe
             description: "Last Month BOE"
-          
           - name: lastMonthBoePerPerforatedInterval
             description: "Last Month BOE Per Perforated Interval"
-          
           - name: lastMonthGas
             description: "Last Month Gas"
-          
           - name: lastMonthGasPerPerforatedInterval
             description: "Last Month Gas Per Perforated Interval"
-          
           - name: lastMonthGor
             description: "Last Month GOR"
-          
           - name: lastMonthMmcfge
             description: "Last Month MMCFGE"
-          
           - name: lastMonthMmcfgePerPerforatedInterval
             description: "Last Month MMCFGE Per Perforated Interval"
-          
           - name: lastMonthOil
             description: "Last Month Oil"
-          
           - name: lastMonthOilPerPerforatedInterval
             description: "Last Month Oil Per Perforated Interval"
-          
           - name: lastMonthWater
             description: "Last Month Water"
-          
           - name: lastMonthWaterPerPerforatedInterval
             description: "Last Month Water Per Perforated Interval"
-          
           - name: lastProdDateDaily
             description: "Last Production Date Daily"
-          
           - name: lastProdDateMonthly
             description: "Last Production Date Monthly"
-          
           - name: lateralLength
             description: "Lateral Length"
-          
           - name: leaseName
             description: "Lease Name"
-          
           - name: leaseNumber
             description: "Lease Number"
-          
           - name: lowerPerforation
             description: "Lower Perforation"
-          
           - name: matrixPermeability
             description: "Matrix Permeability"
-          
           - name: measuredDepth
             description: "Measured Depth"
-          
           - name: monthsProduced
             description: "Months Produced"
-          
           - name: mostRecentImportDate
             description: "Most Recent Import Date"
-          
           - name: mostRecentImportDesc
             description: "Most Recent Import Description"
-          
           - name: mostRecentImportType
             description: "Most Recent Import Type"
-          
           - name: nglGatherer
             description: "NGL Gatherer"
-          
           - name: numTreatmentRecords
             description: "Number of Treatment Records"
-          
           - name: oilApiGravity
             description: "Oil API Gravity"
-          
           - name: oilGatherer
             description: "Oil Gatherer"
-          
           - name: oilSpecificGravity
             description: "Oil Specific Gravity"
-          
           - name: padName
             description: "Pad Name"
-          
           - name: parentChildAnyZone
             description: "Parent Child Any Zone"
-          
           - name: parentChildSameZone
             description: "Parent Child Same Zone"
-          
           - name: percentInZone
             description: "Percent In Zone"
-          
           - name: perfLateralLength
             description: "Perforated Lateral Length"
-          
           - name: permitDate
             description: "Permit Date"
-          
           - name: phdwinId
             description: "PHDWIN ID"
-          
           - name: play
             description: "Play"
-          
           - name: porosity
             description: "Porosity"
-          
           - name: previousOperator
             description: "Previous Operator"
-          
           - name: previousOperatorAlias
             description: "Previous Operator Alias"
-          
           - name: previousOperatorCode
             description: "Previous Operator Code"
-          
           - name: previousOperatorTicker
             description: "Previous Operator Ticker"
-          
           - name: primaryProduct
             description: "Primary Product"
-          
           - name: prmsReservesCategory
             description: "PRMS Reserves Category"
-          
           - name: prmsReservesSubCategory
             description: "PRMS Reserves Sub-Category"
-          
           - name: prmsResourcesClass
             description: "PRMS Resources Class"
-          
           - name: productionMethod
             description: "Production Method"
-          
           - name: proppantMeshSize
             description: "Proppant Mesh Size"
-          
           - name: proppantType
             description: "Proppant Type"
-          
           - name: range
             description: "Range"
-          
           - name: recoveryMethod
             description: "Recovery Method"
-          
+
           # Refrac information
           - name: refracAdditiveVolume
             description: "Refrac Additive Volume"
-          
           - name: refracClusterCount
             description: "Refrac Cluster Count"
-          
           - name: refracDate
             description: "Refrac Date"
-          
           - name: refracFluidPerPerforatedInterval
             description: "Refrac Fluid Per Perforated Interval"
-          
           - name: refracFluidVolume
             description: "Refrac Fluid Volume"
-          
           - name: refracFracVendor
             description: "Refrac Frac Vendor"
-          
           - name: refracMaxInjectionPressure
             description: "Refrac Max Injection Pressure"
-          
           - name: refracMaxInjectionRate
             description: "Refrac Max Injection Rate"
-          
           - name: refracPropWeight
             description: "Refrac Prop Weight"
-          
           - name: refracProppantPerFluid
             description: "Refrac Proppant Per Fluid"
-          
           - name: refracProppantPerPerforatedInterval
             description: "Refrac Proppant Per Perforated Interval"
-          
           - name: refracStageCount
             description: "Refrac Stage Count"
-          
           - name: refracTreatmentType
             description: "Refrac Treatment Type"
-
           - name: refracTreatmentType
             description: "Refrac Treatment Type"
-          
           - name: rig
             description: "Rig"
-          
           - name: rs
             description: "RS"
-          
           - name: scope
             description: "Scope"
-          
           - name: section
             description: "Section"
-          
           - name: sg
             description: "SG"
-          
           - name: so
             description: "SO"
-          
           - name: spudDate
             description: "Spud Date"
-          
           - name: stageSpacing
             description: "Stage Spacing"
-          
           - name: state
             description: "State"
-          
           - name: status
             description: "Status"
-          
           - name: subplay
             description: "Subplay"
-          
           - name: surfaceLatitude
             description: "Surface Latitude"
-          
           - name: surfaceLongitude
             description: "Surface Longitude"
-          
           - name: survey
             description: "Survey"
-          
           - name: sw
             description: "SW"
-          
           - name: targetFormation
             description: "Target Formation"
-          
           - name: thickness
             description: "Thickness"
-          
           - name: til
             description: "TIL"
-          
           - name: toeInLandingZone
             description: "Toe In Landing Zone"
-          
           - name: toeLatitude
             description: "Toe Latitude"
-          
           - name: toeLongitude
             description: "Toe Longitude"
-          
           - name: toeUp
             description: "Toe Up"
-          
           - name: totalAdditiveVolume
             description: "Total Additive Volume"
-          
           - name: totalClusterCount
             description: "Total Cluster Count"
-          
           - name: totalFluidPerPerforatedInterval
             description: "Total Fluid Per Perforated Interval"
-          
           - name: totalFluidVolume
             description: "Total Fluid Volume"
-          
           - name: totalPropWeight
             description: "Total Prop Weight"
-          
           - name: totalProppantPerFluid
             description: "Total Proppant Per Fluid"
-          
           - name: totalProppantPerPerforatedInterval
             description: "Total Proppant Per Perforated Interval"
-          
           - name: totalStageCount
             description: "Total Stage Count"
-          
           - name: township
             description: "Township"
-          
           - name: trueVerticalDepth
             description: "True Vertical Depth"
-          
           - name: tubingDepth
             description: "Tubing Depth"
-          
           - name: tubingId
             description: "Tubing ID"
-          
           - name: typeCurveArea
             description: "Type Curve Area"
-          
           - name: updatedAt
             description: "Updated At"
-          
           - name: upperPerforation
             description: "Upper Perforation"
-          
           - name: verticalSpacing
             description: "Vertical Spacing"
-          
           - name: vtWellSpacingAnyZone
             description: "VT Well Spacing Any Zone"
-          
           - name: vtWellSpacingSameZone
             description: "VT Well Spacing Same Zone"
-          
           - name: wellName
             description: "Well Name"
-          
           - name: wellNumber
             description: "Well Number"
-          
           - name: wellType
             description: "Well Type"
-          
           - name: zi
             description: "Zi"
-        
-        # Freshness configuration
-        loaded_at_field: "{{ var('loaded_at_field', '_portable_extracted') }}"
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
 
       - name: project_wells
         description: "Contains detailed information about project wells in Combo Curve"
-        
+        config:
+          # Freshness configuration
+          loaded_at_field: "{{ var('loaded_at_field', '_portable_extracted') }}"
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
         columns:
           # Required Field
           - name: dataSource
             description: "Data Source"
             tests:
               - not_null
-          
+
           # Optional Fields - A
           - name: abstract
             description: "Abstract"
-          
           - name: acreSpacing
             description: "Acre Same Zone Spacing (ACRE)"
-          
           - name: allocationType
             description: "Allocation Type"
-          
           - name: api10
             description: "API 10"
-          
           - name: api12
             description: "API 12"
-          
           - name: api14
             description: "API 14"
-          
           - name: ariesId
             description: "Aries ID"
-          
           - name: azimuth
             description: "Azimuth"
-          
+
           # Optional Fields - B
           - name: basin
             description: "Basin"
-          
           - name: bg
             description: "Gas Formation Volume Factor"
-          
           - name: block
             description: "Block"
-          
           - name: bo
             description: "Oil Formation Volume Factor"
-          
           - name: bubblePointPress
             description: "Bubble Point Pressure"
-          
+
           # Optional Fields - C
           - name: casingId
             description: "Casing ID (IN)"
-          
           - name: chokeSize
             description: "Choke Size (IN)"
-          
           - name: chosenID
             description: "Chosen ID"
-          
           - name: chosenKeyID
             description: "Chosen ID Key"
-          
           - name: completionDesign
             description: "Completion Design"
-          
           - name: completionEndDate
             description: "Completion End Date"
-          
           - name: completionStartDate
             description: "Completion Start Date"
-          
           - name: copied
             description: "Copied Well"
-          
           - name: copiedFrom
             description: "Copied from"
-          
           - name: country
             description: "Country"
-          
           - name: county
             description: "County/Parish"
-          
           - name: createdAt
             description: "Well Creation Date"
-          
           - name: cumBoe
             description: "Cum BOE (MBOE)"
-          
           - name: cumBoePerPerforatedInterval
             description: "Cum BOE/Perf LL (BOE/FT)"
-          
           - name: cumGas
             description: "Cum Gas (MMCF)"
-          
           - name: cumGasPerPerforatedInterval
             description: "Cum Gas/Perf LL (MCF/FT)"
-          
           - name: cumGor
             description: "Cum GOR"
-          
           - name: cumMmcfge
             description: "Cum MMCFGE"
-          
           - name: cumMmcfgePerPerforatedInterval
             description: "Cum MMCFGE/Perf LL"
-          
           - name: cumOil
             description: "Cum Oil (MBBL)"
-          
           - name: cumOilPerPerforatedInterval
             description: "Cum Oil/Perf LL (BBL/FT)"
-          
           - name: cumWater
             description: "Cum Water (MBBL)"
-          
           - name: cumWaterPerPerforatedInterval
             description: "Cum Water/Perf LL (BBL/FT)"
-          
           - name: currentOperator
             description: "Current Operator"
-          
           - name: currentOperatorAlias
             description: "Current Operator Alias"
-          
           - name: currentOperatorCode
             description: "Current Operator Code"
-          
           - name: currentOperatorTicker
             description: "Current Operator Ticker"
-          
+
           # Custom Fields
           - name: customBool0
             description: "Custom Boolean 0"
-          
           - name: customBool1
             description: "Custom Boolean 1"
-          
           - name: customBool2
             description: "Custom Boolean 2"
-          
           - name: customBool3
             description: "Custom Boolean 3"
-          
           - name: customBool4
             description: "Custom Boolean 4"
-          
           - name: customDate0
             description: "Custom Date 0"
-          
           - name: customDate1
             description: "Custom Date 1"
-          
           - name: customDate2
             description: "Custom Date 2"
-          
           - name: customDate3
             description: "Custom Date 3"
-          
           - name: customDate4
             description: "Custom Date 4"
-          
           - name: customDate5
             description: "Custom Date 5"
-          
           - name: customDate6
             description: "Custom Date 6"
-          
           - name: customDate7
             description: "Custom Date 7"
-          
           - name: customDate8
             description: "Custom Date 8"
-          
           - name: customDate9
             description: "Custom Date 9"
-          
           - name: customNumber0
             description: "Custom Number 0"
-          
           - name: customNumber1
             description: "Custom Number 1"
-          
           - name: customNumber10
             description: "Custom Number 10"
-          
           - name: customNumber11
             description: "Custom Number 11"
-          
           - name: customNumber12
             description: "Custom Number 12"
-          
           - name: customNumber13
             description: "Custom Number 13"
-          
           - name: customNumber14
             description: "Custom Number 14"
-          
           - name: customNumber15
             description: "Custom Number 15"
-          
           - name: customNumber16
             description: "Custom Number 16"
-          
           - name: customNumber17
             description: "Custom Number 17"
-          
           - name: customNumber18
             description: "Custom Number 18"
-          
           - name: customNumber19
             description: "Custom Number 19"
-          
           - name: customNumber2
             description: "Custom Number 2"
-          
           - name: customNumber3
             description: "Custom Number 3"
-          
           - name: customNumber4
             description: "Custom Number 4"
-          
           - name: customNumber5
             description: "Custom Number 5"
-          
           - name: customNumber6
             description: "Custom Number 6"
-          
           - name: customNumber7
             description: "Custom Number 7"
-          
           - name: customNumber8
             description: "Custom Number 8"
-          
           - name: customNumber9
             description: "Custom Number 9"
-          
           - name: customString0
             description: "Custom String 0"
-          
           - name: customString1
             description: "Custom String 1"
-          
           - name: customString10
             description: "Custom String 10"
-          
           - name: customString11
             description: "Custom String 11"
-          
           - name: customString12
             description: "Custom String 12"
-          
           - name: customString13
             description: "Custom String 13"
-          
           - name: customString14
             description: "Custom String 14"
-          
           - name: customString15
             description: "Custom String 15"
-          
           - name: customString16
             description: "Custom String 16"
-          
           - name: customString17
             description: "Custom String 17"
-          
           - name: customString18
             description: "Custom String 18"
-          
           - name: customString19
             description: "Custom String 19"
-          
           - name: customString2
             description: "Custom String 2"
-          
           - name: customString20
             description: "Custom String 20"
-          
           - name: customString21
             description: "Custom String 21"
-          
           - name: customString22
             description: "Custom String 22"
-          
           - name: customString23
             description: "Custom String 23"
-          
           - name: customString24
             description: "Custom String 24"
-          
           - name: customString3
             description: "Custom String 3"
-          
           - name: customString4
             description: "Custom String 4"
-          
           - name: customString5
             description: "Custom String 5"
-          
           - name: customString6
             description: "Custom String 6"
-          
           - name: customString7
             description: "Custom String 7"
-          
           - name: customString8
             description: "Custom String 8"
-          
           - name: customString9
             description: "Custom String 9"
-          
           - name: dataPool
             description: "Data Pool"
-          
           - name: dataSourceCustomName
             description: "Data Source Custom Name"
-          
           - name: dateRigRelease
             description: "Date Rig Release"
-          
           - name: dewPointPress
             description: "Dew Point Press"
-          
           - name: distanceFromBaseOfZone
             description: "Distance From Base Of Zone"
-          
           - name: distanceFromTopOfZone
             description: "Distance From Top Of Zone"
-          
           - name: district
             description: "District"
-          
           - name: drainageArea
             description: "Drainage Area"
-          
           - name: drillEndDate
             description: "Drill End Date"
-          
           - name: drillStartDate
             description: "Drill Start Date"
-          
           - name: elevation
             description: "Elevation"
-          
           - name: elevationType
             description: "Elevation Type"
-          
           - name: field
             description: "Field"
-          
+
           # First 12 Metrics
           - name: first12Boe
             description: "First 12 BOE"
-          
           - name: first12BoePerPerforatedInterval
             description: "First 12 BOE Per Perforated Interval"
-          
           - name: first12Gas
             description: "First 12 Gas"
-          
           - name: first12GasPerPerforatedInterval
             description: "First 12 Gas Per Perforated Interval"
-          
           - name: first12Gor
             description: "First 12 GOR"
-          
           - name: first12Mmcfge
             description: "First 12 MMCFGE"
-          
           - name: first12MmcfgePerPerforatedInterval
             description: "First 12 MMCFGE Per Perforated Interval"
-          
           - name: first12Oil
             description: "First 12 Oil"
-          
           - name: first12OilPerPerforatedInterval
             description: "First 12 Oil Per Perforated Interval"
-          
           - name: first12Water
             description: "First 12 Water"
-          
           - name: first12WaterPerPerforatedInterval
             description: "First 12 Water Per Perforated Interval"
-          
+
           # First 6 Metrics
           - name: first6Boe
             description: "First 6 BOE"
-          
           - name: first6BoePerPerforatedInterval
             description: "First 6 BOE Per Perforated Interval"
-          
           - name: first6Gas
             description: "First 6 Gas"
-          
           - name: first6GasPerPerforatedInterval
             description: "First 6 Gas Per Perforated Interval"
-          
           - name: first6Gor
             description: "First 6 GOR"
-          
           - name: first6Mmcfge
             description: "First 6 MMCFGE"
-          
           - name: first6MmcfgePerPerforatedInterval
             description: "First 6 MMCFGE Per Perforated Interval"
-          
           - name: first6Oil
             description: "First 6 Oil"
-          
           - name: first6OilPerPerforatedInterval
             description: "First 6 Oil Per Perforated Interval"
-          
           - name: first6Water
             description: "First 6 Water"
-          
           - name: first6WaterPerPerforatedInterval
             description: "First 6 Water Per Perforated Interval"
-          
+
           # First Completion Metrics
           - name: firstAdditiveVolume
             description: "First Additive Volume"
-          
           - name: firstClusterCount
             description: "First Cluster Count"
-          
           - name: firstFluidPerPerforatedInterval
             description: "First Fluid Per Perforated Interval"
-          
           - name: firstFluidVolume
             description: "First Fluid Volume"
-          
           - name: firstFracVendor
             description: "First Frac Vendor"
-          
           - name: firstMaxInjectionPressure
             description: "First Max Injection Pressure"
-          
           - name: firstMaxInjectionRate
             description: "First Max Injection Rate"
-          
           - name: firstProdDate
             description: "First Production Date"
-          
           - name: firstProdDateDailyCalc
             description: "First Production Date Daily Calc"
-          
           - name: firstProdDateMonthlyCalc
             description: "First Production Date Monthly Calc"
-          
           - name: firstPropWeight
             description: "First Prop Weight"
-          
           - name: firstProppantPerFluid
             description: "First Proppant Per Fluid"
-          
           - name: firstProppantPerPerforatedInterval
             description: "First Proppant Per Perforated Interval"
-          
           - name: firstStageCount
             description: "First Stage Count"
-          
           - name: firstTestFlowTbgPress
             description: "First Test Flow TBG Press"
-          
           - name: firstTestGasVol
             description: "First Test Gas Vol"
-          
           - name: firstTestGor
             description: "First Test GOR"
-          
           - name: firstTestOilVol
             description: "First Test Oil Vol"
-          
           - name: firstTestWaterVol
             description: "First Test Water Vol"
-          
           - name: firstTreatmentType
             description: "First Treatment Type"
-          
           - name: flowPath
             description: "Flow Path"
-          
           - name: fluidType
             description: "Fluid Type"
-          
           - name: footageInLandingZone
             description: "Footage In Landing Zone"
-          
           - name: formationThicknessMean
             description: "Formation Thickness Mean"
-          
           - name: fractureConductivity
             description: "Fracture Conductivity"
-          
+
           # Gas Analysis Fields
           - name: gasAnalysisDate
             description: "Gas Analysis Date"
-          
           - name: gasC1
             description: "Gas C1"
-          
           - name: gasC2
             description: "Gas C2"
-          
           - name: gasC3
             description: "Gas C3"
-          
           - name: gasCo2
             description: "Gas CO2"
-          
           - name: gasGatherer
             description: "Gas Gatherer"
-          
           - name: gasH2
             description: "Gas H2"
-          
           - name: gasH2o
             description: "Gas H2O"
-          
           - name: gasH2s
             description: "Gas H2S"
-          
           - name: gasHe
             description: "Gas He"
-          
           - name: gasIc4
             description: "Gas IC4"
-          
           - name: gasIc5
             description: "Gas IC5"
-          
           - name: gasN2
             description: "Gas N2"
-          
           - name: gasNc10
             description: "Gas NC10"
-          
           - name: gasNc4
             description: "Gas NC4"
-          
           - name: gasNc5
             description: "Gas NC5"
-          
           - name: gasNc6
             description: "Gas NC6"
-          
           - name: gasNc7
             description: "Gas NC7"
-          
           - name: gasNc8
             description: "Gas NC8"
-          
           - name: gasNc9
             description: "Gas NC9"
-          
           - name: gasO2
             description: "Gas O2"
-          
           - name: gasSpecificGravity
             description: "Gas Specific Gravity"
-          
           - name: generic
             description: "Generic"
-          
           - name: grossPerforatedInterval
             description: "Gross Perforated Interval"
-          
           - name: groundElevation
             description: "Ground Elevation"
-          
           - name: hasDaily
             description: "Has Daily"
-          
           - name: hasMonthly
             description: "Has Monthly"
-          
           - name: heelLatitude
             description: "Heel Latitude"
-          
           - name: heelLongitude
             description: "Heel Longitude"
-          
           - name: holeDirection
             description: "Hole Direction"
-          
           - name: horizontalSpacing
             description: "Horizontal Spacing"
-          
           - name: hzWellSpacingAnyZone
             description: "Hz Well Spacing Any Zone"
-          
           - name: hzWellSpacingSameZone
             description: "Hz Well Spacing Same Zone"
-          
           - name: id
             description: "ID"
             tests:
               - unique
               - not_null
-          
           - name: initialRespress
             description: "Initial Reservoir Pressure"
-          
           - name: initialRestemp
             description: "Initial Reservoir Temperature"
-          
           - name: inptID
             description: "INPT ID"
             tests:
               - unique
-          
+
           # Landing Zone Information
           - name: landingZone
             description: "Landing Zone"
-          
           - name: landingZoneBase
             description: "Landing Zone Base"
-          
           - name: landingZoneTop
             description: "Landing Zone Top"
-          
+
           # Last 12 Production Metrics
           - name: last12Boe
             description: "Last 12 BOE"
-          
           - name: last12BoePerPerforatedInterval
             description: "Last 12 BOE Per Perforated Interval"
-          
           - name: last12Gas
             description: "Last 12 Gas"
-          
           - name: last12GasPerPerforatedInterval
             description: "Last 12 Gas Per Perforated Interval"
-          
           - name: last12Gor
             description: "Last 12 GOR"
-          
           - name: last12Mmcfge
             description: "Last 12 MMCFGE"
-          
           - name: last12MmcfgePerPerforatedInterval
             description: "Last 12 MMCFGE Per Perforated Interval"
-          
           - name: last12Oil
             description: "Last 12 Oil"
-          
           - name: last12OilPerPerforatedInterval
             description: "Last 12 Oil Per Perforated Interval"
-          
           - name: last12Water
             description: "Last 12 Water"
-          
           - name: last12WaterPerPerforatedInterval
             description: "Last 12 Water Per Perforated Interval"
-          
+
           # Last Month Production Metrics
           - name: lastMonthBoe
             description: "Last Month BOE"
-          
           - name: lastMonthBoePerPerforatedInterval
             description: "Last Month BOE Per Perforated Interval"
-          
           - name: lastMonthGas
             description: "Last Month Gas"
-          
           - name: lastMonthGasPerPerforatedInterval
             description: "Last Month Gas Per Perforated Interval"
-          
           - name: lastMonthGor
             description: "Last Month GOR"
-          
           - name: lastMonthMmcfge
             description: "Last Month MMCFGE"
-          
           - name: lastMonthMmcfgePerPerforatedInterval
             description: "Last Month MMCFGE Per Perforated Interval"
-          
           - name: lastMonthOil
             description: "Last Month Oil"
-          
           - name: lastMonthOilPerPerforatedInterval
             description: "Last Month Oil Per Perforated Interval"
-          
           - name: lastMonthWater
             description: "Last Month Water"
-          
           - name: lastMonthWaterPerPerforatedInterval
             description: "Last Month Water Per Perforated Interval"
-          
           - name: lastProdDateDaily
             description: "Last Production Date Daily"
-          
           - name: lastProdDateMonthly
             description: "Last Production Date Monthly"
-          
           - name: lateralLength
             description: "Lateral Length"
-          
           - name: leaseName
             description: "Lease Name"
-          
           - name: leaseNumber
             description: "Lease Number"
-          
           - name: lowerPerforation
             description: "Lower Perforation"
-          
           - name: matrixPermeability
             description: "Matrix Permeability"
-          
           - name: measuredDepth
             description: "Measured Depth"
-          
           - name: monthsProduced
             description: "Months Produced"
-          
           - name: mostRecentImportDate
             description: "Most Recent Import Date"
-          
           - name: mostRecentImportDesc
             description: "Most Recent Import Description"
-          
           - name: mostRecentImportType
             description: "Most Recent Import Type"
-          
           - name: nglGatherer
             description: "NGL Gatherer"
-          
           - name: numTreatmentRecords
             description: "Number of Treatment Records"
-          
           - name: oilApiGravity
             description: "Oil API Gravity"
-          
           - name: oilGatherer
             description: "Oil Gatherer"
-          
           - name: oilSpecificGravity
             description: "Oil Specific Gravity"
-          
           - name: padName
             description: "Pad Name"
-          
           - name: parentChildAnyZone
             description: "Parent Child Any Zone"
-          
           - name: parentChildSameZone
             description: "Parent Child Same Zone"
-          
           - name: percentInZone
             description: "Percent In Zone"
-          
           - name: perfLateralLength
             description: "Perforated Lateral Length"
-          
           - name: permitDate
             description: "Permit Date"
-          
           - name: phdwinId
             description: "PHDWIN ID"
-          
           - name: play
             description: "Play"
-          
           - name: porosity
             description: "Porosity"
-          
           - name: previousOperator
             description: "Previous Operator"
-          
           - name: previousOperatorAlias
             description: "Previous Operator Alias"
-          
           - name: previousOperatorCode
             description: "Previous Operator Code"
-          
           - name: previousOperatorTicker
             description: "Previous Operator Ticker"
-          
           - name: primaryProduct
             description: "Primary Product"
-          
           - name: prmsReservesCategory
             description: "PRMS Reserves Category"
-          
           - name: prmsReservesSubCategory
             description: "PRMS Reserves Sub-Category"
-          
           - name: prmsResourcesClass
             description: "PRMS Resources Class"
-          
           - name: productionMethod
             description: "Production Method"
-          
           - name: proppantMeshSize
             description: "Proppant Mesh Size"
-          
           - name: proppantType
             description: "Proppant Type"
-          
           - name: range
             description: "Range"
-          
           - name: recoveryMethod
             description: "Recovery Method"
-          
+
           # Refrac information
           - name: refracAdditiveVolume
             description: "Refrac Additive Volume"
-          
           - name: refracClusterCount
             description: "Refrac Cluster Count"
-          
           - name: refracDate
             description: "Refrac Date"
-          
           - name: refracFluidPerPerforatedInterval
             description: "Refrac Fluid Per Perforated Interval"
-          
           - name: refracFluidVolume
             description: "Refrac Fluid Volume"
-          
           - name: refracFracVendor
             description: "Refrac Frac Vendor"
-          
           - name: refracMaxInjectionPressure
             description: "Refrac Max Injection Pressure"
-          
           - name: refracMaxInjectionRate
             description: "Refrac Max Injection Rate"
-          
           - name: refracPropWeight
             description: "Refrac Prop Weight"
-          
           - name: refracProppantPerFluid
             description: "Refrac Proppant Per Fluid"
-          
           - name: refracProppantPerPerforatedInterval
             description: "Refrac Proppant Per Perforated Interval"
-          
           - name: refracStageCount
             description: "Refrac Stage Count"
-          
           - name: refracTreatmentType
             description: "Refrac Treatment Type"
-
           - name: refracTreatmentType
             description: "Refrac Treatment Type"
-          
           - name: rig
             description: "Rig"
-          
           - name: rs
             description: "RS"
-          
           - name: scope
             description: "Scope"
-          
           - name: section
             description: "Section"
-          
           - name: sg
             description: "SG"
-          
           - name: so
             description: "SO"
-          
           - name: spudDate
             description: "Spud Date"
-          
           - name: stageSpacing
             description: "Stage Spacing"
-          
           - name: state
             description: "State"
-          
           - name: status
             description: "Status"
-          
           - name: subplay
             description: "Subplay"
-          
           - name: surfaceLatitude
             description: "Surface Latitude"
-          
           - name: surfaceLongitude
             description: "Surface Longitude"
-          
           - name: survey
             description: "Survey"
-          
           - name: sw
             description: "SW"
-          
           - name: targetFormation
             description: "Target Formation"
-          
           - name: thickness
             description: "Thickness"
-          
           - name: til
             description: "TIL"
-          
           - name: toeInLandingZone
             description: "Toe In Landing Zone"
-          
           - name: toeLatitude
             description: "Toe Latitude"
-          
           - name: toeLongitude
             description: "Toe Longitude"
-          
           - name: toeUp
             description: "Toe Up"
-          
           - name: totalAdditiveVolume
             description: "Total Additive Volume"
-          
           - name: totalClusterCount
             description: "Total Cluster Count"
-          
           - name: totalFluidPerPerforatedInterval
             description: "Total Fluid Per Perforated Interval"
-          
           - name: totalFluidVolume
             description: "Total Fluid Volume"
-          
           - name: totalPropWeight
             description: "Total Prop Weight"
-          
           - name: totalProppantPerFluid
             description: "Total Proppant Per Fluid"
-          
           - name: totalProppantPerPerforatedInterval
             description: "Total Proppant Per Perforated Interval"
-          
           - name: totalStageCount
             description: "Total Stage Count"
-          
           - name: township
             description: "Township"
-          
           - name: trueVerticalDepth
             description: "True Vertical Depth"
-          
           - name: tubingDepth
             description: "Tubing Depth"
-          
           - name: tubingId
             description: "Tubing ID"
-          
           - name: typeCurveArea
             description: "Type Curve Area"
-          
           - name: updatedAt
             description: "Updated At"
-          
           - name: upperPerforation
             description: "Upper Perforation"
-          
           - name: verticalSpacing
             description: "Vertical Spacing"
-          
           - name: vtWellSpacingAnyZone
             description: "VT Well Spacing Any Zone"
-          
           - name: vtWellSpacingSameZone
             description: "VT Well Spacing Same Zone"
-          
           - name: wellName
             description: "Well Name"
-          
           - name: wellNumber
             description: "Well Number"
-          
           - name: wellType
             description: "Well Type"
-          
           - name: zi
             description: "Zi"
-        
-        # Freshness configuration
-        loaded_at_field: "{{ var('loaded_at_field', '_portable_extracted') }}"
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
 
       - name: econ_runs
         description: Contains economic run information for project scenarios
 
       - name: econ_run_monthly_export_results
         description: Contains monthly export results for economic runs
-
+        config:
+          # Freshness configuration
+          loaded_at_field: _PORTABLE_EXTRACTED
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
         columns:
           # Metadata and Identifiers
           - name: _ID
@@ -2045,712 +1432,508 @@ sources:
             tests:
               - unique
               - not_null
-          
           - name: _PORTABLE_EXTRACTED
             description: "Timestamp when the data was extracted"
-          
           - name: ECONRUN
             description: "Economic run identifier"
-          
           - name: ECON_RUN_DATE
             description: "Date when the economic run was performed"
-          
           - name: DATE
             description: "Reference date for the economic run data"
-          
           - name: COMBONAME
             description: "Name of the economic scenario combination"
-          
           - name: WELL
             description: "Well identifier"
-          
           - name: PROJECT
             description: "Project identifier"
-          
           - name: SCENARIO
             description: "Scenario identifier"
 
           # Cash Flow Fields
           - name: BEFOREINCOMETAXCASHFLOW
             description: "Cash flow before income tax"
-          
           - name: AFTERINCOMETAXCASHFLOW
             description: "Cash flow after income tax"
-          
           - name: FIRSTDISCOUNTCASHFLOW
             description: "First discounted cash flow"
-          
           - name: SECONDDISCOUNTCASHFLOW
             description: "Second discounted cash flow"
-          
           - name: FIRSTDISCOUNTNETINCOME
             description: "First discounted net income"
-          
           - name: SECONDDISCOUNTNETINCOME
             description: "Second discounted net income"
-          
           - name: FIRSTDISCOUNTEDCAPEX
             description: "First discounted capital expenditure"
-          
           - name: SECONDDISCOUNTEDCAPEX
             description: "Second discounted capital expenditure"
-          
           - name: NETINCOME
             description: "Net income"
-          
           - name: NETPROFIT
             description: "Net profit"
-          
+
           # Discount Table Cash Flow Fields
           - name: DISCOUNTTABLECASHFLOW1
             description: "Discount table cash flow period 1"
-          
           - name: DISCOUNTTABLECASHFLOW2
             description: "Discount table cash flow period 2"
-          
           - name: DISCOUNTTABLECASHFLOW3
             description: "Discount table cash flow period 3"
-          
           - name: DISCOUNTTABLECASHFLOW4
             description: "Discount table cash flow period 4"
-          
           - name: DISCOUNTTABLECASHFLOW5
             description: "Discount table cash flow period 5"
-          
           - name: DISCOUNTTABLECASHFLOW6
             description: "Discount table cash flow period 6"
-          
           - name: DISCOUNTTABLECASHFLOW7
             description: "Discount table cash flow period 7"
-          
           - name: DISCOUNTTABLECASHFLOW8
             description: "Discount table cash flow period 8"
-          
           - name: DISCOUNTTABLECASHFLOW9
             description: "Discount table cash flow period 9"
-          
           - name: DISCOUNTTABLECASHFLOW10
             description: "Discount table cash flow period 10"
-          
           - name: DISCOUNTTABLECASHFLOW11
             description: "Discount table cash flow period 11"
-          
           - name: DISCOUNTTABLECASHFLOW12
             description: "Discount table cash flow period 12"
-          
           - name: DISCOUNTTABLECASHFLOW13
             description: "Discount table cash flow period 13"
-          
           - name: DISCOUNTTABLECASHFLOW14
             description: "Discount table cash flow period 14"
-          
           - name: DISCOUNTTABLECASHFLOW15
             description: "Discount table cash flow period 15"
-          
           - name: DISCOUNTTABLECASHFLOW16
             description: "Discount table cash flow period 16"
-          
+
           # After-Tax Discount Table Cash Flow Fields
           - name: AFITDISCOUNTTABLECASHFLOW1
             description: "After federal income tax discount table cash flow period 1"
-          
           - name: AFITDISCOUNTTABLECASHFLOW2
             description: "After federal income tax discount table cash flow period 2"
-          
           - name: AFITDISCOUNTTABLECASHFLOW3
             description: "After federal income tax discount table cash flow period 3"
-          
           - name: AFITDISCOUNTTABLECASHFLOW4
             description: "After federal income tax discount table cash flow period 4"
-          
           - name: AFITDISCOUNTTABLECASHFLOW5
             description: "After federal income tax discount table cash flow period 5"
-          
           - name: AFITDISCOUNTTABLECASHFLOW6
             description: "After federal income tax discount table cash flow period 6"
-          
           - name: AFITDISCOUNTTABLECASHFLOW7
             description: "After federal income tax discount table cash flow period 7"
-          
           - name: AFITDISCOUNTTABLECASHFLOW8
             description: "After federal income tax discount table cash flow period 8"
-          
           - name: AFITDISCOUNTTABLECASHFLOW9
             description: "After federal income tax discount table cash flow period 9"
-          
           - name: AFITDISCOUNTTABLECASHFLOW10
             description: "After federal income tax discount table cash flow period 10"
-          
           - name: AFITDISCOUNTTABLECASHFLOW11
             description: "After federal income tax discount table cash flow period 11"
-          
           - name: AFITDISCOUNTTABLECASHFLOW12
             description: "After federal income tax discount table cash flow period 12"
-          
           - name: AFITDISCOUNTTABLECASHFLOW13
             description: "After federal income tax discount table cash flow period 13"
-          
           - name: AFITDISCOUNTTABLECASHFLOW14
             description: "After federal income tax discount table cash flow period 14"
-          
           - name: AFITDISCOUNTTABLECASHFLOW15
             description: "After federal income tax discount table cash flow period 15"
-          
           - name: AFITDISCOUNTTABLECASHFLOW16
             description: "After federal income tax discount table cash flow period 16"
-          
+
           # Revenue Fields
           - name: TOTALREVENUE
             description: "Total revenue from all sources"
-          
           - name: OILREVENUE
             description: "Revenue from oil production"
-          
           - name: GASREVENUE
             description: "Revenue from gas production"
-          
           - name: NGLREVENUE
             description: "Revenue from natural gas liquids production"
-          
           - name: DRIPCONDENSATEREVENUE
             description: "Revenue from drip condensate production"
-          
+
           # Expense Fields
           - name: TOTALEXPENSE
             description: "Total expenses"
-          
           - name: TOTALFIXEDEXPENSE
             description: "Total fixed expenses"
-          
           - name: TOTALVARIABLEEXPENSE
             description: "Total variable expenses"
-          
           - name: TOTALOILVARIABLEEXPENSE
             description: "Total variable expenses for oil"
-          
           - name: TOTALGASVARIABLEEXPENSE
             description: "Total variable expenses for gas"
-          
           - name: TOTALNGLVARIABLEEXPENSE
             description: "Total variable expenses for NGL"
-          
           - name: TOTALDRIPCONDENSATEVARIABLEEXPENSE
             description: "Total variable expenses for drip condensate"
-          
           - name: MONTHLYWELLCOST
             description: "Monthly well cost"
-          
           - name: OTHERMONTHLYCOST_1
             description: "Other monthly cost category 1"
-          
           - name: OTHERMONTHLYCOST_2
             description: "Other monthly cost category 2"
-          
+
           # Oil Processing Expenses
           - name: OILGATHERINGEXPENSE
             description: "Oil gathering expense"
-          
           - name: OILPROCESSINGEXPENSE
             description: "Oil processing expense"
-          
           - name: OILTRANSPORTATIONEXPENSE
             description: "Oil transportation expense"
-          
           - name: OILMARKETINGEXPENSE
             description: "Oil marketing expense"
-          
           - name: OILOTHEREXPENSE
             description: "Other oil expenses"
-          
+
           # Gas Processing Expenses
           - name: GASGATHERINGEXPENSE
             description: "Gas gathering expense"
-          
           - name: GASPROCESSINGEXPENSE
             description: "Gas processing expense"
-          
           - name: GASTRANSPORTATIONEXPENSE
             description: "Gas transportation expense"
-          
           - name: GASMARKETINGEXPENSE
             description: "Gas marketing expense"
-          
           - name: GASOTHEREXPENSE
             description: "Other gas expenses"
-          
+
           # NGL Processing Expenses
           - name: NGLGATHERINGEXPENSE
             description: "NGL gathering expense"
-          
           - name: NGLPROCESSINGEXPENSE
             description: "NGL processing expense"
-          
           - name: NGLTRANSPORTATIONEXPENSE
             description: "NGL transportation expense"
-          
           - name: NGLMARKETINGEXPENSE
             description: "NGL marketing expense"
-          
           - name: NGLOTHEREXPENSE
             description: "Other NGL expenses"
-          
+
           # Drip Condensate Processing Expenses
           - name: DRIPCONDENSATEGATHERINGEXPENSE
             description: "Drip condensate gathering expense"
-          
           - name: DRIPCONDENSATEPROCESSINGEXPENSE
             description: "Drip condensate processing expense"
-          
           - name: DRIPCONDENSATETRANSPORTATIONEXPENSE
             description: "Drip condensate transportation expense"
-          
           - name: DRIPCONDENSATEMARKETINGEXPENSE
             description: "Drip condensate marketing expense"
-          
           - name: DRIPCONDENSATEOTHEREXPENSE
             description: "Other drip condensate expenses"
-          
+
           # Water Expenses
           - name: WATERDISPOSAL
             description: "Water disposal expense"
-          
+
           # Volume Fields - Production Volumes
           - name: GROSSBOESALESVOLUME
             description: "Gross barrel of oil equivalent sales volume"
-          
           - name: GROSSBOEWELLHEADVOLUME
             description: "Gross barrel of oil equivalent wellhead volume"
-          
           - name: GROSSOILSALESVOLUME
             description: "Gross oil sales volume"
-          
           - name: GROSSOILWELLHEADVOLUME
             description: "Gross oil wellhead volume"
-          
           - name: GROSSGASSALESVOLUME
             description: "Gross gas sales volume"
-          
           - name: GROSSGASWELLHEADVOLUME
             description: "Gross gas wellhead volume"
-          
           - name: GROSSNGLSALESVOLUME
             description: "Gross NGL sales volume"
-          
           - name: GROSSDRIPCONDENSATESALESVOLUME
             description: "Gross drip condensate sales volume"
-          
           - name: GROSSMCFESALESVOLUME
             description: "Gross MCF equivalent sales volume"
-          
           - name: GROSSMCFEWELLHEADVOLUME
             description: "Gross MCF equivalent wellhead volume"
-          
           - name: GROSSWATERWELLHEADVOLUME
             description: "Gross water wellhead volume"
-          
           - name: NETBOESALESVOLUME
             description: "Net barrel of oil equivalent sales volume"
-          
           - name: NETOILSALESVOLUME
             description: "Net oil sales volume"
-          
           - name: NETGASSALESVOLUME
             description: "Net gas sales volume"
-          
           - name: NETNGLSALESVOLUME
             description: "Net NGL sales volume"
-          
           - name: NETDRIPCONDENSATESALESVOLUME
             description: "Net drip condensate sales volume"
-          
           - name: NETMCFESALESVOLUME
             description: "Net MCF equivalent sales volume"
-          
+
           # Working Interest Volumes
           - name: WIBOESALESVOLUME
             description: "Working interest barrel of oil equivalent sales volume"
-          
           - name: WIOILSALESVOLUME
             description: "Working interest oil sales volume"
-          
           - name: WIGASSALESVOLUME
             description: "Working interest gas sales volume"
-          
           - name: WINGLSALESVOLUME
             description: "Working interest NGL sales volume"
-          
           - name: WIDRIPCONDENSATESALESVOLUME
             description: "Working interest drip condensate sales volume"
-          
           - name: WIMCFESALESVOLUME
             description: "Working interest MCF equivalent sales volume"
-          
+
           # Price Fields
           - name: OILPRICE
             description: "Oil price"
-          
           - name: GASPRICE
             description: "Gas price"
-          
           - name: NGLPRICE
             description: "NGL price"
-          
           - name: DRIPCONDENSATEPRICE
             description: "Drip condensate price"
-          
           - name: INPUTOILPRICE
             description: "Input oil price"
-          
           - name: INPUTGASPRICE
             description: "Input gas price"
-          
           - name: INPUTNGLPRICE
             description: "Input NGL price"
-          
           - name: INPUTDRIPCONDENSATEPRICE
             description: "Input drip condensate price"
-          
+
           # Differentials
           - name: OILDIFFERENTIALS1
             description: "Oil differentials 1"
-          
           - name: OILDIFFERENTIALS2
             description: "Oil differentials 2"
-          
           - name: GASDIFFERENTIALS1
             description: "Gas differentials 1"
-          
           - name: GASDIFFERENTIALS2
             description: "Gas differentials 2"
-          
           - name: NGLDIFFERENTIALS1
             description: "NGL differentials 1"
-          
           - name: NGLDIFFERENTIALS2
             description: "NGL differentials 2"
-          
           - name: DRIPCONDENSATEDIFFERENTIALS1
             description: "Drip condensate differentials 1"
-          
           - name: DRIPCONDENSATEDIFFERENTIALS2
             description: "Drip condensate differentials 2"
-          
+
           # Capital Expenditure Fields
           - name: TOTALCAPEX
             description: "Total capital expenditure"
-          
           - name: TOTALINTANGIBLECAPEX
             description: "Total intangible capital expenditure"
-          
           - name: TOTALTANGIBLECAPEX
             description: "Total tangible capital expenditure"
-          
           - name: TOTALGROSSCAPEX
             description: "Total gross capital expenditure"
-          
+
           # Other Investment Fields
           - name: TOTALOTHERINVESTMENT
             description: "Total other investment"
-          
           - name: INTANGIBLEOTHERINVESTMENT
             description: "Intangible other investment"
-          
           - name: TANGIBLEOTHERINVESTMENT
             description: "Tangible other investment"
-          
+
           # Development Capital
           - name: TOTALDRILLING
             description: "Total drilling capital"
-          
           - name: INTANGIBLEDRILLING
             description: "Intangible drilling capital"
-          
           - name: TANGIBLEDRILLING
             description: "Tangible drilling capital"
-          
           - name: TOTALCOMPLETION
             description: "Total completion capital"
-          
           - name: INTANGIBLECOMPLETION
             description: "Intangible completion capital"
-          
           - name: TANGIBLECOMPLETION
             description: "Tangible completion capital"
-          
           - name: TOTALDEVELOPMENT
             description: "Total development capital"
-          
           - name: INTANGIBLEDEVELOPMENT
             description: "Intangible development capital"
-          
           - name: TANGIBLEDEVELOPMENT
             description: "Tangible development capital"
-          
+
           # Facilities Capital
           - name: TOTALFACILITIES
             description: "Total facilities capital"
-          
           - name: INTANGIBLEFACILITIES
             description: "Intangible facilities capital"
-          
           - name: TANGIBLEFACILITIES
             description: "Tangible facilities capital"
-          
           - name: TOTALPAD
             description: "Total pad capital"
-          
           - name: INTANGIBLEPAD
             description: "Intangible pad capital"
-          
           - name: TANGIBLEPAD
             description: "Tangible pad capital"
-          
           - name: TOTALPIPELINES
             description: "Total pipelines capital"
-          
           - name: INTANGIBLEPIPELINES
             description: "Intangible pipelines capital"
-          
           - name: TANGIBLEPIPELINES
             description: "Tangible pipelines capital"
-          
           - name: TOTALWATERLINE
             description: "Total waterline capital"
-          
           - name: INTANGIBLEWATERLINE
             description: "Intangible waterline capital"
-          
           - name: TANGIBLEWATERLINE
             description: "Tangible waterline capital"
-          
+
           # Other Capital Categories
           - name: TOTALAPPRAISAL
             description: "Total appraisal capital"
-          
           - name: INTANGIBLEAPPRAISAL
             description: "Intangible appraisal capital"
-          
           - name: TANGIBLEAPPRAISAL
             description: "Tangible appraisal capital"
-          
           - name: TOTALEXPLORATION
             description: "Total exploration capital"
-          
           - name: INTANGIBLEEXPLORATION
             description: "Intangible exploration capital"
-          
           - name: TANGIBLEEXPLORATION
             description: "Tangible exploration capital"
-          
           - name: TOTALARTIFICIALLIFT
             description: "Total artificial lift capital"
-          
           - name: INTANGIBLEARTIFICIALLIFT
             description: "Intangible artificial lift capital"
-          
           - name: TANGIBLEARTIFICIALLIFT
             description: "Tangible artificial lift capital"
-          
           - name: TOTALWORKOVER
             description: "Total workover capital"
-          
           - name: INTANGIBLEWORKOVER
             description: "Intangible workover capital"
-          
           - name: TANGIBLEWORKOVER
             description: "Tangible workover capital"
-          
           - name: TOTALABANDONMENT
             description: "Total abandonment capital"
-          
           - name: INTANGIBLEABANDONMENT
             description: "Intangible abandonment capital"
-          
           - name: TANGIBLEABANDONMENT
             description: "Tangible abandonment capital"
-          
           - name: TOTALSALVAGE
             description: "Total salvage capital"
-          
           - name: INTANGIBLESALVAGE
             description: "Intangible salvage capital"
-          
           - name: TANGIBLESALVAGE
             description: "Tangible salvage capital"
-          
           - name: TOTALLEASEHOLD
             description: "Total leasehold capital"
-          
           - name: INTANGIBLELEASEHOLD
             description: "Intangible leasehold capital"
-          
           - name: TANGIBLELEASEHOLD
             description: "Tangible leasehold capital"
-          
           - name: TOTALLEGAL
             description: "Total legal capital"
-          
           - name: INTANGIBLELEGAL
             description: "Intangible legal capital"
-          
           - name: TANGIBLELEGAL
             description: "Tangible legal capital"
-          
+
           # Tax Fields
           - name: FEDERALINCOMETAX
             description: "Federal income tax"
-          
           - name: STATEINCOMETAX
             description: "State income tax"
-          
           - name: TAXABLEINCOME
             description: "Taxable income"
-          
           - name: ADVALOREMTAX
             description: "Ad valorem tax"
-          
           - name: TOTALPRODUCTIONTAX
             description: "Total production tax"
-          
           - name: TOTALSEVERANCETAX
             description: "Total severance tax"
-          
           - name: OILSEVERANCETAX
             description: "Oil severance tax"
-          
           - name: GASSEVERANCETAX
             description: "Gas severance tax"
-          
           - name: NGLSEVERANCETAX
             description: "NGL severance tax"
-          
           - name: DRIPCONDENSATESEVERANCETAX
             description: "Drip condensate severance tax"
-          
+
           # Accounting
           - name: DEPRECIATION
             description: "Depreciation"
-          
+
           # Production Parameters
           - name: GROSSWELLCOUNT
             description: "Gross well count"
-          
           - name: NRIWELLCOUNT
             description: "Net revenue interest well count"
-          
           - name: WIWELLCOUNT
             description: "Working interest well count"
-          
           - name: NRIOIL
             description: "Net revenue interest oil percentage"
-          
           - name: NRIGAS
             description: "Net revenue interest gas percentage"
-          
           - name: NRINGL
             description: "Net revenue interest NGL percentage"
-          
           - name: NRIDRIPCONDENSATE
             description: "Net revenue interest drip condensate percentage"
-          
           - name: WIOIL
             description: "Working interest oil percentage"
-          
           - name: WIGAS
             description: "Working interest gas percentage"
-          
           - name: WINGL
             description: "Working interest NGL percentage"
-          
           - name: WIDRIPCONDENSATE
             description: "Working interest drip condensate percentage"
-          
           - name: LEASENRI
             description: "Lease net revenue interest"
-          
+
           # Production Characteristics
           - name: NGLYIELD
             description: "NGL yield"
-          
           - name: DRIPCONDENSATEYIELD
             description: "Drip condensate yield"
-          
           - name: OILLOSS
             description: "Oil loss percentage"
-          
           - name: OILSHRINKAGE
             description: "Oil shrinkage percentage"
-          
           - name: GASLOSS
             description: "Gas loss percentage"
-          
           - name: GASSHRINKAGE
             description: "Gas shrinkage percentage"
-          
           - name: GASFLARE
             description: "Gas flare percentage"
-          
+
           # Start Dates
           - name: OILSTARTUSINGFORECASTDATE
             description: "Oil start using forecast date"
-          
           - name: GASSTARTUSINGFORECASTDATE
             description: "Gas start using forecast date"
-          
           - name: WATERSTARTUSINGFORECASTDATE
             description: "Water start using forecast date"
-        
-        # Freshness configuration
-        loaded_at_field: _PORTABLE_EXTRACTED
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
 
       - name: econ_run_one_liners
         description: Contains one-liner summary information for economic runs
-        
-        loaded_at_field: portableextracted
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
-
+        config:
+          loaded_at_field: portableextracted
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
         columns:
           - name: portableextracted
             description: Timestamp when the record was extracted
-          
           - name: comboname
             description: Name of the economic scenario combination
-          
           - name: econgroup
             description: Economic group identifier
-          
           - name: econprmsreservescategory
             description: PRMS reserves category for the economic run
-          
           - name: econprmsreservessubcategory
             description: PRMS reserves sub-category for the economic run
-          
           - name: econprmsresourcesclass
             description: PRMS resources class for the economic run
-          
           - name: econrun
             description: Economic run identifier
-          
           - name: id
             description: Unique identifier for the record
             tests:
               - unique
               - not_null
-          
           - name: output
             description: Variant type containing output data
-          
           - name: project
             description: Project identifier
-          
           - name: scenario
             description: Scenario identifier
-          
           - name: well
             description: Well identifier
 
@@ -2773,9 +1956,12 @@ sources:
             description: Time resolution of the forecast (e.g., daily)
           - name: well
             description: Well ID
+
       - name: forecast_outputs
+
       - name: forecasts
         description: The table contains records of forecast runs. Each record represents a single forecast and includes details about the forecast type, project, and date.
+
       - name: project_econ_model_general_options
         description: Table containing general options for project economic models
         columns:
