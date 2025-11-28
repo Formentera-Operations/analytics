@@ -7,23 +7,23 @@ models:
     columns:
       - name: economic_one_liner_id
         description: Unique identifier for the economic one-liner record
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: economic_run_id
         description: Identifier for the economic run
-        tests:
+        data_tests:
           - not_null
 
       - name: project_id
         description: Identifier for the project
-        tests:
+        data_tests:
           - not_null
 
       - name: scenario_id
         description: Identifier for the scenario
-        tests:
+        data_tests:
           - not_null
 
       - name: well_id
@@ -156,7 +156,7 @@ models:
           - 'Snyder Drillco': From 'Snyder'
           - 'FP Pronghorn': From 'FP_PRONGHORN'
           - 'FP Drake': From 'FP_DRAKE'
-        tests:
+        data_tests:
           - accepted_values:
               values: ['FP Meramec', 'FP Goldsmith (Saddleback)', 'FP Goldsmith (SLANT)',
                       'FP Green', 'FP Lakefork', 'FP Overlook', 'FP Rio Grande',
@@ -178,7 +178,7 @@ models:
           - '2WIP': From '2WIP'
           - '3PDNP': From '3PDSI'
           - '4PUD': Includes '3PUD', '4PUD', '4PUD_HZ', '4PUD_RC', '4PUD_VT'
-        tests:
+        data_tests:
           - accepted_values:
               values: ['1PDP', '2WIP', '3PDNP', '4PUD']
               quote: true

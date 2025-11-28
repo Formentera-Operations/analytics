@@ -6,7 +6,7 @@ models:
     columns:
       - name: company_id
         description: "Primary key - The unique identifier for each company"
-        tests:
+        data_tests:
           - unique
           - not_null
           - dbt_expectations.expect_column_values_to_not_be_in_set:
@@ -16,72 +16,72 @@ models:
 
       - name: name
         description: "Company name"
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
       - name: is_archived
         description: "Flag indicating if the company record is archived"
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [true, false]
 
       - name: status
         description: "Current status of the company"
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
       - name: lifecyclestage
         description: "Current lifecycle stage of the company"
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
       - name: email
         description: "Primary email address for the company"
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
               config:
                 severity: warn
       - name: raw_created_at
         description: "Timestamp when the record was created"
-        tests:
+        data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: '1900-01-01'
               max_value: "{{ current_timestamp() }}"
       - name: raw_updated_at
         description: "Timestamp when the record was last updated"
-        tests:
+        data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: '1900-01-01'
               max_value: "{{ current_timestamp() }}"
       - name: is_active
         description: "Flag indicating if the company is currently active"
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [true, false]
       - name: hubspot_owner_id
         description: "ID of the Hubspot owner for this company"
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
       - name: country
         description: "Country where the company is located"
-        tests:
+        data_tests:
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set: ['US', 'CA', 'GB', 'AU']  # Add more country codes as needed
               config:
                 severity: warn
       - name: page_views
         description: "Number of page views"
-        tests:
+        data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
@@ -89,7 +89,7 @@ models:
                 severity: warn
       - name: total_visits
         description: "Total number of visits"
-        tests:
+        data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
@@ -97,7 +97,7 @@ models:
                 severity: warn
       - name: tax_exempt
         description: "Flag indicating if the company is tax exempt"
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [true, false]

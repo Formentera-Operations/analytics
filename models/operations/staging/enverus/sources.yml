@@ -40,11 +40,11 @@ sources:
         columns:
           - name: wellid
             description: "Unique well identifier"
-            tests:
+            data_tests:
               - not_null
           - name: completionid
             description: "Completion identifier"
-            tests:
+            data_tests:
               - not_null
           - name: api_uwi
             description: "API Unique Well Identifier (formatted)"
@@ -80,12 +80,12 @@ sources:
         columns:
           - name: productionid
             description: "Unique production record identifier"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: wellid
             description: "Foreign key to wells table"
-            tests:
+            data_tests:
               - not_null
           - name: completionid
             description: "Completion identifier"
@@ -107,7 +107,7 @@ sources:
         columns:
           - name: completionid
             description: "Unique completion identifier"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: envwellserviceprovider
@@ -161,7 +161,7 @@ sources:
         columns:
           - name: uniqueid
             description: "Unique facility identifier"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: envoperator
@@ -176,7 +176,7 @@ sources:
         columns:
           - name: uniqueid
             description: "Unique pipeline identifier"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: commodity
@@ -197,7 +197,7 @@ sources:
         columns:
           - name: uniquedealid
             description: "Unique deal identifier"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: dealtype

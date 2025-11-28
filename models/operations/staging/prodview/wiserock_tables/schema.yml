@@ -4,13 +4,13 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier"
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: tblkeyparent
@@ -51,7 +51,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -60,15 +60,15 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (unit)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -119,7 +119,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -128,15 +128,15 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -451,7 +451,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -460,15 +460,15 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -541,7 +541,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -550,15 +550,15 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -699,7 +699,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -708,15 +708,15 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -817,7 +817,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -826,15 +826,15 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (unit)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1011,7 +1011,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -1020,13 +1020,13 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier"
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: idrecunit
@@ -1247,7 +1247,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -1256,11 +1256,11 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: name
@@ -1457,6 +1457,6 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]

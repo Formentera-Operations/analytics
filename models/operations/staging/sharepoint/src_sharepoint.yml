@@ -16,12 +16,12 @@ sources:
         columns:
           - name: _line
             description: Fivetran's internal row identifier (unique)
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: _fivetran_synced
             description: Timestamp when Fivetran last synced this record
-            tests:
+            data_tests:
               - not_null
 
       - name: MASTER_ACCOUNT_TABLE_MAIN

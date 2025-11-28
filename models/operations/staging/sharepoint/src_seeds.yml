@@ -30,7 +30,7 @@ sources:
         columns:
           - name: merrickid
             description: Primary key - unique identifier for completion records
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: prorationmeter
@@ -75,7 +75,7 @@ sources:
         columns:
           - name: propertywellmerrickid
             description: Primary key matching completion merrickid
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: propertynumber
@@ -110,7 +110,7 @@ sources:
         columns:
           - name: merrickid
             description: Primary key - unique tank identifier
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: tankid
@@ -141,7 +141,7 @@ sources:
         columns:
           - name: merrickid
             description: Primary key - unique meter identifier
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: meterid
@@ -170,7 +170,7 @@ sources:
         columns:
           - name: merrickid
             description: Primary key - unique equipment identifier
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: equipmentid
@@ -205,7 +205,7 @@ sources:
         columns:
           - name: allocationtype
             description: Primary key - allocation type code
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: allocationname
@@ -234,7 +234,7 @@ sources:
         columns:
           - name: allocationtype
             description: Primary key - tank allocation type code
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: allocationname
@@ -269,7 +269,7 @@ sources:
         columns:
           - name: allocationtype
             description: Primary key - meter allocation type code
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: allocationname
@@ -295,7 +295,7 @@ sources:
         columns:
           - name: allocationtype
             description: Primary key - equipment allocation type code
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: allocationname
@@ -326,11 +326,11 @@ sources:
         columns:
           - name: tankid
             description: Foreign key to tank table
-            tests:
+            data_tests:
               - not_null
           - name: recorddate
             description: Date of strapping record
-            tests:
+            data_tests:
               - not_null
           - name: description
             description: Strapping description/notes
@@ -348,7 +348,7 @@ sources:
             description: User who created/modified record
           - name: rowuid
             description: Unique row identifier (GUID)
-            tests:
+            data_tests:
               - unique
               
       - name: tank_strapping_detail_tb_barnett_sheet_1
@@ -360,11 +360,11 @@ sources:
         columns:
           - name: tankid
             description: Foreign key to tank and strapping header
-            tests:
+            data_tests:
               - not_null
           - name: recorddate
             description: Foreign key to strapping header record date
-            tests:
+            data_tests:
               - not_null
           - name: totalinches
             description: Height measurement in total inches
@@ -388,7 +388,7 @@ sources:
             description: Record timestamp
           - name: rowuid
             description: Unique row identifier
-            tests:
+            data_tests:
               - unique
               
       # ==========================================================================
@@ -404,7 +404,7 @@ sources:
         columns:
           - name: routemerrickid
             description: Primary key - unique route identifier
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: routename
@@ -445,12 +445,12 @@ sources:
         columns:
           - name: routestopmerrickid
             description: Primary key - unique route stop identifier
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: routemerrickid
             description: Foreign key to route master
-            tests:
+            data_tests:
               - not_null
           - name: stopname
             description: Stop location name
@@ -480,15 +480,15 @@ sources:
         columns:
           - name: routestopmerrickid
             description: Foreign key to route stop
-            tests:
+            data_tests:
               - not_null
           - name: objectmerrickid
             description: Foreign key to production object (tank/meter/completion/equipment)
-            tests:
+            data_tests:
               - not_null
           - name: objectmerricktype
             description: Type code indicating object type (1=completion, 2=meter, 3=tank, 4=equipment)
-            tests:
+            data_tests:
               - not_null
           - name: displaymessage
             description: Display text for mobile/field device
@@ -518,23 +518,23 @@ sources:
         columns:
           - name: upstreamid
             description: Source object merrick ID
-            tests:
+            data_tests:
               - not_null
           - name: upstreamtype
             description: Source object type code
-            tests:
+            data_tests:
               - not_null
           - name: downstreamid
             description: Destination object merrick ID
-            tests:
+            data_tests:
               - not_null
           - name: downstreamtype
             description: Destination object type code
-            tests:
+            data_tests:
               - not_null
           - name: startdate
             description: Connection effective start date
-            tests:
+            data_tests:
               - not_null
           - name: enddate
             description: Connection effective end date
@@ -568,21 +568,21 @@ sources:
         columns:
           - name: merrickid
             description: Completion merrick ID
-            tests:
+            data_tests:
               - not_null
           - name: sourceid
             description: Connected source object ID
-            tests:
+            data_tests:
               - not_null
           - name: sourcetype
             description: Source object type classification
-            tests:
+            data_tests:
               - not_null
           - name: gatheringsystemid
             description: Foreign key to gathering system
           - name: startdate
             description: Connection start date
-            tests:
+            data_tests:
               - not_null
           - name: enddate
             description: Connection end date
@@ -602,7 +602,7 @@ sources:
         columns:
           - name: gatheringsystemmerrickid
             description: Primary key - unique gathering system identifier
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: gatheringsystemid
@@ -625,7 +625,7 @@ sources:
             description: Soft delete flag
           - name: rowuid
             description: Unique row identifier
-            tests:
+            data_tests:
               - unique
               
       # ==========================================================================
@@ -640,7 +640,7 @@ sources:
         columns:
           - name: producingstatusmerrickid
             description: Primary key - unique status code
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: producingdescriptionshort
@@ -668,7 +668,7 @@ sources:
         columns:
           - name: producingmethodsmerrickid
             description: Primary key - unique method code
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: producingmethodsshort
@@ -695,11 +695,11 @@ sources:
         columns:
           - name: merrickid
             description: Object merrick ID being referenced
-            tests:
+            data_tests:
               - not_null
           - name: merricktype
             description: Object type classification
-            tests:
+            data_tests:
               - not_null
           - name: uniqueid
             description: Alternate unique identifier
@@ -753,19 +753,19 @@ sources:
         columns:
           - name: objectid
             description: Object merrick ID formula applies to
-            tests:
+            data_tests:
               - not_null
           - name: objecttype
             description: Type of object (completion/tank/meter/equipment)
-            tests:
+            data_tests:
               - not_null
           - name: objectformulatype
             description: Type/category of formula calculation
-            tests:
+            data_tests:
               - not_null
           - name: startdate
             description: Formula effective start date
-            tests:
+            data_tests:
               - not_null
           - name: enddate
             description: Formula effective end date

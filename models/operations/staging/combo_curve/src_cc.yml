@@ -62,7 +62,7 @@ sources:
           # Required Field
           - name: dataSource
             description: "Data Source"
-            tests:
+            data_tests:
               - not_null
 
           # Optional Fields - A
@@ -468,7 +468,7 @@ sources:
             description: "Hz Well Spacing Same Zone"
           - name: id
             description: "ID"
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: initialRespress
@@ -477,7 +477,7 @@ sources:
             description: "Initial Reservoir Temperature"
           - name: inptID
             description: "INPT ID"
-            tests:
+            data_tests:
               - unique
 
           # Landing Zone Information
@@ -744,7 +744,7 @@ sources:
           # Required Field
           - name: dataSource
             description: "Data Source"
-            tests:
+            data_tests:
               - not_null
 
           # Optional Fields - A
@@ -1150,7 +1150,7 @@ sources:
             description: "Hz Well Spacing Same Zone"
           - name: id
             description: "ID"
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: initialRespress
@@ -1159,7 +1159,7 @@ sources:
             description: "Initial Reservoir Temperature"
           - name: inptID
             description: "INPT ID"
-            tests:
+            data_tests:
               - unique
 
           # Landing Zone Information
@@ -1429,7 +1429,7 @@ sources:
           # Metadata and Identifiers
           - name: _ID
             description: "Primary key identifier"
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: _PORTABLE_EXTRACTED
@@ -1925,7 +1925,7 @@ sources:
             description: Economic run identifier
           - name: id
             description: Unique identifier for the record
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: output
@@ -1967,7 +1967,7 @@ sources:
         columns:
           - name: id
             description: Unique identifier for the economic model options
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: portableextracted

@@ -26,7 +26,7 @@ models:
         description: >
           Primary key. Corresponds to Fivetran's _line field which maintains the original
           sequential order from the source Excel document.
-        tests:
+        data_tests:
           - unique:
               config:
                 severity: error
@@ -36,7 +36,7 @@ models:
 
       - name: loaded_at
         description: Timestamp when this record was last synced by Fivetran from SharePoint
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: error
@@ -46,7 +46,7 @@ models:
           Hierarchical line number from the LOS report structure. This value is filled down
           from category header rows (e.g., 3 for "OIL BARRELS", 4 for "GAS MCF") to all
           associated detail rows.
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
@@ -56,7 +56,7 @@ models:
           Category header name that groups related line items together. Values include production
           categories (OIL BARRELS, GAS MCF, NGL GALLONS) and financial categories (REVENUE,
           OPERATING EXPENSES, etc.). This value is filled down from header rows to detail rows.
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
@@ -80,7 +80,7 @@ models:
         description: >
           High-level classification used for sorting and grouping line items in reports.
           Examples: OIL SALES, GAS SALES, NGL SALES, OPERATING EXPENSE, etc.
-        tests:
+        data_tests:
           - accepted_values:
               values: ['OIL SALES', 'GAS SALES', 'NGL SALES', 'OIL REV DEDUCT', 'GAS REV DEDUCT',
                        'NGL REV DEDUCT', 'OPERATING EXPENSE', 'LOE', 'PRODUCTION TAX',
@@ -96,7 +96,7 @@ models:
         description: >
           Descriptive name of the line item or account. Examples: "OIL SALES - WI", 
           "GAS HEDGING", "WORKOVER - W/O EQUIPMENT", "PAYROLL"
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
@@ -108,7 +108,7 @@ models:
           - NET QTY AMT: Quantity (barrels, MCF, gallons)
           - NET VALUE AMT: Dollar value
           Null for header and calculation rows.
-        tests:
+        data_tests:
           - accepted_values:
               values: ['NET QTY AMT', 'NET VALUE AMT']
               config:
@@ -137,40 +137,40 @@ models:
         description: >
           Boolean flag indicating if this row is a category header (has line_number but no account_code).
           These rows define the hierarchical structure.
-        tests:
+        data_tests:
           - not_null
 
       - name: is_title_only
         description: >
           Boolean flag indicating rows that are display titles only (e.g., "LOS STATEMENT",
           "--PRODUCTION--", "--REVENUE--")
-        tests:
+        data_tests:
           - not_null
 
       - name: is_hidden_row
         description: >
           Boolean flag indicating rows that should be hidden in reports but included in calculations
           (e.g., "DAYS IN MONTH" used for BOEPD calculations)
-        tests:
+        data_tests:
           - not_null
 
       - name: is_blank_row
         description: Boolean flag indicating intentional blank rows used for spacing in reports
-        tests:
+        data_tests:
           - not_null
 
       - name: is_calculated_row
         description: >
           Boolean flag indicating rows that contain calculated values rather than raw data
           (e.g., totals, averages, derived metrics)
-        tests:
+        data_tests:
           - not_null
 
       - name: is_subtraction
         description: >
           Boolean flag indicating if this line item should be subtracted in calculations
           (typically used for deducts and expenses)
-        tests:
+        data_tests:
           - not_null
 
       - name: product_type
@@ -181,7 +181,7 @@ models:
           - NGL: Natural gas liquids
           - BOE: Barrel of oil equivalent
           - OTHER: Non-product categories (financials, G&A, etc.)
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['OIL', 'GAS', 'NGL', 'BOE', 'OTHER']

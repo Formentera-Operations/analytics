@@ -10,12 +10,12 @@ sources:
         columns:
           - name: IDREC
             description: "Unique record identifier"
-            tests:
+            data_tests:
               - unique
               - not_null
           - name: IDWELL
             description: "Well identifier"
-            tests:
+            data_tests:
               - not_null
           - name: COM
             description: "Comment field"
@@ -25,7 +25,7 @@ sources:
             description: "Calculated string length in meters"
           - name: SYSCREATEDATE
             description: "System record creation date"
-            tests:
+            data_tests:
               - not_null
           - name: PULLREASON
             description: "Reason for pulling the casing string"
@@ -125,7 +125,7 @@ sources:
             description: "Calculated job program phase table key"
           - name: PROPOSEDORACTUAL
             description: "Indicates if record is proposed or actual"
-            tests:
+            data_tests:
               - accepted_values:
                   values: ['proposed', 'actual']
           - name: IDRECJOBPULLTK
