@@ -57,12 +57,12 @@ WITH wells_base AS (
 -- Pivot userfields to get search_key and field
 userfields AS (
     SELECT 
-        ID AS well_id,
-        MAX(CASE WHEN USERFIELDNAME = 'UF-SEARCH KEY' THEN USERFIELDVALUESTRING END) AS search_key,
-        MAX(CASE WHEN USERFIELDNAME = 'UF-PV FIELD' THEN USERFIELDVALUESTRING END) AS pv_field
+        "Id" AS well_id,
+        MAX(CASE WHEN "UserFieldName" = 'UF-SEARCH KEY' THEN "UserFieldValueString" END) AS search_key,
+        MAX(CASE WHEN "UserFieldName" = 'UF-PV FIELD' THEN "UserFieldValueString" END) AS pv_field
     FROM {{ ref('stg_oda__userfield') }}
-    WHERE USERFIELDNAME IN ('UF-SEARCH KEY', 'UF-PV FIELD')
-    GROUP BY ID
+    WHERE "UserFieldName" IN ('UF-SEARCH KEY', 'UF-PV FIELD')
+    GROUP BY "Id"
 ),
 
 final AS (
