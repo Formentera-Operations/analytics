@@ -224,8 +224,8 @@ SELECT
     -- Metadata and timestamps
     CONVERT_TIMEZONE('UTC', 'America/Chicago', CURRENT_TIMESTAMP())::TIMESTAMP_TZ AS last_refresh_time,
     gld.id AS gl_id,
-    gld.create_date::TIMESTAMP_NTZ AS created_date,
-    gld.update_date::TIMESTAMP_NTZ AS updated_date,
+    gld.created_at::TIMESTAMP_NTZ AS created_date,
+    gld.updated_at::TIMESTAMP_NTZ AS updated_date,
     
     -- Company and account info
     c.code AS company_code,
@@ -407,7 +407,7 @@ WHERE 1=1
 {% if is_incremental() %}
     -- Only process new or updated GL entries since last run
     AND (
-        gld.create_date > (SELECT MAX(created_date) FROM {{ this }})
-        OR gld.update_date > (SELECT MAX(updated_date) FROM {{ this }})
+        gld.created_at > (SELECT MAX(created_date) FROM {{ this }})
+        OR gld.updated_at > (SELECT MAX(updated_date) FROM {{ this }})
     )
 {% endif %}

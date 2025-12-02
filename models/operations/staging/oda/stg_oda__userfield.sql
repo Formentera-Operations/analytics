@@ -20,5 +20,3 @@ renamed as (
         ,FLOW_DOCUMENT
     from source
 )
-
-Select * from source

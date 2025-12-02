@@ -1,225 +1,239 @@
-with accounts_hierarchy as (
-    select 
-        a.id as account_id,
-        a.code as account_code,
-        a.name as account_name,
-        a.full_name as account_full_name,
+{{
+    config(
+        materialized='table',
+        tags=['intermediate', 'finance', 'accounts']
+    )
+}}
+
+{#
+    Intermediate model: Classified Chart of Accounts
+    
+    Purpose: Enriches accounts with hierarchy and LOS reporting attributes
+    Grain: One row per account (account_id)
+    
+    Key enrichments:
+    - Account type/subtype hierarchy from ODA
+    - LOS (Lease Operating Statement) classifications from SharePoint
+    - Financial statement classification (P&L vs Balance Sheet)
+    - Interest type parsing (WI, RI, ORRI, etc.)
+    - Reporting capability flags (volume vs value)
+    
+    Use cases:
+    - LOS reporting (posted transactions, specific accounts)
+    - Trial balance
+    - AP/AR aging
+    - General GL analysis
+    
+    Dependencies:
+    - stg_oda__account_v2
+    - stg_oda__account_sub_types
+    - stg_oda__account_types
+    - stg_sharepoint__los_account_map
+#}
+
+WITH accounts_hierarchy AS (
+    SELECT 
+        a.id AS account_id,
+        a.code AS account_code,
+        a.name AS account_name,
+        a.full_name AS account_full_name,
         a.main_account,
         a.sub_account,
-        a.active,
-        a.normally_debit as account_normally_debit,
+        a.active AS is_active,
+        a.normally_debit AS is_normally_debit,
         
-        -- Join complete hierarchy
+        -- Account type hierarchy
         at.type_code,
         at.type_name,
         at.type_full_name,
         ast.subtype_code,
         ast.subtype_name,
         ast.subtype_full_name,
-        ast.normally_debit as subtype_normally_debit
+        ast.normally_debit AS subtype_normally_debit
         
-    from {{ ref('stg_oda__account_v2') }} a
-    join {{ ref('stg_oda__account_sub_types') }} ast 
-        on a.account_subtype_id = ast.account_subtype_id
-    join {{ ref('stg_oda__account_types') }} at 
-        on ast.account_type_id = at.account_type_id
-    where a.active = true
+    FROM {{ ref('stg_oda__account_v2') }} a
+    LEFT JOIN {{ ref('stg_oda__account_sub_types') }} ast 
+        ON a.account_subtype_id = ast.account_subtype_id
+    LEFT JOIN {{ ref('stg_oda__account_types') }} at 
+        ON ast.account_type_id = at.account_type_id
 ),
 
-los_mapping as (
-    select * from {{ ref('seed_los_account_mapping') }}
+-- Deduplicate LOS mapping to one row per account
+-- Accounts can have both volume (NET QTY AMT) and value (NET VALUE AMT) rows
+los_mapping AS (
+    SELECT
+        account_code,
+        
+        -- Common attributes (consistent across value types for same account)
+        MAX(key_sort_category) AS los_key_sort,
+        MAX(line_item_name) AS los_line_item_name,
+        MAX(product_type) AS los_product_type,
+        MAX(report_header_category) AS los_report_header,
+        
+        -- Separate line numbers for report sequencing (Power BI sort order)
+        MAX(CASE WHEN value_type = 'NET QTY AMT' THEN line_number END) AS los_volume_line_number,
+        MAX(CASE WHEN value_type = 'NET VALUE AMT' THEN line_number END) AS los_value_line_number,
+        
+        -- Reporting capability flags
+        MAX(CASE WHEN value_type = 'NET QTY AMT' THEN TRUE ELSE FALSE END) AS has_volume_reporting,
+        MAX(CASE WHEN value_type = 'NET VALUE AMT' THEN TRUE ELSE FALSE END) AS has_value_reporting,
+        
+        -- Calculation flags for report logic
+        MAX(is_subtraction) AS is_los_subtraction,
+        MAX(is_calculated_row) AS is_los_calculated
+        
+    FROM {{ ref('stg_sharepoint__los_account_map') }}
+    WHERE account_code IS NOT NULL
+    GROUP BY account_code
 ),
 
-los_classifications as (
-    select 
-        ah.*,
+classified AS (
+    SELECT
+        -- =================================================================
+        -- Account Identity
+        -- =================================================================
+        ah.account_id,
+        ah.account_code,
+        ah.account_name,
+        ah.account_full_name,
+        ah.main_account,
+        ah.sub_account,
+        ah.is_active,
+        ah.is_normally_debit,
         
-        -- LOS mapping from seed file (handle nulls for unmapped accounts)
-        lm.key_sort as los_category,
-        lm.category_full_name as los_category_name,
-        lm.category_type as los_category_type,
-        lm.category_description as los_category_description,
+        -- =================================================================
+        -- Account Type Hierarchy (from ODA)
+        -- =================================================================
+        ah.type_code,
+        ah.type_name,
+        ah.subtype_code,
+        ah.subtype_name,
         
-        -- High-level P&L classification based on confirmed hierarchy and LOS mapping
-        case 
-            when lm.category_type = 'Revenue' then 'REVENUE'
-            when lm.category_type = 'Expense' then 'EXPENSE'
-            when ah.subtype_code = 'R' then 'REVENUE'
-            when ah.subtype_code = 'X' then 'EXPENSE' 
-            when ah.type_code = 'B' then 'BALANCE_SHEET'
-            else 'OTHER'
-        end as financial_statement_type,
+        -- =================================================================
+        -- Financial Statement Classification
+        -- =================================================================
+        CASE 
+            WHEN ah.subtype_code = 'R' THEN 'REVENUE'
+            WHEN ah.subtype_code = 'X' THEN 'EXPENSE'
+            WHEN ah.subtype_code = 'A' THEN 'ASSET'
+            WHEN ah.subtype_code = 'L' THEN 'LIABILITY'
+            WHEN ah.subtype_code = 'E' THEN 'EQUITY'
+            ELSE 'OTHER'
+        END AS financial_statement_type,
         
-        -- Use LOS mapping for line item classification, fallback for unmapped accounts
-        case 
-            when lm.category_full_name is not null then lm.category_full_name
-            when lm.category_type is null and ah.subtype_code = 'R' then 'Other Revenue'
-            when lm.category_type is null and ah.subtype_code = 'X' then 'Other Expenses'
-            when lm.category_type is null and ah.type_code = 'A' then 'Assets'
-            when lm.category_type is null and ah.type_code = 'L' then 'Liabilities'
-            when lm.category_type is null and ah.type_code = 'E' then 'Equity'
-            else 'Other'
-        end as los_line_item,
+        CASE 
+            WHEN ah.subtype_code IN ('R', 'X') THEN TRUE
+            ELSE FALSE
+        END AS is_income_statement_account,
         
-        -- LOS-based income statement grouping using seed data with fallbacks
-        case 
-            when lm.key_sort in ('OIL SALES', 'GAS SALES', 'NGL SALES') then 'Commodity Revenue'
-            when lm.key_sort in ('OH INCOME', 'WELL SRV INCOME', 'OTHER INCOME') then 'Other Revenue'
-            when lm.key_sort in ('OIL PROD TAXES', 'GAS PROD TAXES', 'NGL PROD TAXES') then 'Production Taxes'
-            when lm.key_sort in ('OIL REV DEDUCT', 'GAS REV DEDUCT', 'NGL REV DEDUCT') then 'Revenue Deductions'
-            when lm.key_sort in ('LEASE MNT & HSE', '3PTY WTR DSPSL', 'CMPNY WTR DSPSL', 'WEATHER', 
-                                'RENTAL EQUIP', 'SURFACE EQUIP', 'FUEL & POWER', 'CHEM & TREATING',
-                                'CNTRCT LBR', 'COMPANY LABOR', 'WELL SERVICING', 'SRVCS & RPRS',
-                                'NON-OP LOE', 'COPAS OVERHEAD', 'AD VALOREM', 'MDSTRM GGA FEE') then 'Lease Operating Expenses'
-            when lm.key_sort = 'WORKOVER' then 'Workover Expenses'
-            when lm.key_sort = 'P&A' then 'Abandonment Costs'
-            when lm.key_sort = 'HEDGES' then 'Derivative Settlements'
-            when lm.key_sort = 'OTHER' then 'Other Expenses'
-            -- Fallback to original logic for unmapped accounts
-            when lm.key_sort is null and ah.subtype_code = 'R' then 'Revenue'
-            when lm.key_sort is null and ah.subtype_code = 'X' then 'Operating Expenses'
-            when lm.key_sort is null and ah.type_code = 'A' then 'Assets'
-            when lm.key_sort is null and ah.type_code = 'L' then 'Liabilities'
-            when lm.key_sort is null and ah.type_code = 'E' then 'Equity'
-            else 'Other'
-        end as income_statement_section,
+        CASE 
+            WHEN ah.type_code = 'B' THEN TRUE
+            ELSE FALSE
+        END AS is_balance_sheet_account,
         
-        -- Interest type classification (enhanced with LOS data)
-        case 
-            when ah.account_name ilike '%WI%' or ah.account_name ilike '%working%' or ah.account_code like '%/ 1' then 'Working Interest'
-            when ah.account_name ilike '%RI%' or ah.account_name ilike '%royalty%' or ah.account_code like '%/ 2' then 'Royalty Interest'
-            when ah.account_name ilike '%ORRI%' or ah.account_name ilike '%overriding%' or ah.account_code like '%/ 3' then 'Overriding Royalty'
-            when ah.account_name ilike '%hedge%' or ah.account_code like '%/ 4' or ah.account_code like '%/ 2_' then 'Hedging'
-            when ah.account_name ilike '%accrued%' or ah.account_code like '%/ 5' then 'Accruals'
-            when ah.account_name ilike '%deduct%' or ah.account_code like '84_%' or ah.account_code like '85_%' or ah.account_code like '86_%' or ah.account_code like '87_%' then 'Deductions'
-            else 'Base'
-        end as interest_type,
+        -- =================================================================
+        -- LOS Attributes (from SharePoint)
+        -- =================================================================
+        lm.los_key_sort,
+        lm.los_line_item_name,
+        lm.los_product_type,
+        lm.los_report_header,
+        lm.los_volume_line_number,
+        lm.los_value_line_number,
+        lm.has_volume_reporting,
+        lm.has_value_reporting,
+        lm.is_los_subtraction,
+        lm.is_los_calculated,
         
-        -- Commodity classification (enhanced with LOS data, handle nulls)
-        case 
-            when lm.key_sort = 'OIL SALES' then 'Oil'
-            when lm.key_sort = 'GAS SALES' then 'Gas'
-            when lm.key_sort = 'NGL SALES' then 'NGL'
-            -- Fallback logic for unmapped accounts
-            when lm.key_sort is null and ah.account_code like '701%' then 'Oil'
-            when lm.key_sort is null and ah.account_code like '702%' then 'Gas'
-            when lm.key_sort is null and ah.account_code like '703%' then 'NGL'
-            else 'Non-Commodity'
-        end as commodity_type,
+        -- LOS account flag (is this account in the LOS mapping?)
+        CASE WHEN lm.account_code IS NOT NULL THEN TRUE ELSE FALSE END AS is_los_account,
         
-        -- LOS line number for sorting (enhanced with comprehensive mapping)
-        case 
-            -- Revenue items
-            when lm.key_sort = 'OIL SALES' then 9
-            when lm.key_sort = 'GAS SALES' then 10
-            when lm.key_sort = 'NGL SALES' then 11
-            when lm.key_sort = 'OH INCOME' then 12
-            when lm.key_sort = 'WELL SRV INCOME' then 13
-            when lm.key_sort = 'OTHER INCOME' then 14
-            
-            -- Deduction items
-            when lm.key_sort = 'OIL REV DEDUCT' then 15
-            when lm.key_sort = 'GAS REV DEDUCT' then 16
-            when lm.key_sort = 'NGL REV DEDUCT' then 17
-            
-            -- Tax items
-            when lm.key_sort = 'OIL PROD TAXES' then 18
-            when lm.key_sort = 'GAS PROD TAXES' then 19
-            when lm.key_sort = 'NGL PROD TAXES' then 20
-            
-            -- Operating expense items
-            when lm.key_sort = 'WORKOVER' then 21
-            when lm.key_sort = 'LEASE MNT & HSE' then 22
-            when lm.key_sort = '3PTY WTR DSPSL' then 23
-            when lm.key_sort = 'CMPNY WTR DSPSL' then 24
-            when lm.key_sort = 'MDSTRM GGA FEE' then 25
-            when lm.key_sort = 'WEATHER' then 26
-            when lm.key_sort = 'RENTAL EQUIP' then 27
-            when lm.key_sort = 'SURFACE EQUIP' then 28
-            when lm.key_sort = 'SRVCS & RPRS' then 29
-            when lm.key_sort = 'FUEL & POWER' then 30
-            when lm.key_sort = 'CHEM & TREATING' then 31
-            when lm.key_sort = 'CNTRCT LBR' then 32
-            when lm.key_sort = 'WELL SERVICING' then 33
-            when lm.key_sort = 'COMPANY LABOR' then 34
-            when lm.key_sort = 'NON-OP LOE' then 35
-            when lm.key_sort = 'COPAS OVERHEAD' then 37
-            when lm.key_sort = 'AD VALOREM' then 38
-            when lm.key_sort = 'P&A' then 39
-            
-            -- Other items
-            when lm.key_sort = 'HEDGES' then 52
-            when lm.key_sort = 'OTHER' then 999
-            
-            -- Fallback to original logic for unmapped accounts
-            when lm.key_sort is null and ah.account_code like '701%' then 9
-            when lm.key_sort is null and ah.account_code like '702%' then 10
-            when lm.key_sort is null and ah.account_code like '703%' then 11
-            when lm.key_sort is null and ah.account_code like '830%' then 18
-            when lm.key_sort is null and ah.account_code like '900%' then 30
-            when lm.key_sort is null and ah.account_code like '903%' then 21
-            when lm.key_sort is null and ah.account_code like '905%' then 38
-            when lm.key_sort is null and ah.account_code like '806%' then 39
-            when lm.key_sort is null and ah.account_code like '935%' then 52
-            
-            else 9999
-        end as los_sort_order,
+        -- =================================================================
+        -- LOS Groupings (from SharePoint mapping)
+        -- =================================================================
         
-        -- Value type for LOS reporting
-        case 
-            when lm.category_type = 'Revenue' then 'REVENUE_VALUE'
-            when lm.category_type = 'Expense' then 'EXPENSE_VALUE'
-            when subtype_code = 'R' then 'REVENUE_VALUE'
-            when subtype_code = 'X' then 'EXPENSE_VALUE'
-            else 'OTHER_VALUE'
-        end as los_value_type,
+        -- High-level category for broad rollups
+        CASE 
+            WHEN lm.los_report_header = 'DEV CAPEX' THEN 'Capital'
+            WHEN lm.los_report_header IN ('MIDSTREAM CAPEX', 'MIDSTREAM DEAL COSTS', 'MIDSTREAM GL INJECTION') THEN 'Midstream'
+            WHEN lm.los_report_header = 'O&G LEASEHOLD' THEN 'Leasehold'
+            WHEN lm.los_report_header IN ('OIL REVENUE', 'GAS REVENUE', 'NGL REVENUE') THEN 'Commodity Revenue'
+            WHEN lm.los_report_header IN ('OIL REVENUE DEDUCTS', 'GAS REVENUE DEDUCTS', 'NGL REVENUE DEDUCTS') THEN 'Revenue Deductions'
+            WHEN lm.los_report_header IN ('OIL PRODUCTION TAXES', 'GAS PRODUCTION TAXES', 'NGL PRODUCTION TAXES', 'AD VAL TAXES') THEN 'Production & Ad Valorem Taxes'
+            WHEN lm.los_report_header IN ('OVERHEAD INCOME', 'WELL SERVICING INCOME', 'MISC INCOME') THEN 'Other Income'
+            WHEN lm.los_report_header = 'WORKOVER EXPENSES' THEN 'Workover'
+            WHEN lm.los_report_header = 'P&A' THEN 'Abandonment'
+            WHEN lm.los_report_header IN ('HEDGE SETTLEMENTS', 'CANCELED HEDGES') THEN 'Derivatives'
+            WHEN lm.los_report_header IN (
+                'LEASE MAINTENANCE', 'SERVICES & REPAIRS', 'SURFACE EQUIPMENT', 'WELL SERVICING & DH EQUIP',
+                'COMPANY LABOR', 'CONTRACT LABOR & SUPERVISION', 'CHEMICALS & TREATING', 'RENTAL EQUIPMENT',
+                '3RD PTY WTR & DSPL', 'COMPANY WTR & DISPOSAL', 'FUEL & POWER', 'WEATHER', 
+                'COPAS OVERHEAD', 'NON-OP LOE', 'DALY WATERS'
+            ) THEN 'Lease Operating Expenses'
+            WHEN lm.los_report_header IN (
+                'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'HARDWR & SOFTWR', 'OFFICE RENT', 
+                'CORP FEES', 'CORP INSURANCE', 'AUDIT', 'LEGAL', 'REAL PROP TAX', 
+                'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS'
+            ) THEN 'G&A'
+            WHEN lm.los_report_header = 'INVENTORY' THEN 'Inventory'
+            WHEN lm.los_report_header IN ('OTHER', 'ACCRUAL') THEN 'Other'
+            ELSE NULL
+        END AS los_category,
         
-        -- Operating vs Capital classification (enhanced with LOS data, handle nulls)
-        case 
-            when lm.key_sort = 'WORKOVER' and ah.account_code like '903%' then 'CAPITAL'
-            when lm.key_sort = 'P&A' then 'ABANDONMENT'
-            when lm.key_sort = 'HEDGES' then 'DERIVATIVE'
-            when lm.category_type = 'Revenue' then 'REVENUE'
-            when lm.category_type = 'Expense' then 'OPERATING'
-            -- Fallback logic for unmapped accounts
-            when lm.key_sort is null and ah.account_code like '310%' then 'CAPITAL'
-            when lm.key_sort is null and ah.account_code like '328%' then 'CAPITAL'
-            when lm.key_sort is null and ah.account_code like '301%' then 'CAPITAL'
-            when lm.key_sort is null and ah.account_code like '806%' then 'ABANDONMENT'
-            when lm.key_sort is null and ah.account_code like '935%' then 'DERIVATIVE'
-            when lm.key_sort is null and ah.subtype_code = 'R' then 'REVENUE'
-            when lm.key_sort is null and ah.subtype_code = 'X' then 'OPERATING'
-            else 'OTHER'
-        end as expense_type,
+        -- Detail section (direct from SharePoint report header)
+        lm.los_report_header AS los_section,
         
-        -- Detailed subcategory using account name from LOS mapping, fallback to original name
-        coalesce(lm.account_name, ah.account_name) as detailed_subcategory,
+        -- =================================================================
+        -- Interest Type (parsed from account name/code)
+        -- =================================================================
+        CASE 
+            WHEN ah.account_name ILIKE '%WI%' 
+                OR ah.account_name ILIKE '%working%' 
+                OR ah.sub_account = '1' THEN 'Working Interest'
+            WHEN ah.account_name ILIKE '%RI%' 
+                OR ah.account_name ILIKE '%royalty%' 
+                OR ah.sub_account = '2' THEN 'Royalty Interest'
+            WHEN ah.account_name ILIKE '%ORRI%' 
+                OR ah.account_name ILIKE '%overriding%' 
+                OR ah.sub_account = '3' THEN 'Overriding Royalty'
+            WHEN ah.account_name ILIKE '%hedge%' 
+                OR ah.sub_account LIKE '2_%' THEN 'Hedging'
+            WHEN ah.account_name ILIKE '%accrued%' 
+                OR ah.sub_account = '5' THEN 'Accruals'
+            WHEN ah.account_name ILIKE '%deduct%' 
+                OR ah.main_account IN ('84', '85', '86', '87') THEN 'Deductions'
+            ELSE 'Base'
+        END AS interest_type,
         
-        -- Flag for income statement relevance (handle nulls)
-        case 
-            when lm.category_type in ('Revenue', 'Expense') then true
-            when lm.category_type is null and ah.subtype_code in ('R', 'X') then true
-            else false
-        end as is_income_statement_account,
+        -- =================================================================
+        -- Commodity Type (prefer LOS mapping, fallback to account code)
+        -- =================================================================
+        CASE 
+            WHEN lm.los_product_type IS NOT NULL THEN lm.los_product_type
+            WHEN ah.main_account = '701' THEN 'OIL'
+            WHEN ah.main_account = '702' THEN 'GAS'
+            WHEN ah.main_account = '703' THEN 'NGL'
+            ELSE 'OTHER'
+        END AS commodity_type,
         
-        -- Flag for LOS relevance (accounts in our seed file)
-        case 
-            when lm.account_code is not null then true
-            else false
-        end as is_los_account,
-        
-        -- Flag for capital vs operating (handle nulls)
-        case 
-            when lm.key_sort = 'WORKOVER' and ah.account_code like '903%' then true
-            when lm.key_sort is null and ah.account_code like '310%' then true
-            when lm.key_sort is null and ah.account_code like '328%' then true
-            when lm.key_sort is null and ah.account_code like '301%' then true
-            else false
-        end as is_capital_account
-        
-    from accounts_hierarchy ah
-    left join los_mapping lm 
-        on ah.account_code = lm.account_code
+        -- =================================================================
+        -- Expense Classification
+        -- =================================================================
+        CASE 
+            WHEN lm.los_key_sort = 'WORKOVER' THEN 'WORKOVER'
+            WHEN lm.los_key_sort = 'P&A' THEN 'ABANDONMENT'
+            WHEN lm.los_key_sort = 'HEDGES' THEN 'DERIVATIVE'
+            WHEN lm.los_key_sort IS NOT NULL AND ah.subtype_code = 'R' THEN 'REVENUE'
+            WHEN lm.los_key_sort IS NOT NULL AND ah.subtype_code = 'X' THEN 'LOE'
+            WHEN ah.main_account IN ('310', '328', '301') THEN 'CAPITAL'
+            WHEN ah.subtype_code = 'R' THEN 'REVENUE'
+            WHEN ah.subtype_code = 'X' THEN 'OPERATING'
+            ELSE 'OTHER'
+        END AS expense_classification
+
+    FROM accounts_hierarchy ah
+    LEFT JOIN los_mapping lm 
+        ON ah.account_code = lm.account_code
 )
 
-select * from los_classifications
+SELECT * FROM classified
