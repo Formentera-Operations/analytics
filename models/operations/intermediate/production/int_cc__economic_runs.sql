@@ -1,5 +1,5 @@
 {{ config(
-    enable= false,
+    enabled=false,
     materialized='view'
 ) }}
 
