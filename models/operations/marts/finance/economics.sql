@@ -1,6 +1,6 @@
 {{
     config(
-        enable = false,
+        enabled=false,
         materialized='incremental',
         unique_key=['id', 'date', 'well_id'],
         cluster_by=['date', 'well_id'],
