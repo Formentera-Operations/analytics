@@ -20,3 +20,5 @@ renamed as (
         ,FLOW_DOCUMENT
     from source
 )
+
+select * from renamed
