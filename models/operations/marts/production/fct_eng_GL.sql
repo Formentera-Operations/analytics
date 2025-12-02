@@ -13,6 +13,11 @@ WITH gl as (
         ,location_type as "Location Type"
         ,company_code as "Company Code"
         ,company_name as "Company Name"
+        ,search_key as "Company Asset"
+        ,CASE
+			WHEN op_ref = 'NON-OPERATED' THEN 0
+			ELSE 1
+			END AS "Is Operated"
         ,main_account as "Main Account"
         ,sub_account as "Sub Account"
         ,CONCAT(main_account,'-', sub_account) as "Combined Account"
@@ -43,10 +48,44 @@ WITH gl as (
     FROM {{ ref('int_general_ledger_enhanced') }}
 )
 
-Select *
+--, tbl as (
+Select
+    "Account Key"
+    ,"Accrual Date"
+    ,"AFE Number"
+    ,"AFE Type Code"
+    ,"AFE Type Full Name"
+    ,"AFE Type Label"
+    ,"Closed"
+    ,"Combined Account"
+    ,"Company Asset"
+    ,"Company Code"
+    ,"Company Name"
+    ,"GL ID"
+    ,"Gross Value"
+    ,"Gross Volume"
+    ,"In Accrual Balance"
+    ,"In Accrual Report"
+    ,"Is Operated"
+    ,"Jordan-Key"
+    ,"Journal Date"
+    ,"Location Name"
+    ,"Location Type"
+    ,"Main Account"
+    ,"Net Value"
+    ,"Net Volume"
+    ,"POSTED"
+    ,"Sub Account"
+    ,"Voucher Type Code"
+    ,"Well Code"
+    ,"Well Name"
 from gl
 WHERE Posted = 'Y'
 AND "Journal Date" > '2021-12-31'
 AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
 AND NOT "Combined Account" in ('850-35', '850-36')
   AND NOT "Company Code" IN (705, 801, 900)
+  --AND "Is Operated" = 1
+--)
+
+--select distinct "Company Asset" from tbl order by "Company Asset"

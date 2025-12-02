@@ -396,11 +396,6 @@ sources:
           - name: drillStartDate
             description: "Drill Start Date"
           
-          - name: drillinginfoId
-            description: "DrillingInfo ID"
-            tests:
-              - unique
-          
           - name: elevation
             description: "Elevation"
           

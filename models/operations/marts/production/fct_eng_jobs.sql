@@ -22,6 +22,7 @@ WITH jobs as (
         ,"Planned Start Datetime"
         ,"Primary Job Type"
         ,"Secondary Job Type"
+        ,"Time Log Total Hours"
         ,"Total Field Estimate"
         ,"Well ID"
         ,"Wellview Job Category"

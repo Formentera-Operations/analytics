@@ -22,16 +22,16 @@ require-dbt-version: ">=1.0.0"
 
 # Configuring models
 models:
+  elementary:
+    ## elementary models will be created in the schema '<your_schema>_elementary'
+    +schema: "elementary"
+    ## To disable elementary for dev, uncomment this:
+    # enabled: "{{ target.name in ['prod','analytics'] }}"
+
   formentera_analytics:
     # Config applied to all models
     +materialized: view  # Default materialization
     +copy_grants: true
-    
-    elementary:
-      ## elementary models will be created in the schema '<your_schema>_elementary'
-      +schema: "elementary"
-      ## To disable elementary for dev, uncomment this:
-      # enabled: "{{ target.name in ['prod','analytics'] }}"
 
     # Formentera Operations (Tenant 1)
     operations:
