@@ -53,6 +53,16 @@ wells AS (
     FROM {{ ref('stg_oda__wells') }}
 ),
 
+userfields AS (
+    SELECT 
+        Id,
+        UserFieldName,
+        UserFieldValueString
+    FROM {{ ref('stg_oda__userfield') }}
+    WHERE UserFieldName = 'UF-SEARCH KEY'
+GROUP BY ALL
+),
+
 source_modules AS (
     SELECT *
     FROM {{ ref('stg_oda__source_module') }}
@@ -214,8 +224,8 @@ SELECT
     -- Metadata and timestamps
     CONVERT_TIMEZONE('UTC', 'America/Chicago', CURRENT_TIMESTAMP())::TIMESTAMP_TZ AS last_refresh_time,
     gld.id AS gl_id,
-    gld.create_date::TIMESTAMP_NTZ AS created_date,
-    gld.update_date::TIMESTAMP_NTZ AS updated_date,
+    gld.created_at::TIMESTAMP_NTZ AS created_date,
+    gld.updated_at::TIMESTAMP_NTZ AS updated_date,
     
     -- Company and account info
     c.code AS company_code,
@@ -285,9 +295,11 @@ SELECT
     CAST(source_modules.name AS VARCHAR) AS source_module_name,
     CAST(vouchers.code AS VARCHAR) AS voucher_code,
     CAST(vouchers.voucher_type_id AS VARCHAR) AS voucher_type_id,
+    CAST(wells.property_reference_code AS VARCHAR) AS op_ref,
     CAST(wells.code AS VARCHAR) AS well_code,
     wells.id as well_id,
     CAST(wells.name AS VARCHAR) AS well_name,
+    CAST(loc_search.UserFieldValueString AS VARCHAR) AS search_key,
     
     -- Report inclusion flags
     gld.is_include_in_journal_report AS include_in_journal_report,
@@ -339,14 +351,6 @@ SELECT
     CAST(recon_types.code AS VARCHAR) AS reconciliation_type,
     gld.is_reconciled_trial AS reconciled_trial,
     gld.is_reconciled AS reconciled,
-
-    /*    -- AFE Type Classification
-    CAST(afes.afe_type_id AS VARCHAR) AS afe_type_id,
-    CAST(afes.afe_type_code AS VARCHAR) AS afe_type_code,
-    CAST(afes.afe_type_label AS VARCHAR) AS afe_type_label,
-    CAST(afes.afe_type_full_name AS VARCHAR) AS afe_type_full_name,
-*/
-
     
     -- Entry metadata
     gld.is_generated_entry AS generated_entry,
@@ -378,6 +382,8 @@ LEFT OUTER JOIN vouchers
     ON gld.voucher_id = vouchers.id
 LEFT OUTER JOIN wells
     ON gld.well_id = wells.id
+LEFT OUTER JOIN userfields AS loc_search
+        ON gld.location_well_id = loc_search.Id
 LEFT OUTER JOIN rev_deck_revisions
     ON gld.source_revenue_deck_revision_id = rev_deck_revisions.id
 LEFT OUTER JOIN rev_decks
@@ -401,7 +407,7 @@ WHERE 1=1
 {% if is_incremental() %}
     -- Only process new or updated GL entries since last run
     AND (
-        gld.create_date > (SELECT MAX(created_date) FROM {{ this }})
-        OR gld.update_date > (SELECT MAX(updated_date) FROM {{ this }})
+        gld.created_at > (SELECT MAX(created_date) FROM {{ this }})
+        OR gld.updated_at > (SELECT MAX(updated_date) FROM {{ this }})
     )
 {% endif %}
