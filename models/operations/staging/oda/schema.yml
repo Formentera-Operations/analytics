@@ -39,7 +39,7 @@ models:
   - name: stg_oda__gl
     config:
       elementary:
-        timestamp_column: flow_published_at
+        timestamp_column: _flow_published_at
     description: |
       Staging model for General Ledger entries from Quorum OnDemand Accounting.
       This is a critical table that contains all financial transactions across the organization, 
@@ -174,12 +174,12 @@ models:
               to: ref('stg_oda__afe_v2')
               field: id
 
-      - name: create_date
+      - name: created_at
         description: Timestamp when the record was created
         data_tests:
           - not_null
 
-      - name: flow_published_at
+      - name: _flow_published_at
         description: Timestamp when the record was published to the data flow
         data_tests:
           - not_null
