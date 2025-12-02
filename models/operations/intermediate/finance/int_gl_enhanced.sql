@@ -121,12 +121,12 @@ exp_deck_sets AS (
 
 userfields_search_key AS (
     SELECT 
-        CAST(ID AS VARCHAR) AS well_id,
-        USERFIELDVALUESTRING AS search_key
+        CAST("Id" AS VARCHAR) AS well_id,
+        "UserFieldValueString" AS search_key
     FROM {{ ref('stg_oda__userfield') }}
-    WHERE USERFIELDNAME = 'UF-SEARCH KEY'
-      AND ENTITYTYPEID = 2  -- Wells only
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY ID ORDER BY USERFIELDIDENTITY DESC) = 1
+    WHERE "UserFieldName" = 'UF-SEARCH KEY'
+      AND "EntityTypeId" = 2  -- Wells only
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY "Id" ORDER BY "UserFieldIdentity" DESC) = 1
 ),
 
 -- =============================================================================
