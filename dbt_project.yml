@@ -45,13 +45,13 @@ models:
       staging:
         +database: FO_STAGE_DB
         +materialized: view
-        
+
         # Combo Curve staging models
         combo_curve:
           +schema: stg_combo_curve
           +materialized: view
 
-        # Hubspot staging models 
+        # Hubspot staging models
         hubspot:
           +schema: stg_hubspot
           +materialized: view
@@ -112,7 +112,7 @@ models:
       staging:
         +database: FP_STAGE_DB
         +materialized: view
-        
+
         # Combo Curve staging models
         combo_curve:
           +schema: stg_combo_curve
@@ -133,5 +133,5 @@ models:
         +tags: ["marts", "fp"]
 
 flags:
-  require_explicit_package_overrides_for_builtin_materializations: False
-  source_freshness_run_project_hooks: True
+  require_explicit_package_overrides_for_builtin_materializations: false
+  source_freshness_run_project_hooks: true

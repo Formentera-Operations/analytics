@@ -8,36 +8,36 @@ models:
     columns:
       - name: account_type_id
         description: Unique identifier for the account type
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: type_code
         description: Code used to identify the account type
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: type_name
         description: Short name of the account type
-        tests:
+        data_tests:
           - not_null
 
       - name: type_full_name
         description: Full descriptive name of the account type
-        tests:
+        data_tests:
           - not_null
 
       - name: record_insert_date
         description: Timestamp when the record was first inserted
-        tests:
+        data_tests:
           - not_null
 
       - name: record_update_date
         description: Timestamp when the record was last updated
 
   - name: stg_oda__gl
-    config: 
+    config:
       elementary:
         timestamp_column: flow_published_at
     description: |
@@ -58,11 +58,11 @@ models:
             count: 1
           where_expression: "journal_date >= current_date - 30"  # Only look at recent data
           anomaly_sensitivity: 4  # Start less sensitive to reduce noise
-          
-      # 2. Check data freshness - ensure pipeline is working    
+
+      # 2. Check data freshness - ensure pipeline is working
       - elementary.freshness_anomalies:  # Fixed: removed extra 's'
           anomaly_sensitivity: 3
-      
+
       # 3. Monitor the most critical column - money
       - elementary.column_anomalies:
           column_name: net_value
@@ -70,17 +70,17 @@ models:
             - sum  # Total money flow
             - zero_count  # Unusual number of zero amounts
           where_expression: "is_posted = true and journal_date >= current_date - 14"
-          
+
     columns:
       - name: id
         description: Unique identifier for each GL entry
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: company_id
         description: Identifier for the company associated with the transaction
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('stg_oda__company_v2')
@@ -88,7 +88,7 @@ models:
 
       - name: account_id
         description: Foreign key to the Chart of Accounts
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('stg_oda__account_v2')
@@ -96,12 +96,12 @@ models:
 
       - name: journal_date_key
         description: Date key for the journal entry, used for date-based lookups
-        tests:
+        data_tests:
           - not_null
-              
+
       - name: journal_date
         description: Date when the transaction was recorded in the general ledger
-        tests:
+        data_tests:
           - not_null
 
       - name: accrual_date
@@ -112,7 +112,7 @@ models:
 
       - name: description
         description: Detailed description of the transaction, standardized to 'No Description' when empty or NULL
-        tests:
+        data_tests:
           - not_null  # Added because we're defaulting empty values
           - dbt_expectations.expect_column_value_lengths_to_be_between:
               min_value: 1
@@ -120,15 +120,15 @@ models:
 
       - name: gross_value
         description: Original transaction amount before any allocations or splits
-        tests:
+        data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: -10000000000  # Extended based on actual data
               max_value: 10000000000
-              
+
       - name: net_value
         description: Final transaction amount after allocations or splits
-        tests:
+        data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: -10000000000  # Extended based on actual data
@@ -136,55 +136,53 @@ models:
 
       - name: currency_id
         description: Currency code for the transaction
-        tests:
+        data_tests:
           - not_null
 
       - name: is_posted
         description: Indicates if the transaction has been posted to the general ledger
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [true, false]
 
       - name: is_reconciled
         description: Indicates if the transaction has been reconciled
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [true, false]
 
       - name: source_module
         description: System module that generated the transaction. Distribution as of analysis - GL (62M), AP (48.6M), Revenue (40.3M), AR (185K)
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['GL', 'AP', 'Revenue', 'AR']
 
       - name: source_module_code
         description: Code representing the source module
-        tests:
+        data_tests:
           - relationships:
               to: ref('stg_oda__source_module')  # Assuming this reference exists
               field: code
 
       - name: afe_id
         description: Reference to Authorization for Expenditure
-        tests:
+        data_tests:
           - relationships:
               to: ref('stg_oda__afe_v2')
               field: id
 
       - name: create_date
         description: Timestamp when the record was created
-        tests:
+        data_tests:
           - not_null
-          
 
       - name: flow_published_at
         description: Timestamp when the record was published to the data flow
-        tests:
+        data_tests:
           - not_null
-          
 
   - name: stg_oda__account_sub_types
     description: |
@@ -193,13 +191,13 @@ models:
     columns:
       - name: account_subtype_id
         description: Unique identifier for the account subtype
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: account_type_id
         description: Foreign key to the parent account type
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('stg_oda__account_types')
@@ -207,28 +205,28 @@ models:
 
       - name: subtype_code
         description: Code used to identify the account subtype
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: subtype_name
         description: Short name of the account subtype
-        tests:
+        data_tests:
           - not_null
 
       - name: subtype_full_name
         description: Full descriptive name of the account subtype
-        tests:
+        data_tests:
           - not_null
 
       - name: normally_debit
         description: Flag indicating if accounts of this subtype normally have a debit balance
-        tests:
+        data_tests:
           - not_null
 
       - name: record_insert_date
         description: Timestamp when the record was first inserted
-        tests:
+        data_tests:
           - not_null
 
       - name: record_update_date
@@ -241,64 +239,64 @@ models:
     columns:
       - name: id
         description: Unique identifier for the AFE record
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: afe_v2_identity
         description: Unique identity number for the AFE in v2 system
-        tests:
+        data_tests:
           - not_null
 
       - name: code
         description: Business identifier/number for the AFE
-        tests:
+        data_tests:
           - not_null
           - unique
 
       - name: code_sort
         description: AFE code formatted for sorting purposes
-        tests:
+        data_tests:
           - not_null
 
       - name: name
         description: Short name or title of the AFE
-        tests:
+        data_tests:
           - not_null
 
       - name: full_name
         description: Complete name of the AFE
-        tests:
+        data_tests:
           - not_null
 
       - name: afe_type_id
         description: Foreign key to AFE type classification
-        tests:
+        data_tests:
           - not_null
 
       - name: afe_type_code
         description: Code representing the type of AFE
-        tests:
+        data_tests:
           - not_null
 
       - name: application_type_id
         description: Foreign key to application type
-        tests:
+        data_tests:
           - not_null
 
       - name: application_type_code
         description: Code indicating how the AFE is applied
-        tests:
+        data_tests:
           - not_null
 
       - name: budget_usage_type_id
         description: Foreign key to budget usage type
-        tests:
+        data_tests:
           - not_null
 
       - name: budget_usage_type_code
         description: Code indicating how the budget is used
-        tests:
+        data_tests:
           - not_null
 
       - name: field_id
@@ -309,17 +307,17 @@ models:
 
       - name: default_company_code
         description: Code of the default company for this AFE
-        tests:
+        data_tests:
           - not_null
 
       - name: create_date
         description: Timestamp when the record was created
-        tests:
+        data_tests:
           - not_null
 
       - name: flow_published_at
         description: Timestamp when the record was published to the data flow
-        tests:
+        data_tests:
           - not_null
 
   - name: stg_oda__account_v2
@@ -329,29 +327,29 @@ models:
     columns:
       - name: id
         description: Unique identifier for the account
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: code
         description: Account code used for identification
-        tests:
+        data_tests:
           - not_null
           - unique
 
       - name: name
         description: Short name of the account
-        tests:
+        data_tests:
           - not_null
 
       - name: full_name
         description: Full descriptive name of the account
-        tests:
+        data_tests:
           - not_null
 
       - name: account_type_id
         description: Foreign key to account type
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('stg_oda__account_types')
@@ -359,24 +357,24 @@ models:
 
       - name: account_subtype_id
         description: Foreign key to account subtype
-        tests:
+        data_tests:
           - relationships:
               to: ref('stg_oda__account_sub_types')
               field: account_subtype_id
 
       - name: active
         description: Flag indicating if the account is currently active
-        tests:
+        data_tests:
           - not_null
 
       - name: normally_debit
         description: Flag indicating if the account normally has a debit balance
-        tests:
+        data_tests:
           - not_null
 
       - name: account_sort
         description: Sorting value for the account
-        tests:
+        data_tests:
           - not_null
 
       - name: key_sort
@@ -384,22 +382,22 @@ models:
 
       - name: summarize_in_gl_reports
         description: Flag indicating if account should be summarized in GL reports
-        tests:
+        data_tests:
           - not_null
 
       - name: summarize_in_jib_invoice
         description: Flag indicating if account should be summarized in JIB invoices
-        tests:
+        data_tests:
           - not_null
 
       - name: bank_recon_performed
         description: Flag indicating if bank reconciliation is performed for this account
-        tests:
+        data_tests:
           - not_null
 
       - name: create_date
         description: Timestamp when the record was created
-        tests:
+        data_tests:
           - not_null
 
       - name: update_date
@@ -407,6 +405,5 @@ models:
 
       - name: flow_published_at
         description: Timestamp when the record was published to the data flow
-        tests:
+        data_tests:
           - not_null
-
