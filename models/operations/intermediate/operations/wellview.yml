@@ -3,17 +3,17 @@ version: 2
 models:
   - name: int_wellview__canonical_wells
     description: "Canonicalized well grain enriched with latest wellbore details and current/prior status rollups from WellView."
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: ['well_id']
     columns:
       - name: well_sk
         description: "Surrogate key generated from the WellView well identifier."
-        tests:
+        data_tests:
           - not_null
       - name: well_id
         description: "Native WellView well identifier (IDWELL)."
-        tests:
+        data_tests:
           - not_null
       - name: well_bore_sk
         description: "Surrogate key representing the active wellbore record for the well."
@@ -24,17 +24,17 @@ models:
 
   - name: int_wellview__well_status_history_bridge
     description: "History bridge retaining the chronological status changes for each WellView well."
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: ['well_id', 'record_id']
     columns:
       - name: well_status_sk
         description: "Surrogate key generated from the status history record."
-        tests:
+        data_tests:
           - not_null
       - name: well_id
         description: "Native WellView well identifier associated with the status event."
-        tests:
+        data_tests:
           - not_null
       - name: status_date
         description: "Effective date of the status record."

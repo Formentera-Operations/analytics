@@ -25,13 +25,13 @@ sources:
         columns:
           - name: ID
             description: Unique identifier for each GL entry
-            tests:
+            data_tests:
               - not_null
           - name: '"_meta/op"'
             description: >
               Estuary-specific operation type indicator: "c" indicates a create,
               "d" indicates a soft-delete.
-            tests:
+            data_tests:
               - not_null
           - name: COMPANYID
             description: Identifier for the company associated with the transaction

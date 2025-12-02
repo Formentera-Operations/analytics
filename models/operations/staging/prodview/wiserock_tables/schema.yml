@@ -4,13 +4,13 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier"
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: tblkeyparent
@@ -51,7 +51,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -60,24 +60,24 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (unit)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
-      
+
       # Date and comments
       - name: dttm
         description: "Entry Date"
       - name: com
         description: "Comments"
-      
+
       # Remark information
       - name: typ
         description: "Type"
@@ -85,13 +85,13 @@ models:
         description: "Link"
       - name: idrecitemtk
         description: "Link Table"
-      
+
       # Flags
       - name: actionrqd
         description: "Action Required?"
       - name: explainedimbalance
         description: "Explains Imbalance?"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -103,7 +103,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -119,7 +119,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -128,18 +128,18 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
-      
+
       # Test information
       - name: typ
         description: "Type"
@@ -159,11 +159,11 @@ models:
         description: "Note"
       - name: dttm
         description: "Effective Date"
-      
+
       # Test conditions
       - name: szchoke
         description: "Choke Size (converted to 1/64 inches)"
-      
+
       # Oil/Emulsion measurements
       - name: readinghcliqstart
         description: "Start Reading Oil/Emulsion"
@@ -191,7 +191,7 @@ models:
         description: "Oil/Emulsion Volume Override (converted to barrels)"
       - name: factgasinsoln
         description: "Gas In Solution Factor (converted to MCF/BBL)"
-      
+
       # Gas measurements
       - name: duronor
         description: "Hours On Override (converted from days to hours)"
@@ -209,7 +209,7 @@ models:
         description: "Gas Volume Entry (converted to MCF)"
       - name: volgas
         description: "Gas Volume Override (converted to MCF)"
-      
+
       # Water measurements
       - name: readingwaterstart
         description: "Water Start Reading"
@@ -219,13 +219,13 @@ models:
         description: "Water Volume Entry (converted to barrels)"
       - name: volwater
         description: "Water Volume Override (converted to barrels)"
-      
+
       # Sand measurements
       - name: volentersand
         description: "Sand Volume Entry (converted to barrels)"
       - name: volsand
         description: "Sand Volume Override (converted to barrels)"
-      
+
       # Calculated volumes
       - name: volfluidtotalcalc
         description: "Test Total Fluid Volume (converted to barrels, calculated)"
@@ -243,7 +243,7 @@ models:
         description: "Recovered Lift Gas (converted to MCF)"
       - name: volsandcalc
         description: "Test Sand Volume (converted to barrels, calculated)"
-      
+
       # Calculated rates
       - name: ratefluidtotalcalc
         description: "Total Fluid Rate (converted to BBL/day, calculated)"
@@ -261,7 +261,7 @@ models:
         description: "Water Rate (converted to BBL/day, calculated)"
       - name: ratesandcalc
         description: "Sand Rate (converted to BBL/day, calculated)"
-      
+
       # Calculated totals
       - name: bswtotalcalc
         description: "Total BS&W (converted to percentage, calculated)"
@@ -273,7 +273,7 @@ models:
         description: "Condensate Gas Ratio (converted to BBL/MCF, calculated)"
       - name: wgrcalc
         description: "Water Gas Ratio (converted to BBL/MCF, calculated)"
-      
+
       # Change calculations
       - name: ratechghcliqcalc
         description: "Change in Oil/Emulsion Rate (converted to BBL/day, calculated)"
@@ -311,13 +311,13 @@ models:
         description: "Change in Sand Cut (converted to percentage, calculated)"
       - name: pctchgsandcutcalc
         description: "% Change in Sand Cut (converted to percentage, calculated)"
-      
+
       # Reference information
       - name: reasonvariance
         description: "Reason For Variance"
       - name: datasource
         description: "Data Source"
-      
+
       # Pressure conditions (converted from kPa to PSI)
       - name: presbh
         description: "Pressure BH (converted to PSI)"
@@ -331,7 +331,7 @@ models:
         description: "Pressure Test Separator (converted to PSI)"
       - name: preswh
         description: "Pressure WellHead (converted to PSI)"
-      
+
       # Test purposes
       - name: purposealloc
         description: "Allocation?"
@@ -339,7 +339,7 @@ models:
         description: "Deliverability?"
       - name: purposereg
         description: "Regulatory?"
-      
+
       # Temperature conditions (converted from °C to °F)
       - name: tempbh
         description: "Temperature Bottom Hole (converted to °F)"
@@ -349,11 +349,11 @@ models:
         description: "Temperature Test Separator (converted to °F)"
       - name: tempwh
         description: "Temperature Well Head (converted to °F)"
-      
+
       # Test personnel
       - name: testedby
         description: "Tested By"
-      
+
       # Temperature and pressure correction
       - name: tempstart
         description: "Temperature of Opening Level (converted to °F)"
@@ -367,13 +367,13 @@ models:
         description: "Temperature of Sample (converted to °F)"
       - name: pressample
         description: "Pressure of Sample (converted to PSI)"
-      
+
       # Density measurements (converted to API gravity)
       - name: densitysample
         description: "Density of Sample (converted to °API)"
       - name: densitysample60f
         description: "Density of Sample at 60F (converted to °API, calculated)"
-      
+
       # Regulatory properties
       - name: preswhsi
         description: "Shut-In Wellhead Pressure (converted to PSI)"
@@ -387,11 +387,11 @@ models:
         description: "Gas Specific Gravity"
       - name: densitycond
         description: "Condensate Gravity (converted to °API)"
-      
+
       # Other fields
       - name: trailerduration
         description: "Trailer Duration (days)"
-      
+
       # User-defined fields
       - name: usertxt1
         description: "User Text 1"
@@ -423,7 +423,7 @@ models:
         description: "User Date 4"
       - name: userdttm5
         description: "User Date 5"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -435,7 +435,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -451,7 +451,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -460,18 +460,18 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
-      
+
       # Date and status information
       - name: dttm
         description: "Status Date"
@@ -489,13 +489,13 @@ models:
         description: "Completion Type"
       - name: methodprod
         description: "Production Method"
-      
+
       # Configuration flags
       - name: calclostprod
         description: "Calculate Lost Production"
       - name: wellcountincl
         description: "Include in Well Count"
-      
+
       # User-defined fields
       - name: usertxt1
         description: "UserTxt1"
@@ -509,11 +509,11 @@ models:
         description: "User Num 2"
       - name: usernum3
         description: "User Num 3"
-      
+
       # Comments
       - name: com
         description: "Comment"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -525,7 +525,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -541,7 +541,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -550,22 +550,22 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
-      
+
       # Date and basic info
       - name: dttm
         description: "Date"
-      
+
       # Pressure fields (converted from kPa to PSI)
       - name: prestub
         description: "Tubing Pressure (converted to PSI)"
@@ -585,29 +585,29 @@ models:
         description: "Shut-In Tubing Pressure (converted to PSI)"
       - name: prescassi
         description: "Shut-In Casing Pressure (converted to PSI)"
-      
+
       # Temperature fields (converted from °C to °F)
       - name: tempwh
         description: "Wellhead Temperature (converted to °F)"
       - name: tempbh
         description: "Bottomhole Temperature (converted to °F)"
-      
+
       # Choke size (converted from meters to 1/64")
       - name: szchoke
         description: "Choke Size (converted to 1/64 inches)"
-      
+
       # Viscosity fields
       - name: viscdynamic
         description: "Dynamic Viscosity (pascal seconds)"
       - name: visckinematic
         description: "Kinematic Viscosity (converted to IN²/S)"
-      
+
       # Other measurements
       - name: ph
         description: "Hertz (proportion)"
       - name: salinity
         description: "H2S Daily Reading (converted to PPM)"
-      
+
       # User pressure fields (converted from kPa to PSI)
       - name: presuser1
         description: "Surface Casing Pressure (converted to PSI)"
@@ -619,7 +619,7 @@ models:
         description: "User Pressure 4 (converted to PSI)"
       - name: presuser5
         description: "Annulus Pressure (converted to PSI)"
-      
+
       # User temperature fields (converted from °C to °F)
       - name: tempuser1
         description: "Treater Temperature (converted to °F)"
@@ -631,7 +631,7 @@ models:
         description: "Fluid Level Csg P (converted to °F)"
       - name: tempuser5
         description: "Fluid Level Tbg P (converted to °F)"
-      
+
       # User-defined text fields
       - name: usertxt1
         description: "SPCC Inspection Complete?"
@@ -643,7 +643,7 @@ models:
         description: "Plunger Size"
       - name: usertxt5
         description: "Operational Work"
-      
+
       # User-defined numeric fields
       - name: usernum1
         description: "Cycles"
@@ -655,7 +655,7 @@ models:
         description: "After Flow (converted to minutes)"
       - name: usernum5
         description: "Shut In Time (converted to minutes)"
-      
+
       # User-defined date fields
       - name: userdttm1
         description: "Plunger Inspection Date"
@@ -667,11 +667,11 @@ models:
         description: "User Date 4"
       - name: userdttm5
         description: "User Date 5"
-      
+
       # Comments
       - name: com
         description: "Note"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -683,7 +683,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -699,7 +699,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -708,18 +708,18 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (completion)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
-      
+
       # Downtime information
       - name: typdowntm
         description: "Type of Downtime Entry"
@@ -733,7 +733,7 @@ models:
         description: "Downtime Code 2"
       - name: codedowntm3
         description: "Downtime Code 3"
-      
+
       # End information
       - name: dttmend
         description: "Last Day"
@@ -741,13 +741,13 @@ models:
         description: "Downtime on Last Day (converted from days to hours)"
       - name: durdowncalc
         description: "Total Downtime (converted from days to hours, calculated)"
-      
+
       # Planning information
       - name: dttmplanend
         description: "Planned End Date"
       - name: durdownplanend
         description: "Planned Downtime Duration (converted from days to hours)"
-      
+
       # Descriptive fields
       - name: com
         description: "Comments"
@@ -757,7 +757,7 @@ models:
         description: "Failure flag"
       - name: product
         description: "Product"
-      
+
       # User-defined fields
       - name: usertxt1
         description: "User Text 1"
@@ -789,7 +789,7 @@ models:
         description: "User Date 4"
       - name: userdttm5
         description: "User Date 5"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -801,7 +801,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -817,7 +817,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -826,18 +826,18 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier (unit)"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
-      
+
       # Date fields
       - name: dttmstartalloc
         description: "Start Allocating Date in ProdView"
@@ -859,7 +859,7 @@ models:
         description: "Last Produced Oil Date (calculated)"
       - name: dttmlastproducedgascalc
         description: "Last Produced Gas Date (calculated)"
-      
+
       # Completion identifiers
       - name: completionname
         description: "Completion Name"
@@ -887,13 +887,13 @@ models:
         description: "Gas Alloc Group No."
       - name: completioncode
         description: "Surface Commingle Number"
-      
+
       # Well information
       - name: wellname
         description: "Well Name"
       - name: heldbyproductionthreshold
         description: "Held by Production Threshold (days)"
-      
+
       # Well identifiers
       - name: wellidregulatory
         description: "Regulatory ID of Well"
@@ -911,7 +911,7 @@ models:
         description: "Producing Formation"
       - name: wellide
         description: "Legal Well Name"
-      
+
       # Import/Export identifiers
       - name: importid1
         description: "Import ID 1"
@@ -929,7 +929,7 @@ models:
         description: "Export ID 2"
       - name: exporttyp2
         description: "Export Type 2"
-      
+
       # Location coordinates
       - name: latitude
         description: "Bottomhole Latitude (degrees of angle)"
@@ -939,13 +939,13 @@ models:
         description: "Lat Long Data Source"
       - name: latlongdatum
         description: "Lat/Long Datum"
-      
+
       # Entry requirements
       - name: entryreqperiodfluidlevel
         description: "Entry Requirement Period Fluid Level"
       - name: entryreqperiodparam
         description: "Entry Requirement Period Parameters"
-      
+
       # User-defined fields
       - name: usertxt1
         description: "BHA Type PAGA/SAGA/RPGA"
@@ -977,13 +977,13 @@ models:
         description: "User Date 4"
       - name: userdttm5
         description: "User Date 5"
-      
+
       # Migration tracking
       - name: keymigrationsource
         description: "Migration Source Key"
       - name: typmigrationsource
         description: "Migration Source Type"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -995,7 +995,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -1011,7 +1011,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -1020,13 +1020,13 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrecparent
         description: "Parent record identifier"
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: idrecunit
@@ -1053,7 +1053,7 @@ models:
         description: "Downtime (converted to hours)"
       - name: durop
         description: "Operating time (converted to hours)"
-      
+
       # Gathered volumes (imperial units)
       - name: volprodgathhcliq
         description: "Gathered HCLiq (converted to barrels)"
@@ -1063,7 +1063,7 @@ models:
         description: "Gathered Water (converted to barrels)"
       - name: volprodgathsand
         description: "Gathered Sand (converted to barrels)"
-      
+
       # Allocated volumes (imperial units)
       - name: volprodallochcliq
         description: "Allocated HCLiq (converted to barrels)"
@@ -1081,7 +1081,7 @@ models:
         description: "Allocated Water (converted to barrels)"
       - name: volprodallocsand
         description: "Allocated Sand (converted to barrels)"
-      
+
       # Allocation factors (no conversion - M³/M³)
       - name: allocfacthcliq
         description: "Allocation Factor HCLiq (M³/M³)"
@@ -1091,7 +1091,7 @@ models:
         description: "Allocation Factor Water (M³/M³)"
       - name: allocfactsand
         description: "Allocation Factor Sand (M³/M³)"
-      
+
       # Working interest (converted to percentage)
       - name: wihcliq
         description: "Working Interest Oil/Cond (converted to percentage)"
@@ -1101,7 +1101,7 @@ models:
         description: "Working Interest Water (converted to percentage)"
       - name: wisand
         description: "Working Interest Sand (converted to percentage)"
-      
+
       # Net revenue interest (converted to percentage)
       - name: nrihcliq
         description: "Net Revenue Interest Oil/Cond (converted to percentage)"
@@ -1111,7 +1111,7 @@ models:
         description: "Net Revenue Interest Water (converted to percentage)"
       - name: nrisand
         description: "Net Revenue Interest Sand (converted to percentage)"
-      
+
       # Cumulative production (imperial units)
       - name: volprodcumhcliq
         description: "Cumulated HCLiq (converted to barrels)"
@@ -1127,7 +1127,7 @@ models:
         description: "Cumulated Water (converted to barrels)"
       - name: volprodcumsand
         description: "Cumulated Sand (converted to barrels)"
-      
+
       # Heat values (imperial units)
       - name: heatprodgath
         description: "Gathered Heat (converted to MMBTU)"
@@ -1149,13 +1149,13 @@ models:
         description: "Disposed Vent Heat (converted to MMBTU)"
       - name: heatdispincinerate
         description: "Disposed Incinerate Heat (converted to MMBTU)"
-      
+
       # Density (converted to API gravity)
       - name: densityalloc
         description: "Allocated Density (converted to °API)"
       - name: densitysale
         description: "Sales Density (converted to °API)"
-      
+
       # Reference identifiers
       - name: idrecmeasmeth
         description: "Last Measurement Method"
@@ -1205,11 +1205,11 @@ models:
         description: "Reporting Facility"
       - name: idrecfacilitytk
         description: "Reporting Facility Table"
-      
+
       # Operational metrics
       - name: pumpeff
         description: "Pump Efficiency (converted to percentage)"
-      
+
       # Calculation settings
       - name: idreccalcset
         description: "Calc Settings"
@@ -1219,7 +1219,7 @@ models:
         description: "Deferment"
       - name: idrecdefermenttk
         description: "Deferment Table"
-      
+
       # System lock fields
       - name: syslockmeui
         description: "Lock Me (UI)"
@@ -1231,7 +1231,7 @@ models:
         description: "Lock My Children"
       - name: syslockdate
         description: "Lock Date (UTC)"
-      
+
       # System metadata
       - name: sysmoddate
         description: "Last Mod Date (UTC)"
@@ -1247,7 +1247,7 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
 
@@ -1256,11 +1256,11 @@ models:
     columns:
       - name: idflownet
         description: "Flow network identifier"
-        tests:
+        data_tests:
           - not_null
       - name: idrec
         description: "Unique record identifier"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: name
@@ -1457,6 +1457,6 @@ models:
         description: "Record update timestamp (mapped from _fivetran_synced)"
       - name: deleted
         description: "Deletion flag (mapped from _fivetran_deleted)"
-        tests:
+        data_tests:
           - accepted_values:
               values: [true, false]
