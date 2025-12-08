@@ -19,9 +19,10 @@ sources:
           - Accrual and cash-basis accounting entries
         data_tests:
           - dbt_utils.unique_combination_of_columns:
-              combination_of_columns:
-                - ID
-                - '"_meta/op"'
+              arguments:
+                combination_of_columns:
+                  - ID
+                  - '"_meta/op"'
         columns:
           - name: ID
             description: Unique identifier for each GL entry

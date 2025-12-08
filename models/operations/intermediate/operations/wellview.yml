@@ -5,7 +5,8 @@ models:
     description: "Canonicalized well grain enriched with latest wellbore details and current/prior status rollups from WellView."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: ['well_id']
+          arguments:
+            combination_of_columns: ["well_id"]
     columns:
       - name: well_sk
         description: "Surrogate key generated from the WellView well identifier."
@@ -26,7 +27,8 @@ models:
     description: "History bridge retaining the chronological status changes for each WellView well."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: ['well_id', 'record_id']
+          arguments:
+            combination_of_columns: ["well_id", "record_id"]
     columns:
       - name: well_status_sk
         description: "Surrogate key generated from the status history record."

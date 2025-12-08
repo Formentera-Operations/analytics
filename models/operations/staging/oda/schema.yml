@@ -38,8 +38,9 @@ models:
 
   - name: stg_oda__gl
     config:
-      elementary:
-        timestamp_column: _flow_published_at
+      meta:
+        elementary:
+          timestamp_column: _flow_published_at
     description: |
       Staging model for General Ledger entries from Quorum OnDemand Accounting.
       This is a critical table that contains all financial transactions across the organization, 
@@ -53,23 +54,26 @@ models:
     data_tests:
       # 1. Monitor daily volume - know if data stops flowing
       - elementary.volume_anomalies:
-          time_bucket:
-            period: day
-            count: 1
-          where_expression: "journal_date >= current_date - 30"  # Only look at recent data
-          anomaly_sensitivity: 4  # Start less sensitive to reduce noise
+          arguments:
+            time_bucket:
+              period: day
+              count: 1
+            where_expression: "journal_date >= current_date - 30"  # Only look at recent data
+            anomaly_sensitivity: 4  # Start less sensitive to reduce noise
 
       # 2. Check data freshness - ensure pipeline is working
       - elementary.freshness_anomalies:  # Fixed: removed extra 's'
-          anomaly_sensitivity: 3
+          arguments:
+            anomaly_sensitivity: 3
 
       # 3. Monitor the most critical column - money
       - elementary.column_anomalies:
           column_name: net_value
-          column_anomalies:
-            - sum  # Total money flow
-            - zero_count  # Unusual number of zero amounts
-          where_expression: "is_posted = true and journal_date >= current_date - 14"
+          arguments:
+            column_anomalies:
+              - sum  # Total money flow
+              - zero_count  # Unusual number of zero amounts
+            where_expression: "is_posted = true and journal_date >= current_date - 14"
 
     columns:
       - name: id
@@ -83,16 +87,18 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_oda__company_v2')
-              field: id
+              arguments:
+                to: ref("stg_oda__company_v2")
+                field: id
 
       - name: account_id
         description: Foreign key to the Chart of Accounts
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_oda__account_v2')
-              field: id
+              arguments:
+                to: ref("stg_oda__account_v2")
+                field: id
 
       - name: journal_date_key
         description: Date key for the journal entry, used for date-based lookups
@@ -115,24 +121,27 @@ models:
         data_tests:
           - not_null  # Added because we're defaulting empty values
           - dbt_expectations.expect_column_value_lengths_to_be_between:
-              min_value: 1
-              max_value: 1000
+              arguments:
+                min_value: 1
+                max_value: 1000
 
       - name: gross_value
         description: Original transaction amount before any allocations or splits
         data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
-              min_value: -10000000000  # Extended based on actual data
-              max_value: 10000000000
+              arguments:
+                min_value: -10000000000  # Extended based on actual data
+                max_value: 10000000000
 
       - name: net_value
         description: Final transaction amount after allocations or splits
         data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
-              min_value: -10000000000  # Extended based on actual data
-              max_value: 10000000000
+              arguments:
+                min_value: -10000000000  # Extended based on actual data
+                max_value: 10000000000
 
       - name: currency_id
         description: Currency code for the transaction
@@ -144,35 +153,40 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
       - name: is_reconciled
         description: Indicates if the transaction has been reconciled
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
       - name: source_module
         description: System module that generated the transaction. Distribution as of analysis - GL (62M), AP (48.6M), Revenue (40.3M), AR (185K)
         data_tests:
           - not_null
           - accepted_values:
-              values: ['GL', 'AP', 'Revenue', 'AR']
+              arguments:
+                values: ["GL", "AP", "Revenue", "AR"]
 
       - name: source_module_code
         description: Code representing the source module
         data_tests:
           - relationships:
-              to: ref('stg_oda__source_module')  # Assuming this reference exists
-              field: code
+              arguments:
+                to: ref("stg_oda__source_module")  # Assuming this reference exists
+                field: code
 
       - name: afe_id
         description: Reference to Authorization for Expenditure
         data_tests:
           - relationships:
-              to: ref('stg_oda__afe_v2')
-              field: id
+              arguments:
+                to: ref("stg_oda__afe_v2")
+                field: id
 
       - name: created_at
         description: Timestamp when the record was created
@@ -200,8 +214,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_oda__account_types')
-              field: account_type_id
+              arguments:
+                to: ref("stg_oda__account_types")
+                field: account_type_id
 
       - name: subtype_code
         description: Code used to identify the account subtype
@@ -352,15 +367,17 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_oda__account_types')
-              field: account_type_id
+              arguments:
+                to: ref("stg_oda__account_types")
+                field: account_type_id
 
       - name: account_subtype_id
         description: Foreign key to account subtype
         data_tests:
           - relationships:
-              to: ref('stg_oda__account_sub_types')
-              field: account_subtype_id
+              arguments:
+                to: ref("stg_oda__account_sub_types")
+                field: account_subtype_id
 
       - name: active
         description: Flag indicating if the account is currently active

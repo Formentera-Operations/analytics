@@ -18,10 +18,10 @@ sources:
       freshness:
         warn_after: {count: 12, period: hour}
         error_after: {count: 24, period: hour}
-    # Global source configurations
-    meta:
-      external_location: "Enverus Database Share (ENVERUS_DB.ENV)"
-      owner: "data_engineering"
+      # Global source configurations
+      meta:
+        external_location: "Enverus Database Share (ENVERUS_DB.ENV)"
+        owner: "data_engineering"
     tables:
       # =============================================================================
       # FOUNDATIONS TABLES - Core Oil & Gas Data
@@ -34,9 +34,10 @@ sources:
           to other well-related data.
         data_tests:
           - dbt_utils.unique_combination_of_columns:
-              combination_of_columns:
-                - wellid
-                - completionid
+              arguments:
+                combination_of_columns:
+                  - wellid
+                  - completionid
         columns:
           - name: wellid
             description: "Unique well identifier"
