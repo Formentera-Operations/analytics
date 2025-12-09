@@ -1,10 +1,10 @@
-name: 'formentera_analytics'
-version: '1.0.0'
+name: formentera_analytics
+version: "1.0.0"
 config-version: 2
+require-dbt-version: ">=1.0.0"
 
-profile: 'default'
+profile: default
 
-# These configurations specify where dbt should look for different types of files.
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -15,13 +15,9 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-# Use custom schema naming
-require-dbt-version: ">=1.0.0"
-
 on-run-start:
   - "{{ dbt_snow_mask.apply_masking_policy('sources') if target.name in ['prod'] else '' }}"
 
-# Configuring models
 models:
   +post-hook:
     - "{{ dbt_snow_mask.apply_masking_policy('models') }}"
@@ -33,55 +29,22 @@ models:
     # enabled: "{{ target.name in ['prod','analytics'] }}"
 
   formentera_analytics:
-    # Config applied to all models
-    +materialized: view  # Default materialization
+    +materialized: view
     +copy_grants: true
 
     # Formentera Operations (Tenant 1)
     operations:
-      # Source/Raw models - minimal transformations
-      src:
-        +database: FO_RAW_DB
-        +schema: src
-        +materialized: view
 
       # Staging models - cleaned data, 1:1 with source
       staging:
         +database: FO_STAGE_DB
-        +materialized: view
-
-        # Combo Curve staging models
-        combo_curve:
-          +schema: stg_combo_curve
-          +materialized: view
-
-        # Hubspot staging models
-        hubspot:
-          +schema: stg_hubspot
-          +materialized: view
-
-        # ODA staging models
-        oda:
-          +schema: stg_oda
-          +materialized: view
-
-        prodview:
-          +schema: stg_prodview
-          +materialized: view
-
-        wellview:
-          +schema: stg_wellview
-          +materialized: view
-
-        enverus:
-
-          +schema: stg_enverus
-          +materialized: view
-
-        procount:
-
-          +schema: stg_procount
-          +materialized: view
+        combo_curve: {+schema: "stg_combo_curve"}
+        hubspot: {+schema: "stg_hubspot"}
+        oda: {+schema: "stg_oda"}
+        prodview: {+schema: "stg_prodview"}
+        wellview: {+schema: "stg_wellview"}
+        enverus: {+schema: "stg_enverus"}
+        procount: {+schema: "stg_procount"}
 
       # Intermediate models - business logic layers
       intermediate:
@@ -96,36 +59,23 @@ models:
         +schema: marts
         +materialized: table
         +tags: ["marts", "fo"]
-
         griffin:
-
           +schema: griffin
           +materialized: table
 
+      # Applications models - application-specific data models
       applications:
         +database: FORMENTERA_OPS_DB
-
         wiserock:
           +schema: wiserock
           +materialized: table
 
     # Formentera Partners (Tenant 2)
-    fp:
-      # Source/Raw models - minimal transformations
-      src:
-        +database: FP_RAW_DB
-        +schema: src
-        +materialized: view
+    partners:
 
       # Staging models - cleaned data, 1:1 with source
       staging:
         +database: FP_STAGE_DB
-        +materialized: view
-
-        # Combo Curve staging models
-        combo_curve:
-          +schema: stg_combo_curve
-          +materialized: view
 
       # Intermediate models - business logic layers
       intermediate:
