@@ -8,7 +8,7 @@ WITH gl as (
     Select
         gl_id as "GL ID"
         ,total_interest_expected AS "NRI Expected"
-        ,total_interest_actual AS "NRI Actual"
+        ,net_revenue_interest_actual AS "NRI Actual"
         ,afe_code as "AFE Number"
         ,voucher_type_id as "Voucher Type Code"
         ,location_name as "Location Name"
