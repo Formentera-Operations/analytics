@@ -8,7 +8,6 @@ renamed as (
 
     select
         -- Primary key and deck identifiers
-        "_meta/row_id" as row_id,
         ID as id,
         DECKREVISIONID as deck_revision_id,
         EXPENSEDECKPARTICIPANTIDENTITY as expense_deck_participant_identity,
