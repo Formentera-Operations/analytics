@@ -28,7 +28,6 @@ renamed as (
         CREATEEVENTID as create_event_id,
         UPDATEDATE as update_date,
         UPDATEEVENTID as update_event_id,
-        "_meta/op" as operation_type,
         FLOW_PUBLISHED_AT as flow_published_at,
         
         -- Full document JSON for reference
