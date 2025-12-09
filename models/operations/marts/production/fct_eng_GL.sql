@@ -1,5 +1,5 @@
 {{ config(
-    enable= true,
+    enabled=true,
     materialized='table',
     tags=['marts', 'facts']
 ) }}

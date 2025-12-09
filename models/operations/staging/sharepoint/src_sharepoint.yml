@@ -6,24 +6,22 @@ sources:
       - name: los_mapping_master_oda_los_report_mapping_logic
         description: >
           Master mapping table for LOS (Lease Operating Statement) report logic from Quorum OnDemand.
-          This table defines the hierarchical structure, account mappings, and calculation logic for 
+          This table defines the hierarchical structure, account mappings, and calculation logic for
           production and financial reporting. Data is synced from SharePoint via Fivetran.
-        
-        loaded_at_field: _fivetran_synced
-        
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
-        
+        config:
+          loaded_at_field: _fivetran_synced
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
         columns:
           - name: _line
             description: Fivetran's internal row identifier (unique)
-            tests:
+            data_tests:
               - unique
               - not_null
-          
           - name: _fivetran_synced
             description: Timestamp when Fivetran last synced this record
-            tests:
+            data_tests:
               - not_null
+
       - name: MASTER_ACCOUNT_TABLE_MAIN

@@ -21,4 +21,4 @@ renamed as (
     from source
 )
 
-Select * from source
+select * from renamed

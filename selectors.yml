@@ -1,6 +1,7 @@
 selectors:
   - name: applications-wiserock
     definition: +models/operations/applications/wiserock
+
   - name: marts-finance-general-ledger
     definition:
       union:
@@ -10,8 +11,13 @@ selectors:
         - +dim_dates
         - +dim_wells
         - +dim_entities
+        - +dim_owners
+        - +dim_vendors
+        - +dim_purchasers
+        - +fct_los
         - +dim_los_acct_map
         - +general_ledger+
+
   - name: marts-finance-combo-curve
     definition:
       union:
@@ -22,8 +28,10 @@ selectors:
         - +economic_one_liners+
         - +well_forecast_summary+
         - +well_forecast_parameters+
+
   - name: marts-production
     definition: +path:models/operations/marts/production
+
   - name: default
     default: true
     definition:

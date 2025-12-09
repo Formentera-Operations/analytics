@@ -55,11 +55,11 @@ wells AS (
 
 userfields AS (
     SELECT 
-        Id,
-        UserFieldName,
-        UserFieldValueString
+        "Id",
+        "UserFieldName",
+        "UserFieldValueString"
     FROM {{ ref('stg_oda__userfield') }}
-    WHERE UserFieldName = 'UF-SEARCH KEY'
+    WHERE "UserFieldName" = 'UF-SEARCH KEY'
 GROUP BY ALL
 ),
 
@@ -224,8 +224,8 @@ SELECT
     -- Metadata and timestamps
     CONVERT_TIMEZONE('UTC', 'America/Chicago', CURRENT_TIMESTAMP())::TIMESTAMP_TZ AS last_refresh_time,
     gld.id AS gl_id,
-    gld.create_date::TIMESTAMP_NTZ AS created_date,
-    gld.update_date::TIMESTAMP_NTZ AS updated_date,
+    gld.created_at::TIMESTAMP_NTZ AS created_date,
+    gld.updated_at::TIMESTAMP_NTZ AS updated_date,
     
     -- Company and account info
     c.code AS company_code,
@@ -299,7 +299,7 @@ SELECT
     CAST(wells.code AS VARCHAR) AS well_code,
     wells.id as well_id,
     CAST(wells.name AS VARCHAR) AS well_name,
-    CAST(loc_search.UserFieldValueString AS VARCHAR) AS search_key,
+    CAST(loc_search."UserFieldValueString" AS VARCHAR) AS search_key,
     
     -- Report inclusion flags
     gld.is_include_in_journal_report AS include_in_journal_report,
@@ -383,7 +383,7 @@ LEFT OUTER JOIN vouchers
 LEFT OUTER JOIN wells
     ON gld.well_id = wells.id
 LEFT OUTER JOIN userfields AS loc_search
-        ON gld.location_well_id = loc_search.Id
+        ON gld.location_well_id = loc_search."Id"
 LEFT OUTER JOIN rev_deck_revisions
     ON gld.source_revenue_deck_revision_id = rev_deck_revisions.id
 LEFT OUTER JOIN rev_decks
@@ -407,7 +407,7 @@ WHERE 1=1
 {% if is_incremental() %}
     -- Only process new or updated GL entries since last run
     AND (
-        gld.create_date > (SELECT MAX(created_date) FROM {{ this }})
-        OR gld.update_date > (SELECT MAX(updated_date) FROM {{ this }})
+        gld.created_at > (SELECT MAX(created_date) FROM {{ this }})
+        OR gld.updated_at > (SELECT MAX(updated_date) FROM {{ this }})
     )
 {% endif %}
