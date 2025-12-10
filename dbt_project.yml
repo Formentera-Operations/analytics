@@ -18,6 +18,9 @@ clean-targets:
 # Use custom schema naming
 require-dbt-version: ">=1.0.0"
 
+on-run-start:
+  - "{{ dbt_snow_mask.apply_masking_policy('sources') if target.name in ['prod'] else '' }}"
+
 # Configuring models
 models:
   +post-hook:
