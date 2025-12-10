@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: afe_execute
+    database: ESTUARY_DB
+    schema: AFE_RAW
+    tables:
+      - name: AFE
+          description: AFE tables from Quorum AFE Execute containing information regarding project estimates, field costs, and ACTUAL_AMOUNTS
+      - name: AFENUMBER
+      - name: AFE_CUSTOM
+      - name: LUT_AFE_TYPE
+      - name: LUT_ACQUISITION
+      - name: USER
+      - name: ACTUAL_AMOUNTS
+      - name: FIELDCOST_AMOUNTS
+      - name: AFE_WELL
+      - name: AFE_WELL_CUSTOM
+      - name: WELL
+
+
+
+
+      
+    
