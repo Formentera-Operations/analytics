@@ -1,0 +1,496 @@
+version: 2
+
+models:
+  # ============================================
+  # COMPLETION MODELS
+  # ============================================
+  
+  - name: stg_procount__completions
+    description: >
+      Staging model for Procount completion master data. Contains well completion 
+      header information including well identifiers, locations, status, and configuration.
+    columns:
+      - name: merrick_id
+        description: Procount internal unique identifier for the completion
+        tests:
+          - unique
+          - not_null
+      - name: well_name
+        description: Well name
+      - name: completion_name
+        description: Completion name/identifier
+      - name: completion_number
+        description: Completion number within the well
+      - name: uwi
+        description: Unique Well Identifier
+      - name: stateapiwell_number
+        description: State API well number
+      - name: latitude
+        description: Well latitude coordinate
+      - name: longitude
+        description: Well longitude coordinate
+      - name: producingstatus
+        description: Current producing status code
+      - name: completionstatus
+        description: Completion status code
+      - name: active_flag
+        description: Flag indicating if completion is active (1) or inactive (0)
+      - name: delete_flag
+        description: Flag indicating if record is soft deleted
+      - name: _fivetran_deleted
+        description: Fivetran CDC deletion flag
+      - name: _fivetran_synced
+        description: Fivetran sync timestamp
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__completiondaily
+    description: >
+      Staging model for daily completion production records. Contains daily volumes,
+      pressures, temperatures, and operational measurements at the completion level.
+    columns:
+      - name: completiondaily_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion master
+        tests:
+          - not_null
+      - name: record_date
+        description: Production date
+        tests:
+          - not_null
+      - name: alloc_est_oil_vol
+        description: Allocated estimated oil volume (BBL)
+      - name: alloc_est_gas_vol_mcf
+        description: Allocated estimated gas volume (MCF)
+      - name: alloc_est_water_vol
+        description: Allocated estimated water volume (BBL)
+      - name: oilproduction
+        description: Oil production volume
+      - name: waterproduction
+        description: Water production volume
+      - name: tubingpressure
+        description: Tubing pressure reading
+      - name: casingpressure
+        description: Casing pressure reading
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__completiondailydisp
+    description: >
+      Staging model for daily completion disposition records. Contains allocated 
+      volumes broken out by disposition code (sales, fuel use, flare, etc.).
+    columns:
+      - name: completiondailydisp_sk
+        description: Surrogate key generated from merrick_id + record_date + run_ticket_number + source_id + source_type
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion master
+        tests:
+          - not_null
+      - name: record_date
+        description: Production date
+        tests:
+          - not_null
+      - name: disposition_code
+        description: Code indicating how volume was disposed (sales, fuel, flare, etc.)
+      - name: alloc_est_oil_vol
+        description: Allocated estimated oil volume for this disposition
+      - name: alloc_est_gas_vol_mcf
+        description: Allocated estimated gas volume (MCF) for this disposition
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__completionmonthly
+    description: >
+      Staging model for monthly completion production records. Contains aggregated
+      monthly volumes and operational data at the completion level.
+    columns:
+      - name: completionmonthly_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion master
+        tests:
+          - not_null
+      - name: record_date
+        description: First day of production month
+        tests:
+          - not_null
+      - name: oilproduction
+        description: Monthly oil production volume
+      - name: waterproduction
+        description: Monthly water production volume
+      - name: dayson
+        description: Number of producing days in month
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__completionmonthlydisp
+    description: >
+      Staging model for monthly completion disposition records. Contains allocated
+      volumes by disposition code aggregated to month.
+    columns:
+      - name: completionmonthlydisp_sk
+        description: Surrogate key generated from merrick_id + record_date + run_ticket_number + source_id + source_type
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion master
+        tests:
+          - not_null
+      - name: record_date
+        description: First day of production month
+        tests:
+          - not_null
+      - name: disposition_code
+        description: Code indicating how volume was disposed
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__completionwelltest
+    description: >
+      Staging model for well test records. Contains test results including
+      production rates, pressures, and test parameters.
+    columns:
+      - name: completionwelltest_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion master
+        tests:
+          - not_null
+      - name: record_date
+        description: Test date
+        tests:
+          - not_null
+      - name: oilproduction
+        description: Test oil production rate
+      - name: gasproduction
+        description: Test gas production rate
+      - name: waterproduction
+        description: Test water production rate
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  # ============================================
+  # DOWNTIME MODELS
+  # ============================================
+
+  - name: stg_procount__downtime_codes
+    description: >
+      Staging model for downtime code reference data. Contains standardized
+      downtime classifications and descriptions.
+    columns:
+      - name: downtime_code
+        description: Unique downtime code identifier
+        tests:
+          - unique
+          - not_null
+      - name: downtimedescription
+        description: Description of the downtime code
+      - name: active_flag
+        description: Flag indicating if code is active
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__downtime_reasons
+    description: >
+      Staging model for downtime event records. Contains actual downtime events
+      with duration, cause, and associated equipment/completion.
+    columns:
+      - name: downtimereason_sk
+        description: Surrogate key generated from object_merrick_id + object_type + originaldateentered + originaltimeentered
+        tests:
+          - unique
+          - not_null
+      - name: object_merrick_id
+        description: Foreign key to the equipment or completion experiencing downtime
+        tests:
+          - not_null
+      - name: object_type
+        description: Type of object (completion, equipment, etc.)
+        tests:
+          - not_null
+      - name: downtime_code
+        description: Foreign key to downtime code reference
+      - name: downtime_hours
+        description: Duration of downtime in hours
+      - name: start_date
+        description: Downtime start date
+      - name: end_date
+        description: Downtime end date
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  # ============================================
+  # EQUIPMENT MODELS
+  # ============================================
+
+  - name: stg_procount__equipment
+    description: >
+      Staging model for equipment master data. Contains header information
+      for compressors, pumps, separators, and other field equipment.
+    columns:
+      - name: merrick_id
+        description: Procount internal unique identifier for the equipment
+        tests:
+          - unique
+          - not_null
+      - name: equipment_name
+        description: Equipment name
+      - name: serial_number
+        description: Equipment serial number
+      - name: make
+        description: Equipment manufacturer
+      - name: horsepower
+        description: Equipment horsepower rating
+      - name: active_flag
+        description: Flag indicating if equipment is active
+      - name: delete_flag
+        description: Flag indicating if record is soft deleted
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__equipmentdaily
+    description: >
+      Staging model for daily equipment records. Contains operational data
+      including run hours, pressures, temperatures, and volumes.
+    columns:
+      - name: equipmentdaily_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to equipment master
+        tests:
+          - not_null
+      - name: record_date
+        description: Record date
+        tests:
+          - not_null
+      - name: hourson
+        description: Hours equipment was running
+      - name: suctionpressure
+        description: Suction pressure reading
+      - name: dischargepressure
+        description: Discharge pressure reading
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  # ============================================
+  # METER MODELS
+  # ============================================
+
+  - name: stg_procount__meters
+    description: >
+      Staging model for meter master data. Contains header information
+      for sales meters, check meters, and allocation meters.
+    columns:
+      - name: merrick_id
+        description: Procount internal unique identifier for the meter
+        tests:
+          - unique
+          - not_null
+      - name: meter_name
+        description: Meter name
+      - name: serial_number
+        description: Meter serial number
+      - name: meter_type
+        description: Type of meter
+      - name: active_flag
+        description: Flag indicating if meter is active
+      - name: delete_flag
+        description: Flag indicating if record is soft deleted
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__meterdaily
+    description: >
+      Staging model for daily meter records. Contains daily meter readings
+      and allocated volumes.
+    columns:
+      - name: meterdaily_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to meter master
+        tests:
+          - not_null
+      - name: record_date
+        description: Record date
+        tests:
+          - not_null
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__metermonthly
+    description: >
+      Staging model for monthly meter records. Contains aggregated monthly
+      meter data.
+    columns:
+      - name: metermonthly_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to meter master
+        tests:
+          - not_null
+      - name: record_date
+        description: First day of month
+        tests:
+          - not_null
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__meter_run_tickets
+    description: >
+      Staging model for meter run ticket records. Contains oil/gas sales
+      tickets with volumes, gravity, and purchaser information.
+    columns:
+      - name: meterrunticket_sk
+        description: Surrogate key generated from merrick_id + record_date + run_ticket_number
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to meter master
+        tests:
+          - not_null
+      - name: record_date
+        description: Record date
+        tests:
+          - not_null
+      - name: run_ticket_number
+        description: Run ticket number
+        tests:
+          - not_null
+      - name: run_ticket_date
+        description: Run ticket date
+      - name: grossbarrels
+        description: Gross barrels on ticket
+      - name: netbarrels
+        description: Net barrels on ticket
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  # ============================================
+  # TANK MODELS
+  # ============================================
+
+  - name: stg_procount__tanks
+    description: >
+      Staging model for tank master data. Contains header information
+      for storage tanks including size, type, and configuration.
+    columns:
+      - name: merrick_id
+        description: Procount internal unique identifier for the tank
+        tests:
+          - unique
+          - not_null
+      - name: tank_name
+        description: Tank name
+      - name: serial_number
+        description: Tank serial number
+      - name: tanksize
+        description: Tank capacity in barrels
+      - name: tank_type
+        description: Type of tank
+      - name: active_flag
+        description: Flag indicating if tank is active
+      - name: delete_flag
+        description: Flag indicating if record is soft deleted
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__tankdaily
+    description: >
+      Staging model for daily tank records. Contains daily tank gauges
+      and inventory calculations.
+    columns:
+      - name: tankdaily_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to tank master
+        tests:
+          - not_null
+      - name: record_date
+        description: Gauge date
+        tests:
+          - not_null
+      - name: beginningoil
+        description: Beginning oil inventory
+      - name: endingoil
+        description: Ending oil inventory
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__tankmonthly
+    description: >
+      Staging model for monthly tank records. Contains aggregated monthly
+      tank data.
+    columns:
+      - name: tankmonthly_sk
+        description: Surrogate key generated from merrick_id + record_date
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to tank master
+        tests:
+          - not_null
+      - name: record_date
+        description: First day of month
+        tests:
+          - not_null
+      - name: _loaded_at
+        description: dbt load timestamp
+
+  - name: stg_procount__tank_run_tickets
+    description: >
+      Staging model for tank run ticket records. Contains oil hauling
+      tickets with volumes, gravity, and hauler information.
+    columns:
+      - name: tankrunticket_sk
+        description: Surrogate key generated from merrick_id + record_date + run_ticket_number
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to tank master
+        tests:
+          - not_null
+      - name: record_date
+        description: Record date
+        tests:
+          - not_null
+      - name: run_ticket_number
+        description: Run ticket number
+        tests:
+          - not_null
+      - name: run_ticket_date
+        description: Run ticket date
+      - name: grossbarrels
+        description: Gross barrels on ticket
+      - name: netbarrels
+        description: Net barrels on ticket
+      - name: _loaded_at
+        description: dbt load timestamp
