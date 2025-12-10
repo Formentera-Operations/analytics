@@ -82,19 +82,20 @@ models:
           Examples: OIL SALES, GAS SALES, NGL SALES, OPERATING EXPENSE, etc.
         data_tests:
           - accepted_values:
-              values: ['OIL SALES', 'GAS SALES', 'NGL SALES', 'OIL REV DEDUCT', 'GAS REV DEDUCT',
-                       'NGL REV DEDUCT', 'OPERATING EXPENSE', 'LOE', 'PRODUCTION TAX',
-                       'COMPRESSION', 'TRANSPORTATION', 'LEASE OPERATING', 'AUDIT',
-                       'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'CORP FEES', 'CORP INSURANCE',
-                       'DALY WATERS', 'HARDWR & SOFTWR', 'LEGAL', 'MISCELLANEOUS',
-                       'OFFICE RENT', 'REAL PROP TAX', 'SUPPLIES & EQP', 'TRAVEL',
-                       'UTIL & INTERNET', 'VEHICLES']
+              arguments:
+                values: ['OIL SALES', 'GAS SALES', 'NGL SALES', 'OIL REV DEDUCT', 'GAS REV DEDUCT',
+                         'NGL REV DEDUCT', 'OPERATING EXPENSE', 'LOE', 'PRODUCTION TAX',
+                         'COMPRESSION', 'TRANSPORTATION', 'LEASE OPERATING', 'AUDIT',
+                         'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'CORP FEES', 'CORP INSURANCE',
+                         'DALY WATERS', 'HARDWR & SOFTWR', 'LEGAL', 'MISCELLANEOUS',
+                         'OFFICE RENT', 'REAL PROP TAX', 'SUPPLIES & EQP', 'TRAVEL',
+                         'UTIL & INTERNET', 'VEHICLES']
               config:
                 severity: warn
 
       - name: line_item_name
         description: >
-          Descriptive name of the line item or account. Examples: "OIL SALES - WI", 
+          Descriptive name of the line item or account. Examples: "OIL SALES - WI",
           "GAS HEDGING", "WORKOVER - W/O EQUIPMENT", "PAYROLL"
         data_tests:
           - not_null:
@@ -104,13 +105,14 @@ models:
 
       - name: value_type
         description: >
-          Indicates whether the line represents a quantity or a value. 
+          Indicates whether the line represents a quantity or a value.
           - NET QTY AMT: Quantity (barrels, MCF, gallons)
           - NET VALUE AMT: Dollar value
           Null for header and calculation rows.
         data_tests:
           - accepted_values:
-              values: ['NET QTY AMT', 'NET VALUE AMT']
+              arguments:
+                values: ["NET QTY AMT", "NET VALUE AMT"]
               config:
                 severity: warn
                 where: "value_type is not null"
@@ -184,6 +186,7 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: ['OIL', 'GAS', 'NGL', 'BOE', 'OTHER']
+              arguments:
+                values: ["OIL", "GAS", "NGL", "BOE", "OTHER"]
               config:
                 severity: warn

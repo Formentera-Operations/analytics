@@ -53,7 +53,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_remarks
     description: "Staging model for unit remarks - tracking comments, action items, and imbalance explanations"
@@ -121,7 +122,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_production_tests
     description: "Staging model for production tests - capturing well performance measurements and analysis (imperial units)"
@@ -453,7 +455,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_status
     description: "Staging model for completion status - tracking operational states and configurations"
@@ -543,7 +546,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_completion_parameters
     description: "Staging model for completion parameters - operational measurements and settings (imperial units)"
@@ -701,7 +705,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_completion_downtimes
     description: "Staging model for completion downtimes - tracking operational interruptions and maintenance events"
@@ -819,7 +824,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_completions
     description: "Staging model for completions - licensed producing or injecting intervals in wells"
@@ -1013,7 +1019,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_daily_allocations
     description: "Staging model for daily allocations with production volumes and operational data (imperial units)"
@@ -1249,7 +1256,8 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
   - name: stg_wiserock__pv_units
     description: "Staging model for ProdView units - building blocks of the flow network"
@@ -1459,4 +1467,5 @@ models:
         description: "Deletion flag (mapped from _fivetran_deleted)"
         data_tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
