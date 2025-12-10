@@ -6,7 +6,6 @@ sources:
     schema: AFE_RAW
     tables:
       - name: AFE
-          description: AFE tables from Quorum AFE Execute containing information regarding project estimates, field costs, and ACTUAL_AMOUNTS
       - name: AFENUMBER
       - name: AFE_CUSTOM
       - name: LUT_AFE_TYPE
