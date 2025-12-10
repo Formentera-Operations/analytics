@@ -1,0 +1,305 @@
+version: 2
+
+models:
+  # ============================================
+  # DIMENSIONS
+  # ============================================
+  
+  - name: dim_griffin__completions
+    description: >
+      Completion dimension for Griffin (Crescent Barnett) assets. Slim, reporting-focused 
+      view of completion attributes. Primary grain for production reporting.
+    columns:
+      - name: completion_key
+        description: Surrogate key for dimension joins
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Natural key - Procount completion identifier
+        tests:
+          - unique
+          - not_null
+      - name: apiwell_number
+        description: 14-digit API well number
+      - name: uwi
+        description: Unique well identifier
+
+  - name: dim_griffin__equipment
+    description: >
+      Equipment dimension for pumps, compressors, and other field equipment.
+      Links to parent completion for hierarchy.
+    columns:
+      - name: equipment_key
+        description: Surrogate key for dimension joins
+        tests:
+          - unique
+          - not_null
+      - name: equipment_merrick_id
+        description: Natural key - Procount equipment identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_griffin__meters
+    description: >
+      Meter dimension for gas and liquid measurement devices.
+      Includes purchaser/contract info and calibration details.
+    columns:
+      - name: meter_key
+        description: Surrogate key for dimension joins
+        tests:
+          - unique
+          - not_null
+      - name: meter_merrick_id
+        description: Natural key - Procount meter identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_griffin__tanks
+    description: >
+      Tank dimension for oil and water storage tanks.
+      Includes capacity specs and strapping table references.
+    columns:
+      - name: tank_key
+        description: Surrogate key for dimension joins
+        tests:
+          - unique
+          - not_null
+      - name: tank_merrick_id
+        description: Natural key - Procount tank identifier
+        tests:
+          - unique
+          - not_null
+
+  # ============================================
+  # FACTS - COMPLETION PRODUCTION
+  # ============================================
+
+  - name: fct_griffin__daily_production
+    description: >
+      Daily production fact at completion level. Primary volumes are allocated (alloc_*) 
+      which represent final reported values after allocation. Also includes measured 
+      volumes and disposition summaries.
+    columns:
+      - name: completiondaily_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: completion_key
+        description: Foreign key to dim_griffin__completions
+      - name: record_date
+        description: Production date
+        tests:
+          - not_null
+      - name: alloc_oil_bbls
+        description: Allocated oil volume in barrels
+      - name: alloc_gas_mcf
+        description: Allocated gas volume in MCF
+      - name: alloc_boe
+        description: Allocated BOE (oil + condensate + NGL + gas/6)
+
+  - name: fct_griffin__monthly_production
+    description: >
+      Monthly production fact at completion level. Primary volumes are allocated.
+      Includes state-reported volumes and daily averages.
+    columns:
+      - name: completionmonthly_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: completion_key
+        description: Foreign key to dim_griffin__completions
+      - name: production_month
+        description: First day of production month
+        tests:
+          - not_null
+      - name: alloc_oil_bbls
+        description: Allocated oil volume in barrels
+      - name: alloc_gas_mcf
+        description: Allocated gas volume in MCF
+      - name: alloc_boe
+        description: Allocated BOE (oil + condensate + NGL + gas/6)
+
+  # ============================================
+  # FACTS - DISPOSITION DETAIL
+  # ============================================
+
+  - name: fct_griffin__daily_disposition
+    description: >
+      Daily disposition fact showing detailed breakdown of where production went.
+      Grain is completion + date + disposition code + purchaser.
+    columns:
+      - name: completiondailydisp_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: disposition_code
+        description: Disposition type (SALE, FUEL, FLARE, etc.)
+      - name: purchaser_id
+        description: Purchaser for sales dispositions
+
+  - name: fct_griffin__monthly_disposition
+    description: >
+      Monthly disposition fact showing detailed breakdown of where production went.
+      Grain is completion + month + disposition code + purchaser.
+    columns:
+      - name: completionmonthlydisp_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: disposition_code
+        description: Disposition type (SALE, FUEL, FLARE, etc.)
+      - name: purchaser_id
+        description: Purchaser for sales dispositions
+
+  # ============================================
+  # FACTS - RUN TICKETS
+  # ============================================
+
+  - name: fct_griffin__run_tickets
+    description: >
+      Unified run ticket fact combining tank and meter hauling/sales tickets.
+      Includes purchaser, transporter, volumes, and pricing.
+    columns:
+      - name: run_ticket_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: equipment_type
+        description: Source equipment (TANK or METER)
+        tests:
+          - accepted_values:
+              values: ['TANK', 'METER']
+      - name: run_ticket_number
+        description: Ticket number from hauler
+      - name: net_volume
+        description: Net volume after BS&W deduction
+      - name: net_value
+        description: Net value after deductions
+
+  # ============================================
+  # FACTS - DOWNTIME
+  # ============================================
+
+  - name: fct_griffin__downtime
+    description: >
+      Downtime fact tracking completion outages with codes, categories,
+      duration, and lost production estimates.
+    columns:
+      - name: downtime_reason_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: downtime_code
+        description: Standardized downtime code
+      - name: downtime_category
+        description: Downtime category (MECHANICAL, WEATHER, etc.)
+      - name: downtime_hours
+        description: Duration in hours
+      - name: lost_boe
+        description: Estimated lost production in BOE
+
+  # ============================================
+  # FACTS - EQUIPMENT
+  # ============================================
+
+  - name: fct_griffin__equipment_daily
+    description: >
+      Daily equipment operational fact for pumps, compressors, etc.
+      Includes runtime, pressures, temperatures, and electrical readings.
+    columns:
+      - name: equipmentdaily_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: equipment_key
+        description: Foreign key to dim_griffin__equipment
+      - name: record_date
+        description: Operational date
+        tests:
+          - not_null
+
+  # ============================================
+  # FACTS - METERS
+  # ============================================
+
+  - name: fct_griffin__meter_daily
+    description: >
+      Daily meter readings and volumes. Includes allocated and measured volumes,
+      meter readings, pressures, and gas analysis.
+    columns:
+      - name: meterdaily_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: meter_key
+        description: Foreign key to dim_griffin__meters
+      - name: record_date
+        description: Reading date
+        tests:
+          - not_null
+
+  - name: fct_griffin__meter_monthly
+    description: >
+      Monthly meter summary with volumes, readings, and gas analysis averages.
+    columns:
+      - name: meter_monthly_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: meter_key
+        description: Foreign key to dim_griffin__meters
+      - name: production_month
+        description: First day of production month
+        tests:
+          - not_null
+
+  # ============================================
+  # FACTS - TANKS
+  # ============================================
+
+  - name: fct_griffin__tank_daily
+    description: >
+      Daily tank gauge readings and inventory movements.
+      Includes open/close inventory, production, sales, and transfers.
+    columns:
+      - name: tankdaily_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: tank_key
+        description: Foreign key to dim_griffin__tanks
+      - name: record_date
+        description: Gauge date
+        tests:
+          - not_null
+      - name: fill_pct
+        description: Tank fill percentage based on working capacity
+
+  - name: fct_griffin__tank_monthly
+    description: >
+      Monthly tank inventory summary.
+    columns:
+      - name: tankmonthly_sk
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: tank_key
+        description: Foreign key to dim_griffin__tanks
+      - name: production_month
+        description: First day of production month
+        tests:
+          - not_null

@@ -1,0 +1,132 @@
+version: 2
+
+models:
+  - name: int_griffin__completions_enriched
+    description: >
+      Completions master data enriched with decoded reference values for producing status, 
+      producing methods, routes, and gathering systems. Foundation for all completion-level reporting.
+    columns:
+      - name: merrick_id
+        description: Primary key - unique completion identifier from Procount
+        tests:
+          - unique
+          - not_null
+
+  - name: int_griffin__daily_production
+    description: >
+      Daily production volumes at completion level with completion context joined.
+      Includes allocated volumes (primary for reporting), measured volumes, and disposition summaries.
+    columns:
+      - name: completiondaily_sk
+        description: Surrogate key for daily production record
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion
+        tests:
+          - not_null
+      - name: record_date
+        description: Production date
+        tests:
+          - not_null
+
+  - name: int_griffin__monthly_production
+    description: >
+      Monthly production volumes at completion level with completion context joined.
+      Includes allocated volumes (primary for reporting), measured volumes, state reported, and daily averages.
+    columns:
+      - name: completionmonthly_sk
+        description: Surrogate key for monthly production record
+        tests:
+          - unique
+          - not_null
+      - name: merrick_id
+        description: Foreign key to completion
+        tests:
+          - not_null
+      - name: record_date
+        description: First day of production month
+        tests:
+          - not_null
+
+  - name: int_griffin__daily_disposition
+    description: >
+      Daily disposition detail showing where production volumes went - sales by purchaser,
+      fuel usage, flare, etc. Grain is completion + date + disposition code.
+    columns:
+      - name: completiondailydisp_sk
+        description: Surrogate key for daily disposition record
+        tests:
+          - unique
+          - not_null
+
+  - name: int_griffin__monthly_disposition
+    description: >
+      Monthly disposition detail showing where production volumes went - sales by purchaser,
+      fuel usage, flare, etc. Grain is completion + month + disposition code.
+    columns:
+      - name: completionmonthlydisp_sk
+        description: Surrogate key for monthly disposition record
+        tests:
+          - unique
+          - not_null
+
+  - name: int_griffin__run_tickets_unified
+    description: >
+      Unified view of tank and meter run tickets (hauling/sales tickets).
+      Combines both equipment types into single model for consolidated ticket analysis.
+    columns:
+      - name: run_ticket_sk
+        description: Surrogate key for run ticket
+        tests:
+          - unique
+          - not_null
+      - name: equipment_type
+        description: Source equipment type (TANK or METER)
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TANK', 'METER']
+
+  - name: int_griffin__downtime_events
+    description: >
+      Downtime events with decoded downtime codes and categories.
+      Includes duration calculations and lost production estimates.
+    columns:
+      - name: downtime_reason_sk
+        description: Surrogate key for downtime event
+        tests:
+          - unique
+          - not_null
+
+  - name: int_griffin__equipment_enriched
+    description: >
+      Equipment master data (pumps, compressors, etc.) enriched with parent completion context.
+    columns:
+      - name: equipment_merrick_id
+        description: Primary key - unique equipment identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: int_griffin__meters_enriched
+    description: >
+      Meter master data enriched with parent completion context and gathering system info.
+    columns:
+      - name: meter_merrick_id
+        description: Primary key - unique meter identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: int_griffin__tanks_enriched
+    description: >
+      Tank master data enriched with parent completion context and capacity specs.
+    columns:
+      - name: tank_merrick_id
+        description: Primary key - unique tank identifier
+        tests:
+          - unique
+          - not_null
+
