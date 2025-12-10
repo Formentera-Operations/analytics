@@ -28,6 +28,8 @@ renamed as (
         CREATEEVENTID as create_event_id,
         UPDATEDATE as update_date,
         UPDATEEVENTID as update_event_id,
+        RECORDINSERTDATE as record_insert_date,  
+        RECORDUPDATEDATE as record_update_date,  
         FLOW_PUBLISHED_AT as flow_published_at,
         
         -- Full document JSON for reference
