@@ -1,0 +1,36 @@
+status_raw,status_clean
+Active,Producing
+Completing,Producing
+ESP,Producing
+ESP - OWNED,Producing
+FLOWING,Producing
+Flowing,Producing
+FLOWING - CASING,Producing
+FLOWING - TUBING,Producing
+GAS LIFT,Producing
+Producer,Producing
+Producing,Producing
+PRODUCING,Producing
+Rod Pump,Producing
+ROD PUMP,Producing
+INACTIVE,Shut In
+INACTIVE COMPLETED,Shut In
+INACTIVE INJECTOR,Shut In
+INACTIVE PRODUCER,Shut In
+SHUT IN,Shut In
+Shut In,Shut In
+Shut-In,Shut In
+INJECTING,Injecting
+Injecting,Injecting
+Injector,Injecting
+P & A,Plugged & Abandoned
+Plugged & Abandoned,Plugged & Abandoned
+Plugged and Abandoned,Plugged & Abandoned
+TA,Temp Abandoned
+Temp Abandoned,Temp Abandoned
+Temporarily Abandoned,Temp Abandoned
+DUC,DUC
+DRILLED,Drilled
+PERMITTED,Permitted
+Planned,Planned
+Sold,Sold
