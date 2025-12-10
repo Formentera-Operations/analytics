@@ -312,6 +312,8 @@ SELECT
     -- Revenue deck information
     CAST(rev_deck_revisions.revision_number AS VARCHAR) AS revenue_deck_change_code,
     rev_decks.effective_date::DATE AS revenue_deck_version_date,
+    CAST(rev_deck_revisions.nri_actual AS VARCHAR) AS net_revenue_interest_actual,
+    CAST(rev_deck_revisions.total_interest_expected AS VARCHAR) AS total_interest_expected,
     
     -- Reference and currency
     CAST(payment_types.code AS VARCHAR) AS reference_type,
