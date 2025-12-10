@@ -91,6 +91,11 @@ models:
         +materialized: table
         +tags: ["marts", "fo"]
 
+        griffin:
+
+          +schema: griffin
+          +materialized: table
+
       applications:
         +database: FORMENTERA_OPS_DB
 
