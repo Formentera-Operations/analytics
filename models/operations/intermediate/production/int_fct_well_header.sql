@@ -65,7 +65,6 @@ tbl as (
                     when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
                     else p."AssetCo" end)
             when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
-            else c.company_name
         end as "Asset Company"
         ,case
             when c.company_code is null then 
@@ -73,6 +72,7 @@ tbl as (
                     when lower(p."AssetCo") = 'fp south texas' then 810
                     when lower(p."AssetCo") = 'fp balboa la' then 707
                     when lower(p."AssetCo") = 'fp balboa ms' then 708
+                    when lower(p."AssetCo") = 'fp balboa la midstream' then 706
                     when lower(p."AssetCo") = 'fp balboa nd' then 709
                     when lower(p."AssetCo") = 'fp divide' then 701
                     when lower(p."AssetCo") = 'fp drake' then 813
@@ -91,14 +91,9 @@ tbl as (
                 when c.company_code is null and p."AssetCo" is null and not w."Company Code" is null then w."Company Code"
             else c.company_code end
         as "Asset Company Code"
-        --,c.company_name as "Asset Company"
-        --,c.company_full_name as "Asset Company full Name"
         ,p."Completion Record ID"
         ,p."Completion Status"
-        --,w."Asset Company" as "WV Asset Company"
-        --,p."AssetCo"
         ,p."District" AS "Business Unit"
-        --,w."District"
         ,p."Unit Create Date (UTC)"
         ,CAST(w."On Production Date" AS date) AS "First Prod Date"
         ,case
@@ -106,8 +101,6 @@ tbl as (
             when w."First Sales Date" is null and not p."First Sale Date" is null then CAST(p."First Sale Date" AS date)
             else CAST(w."First Sales Date" AS date)
         end as "First Sales Date"           
-        --,w."First Sales Date"
-        --,p."First Sale Date"
         ,p."Current Facility"
         ,p."Facility Name"
         ,r."Foreman"
@@ -119,10 +112,6 @@ tbl as (
             else p."Is Operated"
         end as "Is Operated"
         ,p."Is Operated" as "PV Is Operated"
-       /* ,p."Operated Descriptor" as "PV Operated Descriptor"
-        ,w."Operated Descriptor" as "WV Operated Descriptor"
-        ,p."Operator" as "PV Operator"
-        ,w."Operator Name" as "WV Operator"*/
         ,greatest(
             coalesce(p."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
             coalesce(w."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z')
@@ -150,12 +139,9 @@ tbl as (
             when w."Rig Release Date" is null and not p."Rig Release Date" is null then CAST(p."Rig Release Date" AS date)
             else CAST(w."Rig Release Date" AS date)
         end as "Rig Release Date"    
-        --,w."Rig Release Date"
-        --,p."Rig Release Date"
         ,r."Route Record ID"
         ,r."Route Name"
         ,CAST(w."Spud Date" AS date) as "Spud Date"
-        --,p."Spud Date"
         ,w."System Lock Date"
         ,p."Unit Record ID"
         ,p."Unit Type"
@@ -173,7 +159,6 @@ tbl as (
     on p."Unit Record ID" = s."Unit Record ID" and s.rn = 1
     left join route r
     on p."Current Route" = r."Route Record ID"
-    --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
 ),
 
 ranked AS (
