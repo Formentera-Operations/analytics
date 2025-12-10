@@ -6,14 +6,15 @@ models:
       Master well table containing core well information including location,
       operator classification, and key identifiers. Central table for joining
       to other well-related data.
-      
+
       Keeps only the most recent record for each well by removing deleted
       records.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - well_id
-            - completion_id
+          arguments:
+            combination_of_columns:
+              - well_id
+              - completion_id
     columns:
       - name: well_id
         description: Unique identifier for the well.
