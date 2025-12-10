@@ -8,7 +8,10 @@ packages:
   - name: elementary
     package: elementary-data/elementary
     version: 0.21.0
+  - name: dbt_snow_mask
+    package: entechlog/dbt_snow_mask
+    version: 0.2.7
   - name: dbt_date
     package: godatadriven/dbt_date
     version: 0.17.0
-sha1_hash: 7aecad698ebb4f71b84b9508bd5fc8dab2c13d2e
+sha1_hash: df251a63d18e1ab43cfe503767c504649589a569

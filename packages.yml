@@ -6,3 +6,5 @@ packages:
     # https://docs.elementary-data.com
   - package: elementary-data/elementary
     version: 0.21.0
+  - package: entechlog/dbt_snow_mask
+    version: 0.2.7
