@@ -158,12 +158,13 @@ models:
           - 'FP Drake': From 'FP_DRAKE'
         data_tests:
           - accepted_values:
-              values: ['FP Meramec', 'FP Goldsmith (Saddleback)', 'FP Goldsmith (SLANT)',
-                      'FP Green', 'FP Lakefork', 'FP Overlook', 'FP Rio Grande',
-                      'FP Balboa LA', 'FP Balboa MS', 'FP Balboa ND', 'FP Divide',
-                      'FP Kingfisher', 'FP Maverick', 'FP Wheeler', 'Snyder Drillco',
-                      'FP Pronghorn', 'FP Drake']
-              quote: true
+              arguments:
+                values: ['FP Meramec', 'FP Goldsmith (Saddleback)', 'FP Goldsmith (SLANT)',
+                        'FP Green', 'FP Lakefork', 'FP Overlook', 'FP Rio Grande',
+                        'FP Balboa LA', 'FP Balboa MS', 'FP Balboa ND', 'FP Divide',
+                        'FP Kingfisher', 'FP Maverick', 'FP Wheeler', 'Snyder Drillco',
+                        'FP Pronghorn', 'FP Drake']
+                quote: true
 
       - name: net_operating_income
         description: Net operating income
@@ -180,8 +181,9 @@ models:
           - '4PUD': Includes '3PUD', '4PUD', '4PUD_HZ', '4PUD_RC', '4PUD_VT'
         data_tests:
           - accepted_values:
-              values: ['1PDP', '2WIP', '3PDNP', '4PUD']
-              quote: true
+              arguments:
+                values: ["1PDP", "2WIP", "3PDNP", "4PUD"]
+                quote: true
 
       # Reference Values
       - name: reference_after_tax_npv_10

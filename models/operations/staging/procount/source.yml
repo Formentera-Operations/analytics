@@ -1,0 +1,62 @@
+version: 2
+
+sources:
+  - name: procount
+    description: IFS Procount production operations data from Crescent Energy Barnett acquisition via Snowflake data share
+    database: FP_GRIFFIN
+    schema: PUBLIC
+    
+    tables:
+      - name: COMPLETIONDAILYDISPTB
+        description: Daily completion disposition records - allocated volumes by disposition code
+        
+      - name: COMPLETIONDAILYTB
+        description: Daily completion production records - volumes, pressures, and operational data
+        
+      - name: COMPLETIONMONTHLYDISPTB
+        description: Monthly completion disposition records - allocated volumes by disposition code
+        
+      - name: COMPLETIONMONTHLYTB
+        description: Monthly completion production records - aggregated volumes and operational data
+        
+      - name: COMPLETIONTB
+        description: Completion master data - well completion header information
+        
+      - name: COMPLETIONWELLTESTTB
+        description: Well test records - test results and measurements
+        
+      - name: DOWNTIMECODETB
+        description: Downtime code reference table - standardized downtime classifications
+        
+      - name: DOWNTIMEREASONTB
+        description: Downtime reason records - actual downtime events with duration and cause
+        
+      - name: EQUIPMENTDAILYTB
+        description: Daily equipment records - operational data for compressors, pumps, etc.
+        
+      - name: EQUIPMENTTB
+        description: Equipment master data - equipment header information
+        
+      - name: METERDAILYTB
+        description: Daily meter records - meter readings and allocated volumes
+        
+      - name: METERMONTHLYTB
+        description: Monthly meter records - aggregated meter data
+        
+      - name: METERRUNTICKETTB
+        description: Meter run ticket records - oil/gas sales tickets
+        
+      - name: METERTB
+        description: Meter master data - meter header information
+        
+      - name: TANKDAILYTB
+        description: Daily tank records - tank gauges and inventory
+        
+      - name: TANKMONTHLYTB
+        description: Monthly tank records - aggregated tank data
+        
+      - name: TANKRUNTICKETTB
+        description: Tank run ticket records - oil hauling tickets
+        
+      - name: TANKTB
+        description: Tank master data - tank header information

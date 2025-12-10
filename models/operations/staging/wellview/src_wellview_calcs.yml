@@ -127,7 +127,8 @@ sources:
             description: "Indicates if record is proposed or actual"
             data_tests:
               - accepted_values:
-                  values: ['proposed', 'actual']
+                  arguments:
+                    values: ["proposed", "actual"]
           - name: IDRECJOBPULLTK
             description: "Pull job table key"
           - name: DEPTHBTM
