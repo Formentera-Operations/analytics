@@ -13,7 +13,8 @@ renamed as (
         -- Revision state identifiers
         NAME as name,
         FULLNAME as full_name,
-  
+        REVISIONSTATEIDENTITY as revision_state_identity,
+
         -- Metadata and timestamps
         RECORDINSERTDATE as record_insert_date,
         RECORDUPDATEDATE as record_update_date,
