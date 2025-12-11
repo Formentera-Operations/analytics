@@ -1,0 +1,21 @@
+# Temporary config to illustrate masking
+models:
+  - name: masking_example
+    columns:
+      - name: id
+      - name: name
+        config:
+          meta:
+            masking_policy: PII_MASK
+      - name: email
+        config:
+          meta:
+            masking_policy: EMAIL_MASK
+      - name: ssn
+        config:
+          meta:
+            masking_policy: NUMBER_MASK
+      - name: dob
+        config:
+          meta:
+            masking_policy: DATE_MASK

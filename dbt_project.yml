@@ -18,8 +18,14 @@ clean-targets:
 # Use custom schema naming
 require-dbt-version: ">=1.0.0"
 
+on-run-start:
+  - "{{ dbt_snow_mask.apply_masking_policy('sources') if target.name in ['prod'] else '' }}"
+
 # Configuring models
 models:
+  +post-hook:
+    - "{{ dbt_snow_mask.apply_masking_policy('models') }}"
+
   elementary:
     ## elementary models will be created in the schema '<your_schema>_elementary'
     +schema: "elementary"
@@ -91,6 +97,11 @@ models:
         +materialized: table
         +tags: ["marts", "fo"]
 
+        griffin:
+
+          +schema: griffin
+          +materialized: table
+
       applications:
         +database: FORMENTERA_OPS_DB
 
@@ -134,3 +145,12 @@ flags:
   require_explicit_package_overrides_for_builtin_materializations: false
   source_freshness_run_project_hooks: true
   require_generic_test_arguments_property: true
+
+vars:
+  ###  dbt-snow-mask  ###
+  use_force_applying_masking_policy: "True"
+  create_masking_policy_schema: "False"
+  use_common_masking_policy_db: "True"
+  # https://github.com/Formentera-Operations/snowflake-infrastructure/blob/f10d9a849c3bfcb7df91acb3af10fd3407bb2703/snowflake/masking_policy.tf
+  common_masking_policy_db: "SECURITY_DB"
+  common_masking_policy_schema: "MASKING_POLICIES"

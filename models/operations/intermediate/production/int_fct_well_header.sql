@@ -48,6 +48,7 @@ tbl as (
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 'Formentera South Texas, LP'
                     when lower(p."AssetCo") = 'fp balboa la' then 'FP Balboa LA LLC'
+                    when lower(p."AssetCo") = 'fp balboa la midstream' then 'FP Balboa LA Midstream'
                     when lower(p."AssetCo") = 'fp balboa ms' then 'FP Balboa MS LLC'
                     when lower(p."AssetCo") = 'fp balboa nd' then 'FP Balboa ND LLC'
                     when lower(p."AssetCo") = 'fp divide' then 'FP Divide LLC'
@@ -72,6 +73,7 @@ tbl as (
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 810
                     when lower(p."AssetCo") = 'fp balboa la' then 707
+                    when lower(p."AssetCo") = 'fp balboa la midstream' then 706
                     when lower(p."AssetCo") = 'fp balboa ms' then 708
                     when lower(p."AssetCo") = 'fp balboa nd' then 709
                     when lower(p."AssetCo") = 'fp divide' then 701

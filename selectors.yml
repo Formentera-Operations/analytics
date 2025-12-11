@@ -32,6 +32,9 @@ selectors:
   - name: marts-production
     definition: +path:models/operations/marts/production
 
+  - name: marts-griffin
+    definition: +path:models/operations/marts/griffin
+
   - name: default
     default: true
     definition:
@@ -40,3 +43,4 @@ selectors:
         - {method: "selector", value: "marts-finance-general-ledger"}
         - {method: "selector", value: "marts-finance-combo-curve"}
         - {method: "selector", value: "marts-production"}
+        - {method: "selector", value: "marts-griffin"}
