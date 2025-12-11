@@ -141,12 +141,11 @@ models:
         +materialized: table
         +tags: ["marts", "fp"]
 
-flags:
-  require_explicit_package_overrides_for_builtin_materializations: false
-  source_freshness_run_project_hooks: true
-  require_generic_test_arguments_property: true
-
 vars:
+  # https://github.com/Formentera-Operations/snowflake-infrastructure/blob/f10d9a849c3bfcb7df91acb3af10fd3407bb2703/snowflake/warehouse_services.tf
+  available_warehouse_sizes: ["XS", "S", "M"]
+  enable_dynamic_warehouse: true
+
   ###  dbt-snow-mask  ###
   use_force_applying_masking_policy: "True"
   create_masking_policy_schema: "False"
@@ -154,3 +153,8 @@ vars:
   # https://github.com/Formentera-Operations/snowflake-infrastructure/blob/f10d9a849c3bfcb7df91acb3af10fd3407bb2703/snowflake/masking_policy.tf
   common_masking_policy_db: "SECURITY_DB"
   common_masking_policy_schema: "MASKING_POLICIES"
+
+flags:
+  require_explicit_package_overrides_for_builtin_materializations: false
+  source_freshness_run_project_hooks: true
+  require_generic_test_arguments_property: true
