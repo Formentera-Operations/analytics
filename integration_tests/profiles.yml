@@ -1,6 +1,6 @@
 integration_tests:
   outputs:
-    snowflake:
+    ci:
       type: snowflake
       user: DBT_USER
       password: ""

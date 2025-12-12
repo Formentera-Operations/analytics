@@ -23,4 +23,4 @@ jobs:
           --warn-error
           --profiles-dir integration_tests/
           --profile integration_tests
-          --target snowflake
+          --target ci
