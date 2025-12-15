@@ -51,11 +51,12 @@ with expensedeck_company as (
     -- =================================================================
         -- Interest
     -- =================================================================       
-    case   
-        when it.id = 1 then 'Working'
-        when it.id = 2 then 'Royalty'
-        when it.id = 3 then 'Override'
-        end as interest_name,
+    --case   
+    --    when it.id = 1 then 'Working'
+    --    when it.id = 2 then 'Royalty'
+    --    when it.id = 3 then 'Override'
+    --   end as interest_name,
+    'WI' as interest_type,
     cast(sum(edp.decimal_interest) as Decimal(12,10)) as total_interest,
     
     -- =================================================================
