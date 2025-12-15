@@ -31,6 +31,7 @@ with expensedeck_company as (
         -- Well Data
      -- =================================================================
     w.code as well_code,
+    right(w.code, 6) as eid,
     w.name as well_name,
     w.api_number as api_number, 
     w.state_code as state_code,
