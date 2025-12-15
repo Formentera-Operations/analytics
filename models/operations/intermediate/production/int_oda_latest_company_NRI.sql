@@ -52,11 +52,12 @@ with revenuedeck_company as (
         -- Interest & Product
     -- =================================================================       
     p.name as product_name,
-    case   
-        when it.id = 1 then 'Working'
-        when it.id = 2 then 'Royalty'
-        when it.id = 3 then 'Override'
-        end as interest_name,
+    --case   
+    --   when it.id = 1 then 'Working'
+    --    when it.id = 2 then 'Royalty'
+     --   when it.id = 3 then 'Override'
+     --   end as interest_name,
+     'NRI' as interest_type,
     cast(sum(rdp.decimal_interest) as Decimal(12,10)) as total_interest,
     
     -- =================================================================
@@ -92,9 +93,11 @@ with revenuedeck_company as (
 	and rdr.close_date is null --Deck is not Closed
 	and rdpc.id is not null --Company Participant only
 	and rds.code = '1' --Deck Code 1 
+    and w.code in ('8070106796')
 	and rd.effective_date = (select max(effdaterd.effective_date)   --Latest Effective Date of Deck 
 							from {{ ref('stg_oda__revenue_deck_v2') }} effdaterd
 							where effdaterd.deck_set_id = rd.deck_set_id)
+
 
      group by
         w.code,
@@ -107,7 +110,7 @@ with revenuedeck_company as (
         rdr.revision_number,
         rdpc.code,
         rdpc.name,
-        it.id,
+        --it.id,
         p.name,
         rdr.create_date,
         rdr.update_date   
