@@ -93,7 +93,6 @@ with revenuedeck_company as (
 	and rdr.close_date is null --Deck is not Closed
 	and rdpc.id is not null --Company Participant only
 	and rds.code = '1' --Deck Code 1 
-    and w.code in ('8070106796')
 	and rd.effective_date = (select max(effdaterd.effective_date)   --Latest Effective Date of Deck 
 							from {{ ref('stg_oda__revenue_deck_v2') }} effdaterd
 							where effdaterd.deck_set_id = rd.deck_set_id)
