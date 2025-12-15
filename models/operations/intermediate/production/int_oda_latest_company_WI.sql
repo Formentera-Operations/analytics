@@ -20,7 +20,7 @@
     - stg_oda__company_v2
     - stg_oda__wells
     - stg_oda__interest_type
-    - stg_oda_revision_state
+    - stg_oda__revision_state
 #}
 
 with expensedeck_company as (
