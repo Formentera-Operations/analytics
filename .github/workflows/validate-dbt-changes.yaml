@@ -88,31 +88,31 @@ jobs:
       - name: List modified models
         run: >
           dbt list
-            --resource-type model
-            --select state:modified+
-            --state prod-artifacts/
-            --profile integration_tests
-            --target ci
+          --resource-type model
+          --select state:modified+
+          --state prod-artifacts/
+          --profile integration_tests
+          --target ci
       - name: Initialise Elementary
         run: >
           dbt run
-            --select elementary
-            --profile integration_tests
-            --target ci
+          --select elementary
+          --profile integration_tests
+          --target ci
       - name: dbt build (full refresh)
         run: >
           dbt build
-            --select state:modified+
-            --defer --state prod-artifacts/ --favor-state
-            --indirect-selection cautious
-            --profile integration_tests
-            --target ci
-            --full-refresh
+          --select state:modified+
+          --defer --state prod-artifacts/ --favor-state
+          --indirect-selection cautious
+          --profile integration_tests
+          --target ci
+          --full-refresh
       - name: dbt build (incremental)
         run: >
           dbt build
-            --select state:modified+
-            --defer --state prod-artifacts/ --favor-state
-            --indirect-selection cautious
-            --profile integration_tests
-            --target ci
+          --select state:modified+
+          --defer --state prod-artifacts/ --favor-state
+          --indirect-selection cautious
+          --profile integration_tests
+          --target ci
