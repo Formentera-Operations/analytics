@@ -53,6 +53,11 @@ jobs:
           --warn-error
           --profile integration_tests
           --target ci
+      - name: Store development artifacts
+        uses: actions/upload-artifact@v4
+        with: &dev-artifacts
+          name: target
+          path: target/
 
       # Generate production artifacts
       - name: Checkout main branch
@@ -75,16 +80,14 @@ jobs:
       # Run slim CI
       - name: Checkout feature branch
         uses: actions/checkout@v6
+      - name: Retrieve development artifacts
+        uses: actions/download-artifact@v4
+        with: *dev-artifacts
       - name: Retrieve production artifacts
         uses: actions/download-artifact@v4
         with: *prod-artifacts
       - name: Install dbt packages
         run: dbt deps --profile integration_tests --target ci
-      - name: Generate feature branch artifacts
-        run: >
-          dbt parse
-          --profile integration_tests
-          --target ci
       - name: List modified models
         run: >
           dbt list
