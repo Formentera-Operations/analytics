@@ -39,6 +39,10 @@ WITH accounts_hierarchy AS (
         a.account_full_name AS account_full_name,
         a.main_account,
         a.sub_account,
+        case
+            when a.sub_account = '' then a.main_account
+            else concat(a.main_account, '-', a.sub_account)
+        end as combined_account,
         a.is_active AS is_active,
         a.is_normally_debit AS is_normally_debit,
         a.is_accrual as is_accrual,
@@ -99,6 +103,7 @@ final AS (
         ah.account_full_name,
         ah.main_account,
         ah.sub_account,
+        ah.combined_account,
         ah.is_active,
         ah.is_normally_debit,
         ah.is_accrual,
