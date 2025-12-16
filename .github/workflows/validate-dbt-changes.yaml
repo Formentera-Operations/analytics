@@ -14,17 +14,17 @@ on:
 
 env:
   DBT_PROFILES_DIR: integration_tests/
-  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_ACCOUNT: ""  # ${{ secrets.SNOWFLAKE_ACCOUNT }}
   # PROD profile env vars
-  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-  SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+  SNOWFLAKE_USER: DBT_USER  # ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_PASSWORD: ""  # ${{ secrets.SNOWFLAKE_PASSWORD }}
   SNOWFLAKE_DATABASE: FO_RAW_DB
   SNOWFLAKE_SCHEMA: PROD
   SNOWFLAKE_ROLE: DBT_ROLE
   SNOWFLAKE_WAREHOUSE: DBT_CI_WH_XS
   # CI profile env vars
-  SNOWFLAKE_USER_CI: ${{ secrets.SNOWFLAKE_USER_CI }}
-  SNOWFLAKE_PASSWORD_CI: ${{ secrets.SNOWFLAKE_PASSWORD_CI }}
+  SNOWFLAKE_USER_CI: DBT_USER  # ${{ secrets.SNOWFLAKE_USER_CI }}
+  SNOWFLAKE_PASSWORD_CI: ""  # ${{ secrets.SNOWFLAKE_PASSWORD_CI }}
   SNOWFLAKE_DATABASE_CI: FO_RAW_DB
   SNOWFLAKE_SCHEMA_CI: DBT_CI_${{ github.event.number }}  # Create a unique schema for each PR
   SNOWFLAKE_ROLE_CI: DBT_ROLE
@@ -65,7 +65,7 @@ jobs:
       # Generate production artifacts
       - name: Checkout main branch
         uses: actions/checkout@v6
-        with: {ref: main}
+        with: {ref: 8c64a8557649fbd3addd2e2100644494cc5a7ac6}
       - name: Retrieve dbt packages
         uses: actions/download-artifact@v4
         with: *dbt-packages
