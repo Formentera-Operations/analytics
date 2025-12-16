@@ -1,11 +1,22 @@
 integration_tests:
   outputs:
+    prod:
+      type: snowflake
+      authenticator: "{{ env_var('SNOWFLAKE_AUTHENTICATOR') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
     ci:
       type: snowflake
-      user: DBT_USER
-      password: ""
-      account: ""
-      database: ""
-      schema: ""
-      role: ""
-      warehouse: ""
+      authenticator: "{{ env_var('SNOWFLAKE_AUTHENTICATOR_CI') }}"
+      user: "{{ env_var('SNOWFLAKE_USER_CI') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD_CI') }}"
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE_CI') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA_CI') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE_CI') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE_CI') }}"
