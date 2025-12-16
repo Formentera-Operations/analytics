@@ -262,7 +262,7 @@ models:
       - name: _loaded_at
         description: dbt load timestamp
 
-  - name: stg_procount__equipmentdaily
+  - name: stg_procount__equipment_daily
     description: >
       Staging model for daily equipment records. Contains operational data
       including run hours, pressures, temperatures, and volumes.
