@@ -57,7 +57,7 @@ jobs:
       # Generate production artifacts
       - name: Checkout main branch
         uses: actions/checkout@v6
-        with: {ref: main}
+        with: {ref: 8c64a8557649fbd3addd2e2100644494cc5a7ac6}
       - name: Generate production artifacts
         run: >
           dbt parse
