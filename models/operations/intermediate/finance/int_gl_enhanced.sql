@@ -275,10 +275,10 @@ final AS (
         c.name AS company_name,
         
         -- Account
-        acct.id AS account_id,
+        acct.account_id AS account_id,
         acct.main_account,
         acct.sub_account,
-        acct.name AS account_name,
+        acct.account_name AS account_name,
         
         -- AFE classification
         afes.id AS afe_id,
@@ -383,7 +383,7 @@ final AS (
     LEFT JOIN companies AS c
         ON gld.company_id = c.id
     LEFT JOIN accounts AS acct
-        ON gld.account_id = acct.id
+        ON gld.account_id = acct.account_id
     LEFT JOIN vouchers
         ON gld.voucher_id = vouchers.id
     LEFT JOIN wells
