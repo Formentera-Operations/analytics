@@ -58,6 +58,8 @@ jobs:
       - name: Checkout main branch
         uses: actions/checkout@v6
         with: {ref: 8c64a8557649fbd3addd2e2100644494cc5a7ac6}
+      - name: Install dbt packages
+        run: dbt deps --profile integration_tests --target prod
       - name: Generate production artifacts
         run: >
           dbt parse
@@ -76,6 +78,8 @@ jobs:
       - name: Retrieve production artifacts
         uses: actions/download-artifact@v4
         with: *prod-artifacts
+      - name: Install dbt packages
+        run: dbt deps --profile integration_tests --target ci
       - name: Generate feature branch artifacts
         run: >
           dbt parse
