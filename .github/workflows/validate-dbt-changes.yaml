@@ -14,23 +14,23 @@ on:
 
 env:
   DBT_PROFILES_DIR: integration_tests/
-  SNOWFLAKE_ACCOUNT: ""  # ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   # PROD profile env vars
   SNOWFLAKE_AUTHENTICATOR: none
-  SNOWFLAKE_USER: DBT_USER  # ${{ secrets.SNOWFLAKE_USER }}
-  SNOWFLAKE_PASSWORD: ""  # ${{ secrets.SNOWFLAKE_PASSWORD }}
-  SNOWFLAKE_DATABASE: ""  # FO_RAW_DB
-  SNOWFLAKE_SCHEMA: ""  # PROD
-  SNOWFLAKE_ROLE: ""  # PROD_DBT_ROLE
-  SNOWFLAKE_WAREHOUSE: ""  # PROD_DBT_WH
+  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+  SNOWFLAKE_DATABASE: FO_RAW_DB
+  SNOWFLAKE_SCHEMA: PROD
+  SNOWFLAKE_ROLE: PROD_DBT_ROLE
+  SNOWFLAKE_WAREHOUSE: PROD_DBT_WH
   # CI profile env vars
   SNOWFLAKE_AUTHENTICATOR_CI: none
-  SNOWFLAKE_USER_CI: DBT_USER  # ${{ secrets.SNOWFLAKE_USER_CI }}
-  SNOWFLAKE_PASSWORD_CI: ""  # ${{ secrets.SNOWFLAKE_CI_USER_PASSWORD }}
-  SNOWFLAKE_DATABASE_CI: ""  # FO_RAW_DB
-  SNOWFLAKE_SCHEMA_CI: ""  # DBT_CI_${{ github.event.number }}  # Create a unique schema for each PR
-  SNOWFLAKE_ROLE_CI: ""  # CI_DBT_ROLE
-  SNOWFLAKE_WAREHOUSE_CI: ""  # CI_DBT_WH
+  SNOWFLAKE_USER_CI: ${{ secrets.SNOWFLAKE_USER_CI }}
+  SNOWFLAKE_PASSWORD_CI: ${{ secrets.SNOWFLAKE_CI_USER_PASSWORD }}
+  SNOWFLAKE_DATABASE_CI: FO_RAW_DB
+  SNOWFLAKE_SCHEMA_CI: DBT_CI_${{ github.event.number }}  # Create a unique schema for each PR
+  SNOWFLAKE_ROLE_CI: CI_DBT_ROLE
+  SNOWFLAKE_WAREHOUSE_CI: CI_DBT_WH
 
 jobs:
   validate-dbt-changes:
@@ -62,7 +62,7 @@ jobs:
       # Generate production artifacts
       - name: Checkout main branch
         uses: actions/checkout@v6
-        with: {ref: 8c64a8557649fbd3addd2e2100644494cc5a7ac6}
+        with: {ref: main}
       - name: Install dbt packages
         run: dbt deps --profile integration_tests --target prod
       - name: Generate production artifacts
