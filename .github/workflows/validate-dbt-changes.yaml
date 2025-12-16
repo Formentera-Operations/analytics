@@ -65,7 +65,7 @@ jobs:
       # Generate production artifacts
       - name: Checkout main branch
         uses: actions/checkout@v6
-        with: {ref: 8c64a8557649fbd3addd2e2100644494cc5a7ac6}
+        with: {ref: 9db5ba77cbd956efd35acf7f4fed5ba9ef9d2104}
       - name: Retrieve dbt packages
         uses: actions/download-artifact@v4
         with: *dbt-packages
