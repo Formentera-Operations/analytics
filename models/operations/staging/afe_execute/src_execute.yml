@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: afe_execute
+    database: ESTUARY_DB
+    schema: AFE_RAW
+    tables:
+      - name: AFE
+      - name: AFENUMBER
+      - name: AFE_CUSTOM
+      - name: LUT_AFE_TYPE
+      - name: LUT_ACQUISITION
+      - name: USER
+      - name: ACTUAL_AMOUNTS
+      - name: FIELDCOST_AMOUNTS
+      - name: AFE_WELL
+      - name: AFE_WELL_CUSTOM
+      - name: WELL
+
+
+
+
+      
+    

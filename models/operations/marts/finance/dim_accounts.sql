@@ -33,14 +33,15 @@
 
 WITH accounts_hierarchy AS (
     SELECT 
-        a.id AS account_id,
-        a.code AS account_code,
-        a.name AS account_name,
-        a.full_name AS account_full_name,
+        a.account_id AS account_id,
+        a.account_code AS account_code,
+        a.account_name AS account_name,
+        a.account_full_name AS account_full_name,
         a.main_account,
         a.sub_account,
-        a.active AS is_active,
-        a.normally_debit AS is_normally_debit,
+        a.is_active AS is_active,
+        a.is_normally_debit AS is_normally_debit,
+        a.is_accrual as is_accrual,
         
         -- Account type hierarchy
         at.type_code,
@@ -100,6 +101,7 @@ final AS (
         ah.sub_account,
         ah.is_active,
         ah.is_normally_debit,
+        ah.is_accrual,
         
         -- =================================================================
         -- Account Type Hierarchy (from ODA)
