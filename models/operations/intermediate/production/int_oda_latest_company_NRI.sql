@@ -58,7 +58,7 @@ with revenuedeck_company as (
      --   when it.id = 3 then 'Override'
      --   end as interest_name,
      'NRI' as interest_type,
-    cast(sum(rdp.decimal_interest) as Decimal(12,10)) as total_interest,
+    cast(sum(rdp.decimal_interest) * 100 as Decimal(12,8)) as total_interest,
     
     -- =================================================================
         -- Change Dates
