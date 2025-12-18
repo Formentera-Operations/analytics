@@ -78,6 +78,7 @@ los_mapping AS (
         -- Separate line numbers for report sequencing (Power BI sort order)
         MAX(CASE WHEN value_type = 'NET QTY AMT' THEN line_number END) AS los_volume_line_number,
         MAX(CASE WHEN value_type = 'NET VALUE AMT' THEN line_number END) AS los_value_line_number,
+        MAX(line_number) as los_line_number,
         
         -- Reporting capability flags
         MAX(CASE WHEN value_type = 'NET QTY AMT' THEN TRUE ELSE FALSE END) AS has_volume_reporting,
@@ -147,6 +148,7 @@ final AS (
         lm.los_report_header,
         lm.los_volume_line_number,
         lm.los_value_line_number,
+        lm.los_line_number,
         lm.has_volume_reporting,
         lm.has_value_reporting,
         lm.is_los_subtraction,
@@ -175,7 +177,7 @@ final AS (
                 'LEASE MAINTENANCE', 'SERVICES & REPAIRS', 'SURFACE EQUIPMENT', 'WELL SERVICING & DH EQUIP',
                 'COMPANY LABOR', 'CONTRACT LABOR & SUPERVISION', 'CHEMICALS & TREATING', 'RENTAL EQUIPMENT',
                 '3RD PTY WTR & DSPL', 'COMPANY WTR & DISPOSAL', 'FUEL & POWER', 'WEATHER', 
-                'COPAS OVERHEAD', 'NON-OP LOE', 'DALY WATERS'
+                'COPAS OVERHEAD', 'NON-OP LOE', 'DALY WATERS', 'MIDSTREAM GL INJECTION', 'OTHER'
             ) THEN 'Lease Operating Expenses'
             WHEN lm.los_report_header IN (
                 'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'HARDWR & SOFTWR', 'OFFICE RENT', 
@@ -183,7 +185,7 @@ final AS (
                 'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS'
             ) THEN 'G&A'
             WHEN lm.los_report_header = 'INVENTORY' THEN 'Inventory'
-            WHEN lm.los_report_header IN ('OTHER', 'ACCRUAL') THEN 'Other'
+            WHEN lm.los_report_header = 'ACCRUAL' THEN 'Accrual'
             ELSE NULL
         END AS los_category,
         
