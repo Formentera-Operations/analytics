@@ -46,7 +46,7 @@ SELECT
   FROM {{ ref('stg_oda__gl') }} GL
   
   INNER JOIN {{ ref('stg_oda__account_v2') }} A
-  ON CAST(GL.ACCOUNT_ID AS VARCHAR) = CAST(A.ID AS VARCHAR)
+  ON CAST(GL.ACCOUNT_ID AS VARCHAR) = CAST(A.ACCOUNT_ID AS VARCHAR)
   
   INNER JOIN {{ ref('stg_oda__company_v2') }} C
   ON CAST(GL.COMPANY_ID AS VARCHAR) = CAST(C.ID AS VARCHAR)
@@ -114,7 +114,7 @@ SELECT
   FROM {{ ref('stg_oda__gl') }} GL
   
   INNER JOIN {{ ref('stg_oda__account_v2') }} A
-  ON CAST(GL.ACCOUNT_ID AS VARCHAR) = CAST(A.ID AS VARCHAR)
+  ON CAST(GL.ACCOUNT_ID AS VARCHAR) = CAST(A.ACCOUNT_ID AS VARCHAR)
   
   INNER JOIN {{ ref('stg_oda__company_v2') }} C
   ON CAST(GL.COMPANY_ID AS VARCHAR) = CAST(C.ID AS VARCHAR)

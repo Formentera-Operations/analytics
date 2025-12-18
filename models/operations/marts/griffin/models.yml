@@ -7,7 +7,7 @@ models:
   
   - name: dim_griffin__completions
     description: >
-      Completion dimension for Griffin (Crescent Barnett) assets. Slim, reporting-focused 
+      Completion dimension for Griffin (Crescent Barnett) assets. Slim, reporting-focused
       view of completion attributes. Primary grain for production reporting.
     columns:
       - name: completion_key
@@ -79,8 +79,8 @@ models:
 
   - name: fct_griffin__daily_production
     description: >
-      Daily production fact at completion level. Primary volumes are allocated (alloc_*) 
-      which represent final reported values after allocation. Also includes measured 
+      Daily production fact at completion level. Primary volumes are allocated (alloc_*)
+      which represent final reported values after allocation. Also includes measured
       volumes and disposition summaries.
     columns:
       - name: completiondaily_sk
@@ -176,7 +176,8 @@ models:
         description: Source equipment (TANK or METER)
         tests:
           - accepted_values:
-              values: ['TANK', 'METER']
+              arguments:
+                values: ['TANK', 'METER']
       - name: run_ticket_number
         description: Ticket number from hauler
       - name: net_volume

@@ -23,11 +23,11 @@ WITH gl as (
         ,main_account as "Main Account"
         ,sub_account as "Sub Account"
         ,CONCAT(main_account,'-', sub_account) as "Combined Account"
-        ,CASE
+        /*,CASE
             WHEN main_account IN (701,702,703) AND sub_account IN (1, 2, 3, 4, 5) THEN
                 CONCAT(main_account, '-', sub_account, '-Vol') 
             ELSE CONCAT(main_account,'-', sub_account)
-        END as "Account Key"
+        END as "Account Key"*/
         ,afe_type_code AS "AFE Type Code"
         ,afe_type_label AS "AFE Type Label"
         ,afe_type_full_name AS "AFE Type Full Name"
@@ -52,8 +52,8 @@ WITH gl as (
 
 --, tbl as (
 Select
-    "Account Key"
-    ,"Accrual Date"
+--    "Account Key"
+    "Accrual Date"
     ,"AFE Number"
     ,"AFE Type Code"
     ,"AFE Type Full Name"

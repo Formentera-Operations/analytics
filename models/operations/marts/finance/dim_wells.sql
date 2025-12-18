@@ -59,9 +59,11 @@ userfields AS (
     SELECT 
         "Id" AS well_id,
         MAX(CASE WHEN "UserFieldName" = 'UF-SEARCH KEY' THEN "UserFieldValueString" END) AS search_key,
-        MAX(CASE WHEN "UserFieldName" = 'UF-PV FIELD' THEN "UserFieldValueString" END) AS pv_field
+        MAX(CASE WHEN "UserFieldName" = 'UF-PV FIELD' THEN "UserFieldValueString" END) AS pv_field,
+        MAX(CASE WHEN "UserFieldName" = 'UF-OPERATED?' THEN "UserFieldValueString" END) AS uf_operated,
+        MAX(CASE WHEN "UserFieldName" = 'UF-OPERATOR' THEN "UserFieldValueString" END) AS uf_operator
     FROM {{ ref('stg_oda__userfield') }}
-    WHERE "UserFieldName" IN ('UF-SEARCH KEY', 'UF-PV FIELD')
+    WHERE "UserFieldName" IN ('UF-SEARCH KEY', 'UF-PV FIELD', 'UF-OPERATED?', 'UF-OPERATOR')
     GROUP BY "Id"
 ),
 
@@ -83,6 +85,7 @@ final AS (
         -- =================================================================
         uf.search_key,
         uf.pv_field,
+    
         
         -- =================================================================
         -- Geography
@@ -162,10 +165,15 @@ final AS (
             ELSE 'UNKNOWN'
         END AS op_ref,
         
-        CASE 
-            WHEN w.property_reference_code IN ('OPERATED', 'Operated', 'CONTRACT_OP') THEN TRUE
-            ELSE FALSE
-        END AS is_operated,
+        COALESCE(
+            -- First: check userfield UF-OPERATED?
+            CASE 
+                WHEN UPPER(uf.uf_operated) IN ('YES', 'Y', 'TRUE', '1') THEN TRUE
+                WHEN UPPER(uf.uf_operated) IN ('NO', 'N', 'FALSE', '0') THEN FALSE
+            END,
+            -- Fallback: derive from property_reference_code
+            w.property_reference_code IN ('OPERATED', 'Operated', 'CONTRACT_OP')
+        ) AS is_operated,
         
         -- =================================================================
         -- Cost Center Classification

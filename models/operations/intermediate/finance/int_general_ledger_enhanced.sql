@@ -232,7 +232,7 @@ SELECT
     c.name as company_name,
     acct.main_account AS main_account,
     acct.sub_account AS sub_account,
-    acct.name AS account_name,
+    acct.account_name AS account_name,
 
     -- AFE Type Classification
     CAST(afes.afe_type_id AS VARCHAR) AS afe_type_id,
@@ -363,7 +363,7 @@ FROM source_gl AS gld
 LEFT OUTER JOIN companies AS c
     ON c.id = gld.company_id
 LEFT OUTER JOIN accounts AS acct
-    ON gld.account_id = acct.id
+    ON gld.account_id = acct.account_id
     
 -- Use the pre-processed location data
 LEFT OUTER JOIN location_codes lc

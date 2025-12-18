@@ -1,0 +1,22 @@
+macros:
+  - name: set_warehouse_size
+    description: >
+      Dynamically set the warehouse for a given size.
+
+      Will be a noop if the `enable_dynamic_warehouse` variable is `false`.
+
+      Example usage in model SQL file:
+
+        ```
+        {% raw %}{{ config(snowflake_warehouse=set_warehouse_size("L")) }}{% endraw %}
+        ```
+    config:
+      docs:
+        show: true
+    arguments:
+      - name: size
+        type: string
+        description: >
+          The warehouse size to use for the given environment.
+
+          Supported sizes are configured in the `available_warehouse_sizes` variable.
