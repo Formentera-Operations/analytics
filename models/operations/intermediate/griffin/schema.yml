@@ -87,7 +87,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['TANK', 'METER']
+              arguments:
+                values: ['TANK', 'METER']
 
   - name: int_griffin__downtime_events
     description: >
