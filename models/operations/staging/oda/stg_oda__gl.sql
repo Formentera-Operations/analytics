@@ -36,11 +36,11 @@ renamed as (
         GLIDENTITY as gl_identity,
         NID as n_id,
         
-        -- Date information
-        CAST(JOURNALDATE as DATE) as journal_date,
-        CAST(ACCRUALDATE as DATE) as accrual_date,
+       -- Date information
+        date(convert_timezone('UTC', JOURNALDATE)) as journal_date,
+        date(convert_timezone('UTC', ACCRUALDATE)) as accrual_date,
         ACCRUALDATEKEY as accrual_date_key,
-        CAST(CASHDATE as DATE) as cash_date,
+        date(convert_timezone('UTC', CASHDATE)) as cash_date,
         CASHDATEKEY as cash_date_key,
         
         -- Description and reference
