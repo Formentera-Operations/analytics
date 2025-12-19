@@ -33,6 +33,7 @@ WITH gl as (
         ,afe_type_full_name AS "AFE Type Full Name"
         ,Posted
         ,journal_date as "Journal Date"
+        ,cash_date as "Cash Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
@@ -58,6 +59,7 @@ Select
     ,"AFE Type Code"
     ,"AFE Type Full Name"
     ,"AFE Type Label"
+    ,"Cash Date"
     ,"Closed"
     ,"Combined Account"
     ,"Company Asset"
