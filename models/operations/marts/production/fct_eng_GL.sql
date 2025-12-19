@@ -7,6 +7,7 @@
 WITH gl as (
     Select
         gl_id as "GL ID"
+        ,gl_description as "GL Description"
         ,total_interest_expected AS "NRI Expected"
         ,net_revenue_interest_actual AS "NRI Actual"
         ,afe_code as "AFE Number"
@@ -33,11 +34,13 @@ WITH gl as (
         ,afe_type_full_name AS "AFE Type Full Name"
         ,Posted
         ,journal_date as "Journal Date"
+        ,journal_date_key as "Journal Date Key"
         ,cash_date as "Cash Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
+        ,accrual_date_key as "Accrual Date Key"
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
         ,gross_amount as "Gross Value"
@@ -55,6 +58,7 @@ WITH gl as (
 Select
 --    "Account Key"
     "Accrual Date"
+    ,"Accrual Date Key"
     ,"AFE Number"
     ,"AFE Type Code"
     ,"AFE Type Full Name"
@@ -66,6 +70,7 @@ Select
     ,"Company Code"
     ,"Company Name"
     ,"GL ID"
+    ,"GL Description"
     ,"Gross Value"
     ,"Gross Volume"
     ,"In Accrual Balance"
@@ -73,6 +78,7 @@ Select
     ,"Is Operated"
     ,"Jordan-Key"
     ,"Journal Date"
+    ,"Journal Date Key"
     ,"Location Name"
     ,"Location Type"
     ,"Main Account"
