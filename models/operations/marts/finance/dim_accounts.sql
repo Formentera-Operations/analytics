@@ -163,8 +163,8 @@ final AS (
         
         -- High-level category for broad rollups
         CASE 
-            WHEN lm.los_report_header = 'DEV CAPEX' THEN 'Capital'
-            WHEN lm.los_report_header IN ('MIDSTREAM CAPEX', 'MIDSTREAM DEAL COSTS', 'MIDSTREAM GL INJECTION') THEN 'Midstream'
+            WHEN lm.los_report_header IN ('DEV CAPEX','MIDSTREAM CAPEX') THEN 'Capital'
+            WHEN lm.los_report_header IN ('MIDSTREAM DEAL COSTS') THEN 'Midstream'
             WHEN lm.los_report_header = 'O&G LEASEHOLD' THEN 'Leasehold'
             WHEN lm.los_report_header IN ('OIL REVENUE', 'GAS REVENUE', 'NGL REVENUE') THEN 'Commodity Revenue'
             WHEN lm.los_report_header IN ('OIL REVENUE DEDUCTS', 'GAS REVENUE DEDUCTS', 'NGL REVENUE DEDUCTS') THEN 'Revenue Deductions'
