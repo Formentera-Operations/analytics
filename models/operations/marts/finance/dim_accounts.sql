@@ -190,7 +190,10 @@ final AS (
         END AS los_category,
         
         -- Detail section (direct from SharePoint report header)
-        lm.los_report_header AS los_section,
+        CASE
+            WHEN account_full_name ='900 / 305: FIELD OFFICE EXPENSE' THEN 'COMPANY LABOR'
+            ELSE lm.los_report_header
+        END AS los_section,
         
         -- =================================================================
         -- Interest Type (parsed from account name/code)
