@@ -3,7 +3,7 @@ integration_tests:
     prod:
       type: snowflake
       user: "{{ env_var('SNOWFLAKE_PROD_USER') }}"
-      password: "{{ env_var('SNOWFLAKE_PROD_PASSWORD') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PROD_PRIVATE_KEY') }}"
       account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
       database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}"
       schema: "{{ env_var('SNOWFLAKE_PROD_SCHEMA') }}"
@@ -12,7 +12,7 @@ integration_tests:
     ci:
       type: snowflake
       user: "{{ env_var('SNOWFLAKE_CI_USER') }}"
-      password: "{{ env_var('SNOWFLAKE_CI_PASSWORD') }}"
+      private_key: "{{ env_var('SNOWFLAKE_CI_PRIVATE_KEY') }}"
       account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
       database: "{{ env_var('SNOWFLAKE_CI_DATABASE') }}"
       schema: "{{ env_var('SNOWFLAKE_CI_SCHEMA') }}"
