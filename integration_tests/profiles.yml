@@ -2,19 +2,19 @@ integration_tests:
   outputs:
     prod:
       type: snowflake
-      user: "{{ env_var('SNOWFLAKE_USER') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      user: "{{ env_var('SNOWFLAKE_PROD_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PROD_PASSWORD') }}"
       account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-      database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
-      schema: "{{ env_var('SNOWFLAKE_SCHEMA') }}"
-      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
-      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}"
+      schema: "{{ env_var('SNOWFLAKE_PROD_SCHEMA') }}"
+      role: "{{ env_var('SNOWFLAKE_PROD_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_PROD_WAREHOUSE') }}"
     ci:
       type: snowflake
-      user: "{{ env_var('SNOWFLAKE_USER_CI') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD_CI') }}"
+      user: "{{ env_var('SNOWFLAKE_CI_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_CI_PASSWORD') }}"
       account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-      database: "{{ env_var('SNOWFLAKE_DATABASE_CI') }}"
-      schema: "{{ env_var('SNOWFLAKE_SCHEMA_CI') }}"
-      role: "{{ env_var('SNOWFLAKE_ROLE_CI') }}"
-      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE_CI') }}"
+      database: "{{ env_var('SNOWFLAKE_CI_DATABASE') }}"
+      schema: "{{ env_var('SNOWFLAKE_CI_SCHEMA') }}"
+      role: "{{ env_var('SNOWFLAKE_CI_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_CI_WAREHOUSE') }}"
