@@ -26,7 +26,7 @@ env:
   # CI profile env vars
   SNOWFLAKE_CI_USER: DBT_CI_USER # ${{ secrets.SNOWFLAKE_CI_USER }}
   SNOWFLAKE_CI_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_CI_PRIVATE_KEY }}
-  SNOWFLAKE_CI_DATABASE: FO_RAW_DB
+  SNOWFLAKE_CI_DATABASE: FO_CI_DB
   SNOWFLAKE_CI_SCHEMA: DBT_CI_${{ github.event.number }}  # Create a unique schema for each PR
   SNOWFLAKE_CI_ROLE: DBT_CI_ROLE
   SNOWFLAKE_CI_WAREHOUSE: DBT_CI_WH_XS
@@ -66,7 +66,7 @@ jobs:
       # Generate production artifacts
       - name: Checkout main branch
         uses: actions/checkout@v6
-        with: {ref: main}
+        with: {ref: 9db5ba77cbd956efd35acf7f4fed5ba9ef9d2104}
       - name: Retrieve dbt packages
         uses: actions/download-artifact@v4
         with: *dbt-packages
