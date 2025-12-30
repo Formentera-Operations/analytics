@@ -1,0 +1,1 @@
+select 1 as test_model_cc_column
