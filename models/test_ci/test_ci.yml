@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: test_ci
+    description: Test model to check if CI picks up modified models and runs the tests
+    data_tests:
+    - not_null
