@@ -115,7 +115,7 @@ jobs:
         run: >
           dbt build
           --select state:modified+
-          --exclude stg_oda__afebudget stg_oda__afebudgetdetail_v2 stg_oda__apinvoicedetail stg_oda__jib stg_oda__jibdetail stg_oda__account_v2 stg_oda__account_types stg_oda__account_sub_types int_oda_wells int_griffin__downtime_events fct_griffin__meter_monthly fct_griffin__tank_monthly well_360__data_quality_summary
+          --exclude stg_oda__afebudget stg_oda__afebudgetdetail_v2 stg_oda__apinvoicedetail stg_oda__jib stg_oda__jibdetail stg_oda__account_v2 stg_oda__account_types stg_oda__account_sub_types int_oda_wells los_v5_wells int_griffin__downtime_events fct_griffin__meter_monthly fct_griffin__tank_monthly well_360__data_quality_summary
           --defer --state prod-artifacts/ --favor-state
           --indirect-selection cautious
           --profile integration_tests
@@ -128,7 +128,7 @@ jobs:
         run: >
           dbt build
           --select state:modified+
-          --exclude stg_oda__afebudget stg_oda__afebudgetdetail_v2 stg_oda__apinvoicedetail stg_oda__jib stg_oda__jibdetail stg_oda__account_v2 stg_oda__account_types stg_oda__account_sub_types int_oda_wells int_griffin__downtime_events fct_griffin__meter_monthly fct_griffin__tank_monthly well_360__data_quality_summary
+          --exclude stg_oda__afebudget stg_oda__afebudgetdetail_v2 stg_oda__apinvoicedetail stg_oda__jib stg_oda__jibdetail stg_oda__account_v2 stg_oda__account_types stg_oda__account_sub_types int_oda_wells los_v5_wells int_griffin__downtime_events fct_griffin__meter_monthly fct_griffin__tank_monthly well_360__data_quality_summary
           --defer --state prod-artifacts/ --favor-state
           --indirect-selection cautious
           --profile integration_tests
