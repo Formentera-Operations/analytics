@@ -1,1 +1,0 @@
-select 1 as test_model_stg_partners_column

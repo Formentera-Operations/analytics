@@ -1,1 +1,0 @@
-select 1 as test_model_ops_intermediate_column

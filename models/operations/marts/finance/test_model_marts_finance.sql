@@ -1,1 +1,0 @@
-select 1 as test_model_marts_finance_column

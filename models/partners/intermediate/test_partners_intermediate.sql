@@ -1,1 +1,0 @@
-select 1 as test_model_partners_intermediate_column
