@@ -7,6 +7,7 @@
 WITH gl as (
     Select
         gl_id as "GL ID"
+        ,gl_description as "GL Description"
         ,total_interest_expected AS "NRI Expected"
         ,net_revenue_interest_actual AS "NRI Actual"
         ,afe_code as "AFE Number"
@@ -33,11 +34,13 @@ WITH gl as (
         ,afe_type_full_name AS "AFE Type Full Name"
         ,Posted
         ,journal_date as "Journal Date"
+        ,journal_date_key as "Journal Date Key"
         ,cash_date as "Cash Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
+        ,accrual_date_key as "Accrual Date Key"
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
         ,gross_amount as "Gross Value"
@@ -55,6 +58,7 @@ WITH gl as (
 Select
 --    "Account Key"
     "Accrual Date"
+    ,"Accrual Date Key"
     ,"AFE Number"
     ,"AFE Type Code"
     ,"AFE Type Full Name"
@@ -66,6 +70,7 @@ Select
     ,"Company Code"
     ,"Company Name"
     ,"GL ID"
+    ,"GL Description"
     ,"Gross Value"
     ,"Gross Volume"
     ,"In Accrual Balance"
@@ -73,6 +78,7 @@ Select
     ,"Is Operated"
     ,"Jordan-Key"
     ,"Journal Date"
+    ,"Journal Date Key"
     ,"Location Name"
     ,"Location Type"
     ,"Main Account"
@@ -90,7 +96,7 @@ WHERE Posted = 'Y'
 AND "Journal Date" > '2021-12-31'
 AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
 AND NOT "Combined Account" in ('850-35', '850-36')
-  AND NOT "Company Code" IN (705, 801, 900)
+  AND NOT "Company Code" IN (705, 801, 900, 200)
   --AND "Is Operated" = 1
 --)
 

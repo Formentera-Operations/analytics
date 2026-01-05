@@ -277,6 +277,7 @@ SELECT
     TO_CHAR(gld.accrual_date, 'MM')::VARCHAR AS accrual_month,
     TO_CHAR(gld.accrual_date, 'YYYY')::VARCHAR AS accrual_year,
     TO_CHAR(gld.accrual_date, 'MM-YYYY')::VARCHAR AS accrual_month_year,
+    gld.accrual_date_key as accrual_date_key,
 
     -- Date dimensions - Cash
     gld.cash_date::DATE AS cash_date,
@@ -289,6 +290,7 @@ SELECT
     TO_CHAR(gld.journal_date, 'MM')::VARCHAR AS journal_month,
     TO_CHAR(gld.journal_date, 'YYYY')::VARCHAR AS journal_year,
     TO_CHAR(gld.journal_date, 'MM-YYYY')::VARCHAR AS journal_month_year,
+    gld.journal_date as journal_date_key,
 
     -- Source and reference information
     CAST(gld.source_module_code AS VARCHAR) AS source_module_code,
