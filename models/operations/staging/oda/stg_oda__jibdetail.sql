@@ -66,7 +66,7 @@ renamed as (
         updatedate as updated_at,
 
         -- metadata
-        _meta_op,
+        "_meta/op" as _meta_op,
         flow_published_at,
         flow_document
 

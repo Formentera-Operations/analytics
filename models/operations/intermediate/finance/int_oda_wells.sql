@@ -31,11 +31,11 @@ WITH rename as (
       ,OPERATOR_ID as "OperatorId"
       ,WELL_STATUS_TYPE_CODE as "WellStatusTypeCode"
       ,WELL_STATUS_TYPE_NAME as "WellStatusTypeName"
-	    ,Max(Case When F.UserFieldName = 'UF-SEARCH KEY' Then F.UserFieldValueString End) As "SEARCHKEY"
-	    ,Max(Case When F.UserFieldName = 'UF-PV FIELD' Then F.UserFieldValueString End) As "FIELD"
+	    ,Max(Case When F."UserFieldName" = 'UF-SEARCH KEY' Then F."UserFieldValueString" End) As "SEARCHKEY"
+	    ,Max(Case When F."UserFieldName" = 'UF-PV FIELD' Then F."UserFieldValueString" End) As "FIELD"
   FROM {{ ref('stg_oda__wells') }} W
   Left Join {{ ref('stg_oda__userfield') }} F
-  On W.ID = F.Id
+  On W.ID = F."Id"
   GROUP BY
        W."ID"
       ,"CODE"
