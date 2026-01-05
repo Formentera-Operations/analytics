@@ -95,7 +95,7 @@ models:
       Downtime events with decoded downtime codes and categories.
       Includes duration calculations and lost production estimates.
     columns:
-      - name: downtime_reason_sk
+      - name: downtimereason_sk
         description: Surrogate key for downtime event
         tests:
           - unique
