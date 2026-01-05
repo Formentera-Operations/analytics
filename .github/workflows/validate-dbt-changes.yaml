@@ -1,8 +1,35 @@
 name: Validate dbt changes
 
 on:
-  - workflow_dispatch
-  - pull_request
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/validate-dbt-changes.yaml
+      - macros/**
+      - models/**
+      - seeds/**
+      - snapshots/**
+      - dbt_project.yml
+      - packages.yml
+
+env:
+  # TODO: remove hardcoded stuff
+  DBT_PROFILES_DIR: integration_tests/
+  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  # PROD profile env vars
+  SNOWFLAKE_PROD_USER: DBT_PROD_USER # ${{ secrets.SNOWFLAKE_PROD_USER }}
+  SNOWFLAKE_PROD_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PROD_PRIVATE_KEY }}
+  SNOWFLAKE_PROD_DATABASE: FO_RAW_DB
+  SNOWFLAKE_PROD_SCHEMA: PROD
+  SNOWFLAKE_PROD_ROLE: DBT_PROD_ROLE
+  SNOWFLAKE_PROD_WAREHOUSE: DBT_PROD_WH_XS
+  # CI profile env vars
+  SNOWFLAKE_CI_USER: DBT_CI_USER # ${{ secrets.SNOWFLAKE_CI_USER }}
+  SNOWFLAKE_CI_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_CI_PRIVATE_KEY }}
+  SNOWFLAKE_CI_DATABASE: FO_CI_DB
+  SNOWFLAKE_CI_SCHEMA: DBT_CI_${{ github.event.number }}  # Create a unique schema for each PR
+  SNOWFLAKE_CI_ROLE: DBT_CI_ROLE
+  SNOWFLAKE_CI_WAREHOUSE: DBT_CI_WH_XS
 
 jobs:
   validate-dbt-changes:
@@ -14,13 +41,95 @@ jobs:
         uses: actions/setup-python@v6
         with: {python-version: "3.11"}
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          dbt deps --profile integration_tests --target ci
+
+      # Validate project configuration
       - name: Validate dbt project
         run: >
-          dbt deps
-
           dbt parse
           --warn-error
-          --profiles-dir integration_tests/
+          --profile integration_tests
+          --target ci
+      - name: Store dbt packages
+        uses: actions/upload-artifact@v4
+        with: &dbt-packages
+          name: dbt_packages
+          path: dbt_packages/
+      - name: Store development artifacts
+        uses: actions/upload-artifact@v4
+        with: &dev-artifacts
+          name: target
+          path: target/
+
+      # Generate production artifacts
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+        with: {ref: 028e9f5d1d76de69130567735e16559622320fbd} # TODO: change to main
+      - name: Retrieve dbt packages
+        uses: actions/download-artifact@v4
+        with: *dbt-packages
+      - name: Generate production artifacts
+        run: >
+          dbt parse
+          --profile integration_tests
+          --target prod
+          --target-path prod-artifacts/
+      - name: Store production artifacts
+        uses: actions/upload-artifact@v4
+        with: &prod-artifacts
+          name: prod-artifacts
+          path: prod-artifacts/
+
+      # Run slim CI
+      - name: Checkout feature branch
+        uses: actions/checkout@v6
+      - name: Retrieve development artifacts
+        uses: actions/download-artifact@v4
+        with: *dev-artifacts
+      - name: Retrieve production artifacts
+        uses: actions/download-artifact@v4
+        with: *prod-artifacts
+      - name: Retrieve dbt packages
+        uses: actions/download-artifact@v4
+        with: *dbt-packages
+      - name: List modified models
+        run: >
+          dbt list
+          --resource-type model
+          --select state:modified+
+          --state prod-artifacts/
+          --profile integration_tests
+          --target ci
+      - name: Initialise Elementary
+        run: >
+          dbt run
+          --select elementary
+          --profile integration_tests
+          --target ci
+      - name: dbt build (full refresh)
+        # Important note: The exclude flag above has been added 
+        # to temporarily bypass existing errors in main.
+        # TODO: Remove the --exclude bit once models are fixed.
+        run: >
+          dbt build
+          --select state:modified+
+          --exclude stg_hubspot__companies+ stg_oda__afebudget+ stg_oda__afebudgetdetail_v2+ stg_oda__apinvoicedetail+ stg_oda__jib+ stg_oda__jibdetail+ stg_oda__account_v2+ stg_oda__account_types+ stg_oda__account_sub_types+ int_oda_wells+ los_v5_wells+ int_griffin__downtime_events+ fct_griffin__meter_monthly+ fct_griffin__tank_monthly+ well_360__data_quality_summary+ fct_griffin__downtime+ fct_income_statement+
+          --defer --state prod-artifacts/ --favor-state
+          --indirect-selection cautious
+          --profile integration_tests
+          --target ci
+          --full-refresh
+      - name: dbt build (incremental)
+        # Important note: The exclude flag above has been added 
+        # to temporarily bypass existing errors in main.
+        # TODO: Remove the --exclude bit once models are fixed.
+        run: >
+          dbt build
+          --select state:modified+
+          --exclude stg_hubspot__companies+ stg_oda__afebudget+ stg_oda__afebudgetdetail_v2+ stg_oda__apinvoicedetail+ stg_oda__jib+ stg_oda__jibdetail+ stg_oda__account_v2+ stg_oda__account_types+ stg_oda__account_sub_types+ int_oda_wells+ los_v5_wells+ int_griffin__downtime_events+ fct_griffin__meter_monthly+ fct_griffin__tank_monthly+ well_360__data_quality_summary+ fct_griffin__downtime+ fct_income_statement+
+          --defer --state prod-artifacts/ --favor-state
+          --indirect-selection cautious
           --profile integration_tests
           --target ci

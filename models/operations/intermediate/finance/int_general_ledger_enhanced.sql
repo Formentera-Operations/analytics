@@ -4,7 +4,8 @@
         unique_key='gl_id',
         on_schema_change='sync_all_columns',
         incremental_strategy='merge',
-        cluster_by=['company_code', 'journal_date', 'main_account', 'sub_account']
+        cluster_by=['company_code', 'journal_date', 'main_account', 'sub_account'],
+        snowflake_warehouse=set_warehouse_size('M') if target.name in ['prod', 'ci'] else target.warehouse
     )
 }}
 

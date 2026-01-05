@@ -1,7 +1,6 @@
 {{
     config(
         materialized='table',
-        schema='marts',
         tags=['combo_curve', 'forecasting', 'summary']
     )
 }}
