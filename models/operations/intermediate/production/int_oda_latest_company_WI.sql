@@ -57,7 +57,7 @@ with expensedeck_company as (
     --    when it.id = 3 then 'Override'
     --   end as interest_name,
     'WI' as interest_type,
-    cast(sum(edp.decimal_interest) as Decimal(12,10)) as total_interest,
+    cast(sum(edp.decimal_interest) * 100 as Decimal(12,8)) as total_interest,
     
     -- =================================================================
         -- Change Dates
