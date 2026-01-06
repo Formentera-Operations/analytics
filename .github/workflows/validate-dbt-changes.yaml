@@ -109,9 +109,6 @@ jobs:
           --profile integration_tests
           --target ci
       - name: dbt build (full refresh)
-        # Important note: The exclude flag above has been added 
-        # to temporarily bypass existing errors in main.
-        # TODO: Remove the --exclude bit once models are fixed.
         run: >
           dbt build
           --select state:modified+
@@ -121,9 +118,6 @@ jobs:
           --target ci
           --full-refresh
       - name: dbt build (incremental)
-        # Important note: The exclude flag above has been added 
-        # to temporarily bypass existing errors in main.
-        # TODO: Remove the --exclude bit once models are fixed.
         run: >
           dbt build
           --select state:modified+
