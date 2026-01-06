@@ -5,7 +5,8 @@
         on_schema_change='sync_all_columns',
         incremental_strategy='merge',
         cluster_by=['company_code', 'journal_date', 'main_account', 'sub_account'],
-        tags=['intermediate', 'finance', 'gl']
+        tags=['intermediate', 'finance', 'gl'],
+        snowflake_warehouse=set_warehouse_size('M') if target.name in ['prod', 'ci'] else target.warehouse,
     )
 }}
 

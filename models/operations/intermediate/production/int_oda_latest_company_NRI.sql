@@ -51,14 +51,17 @@ with revenuedeck_company as (
     -- =================================================================
         -- Interest & Product
     -- =================================================================       
-    p.name as product_name,
+    case
+        when (p.name is null) then 'All Products'
+        else p.name 
+        end as product_name,
     --case   
     --   when it.id = 1 then 'Working'
     --    when it.id = 2 then 'Royalty'
      --   when it.id = 3 then 'Override'
      --   end as interest_name,
      'NRI' as interest_type,
-    cast(sum(rdp.decimal_interest) as Decimal(12,10)) as total_interest,
+    cast(sum(rdp.decimal_interest) * 100 as Decimal(12,8)) as total_interest,
     
     -- =================================================================
         -- Change Dates
@@ -92,7 +95,7 @@ with revenuedeck_company as (
 	and rs.id = '1' --Latest Deck Version
 	and rdr.close_date is null --Deck is not Closed
 	and rdpc.id is not null --Company Participant only
-	and rds.code = '1' --Deck Code 1 
+	and rds.code = '1' --Deck Code 1
 	and rd.effective_date = (select max(effdaterd.effective_date)   --Latest Effective Date of Deck 
 							from {{ ref('stg_oda__revenue_deck_v2') }} effdaterd
 							where effdaterd.deck_set_id = rd.deck_set_id)

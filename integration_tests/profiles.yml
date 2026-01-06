@@ -1,11 +1,20 @@
 integration_tests:
   outputs:
+    prod:
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_PROD_USER') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PROD_PRIVATE_KEY') }}"
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}"
+      schema: "{{ env_var('SNOWFLAKE_PROD_SCHEMA') }}"
+      role: "{{ env_var('SNOWFLAKE_PROD_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_PROD_WAREHOUSE') }}"
     ci:
       type: snowflake
-      user: DBT_USER
-      password: ""
-      account: ""
-      database: ""
-      schema: ""
-      role: ""
-      warehouse: ""
+      user: "{{ env_var('SNOWFLAKE_CI_USER') }}"
+      private_key: "{{ env_var('SNOWFLAKE_CI_PRIVATE_KEY') }}"
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_CI_DATABASE') }}"
+      schema: "{{ env_var('SNOWFLAKE_CI_SCHEMA') }}"
+      role: "{{ env_var('SNOWFLAKE_CI_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_CI_WAREHOUSE') }}"

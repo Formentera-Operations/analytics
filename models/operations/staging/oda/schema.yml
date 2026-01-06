@@ -98,7 +98,7 @@ models:
           - relationships:
               arguments:
                 to: ref("stg_oda__account_v2")
-                field: id
+                field: account_id
 
       - name: journal_date_key
         description: Date key for the journal entry, used for date-based lookups
