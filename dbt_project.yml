@@ -18,9 +18,15 @@ clean-targets:
 on-run-start:
   - "{{ dbt_snow_mask.apply_masking_policy('sources') if target.name in ['prod'] else '' }}"
 
+# Dev models and seeds are written to a single database (FO_DEV_DB or FP_DEV_DB),
+# regardless of the model layer (staging, marts, etc.).
+# This is driven by the database variable in your Snowflake connection in Paradime:
+#   - FO members should set their database to FO_DEV_DB
+#   - FP members should set their database to FP_DEV_DB
+
 seeds:
   formentera_analytics:
-    +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': 'FO_DEV_DB'}.get(target.name, 'FO_DEV_DB') }}"
+    +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
     +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'SEEDS' }}"
 
 models:
@@ -42,7 +48,7 @@ models:
 
       # Staging models - cleaned data, 1:1 with source
       staging:
-        +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': 'FO_DEV_DB'}.get(target.name, 'FO_DEV_DB') }}"
+        +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else None }}"
         combo_curve: {+schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'stg_combo_curve' }}"}
         hubspot: {+schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'stg_hubspot' }}"}
@@ -54,14 +60,14 @@ models:
 
       # Intermediate models - business logic layers
       intermediate:
-        +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': 'FO_DEV_DB'}.get(target.name, 'FO_DEV_DB') }}"
+        +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'intermediate' }}"
         +materialized: ephemeral
         +tags: ["intermediate", "fo"]
 
       # Mart models - business-facing data models
       marts:
-        +database: "{{ {'prod': 'FO_PRODUCTION_DB', 'ci': 'FO_CI_DB', 'dev': 'FO_DEV_DB'}.get(target.name, 'FO_DEV_DB') }}"
+        +database: "{{ {'prod': 'FO_PRODUCTION_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'marts' }}"
         +materialized: table
         +tags: ["marts", "fo"]
@@ -71,7 +77,7 @@ models:
 
       # Applications models - application-specific data models
       applications:
-        +database: "{{ {'prod': 'FORMENTERA_OPS_DB', 'ci': 'FO_CI_DB', 'dev': 'FO_DEV_DB'}.get(target.name, 'FO_DEV_DB') }}"
+        +database: "{{ {'prod': 'FORMENTERA_OPS_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else None }}"
         wiserock:
           +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'wiserock' }}"
@@ -82,19 +88,19 @@ models:
 
       # Staging models - cleaned data, 1:1 with source
       staging:
-        +database: "{{ {'prod': 'FP_STAGE_DB', 'ci': 'FP_CI_DB', 'dev': 'FP_DEV_DB'}.get(target.name, 'FP_DEV_DB') }}"
+        +database: "{{ {'prod': 'FP_STAGE_DB', 'ci': 'FP_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else None }}"
 
       # Intermediate models - business logic layers
       intermediate:
-        +database: "{{ {'prod': 'FP_STAGE_DB', 'ci': 'FP_CI_DB', 'dev': 'FP_DEV_DB'}.get(target.name, 'FP_DEV_DB') }}"
+        +database: "{{ {'prod': 'FP_STAGE_DB', 'ci': 'FP_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'intermediate' }}"
         +materialized: ephemeral
         +tags: ["intermediate", "fp"]
 
       # Mart models - business-facing data models
       marts:
-        +database: "{{ {'prod': 'FP_PRODUCTION_DB', 'ci': 'FP_CI_DB', 'dev': 'FP_DEV_DB'}.get(target.name, 'FP_DEV_DB') }}"
+        +database: "{{ {'prod': 'FP_PRODUCTION_DB', 'ci': 'FP_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'marts' }}"
         +materialized: table
         +tags: ["marts", "fp"]
