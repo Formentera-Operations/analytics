@@ -18,6 +18,11 @@ clean-targets:
 on-run-start:
   - "{{ dbt_snow_mask.apply_masking_policy('sources') if target.name in ['prod'] else '' }}"
 
+seeds:
+  formentera_analytics:
+    +database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': 'FO_DEV_DB'}.get(target.name, 'FO_DEV_DB') }}"
+    +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'SEEDS' }}"
+
 models:
   +post-hook:
     - "{{ dbt_snow_mask.apply_masking_policy('models') }}"
