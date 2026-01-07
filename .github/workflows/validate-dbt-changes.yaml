@@ -13,23 +13,22 @@ on:
       - packages.yml
 
 env:
-  # TODO: remove hardcoded stuff
   DBT_PROFILES_DIR: integration_tests/
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   # PROD profile env vars
-  SNOWFLAKE_PROD_USER: DBT_PROD_USER # ${{ secrets.SNOWFLAKE_PROD_USER }}
+  SNOWFLAKE_PROD_USER: ${{ vars.SNOWFLAKE_PROD_USER }}
   SNOWFLAKE_PROD_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PROD_PRIVATE_KEY }}
-  SNOWFLAKE_PROD_DATABASE: FO_RAW_DB
-  SNOWFLAKE_PROD_SCHEMA: PROD
-  SNOWFLAKE_PROD_ROLE: DBT_PROD_ROLE
-  SNOWFLAKE_PROD_WAREHOUSE: DBT_PROD_WH_XS
+  SNOWFLAKE_PROD_DATABASE: ${{ vars.SNOWFLAKE_PROD_DATABASE }}
+  SNOWFLAKE_PROD_SCHEMA: ${{ vars.SNOWFLAKE_PROD_SCHEMA }}
+  SNOWFLAKE_PROD_ROLE: ${{ vars.SNOWFLAKE_PROD_ROLE }}
+  SNOWFLAKE_PROD_WAREHOUSE: ${{ vars.SNOWFLAKE_PROD_WAREHOUSE }}
   # CI profile env vars
-  SNOWFLAKE_CI_USER: DBT_CI_USER # ${{ secrets.SNOWFLAKE_CI_USER }}
+  SNOWFLAKE_CI_USER: ${{ vars.SNOWFLAKE_CI_USER }}
   SNOWFLAKE_CI_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_CI_PRIVATE_KEY }}
-  SNOWFLAKE_CI_DATABASE: FO_CI_DB
+  SNOWFLAKE_CI_DATABASE: ${{ vars.SNOWFLAKE_CI_DATABASE }}
   SNOWFLAKE_CI_SCHEMA: DBT_CI_${{ github.event.number }}  # Create a unique schema for each PR
-  SNOWFLAKE_CI_ROLE: DBT_CI_ROLE
-  SNOWFLAKE_CI_WAREHOUSE: DBT_CI_WH_XS
+  SNOWFLAKE_CI_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
+  SNOWFLAKE_CI_WAREHOUSE: ${{ vars.SNOWFLAKE_CI_WAREHOUSE }}
 
 jobs:
   validate-dbt-changes:
@@ -109,9 +108,6 @@ jobs:
           --profile integration_tests
           --target ci
       - name: dbt build (full refresh)
-        # Important note: The exclude flag above has been added 
-        # to temporarily bypass existing errors in main.
-        # TODO: Remove the --exclude bit once models are fixed.
         run: >
           dbt build
           --select state:modified+
@@ -121,9 +117,6 @@ jobs:
           --target ci
           --full-refresh
       - name: dbt build (incremental)
-        # Important note: The exclude flag above has been added 
-        # to temporarily bypass existing errors in main.
-        # TODO: Remove the --exclude bit once models are fixed.
         run: >
           dbt build
           --select state:modified+
