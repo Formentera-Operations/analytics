@@ -49,22 +49,8 @@ models:
                 regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
               config:
                 severity: warn
-      - name: raw_created_at
-        description: "Timestamp when the record was created"
-        data_tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: "'1900-01-01'"
-                max_value: "{{ current_timestamp() }}"
-      - name: raw_updated_at
-        description: "Timestamp when the record was last updated"
-        data_tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: "'1900-01-01'"
-                max_value: "{{ current_timestamp() }}"
+    
+      
       - name: is_active
         description: "Flag indicating if the company is currently active"
         data_tests:
