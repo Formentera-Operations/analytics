@@ -78,7 +78,7 @@ field_completeness as (
         round(count_if(surface_latitude is not null) * 100.0 / count(*), 1) as coordinates_pct,
         round(count_if(well_configuration_type is not null) * 100.0 / count(*), 1) as config_type_pct,
         round(count_if(spud_date is not null) * 100.0 / count(*), 1) as spud_date_pct,
-        round(count_if(oda_status is not null or prodview_status is not null) * 100.0 / count(*), 1) as status_pct
+        round(count_if(oda_status is not null or prodview_status_clean is not null) * 100.0 / count(*), 1) as status_pct
     from well_360
 ),
 

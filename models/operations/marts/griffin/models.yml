@@ -194,7 +194,7 @@ models:
       Downtime fact tracking completion outages with codes, categories,
       duration, and lost production estimates.
     columns:
-      - name: downtime_reason_sk
+      - name: downtimereason_sk
         description: Primary key
         tests:
           - unique
