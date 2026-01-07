@@ -43,4 +43,5 @@ tbl as (
 Select
     *
 From tbl
+group by all
     Order by "Asset Company Code"
