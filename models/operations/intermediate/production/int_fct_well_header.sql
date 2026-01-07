@@ -17,7 +17,12 @@ wellview as (
 
 company as (
     Select *
-    from {{ ref('dim_companies') }} c
+    from {{ ref('dim_companies') }} 
+),
+
+field as (
+    select *
+    from {{ ref('int_oda_wells') }}
 ),
 
 prodstatus as (
@@ -134,6 +139,8 @@ tbl as (
         ,w."Lat/Long Datum"
         ,w."Latitude Degrees"
         ,w."Longitude Degrees"
+        ,f."SEARCHKEY" as "ODA Asset"
+        ,f."FIELD" as "ODA Field"
         ,w."UTM Easting Meters"
         ,w."UTM Northing Meters"
         ,w."Master Lock Date"
@@ -175,7 +182,8 @@ tbl as (
     on p."Unit Record ID" = s."Unit Record ID" and s.rn = 1
     left join route r
     on p."Current Route" = r."Route Record ID"
-    --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
+    left join field f 
+    on p."Cost Center" = f."Code"
 ),
 
 ranked AS (
