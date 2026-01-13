@@ -7,7 +7,7 @@
 
 with source as (
 
-    select * from {{ source('sharepoint', 'los_mapping_master_oda_los_report_mapping_logic') }}
+    select * from {{ source('sharepoint', 'los_mapping_master_oda_los_report_mapping_logic') }} order by _line
 
 ),
 
@@ -18,14 +18,14 @@ filled_hierarchy as (
         _fivetran_synced,
         key_sort,
         account,
-        line,
+        NULLIF(line, ' ') as line,
         value_type,
         logic,
         name,
         report_header,
         
         -- Fill down the LINE number using last_value with ignore nulls
-        last_value(line ignore nulls) over (
+        last_value(NULLIF(line, ' ') ignore nulls) over (
             order by _line 
             rows between unbounded preceding and current row
         ) as line_category_filled,
@@ -50,7 +50,7 @@ renamed as (
         _fivetran_synced as loaded_at,
         
         -- Hierarchical columns (filled down from category rows)
-        line_category_filled as line_number,
+        line_category_filled as line_header_line_number,
         report_header_filled as report_header_category,
         
         -- Account mapping columns
@@ -132,11 +132,11 @@ renamed as (
 final as (
 
     select
-        los_mapping_id,
+        cast(los_mapping_id as number) as los_mapping_id,
         loaded_at,
         
         -- Hierarchical identifiers
-        line_number,
+        Cast(line_header_line_number as number) as line_header_line_number,
         report_header_category,
         
         -- Account details
@@ -169,4 +169,5 @@ final as (
 
 )
 
-select * from final
+select * from final 
+order by line_header_line_number
