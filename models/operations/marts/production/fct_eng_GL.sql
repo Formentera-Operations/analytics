@@ -4,7 +4,13 @@
     tags=['marts', 'facts']
 ) }}
 
-WITH gl as (
+
+WITH acctmapping as (
+    select * from {{ ref('dim_accounts') }}
+    where is_los_account = true
+),
+
+gl as (
     Select
         gl_id as "GL ID"
         ,gl_description as "GL Description"
@@ -54,7 +60,7 @@ WITH gl as (
     FROM {{ ref('int_general_ledger_enhanced') }}
 )
 
---, tbl as (
+, tbl as (
 Select
 --    "Account Key"
     "Accrual Date"
@@ -98,6 +104,16 @@ AND "Journal Date" > '2021-12-31'
 --AND NOT "Combined Account" in ('850-35', '850-36')
   AND NOT "Company Code" IN (705, 801, 900, 200)
   --AND "Is Operated" = 1
---)
+),
 
---select distinct "Company Asset" from tbl order by "Company Asset"
+filteraccounts as (
+    select
+        tbl.*
+    from tbl
+    RIGHT JOIN acctmapping m
+    on tbl."Combined Account" = m.combined_account
+)
+
+select
+*
+from filteraccounts
