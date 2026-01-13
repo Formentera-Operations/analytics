@@ -76,9 +76,9 @@ los_mapping AS (
         MAX(report_header_category) AS los_report_header,
         
         -- Separate line numbers for report sequencing (Power BI sort order)
-        CASE WHEN value_type = 'NET QTY AMT' THEN los_mapping_id END AS los_volume_line_number,
-        CASE WHEN value_type = 'NET VALUE AMT' THEN los_mapping_id END AS los_value_line_number,
-        los_mapping_id as los_line_number,
+        CASE WHEN max(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_line_number,
+        CASE WHEN max(value_type) = 'NET VALUE AMT' THEN max(los_mapping_id) END AS los_value_line_number,
+        max(los_mapping_id) as los_line_number,
         max(line_header_line_number) as los_report_header_line_number,
         
         -- Reporting capability flags
@@ -91,7 +91,7 @@ los_mapping AS (
         
     FROM {{ ref('stg_sharepoint__los_account_map') }}
     WHERE account_code IS NOT NULL
-    GROUP BY account_code, los_mapping_id, value_type
+    GROUP BY account_code
 ),
 
 final AS (
