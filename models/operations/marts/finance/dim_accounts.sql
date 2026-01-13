@@ -76,9 +76,10 @@ los_mapping AS (
         MAX(report_header_category) AS los_report_header,
         
         -- Separate line numbers for report sequencing (Power BI sort order)
-        MAX(CASE WHEN value_type = 'NET QTY AMT' THEN line_number END) AS los_volume_line_number,
-        MAX(CASE WHEN value_type = 'NET VALUE AMT' THEN line_number END) AS los_value_line_number,
-        MAX(line_number) as los_line_number,
+        CASE WHEN value_type = 'NET QTY AMT' THEN los_mapping_id END AS los_volume_line_number,
+        CASE WHEN value_type = 'NET VALUE AMT' THEN los_mapping_id END AS los_value_line_number,
+        los_mapping_id as los_line_number,
+        max(line_header_line_number) as los_report_header_line_number,
         
         -- Reporting capability flags
         MAX(CASE WHEN value_type = 'NET QTY AMT' THEN TRUE ELSE FALSE END) AS has_volume_reporting,
@@ -90,7 +91,7 @@ los_mapping AS (
         
     FROM {{ ref('stg_sharepoint__los_account_map') }}
     WHERE account_code IS NOT NULL
-    GROUP BY account_code
+    GROUP BY account_code, los_mapping_id, value_type
 ),
 
 final AS (
@@ -148,6 +149,7 @@ final AS (
         lm.los_report_header,
         lm.los_volume_line_number,
         lm.los_value_line_number,
+        lm.los_report_header_line_number,
         lm.los_line_number,
         lm.has_volume_reporting,
         lm.has_value_reporting,
@@ -186,7 +188,7 @@ final AS (
             ) THEN 'G&A'
             WHEN lm.los_report_header = 'INVENTORY' THEN 'Inventory'
             WHEN lm.los_report_header = 'ACCRUAL' THEN 'Accrual'
-            ELSE NULL
+            ELSE lm.los_report_header
         END AS los_category,
         
         -- Detail section (direct from SharePoint report header)
@@ -232,7 +234,7 @@ final AS (
         -- Expense Classification
         -- =================================================================
         CASE 
-            WHEN lm.los_key_sort = 'WORKOVER' THEN 'WORKOVER'
+            WHEN lm.los_key_sort in ('WORKOVER', 'CAP PROD/WKOVR') THEN 'WORKOVER'
             WHEN lm.los_key_sort = 'P&A' THEN 'ABANDONMENT'
             WHEN lm.los_key_sort = 'HEDGES' THEN 'DERIVATIVE'
             WHEN lm.los_key_sort IS NOT NULL AND ah.subtype_code = 'R' THEN 'REVENUE'
@@ -253,4 +255,4 @@ final AS (
         ON ah.account_code = lm.account_code
 )
 
-SELECT * FROM final
+SELECT * FROM final order by los_line_number
