@@ -74,9 +74,10 @@ los_mapping AS (
         MAX(line_item_name) AS los_line_item_name,
         MAX(product_type) AS los_product_type,
         MAX(report_header_category) AS los_report_header,
+        CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(report_header_category) END AS los_volume_report_header,
         
         -- Separate line numbers for report sequencing (Power BI sort order)
-        CASE WHEN max(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_line_number,
+        CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_line_number,
         CASE WHEN max(value_type) = 'NET VALUE AMT' THEN max(los_mapping_id) END AS los_value_line_number,
         max(los_mapping_id) as los_line_number,
         max(line_header_line_number) as los_report_header_line_number,
@@ -147,6 +148,7 @@ final AS (
         lm.los_line_item_name,
         lm.los_product_type,
         lm.los_report_header,
+        lm.los_volume_report_header,
         lm.los_volume_line_number,
         lm.los_value_line_number,
         lm.los_report_header_line_number,
