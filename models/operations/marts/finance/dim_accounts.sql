@@ -80,6 +80,7 @@ los_mapping AS (
         CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_line_number,
         CASE WHEN max(value_type) = 'NET VALUE AMT' THEN max(los_mapping_id) END AS los_value_line_number,
         max(los_mapping_id) as los_line_number,
+        CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_report_header_line_number,
         max(line_header_line_number) as los_report_header_line_number,
         
         -- Reporting capability flags
