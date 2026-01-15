@@ -6,6 +6,7 @@
 
 with pvunit as (
     select * from {{ ref('stg_prodview__units') }}
+    where "Unit Type" = 'pvunitcomp'
 ),
 
 pvunitcomp as (

@@ -3,64 +3,76 @@
     materialized='view'
 ) }}
 
-WITH rename as (
+with wells as (
+    select *
+      FROM {{ ref('stg_oda__wells') }}
+),
+
+field as (
+    SELECT 
+        "Id",
+        "UserFieldName",
+        "UserFieldValueString"
+    FROM {{ ref('stg_oda__userfield') }}
+    WHERE "UserFieldName" in ('UF-PV FIELD', 'UF-SEARCH KEY')
+GROUP BY ALL
+),
+
+gl as (
+    Select 
+        gld.*
+        ,loc_company.*
+    FROM {{ ref('stg_oda__gl') }} gld
+    LEFT OUTER JOIN {{ ref('stg_oda__company_v2') }} AS loc_company
+        ON gld.company_id = loc_company.id
+),
+
+rename as (
     SELECT 
        W."ID"
-      ,CODE as "Code"
-      ,CODE_SORT as "CodeSort"
-      ,"NAME" as "Name"
-      ,INACTIVE_DATE as "InactiveDate"
-      ,LEGAL_DESCRIPTION as "LegalDescription"
-      ,COUNTRY_NAME as "CountryName"
-      ,STATE_CODE as "StateCode"
-      ,STATE_NAME as "StateName"
-      ,COUNTY_NAME as "CountyName"
-      ,STRIPPER_WELL as "StripperWell"
-      ,PROPERTY_REFERENCE_CODE as "PropertyReferenceCode"
+      ,w.CODE as "Code"
+      ,w.CODE_SORT as "CodeSort"
+      ,w."NAME" as "Name"
+      ,w.INACTIVE_DATE as "InactiveDate"
+      ,w.LEGAL_DESCRIPTION as "LegalDescription"
+      ,w.COUNTRY_NAME as "CountryName"
+      ,w.STATE_CODE as "StateCode"
+      ,w.STATE_NAME as "StateName"
+      ,w.COUNTY_NAME as "CountyName"
+      ,w.STRIPPER_WELL as "StripperWell"
+      ,w.PROPERTY_REFERENCE_CODE as "PropertyReferenceCode"
 	  ,CASE
-			WHEN PROPERTY_REFERENCE_CODE = 'NON-OPERATED' THEN 'NON-OPERATED'
+			WHEN w.PROPERTY_REFERENCE_CODE = 'NON-OPERATED' THEN 'NON-OPERATED'
 			ELSE 'OPERATED'
-			END AS OP_REF
-      ,API_NUMBER as "ApiNumber"
-      ,OPERATING_GROUP_CODE as "OperatingGroupCode"
-      ,OPERATING_GROUP_NAME as "OperatingGroupName"
-      ,PRODUCTION_STATUS_NAME as "ProductionStatusName"
-      ,N_ID as "NId"
-      ,COST_CENTER_TYPE_CODE as "CostCenterTypeCode"
-      ,COST_CENTER_TYPE_NAME as "CostCenterTypeName"
-      ,OPERATOR_ID as "OperatorId"
-      ,WELL_STATUS_TYPE_CODE as "WellStatusTypeCode"
-      ,WELL_STATUS_TYPE_NAME as "WellStatusTypeName"
-	    ,Max(Case When F."UserFieldName" = 'UF-SEARCH KEY' Then F."UserFieldValueString" End) As "SEARCHKEY"
-	    ,Max(Case When F."UserFieldName" = 'UF-PV FIELD' Then F."UserFieldValueString" End) As "FIELD"
-  FROM {{ ref('stg_oda__wells') }} W
-  Left Join {{ ref('stg_oda__userfield') }} F
+		END AS OP_REF
+      ,CASE
+			WHEN w.PROPERTY_REFERENCE_CODE = 'NON-OPERATED' THEN 0
+			ELSE 1
+		END AS OP_IS_OPERATED
+      ,w.API_NUMBER as "ApiNumber"
+      ,w.OPERATING_GROUP_CODE as "OperatingGroupCode"
+      ,w.OPERATING_GROUP_NAME as "OperatingGroupName"
+      ,w.PRODUCTION_STATUS_NAME as "ProductionStatusName"
+      ,w.N_ID as "NId"
+      ,w.COST_CENTER_TYPE_CODE as "CostCenterTypeCode"
+      ,w.COST_CENTER_TYPE_NAME as "CostCenterTypeName"
+      ,w.OPERATOR_ID as "OperatorId"
+      ,w.WELL_STATUS_TYPE_CODE as "WellStatusTypeCode"
+      ,w.WELL_STATUS_TYPE_NAME as "WellStatusTypeName"
+	  ,Case When F."UserFieldName" = 'UF-SEARCH KEY' Then F."UserFieldValueString" End As "SEARCHKEY"
+	  ,Case When F."UserFieldName" = 'UF-PV FIELD' Then F."UserFieldValueString" End As "FIELD"
+      ,g.code as "CompanyCode"
+      ,g.name as "CompanyName"
+      ,g.full_name as company_full_name
+      ,cast(w.create_date as date) as "Created Date"
+      ,cast(w.update_date as date) as "Last Mod Date (UTC)"
+  FROM wells W
+  Left Join field F
   On W.ID = F."Id"
-  GROUP BY
-       W."ID"
-      ,"CODE"
-      ,"CODE_SORT"
-      ,"NAME"
-      ,"INACTIVE_DATE"
-      ,"LEGAL_DESCRIPTION"
-      ,"COUNTRY_NAME"
-      ,"STATE_CODE"
-      ,"STATE_NAME"
-      ,"COUNTY_NAME"
-      ,"STRIPPER_WELL"
-      ,"PROPERTY_REFERENCE_CODE"
-      ,"ApiNumber"
-      ,"OPERATING_GROUP_CODE"
-      ,"OPERATING_GROUP_NAME"
-      ,"PRODUCTION_STATUS_NAME"
-      ,"N_ID"
-      ,"COST_CENTER_TYPE_CODE"
-      ,"COST_CENTER_TYPE_NAME"
-      ,"OPERATOR_ID"
-      ,"WELL_STATUS_TYPE_CODE"
-      ,"WELL_STATUS_TYPE_NAME"
-      ,"OP_REF"
+  left join gl g 
+  ON w.id = g.well_id
 )
 
 SELECT * FROM rename
+group by all
   
