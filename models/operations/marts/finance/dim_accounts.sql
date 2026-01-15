@@ -152,6 +152,7 @@ final AS (
         lm.los_volume_report_header,
         lm.los_volume_line_number,
         lm.los_value_line_number,
+        lm.los_volume_report_header_line_number,
         lm.los_report_header_line_number,
         lm.los_line_number,
         lm.has_volume_reporting,
@@ -275,8 +276,7 @@ SELECT
             WHEN los_category = 'Midstream' THEN 9
             WHEN los_category = 'Inventory' THEN 10
             WHEN los_category = 'Derivatives' THEN 11
-            WHEN los_category = 'G&A' THEN 12
-            WHEN los_category = 'Capital' THEN 7            
+            WHEN los_category = 'G&A' THEN 12         
             ELSE NULL
         END AS los_category_line_number 
 
