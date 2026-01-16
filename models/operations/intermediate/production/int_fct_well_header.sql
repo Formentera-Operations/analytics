@@ -23,6 +23,7 @@ company as (
 oda as (
     select *
     from {{ ref('int_oda_wells') }}
+        where not "PropertyReferenceCode" = 'DNU'
 ),
 
 prodstatus as (
@@ -49,6 +50,7 @@ tbl as (
         w."Abandon Date"
         ,IFNULL(p."API 10", o."ApiNumber") AS "API 10"
         ,case
+            when c.company_name is null and p."AssetCo" is null then o."CompanyName"
             when c.company_name is null then 
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 'Formentera South Texas, LP'
@@ -70,11 +72,11 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
                     when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
                     else p."AssetCo" end)
-            when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
-            when c.company_name is null and p."AssetCo" is null and w."Asset Company" is null then o."CompanyName"
+            when o."CompanyName" is null then w."Asset Company"
             else c.company_name
         end as "Asset Company"
         ,case
+            when c.company_code is null and p."AssetCo" is null then o."CompanyCode"
             when c.company_code is null then 
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 810
@@ -96,8 +98,7 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 300
                     when lower(p."AssetCo") = 'snyder drillco' then 500
                     else left(p."Property Number", 3) end)
-                when c.company_code is null and p."AssetCo" is null and not w."Company Code" is null then w."Company Code"
-                when c.company_code is null and p."AssetCo" is null and w."Company Code" is null then o."CompanyCode"
+                when o."CompanyCode" is null then w."Company Code"
             else c.company_code end
         as "Asset Company Code"
         ,p."Completion Record ID"
@@ -136,7 +137,7 @@ tbl as (
         ,p."Producing Method"
         ,p."Property EID"
         ,case when p."Unit Name" is null then o."Name" else p."Unit Name" end AS "Property Name"
-        ,p."Well Name" as "Prodview Well Name"
+        ,p."Well Name" as "PV Well Name"
         ,p."Property Number"
         ,w."Regulatory Effective Date"
         ,p."Regulatory Field Name"
@@ -149,13 +150,13 @@ tbl as (
         ,r."Route Name"
         ,CAST(w."Spud Date" AS date) as "Spud Date"
         ,w."System Lock Date"
-        ,p."Unit Record ID"
-        ,p."Unit Type"
-        ,P."Unit Sub Type"
-        ,p."Cost Center" as "Well Code"
-        ,w."Well ID"
+        ,case when p."Unit Record ID" is null then o."Code" else p."Unit Record ID" end as "Unit Record ID"
+        ,case when p."Unit Type" is null then o."PropertyReferenceCode" else p."Unit Type" end as "Unit Type"
+        ,case when P."Unit Sub Type" is null then o."CostCenterTypeName" else p."Unit Sub Type" end as "Unit Sub Type"
+        ,case when p."Cost Center" is null then o."Code" else p."Cost Center" end as "Well Code"
+        ,case when w."Well ID" is null then o."ID" else w."Well ID" end as "Well ID"
         ,case when w."Well Name" is null then o."Name" else w."Well Name" end as "Well Name"
-        ,p."Legal Well Name" as "Well Name Legal"
+        ,case when p."Legal Well Name" is null then o."LegalDescription" else p."Legal Well Name" end as "Well Name Legal"
     from prodview p
     left join wellview w 
     on p."WellView Well ID" = w."Well ID"
@@ -173,7 +174,7 @@ ranked AS (
     SELECT
         t.*,
         ROW_NUMBER() OVER (
-            PARTITION BY "Unit Record ID"
+            PARTITION BY "Unit Record ID", "Well Code"
             ORDER BY "Last Mod Date (UTC)" DESC
         ) AS rn
     FROM tbl t
@@ -183,4 +184,3 @@ SELECT *
     ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
 FROM ranked
 WHERE rn = 1
---and "Asset Company" LIKE '%King%'

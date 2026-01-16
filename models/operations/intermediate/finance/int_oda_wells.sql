@@ -59,8 +59,8 @@ rename as (
       ,w.OPERATOR_ID as "OperatorId"
       ,w.WELL_STATUS_TYPE_CODE as "WellStatusTypeCode"
       ,w.WELL_STATUS_TYPE_NAME as "WellStatusTypeName"
-	  ,Case When F."UserFieldName" = 'UF-SEARCH KEY' Then F."UserFieldValueString" End As "SEARCHKEY"
-	  ,Case When F."UserFieldName" = 'UF-PV FIELD' Then F."UserFieldValueString" End As "FIELD"
+	  ,max(Case When F."UserFieldName" = 'UF-SEARCH KEY' Then F."UserFieldValueString" End) As "SEARCHKEY"
+	  ,max(Case When F."UserFieldName" = 'UF-PV FIELD' Then F."UserFieldValueString" End) As "FIELD"
       ,g.code as "CompanyCode"
       ,g.name as "CompanyName"
       ,g.full_name as company_full_name
@@ -71,6 +71,7 @@ rename as (
   On W.ID = F."Id"
   left join gl g 
   ON w.id = g.well_id
+  group by all
 )
 
 SELECT * FROM rename
