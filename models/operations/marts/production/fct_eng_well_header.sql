@@ -12,3 +12,4 @@ WITH wellheader as (
 
 Select *
 from wellheader
+where not "Unit Type" = 'external out'

@@ -154,7 +154,7 @@ tbl as (
         ,case when p."Unit Type" is null then o."PropertyReferenceCode" else p."Unit Type" end as "Unit Type"
         ,case when P."Unit Sub Type" is null then o."CostCenterTypeName" else p."Unit Sub Type" end as "Unit Sub Type"
         ,case when p."Cost Center" is null then o."Code" else p."Cost Center" end as "Well Code"
-        ,case when w."Well ID" is null then o."ID" else w."Well ID" end as "Well ID"
+        ,w."Well ID"
         ,case when w."Well Name" is null then o."Name" else w."Well Name" end as "Well Name"
         ,case when p."Legal Well Name" is null then o."LegalDescription" else p."Legal Well Name" end as "Well Name Legal"
     from prodview p
@@ -168,14 +168,13 @@ tbl as (
     on p."Current Route" = r."Route Record ID"
     full outer join oda o 
     on p."Cost Center" = o."Code"
-    --where not p."Unit Type" = 'external out'
 ),
 
 ranked AS (
     SELECT
         t.*,
         ROW_NUMBER() OVER (
-            PARTITION BY "Unit Record ID", "Well Code"
+            PARTITION BY "Unit Record ID", "Asset Company Code", "Well Code"
             ORDER BY "Last Mod Date (UTC)" DESC
         ) AS rn
     FROM tbl t
@@ -183,6 +182,10 @@ ranked AS (
 
 SELECT *
     ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
-    ,case when "Well Code" is null then cast(floor("Asset Company Code") as text) else cast("Well Code" as text) end as "Asset-Well Key"
+    ,case 
+        when "Well Code" is null then cast(floor("Asset Company Code") as varchar)
+        when "Asset Company Code" is null then "Well Code"
+        else cast(concat(cast(floor("Asset Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar)
+    end as "Asset-Well Key"
 FROM ranked
 WHERE rn = 1
