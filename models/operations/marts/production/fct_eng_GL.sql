@@ -110,6 +110,7 @@ filteraccounts as (
 )
 
 select
-*
+    *
+    ,case when cast("Well Code" as text) is null then cast("Company Code" as text) else cast("Well Code" as text) end as "Asset-Well Key"
 from filteraccounts
 Where not "GL ID" is null
