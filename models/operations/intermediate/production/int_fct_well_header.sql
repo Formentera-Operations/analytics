@@ -182,6 +182,6 @@ ranked AS (
 
 SELECT *
     ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
-    ,case when "Well Code" is null then floor("Asset Company Code") else "Well Code" end as "Asset-Well Key"h
+    ,case when "Well Code" is null then floor("Asset Company Code") else "Well Code" end as "Asset-Well Key"
 FROM ranked
 WHERE rn = 1
