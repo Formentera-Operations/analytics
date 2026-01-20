@@ -111,6 +111,10 @@ filteraccounts as (
 
 select
     *
-    ,case when cast("Well Code" as text) is null then cast("Company Code" as text) else cast("Well Code" as text) end as "Asset-Well Key"
+    ,case 
+        when "Well Code" is null then cast(floor("Company Code") as varchar)
+        when "Company Code" is null then "Well Code"
+        else cast(concat(cast(floor("Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar)
+    end as "Asset-Well Key"
 from filteraccounts
 Where not "GL ID" is null
