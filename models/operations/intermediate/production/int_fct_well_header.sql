@@ -168,7 +168,7 @@ tbl as (
     on p."Current Route" = r."Route Record ID"
     full outer join oda o 
     on p."Cost Center" = o."Code"
-    where not p."Unit Type" = 'external out'
+    --where not p."Unit Type" = 'external out'
 ),
 
 ranked AS (
