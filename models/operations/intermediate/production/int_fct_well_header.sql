@@ -150,7 +150,7 @@ tbl as (
         ,r."Route Name"
         ,CAST(w."Spud Date" AS date) as "Spud Date"
         ,w."System Lock Date"
-        ,case when p."Unit Record ID" is null then o."Code" else p."Unit Record ID" end as "Unit Record ID"
+        ,p."Unit Record ID"
         ,case when p."Unit Type" is null then o."PropertyReferenceCode" else p."Unit Type" end as "Unit Type"
         ,case when P."Unit Sub Type" is null then o."CostCenterTypeName" else p."Unit Sub Type" end as "Unit Sub Type"
         ,case when p."Cost Center" is null then o."Code" else p."Cost Center" end as "Well Code"
@@ -170,22 +170,81 @@ tbl as (
     on p."Cost Center" = o."Code"
 ),
 
+assetwellcode as (
+    select
+        "API 10"
+        ,"Abandon Date"
+        ,"Asset Company"
+        ,"Asset Company Code"
+        ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
+        ,case 
+            when "Well Code" is null then cast(floor("Asset Company Code") as varchar)
+            when "Asset Company Code" is null then "Well Code"
+            else cast(concat(cast(floor("Asset Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar)
+        end as "Asset-Well Key"
+        ,"Business Unit"
+        ,"Completion Record ID"
+        ,"Completion Status"
+        ,"Current Facility"
+        ,"Facility Name"
+        ,"First Prod Date"
+        ,"First Sales Date"
+        ,"Foreman"
+        ,"Foreman Area"
+        ,"Last Approved MIT Date"
+        ,"Last Mod Date (UTC)"
+        ,"Last Write To Database"
+        ,"Lat/Long Datum"
+        ,"Latitude Degrees"
+        ,"Longitude Degrees"
+        ,"Master Lock Date"
+        ,"ODA Asset"
+        ,"ODA Field"
+        ,"Ops Effective Date"
+        ,"Permit Date"
+        ,"Prod Status Record ID"
+        ,"Producing Method"
+        ,"Property EID"
+        ,"Property Name"
+        ,"Property Number"
+        ,"PV Is Operated"
+        ,"PV Well Name"
+        ,"Regulatory Effective Date"
+        ,"Regulatory Field Name"
+        ,"Rig Release Date"
+        ,"Route Name"
+        ,"Route Record ID"
+        ,"Spud Date"
+        ,"System Lock Date"
+        ,"Unit Create Date (UTC)"
+        ,case when "Unit Record ID" is null then
+            (case 
+                when "Well Code" is null then cast(floor("Asset Company Code") as varchar)
+                when "Asset Company Code" is null then "Well Code"
+            else cast(concat(cast(floor("Asset Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar) end
+            ) else "Unit Record ID" end as "Unit Record ID"
+        ,"Unit Sub Type"
+        ,"Unit Type"
+        ,"UTM Easting Meters"
+        ,"UTM Northing Meters"
+        ,"Well Code"
+        ,"Well ID"
+        ,"Well Name"
+        ,"Well Name Legal"
+    FROM tbl
+),
+
 ranked AS (
     SELECT
-        t.*,
+        *,
         ROW_NUMBER() OVER (
-            PARTITION BY "Unit Record ID", "Asset Company Code", "Well Code"
+            PARTITION BY "Unit Record ID"
             ORDER BY "Last Mod Date (UTC)" DESC
         ) AS rn
-    FROM tbl t
+    FROM assetwellcode
 )
 
-SELECT *
-    ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
-    ,case 
-        when "Well Code" is null then cast(floor("Asset Company Code") as varchar)
-        when "Asset Company Code" is null then "Well Code"
-        else cast(concat(cast(floor("Asset Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar)
-    end as "Asset-Well Key"
+SELECT 
+    *
 FROM ranked
 WHERE rn = 1
