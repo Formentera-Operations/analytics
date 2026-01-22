@@ -153,7 +153,7 @@ final AS (
         lm.los_volume_line_number,
         lm.los_value_line_number,
         lm.los_volume_report_header_line_number,
-        lm.los_report_header_line_number,
+        case when ah.account_code = '900 / 305' then 45 else lm.los_report_header_line_number end as los_report_header_line_number,
         lm.los_line_number,
         lm.has_volume_reporting,
         lm.has_value_reporting,
