@@ -145,11 +145,10 @@ final AS (
         -- =================================================================
         -- LOS Attributes (from SharePoint)
         -- =================================================================
-        lm.los_key_sort,
+        case when ah.account_code = '900 / 305' then 'COMPANY LABOR' else lm.los_key_sort end as los_key_sort,
         lm.los_line_item_name,
         lm.los_product_type,
-        case
-            when ah.account_code = '900 / 305' then 'COMPANY LABOR' else lm.los_report_header end as los_report_header,
+        case when ah.account_code = '900 / 305' then 'COMPANY LABOR' else lm.los_report_header end as los_report_header,
         lm.los_volume_report_header,
         lm.los_volume_line_number,
         lm.los_value_line_number,
