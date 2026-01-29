@@ -9,7 +9,8 @@
             "data_type": "date",
             "granularity": "month"
         },
-        cluster_by=['project_id', 'scenario_id', 'economic_run_id', 'well_id']
+        cluster_by=['project_id', 'scenario_id', 'economic_run_id', 'well_id'],
+        snowflake_warehouse=set_warehouse_size('M') if target.name in ['prod', 'ci'] else target.warehouse,
     )
 }}
 

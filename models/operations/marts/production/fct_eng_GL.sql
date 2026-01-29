@@ -4,9 +4,16 @@
     tags=['marts', 'facts']
 ) }}
 
-WITH gl as (
+
+WITH acctmapping as (
+    select * from {{ ref('dim_accounts') }}
+    where is_los_account = true
+),
+
+gl as (
     Select
         gl_id as "GL ID"
+        ,gl_description as "GL Description"
         ,total_interest_expected AS "NRI Expected"
         ,net_revenue_interest_actual AS "NRI Actual"
         ,afe_code as "AFE Number"
@@ -23,20 +30,19 @@ WITH gl as (
         ,main_account as "Main Account"
         ,sub_account as "Sub Account"
         ,CONCAT(main_account,'-', sub_account) as "Combined Account"
-        /*,CASE
-            WHEN main_account IN (701,702,703) AND sub_account IN (1, 2, 3, 4, 5) THEN
-                CONCAT(main_account, '-', sub_account, '-Vol') 
-            ELSE CONCAT(main_account,'-', sub_account)
-        END as "Account Key"*/
         ,afe_type_code AS "AFE Type Code"
         ,afe_type_label AS "AFE Type Label"
         ,afe_type_full_name AS "AFE Type Full Name"
         ,Posted
         ,journal_date as "Journal Date"
+        ,journal_date_key as "Journal Date Key"
+        ,cash_date as "Cash Date"
         ,CONCAT(voucher_code, '-', entry_seq) as "Jordan-Key"
+        ,voucher_code as "Voucher Code"
         ,include_in_accrual_report as "In Accrual Report"
         ,present_in_accrual_balance as "In Accrual Balance"
         ,accrual_date as "Accrual Date"
+        ,accrual_date_key as "Accrual Date Key"
         ,net_amount as "Net Value"
         ,net_volume as "Net Volume"
         ,gross_amount as "Gross Value"
@@ -50,20 +56,22 @@ WITH gl as (
     FROM {{ ref('int_general_ledger_enhanced') }}
 )
 
---, tbl as (
+, tbl as (
 Select
---    "Account Key"
     "Accrual Date"
+    ,"Accrual Date Key"
     ,"AFE Number"
     ,"AFE Type Code"
     ,"AFE Type Full Name"
     ,"AFE Type Label"
+    ,"Cash Date"
     ,"Closed"
     ,"Combined Account"
     ,"Company Asset"
     ,"Company Code"
     ,"Company Name"
     ,"GL ID"
+    ,"GL Description"
     ,"Gross Value"
     ,"Gross Volume"
     ,"In Accrual Balance"
@@ -71,6 +79,7 @@ Select
     ,"Is Operated"
     ,"Jordan-Key"
     ,"Journal Date"
+    ,"Journal Date Key"
     ,"Location Name"
     ,"Location Type"
     ,"Main Account"
@@ -80,16 +89,32 @@ Select
     ,"Sub Account"
     ,"NRI Actual"
     ,"NRI Expected"
+    ,"Voucher Code"
     ,"Voucher Type Code"
     ,"Well Code"
     ,"Well Name"
 from gl
 WHERE Posted = 'Y'
 AND "Journal Date" > '2021-12-31'
-AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
-AND NOT "Combined Account" in ('850-35', '850-36')
-  AND NOT "Company Code" IN (705, 801, 900)
-  --AND "Is Operated" = 1
---)
+--AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
+--AND NOT "Combined Account" in ('850-35', '850-36')
+  --AND NOT "Company Code" IN (705, 801, 900, 200)
+),
 
---select distinct "Company Asset" from tbl order by "Company Asset"
+filteraccounts as (
+    select
+        tbl.*
+    from tbl
+    RIGHT JOIN acctmapping m
+    on tbl."Combined Account" = m.combined_account
+)
+
+select
+    *
+    ,case 
+        when "Well Code" is null then cast(floor("Company Code") as varchar)
+        when "Company Code" is null then "Well Code"
+        else cast(concat(cast(floor("Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar)
+    end as "Asset-Well Key"
+from filteraccounts
+Where not "GL ID" is null

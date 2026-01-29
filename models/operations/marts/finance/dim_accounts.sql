@@ -74,10 +74,14 @@ los_mapping AS (
         MAX(line_item_name) AS los_line_item_name,
         MAX(product_type) AS los_product_type,
         MAX(report_header_category) AS los_report_header,
+        CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(report_header_category) END AS los_volume_report_header,
         
         -- Separate line numbers for report sequencing (Power BI sort order)
-        MAX(CASE WHEN value_type = 'NET QTY AMT' THEN line_number END) AS los_volume_line_number,
-        MAX(CASE WHEN value_type = 'NET VALUE AMT' THEN line_number END) AS los_value_line_number,
+        CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_line_number,
+        CASE WHEN max(value_type) = 'NET VALUE AMT' THEN max(los_mapping_id) END AS los_value_line_number,
+        max(los_mapping_id) as los_line_number,
+        CASE WHEN min(value_type) = 'NET QTY AMT' THEN min(los_mapping_id) END AS los_volume_report_header_line_number,
+        max(line_header_line_number) as los_report_header_line_number,
         
         -- Reporting capability flags
         MAX(CASE WHEN value_type = 'NET QTY AMT' THEN TRUE ELSE FALSE END) AS has_volume_reporting,
@@ -141,12 +145,16 @@ final AS (
         -- =================================================================
         -- LOS Attributes (from SharePoint)
         -- =================================================================
-        lm.los_key_sort,
+        case when ah.account_code = '900 / 305' then 'COMPANY LABOR' else lm.los_key_sort end as los_key_sort,
         lm.los_line_item_name,
         lm.los_product_type,
-        lm.los_report_header,
+        case when ah.account_code = '900 / 305' then 'COMPANY LABOR' else lm.los_report_header end as los_report_header,
+        lm.los_volume_report_header,
         lm.los_volume_line_number,
         lm.los_value_line_number,
+        lm.los_volume_report_header_line_number,
+        case when ah.account_code = '900 / 305' then 45 else lm.los_report_header_line_number end as los_report_header_line_number,
+        lm.los_line_number,
         lm.has_volume_reporting,
         lm.has_value_reporting,
         lm.is_los_subtraction,
@@ -161,34 +169,37 @@ final AS (
         
         -- High-level category for broad rollups
         CASE 
-            WHEN lm.los_report_header = 'DEV CAPEX' THEN 'Capital'
-            WHEN lm.los_report_header IN ('MIDSTREAM CAPEX', 'MIDSTREAM DEAL COSTS', 'MIDSTREAM GL INJECTION') THEN 'Midstream'
+            WHEN lm.los_report_header IN ('DEV CAPEX','MIDSTREAM CAPEX') THEN 'Capital Expenses'
+            WHEN lm.los_report_header IN ('MIDSTREAM DEAL COSTS') THEN 'Midstream'
             WHEN lm.los_report_header = 'O&G LEASEHOLD' THEN 'Leasehold'
-            WHEN lm.los_report_header IN ('OIL REVENUE', 'GAS REVENUE', 'NGL REVENUE') THEN 'Commodity Revenue'
-            WHEN lm.los_report_header IN ('OIL REVENUE DEDUCTS', 'GAS REVENUE DEDUCTS', 'NGL REVENUE DEDUCTS') THEN 'Revenue Deductions'
+            WHEN lm.los_report_header IN ('OIL REVENUE', 'GAS REVENUE', 'NGL REVENUE','OIL REVENUE DEDUCTS', 'GAS REVENUE DEDUCTS', 'NGL REVENUE DEDUCTS') THEN 'Revenue'
+            --WHEN lm.los_report_header IN ('OIL REVENUE DEDUCTS', 'GAS REVENUE DEDUCTS', 'NGL REVENUE DEDUCTS') THEN 'Revenue Deductions'
             WHEN lm.los_report_header IN ('OIL PRODUCTION TAXES', 'GAS PRODUCTION TAXES', 'NGL PRODUCTION TAXES', 'AD VAL TAXES') THEN 'Production & Ad Valorem Taxes'
             WHEN lm.los_report_header IN ('OVERHEAD INCOME', 'WELL SERVICING INCOME', 'MISC INCOME') THEN 'Other Income'
-            WHEN lm.los_report_header = 'WORKOVER EXPENSES' THEN 'Workover'
-            WHEN lm.los_report_header = 'P&A' THEN 'Abandonment'
+            WHEN lm.los_report_header = 'WORKOVER EXPENSES' THEN 'Workover Expenses'
+            WHEN lm.los_report_header = 'P&A' THEN 'P & A Expenses'
             WHEN lm.los_report_header IN ('HEDGE SETTLEMENTS', 'CANCELED HEDGES') THEN 'Derivatives'
             WHEN lm.los_report_header IN (
                 'LEASE MAINTENANCE', 'SERVICES & REPAIRS', 'SURFACE EQUIPMENT', 'WELL SERVICING & DH EQUIP',
                 'COMPANY LABOR', 'CONTRACT LABOR & SUPERVISION', 'CHEMICALS & TREATING', 'RENTAL EQUIPMENT',
                 '3RD PTY WTR & DSPL', 'COMPANY WTR & DISPOSAL', 'FUEL & POWER', 'WEATHER', 
-                'COPAS OVERHEAD', 'NON-OP LOE', 'DALY WATERS'
+                'COPAS OVERHEAD', 'NON-OP LOE', 'MIDSTREAM GL INJECTION', 'OTHER'
             ) THEN 'Lease Operating Expenses'
+            WHEN lm.los_line_item_name = 'ACCRUED LOE' THEN 'Lease Operating Expenses'
             WHEN lm.los_report_header IN (
                 'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'HARDWR & SOFTWR', 'OFFICE RENT', 
                 'CORP FEES', 'CORP INSURANCE', 'AUDIT', 'LEGAL', 'REAL PROP TAX', 
                 'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS'
             ) THEN 'G&A'
             WHEN lm.los_report_header = 'INVENTORY' THEN 'Inventory'
-            WHEN lm.los_report_header IN ('OTHER', 'ACCRUAL') THEN 'Other'
-            ELSE NULL
+            ELSE null
         END AS los_category,
         
         -- Detail section (direct from SharePoint report header)
-        lm.los_report_header AS los_section,
+        CASE
+            WHEN account_full_name ='900 / 305: FIELD OFFICE EXPENSE' THEN 'COMPANY LABOR'
+            ELSE lm.los_report_header
+        END AS los_section,
         
         -- =================================================================
         -- Interest Type (parsed from account name/code)
@@ -227,7 +238,7 @@ final AS (
         -- Expense Classification
         -- =================================================================
         CASE 
-            WHEN lm.los_key_sort = 'WORKOVER' THEN 'WORKOVER'
+            WHEN lm.los_key_sort in ('WORKOVER', 'CAP PROD/WKOVR') THEN 'WORKOVER'
             WHEN lm.los_key_sort = 'P&A' THEN 'ABANDONMENT'
             WHEN lm.los_key_sort = 'HEDGES' THEN 'DERIVATIVE'
             WHEN lm.los_key_sort IS NOT NULL AND ah.subtype_code = 'R' THEN 'REVENUE'
@@ -248,4 +259,26 @@ final AS (
         ON ah.account_code = lm.account_code
 )
 
-SELECT * FROM final
+SELECT 
+    * 
+    -- =================================================================
+    -- LOS Category Sort order
+    -- =================================================================        
+        ,CASE
+            WHEN los_category = 'Revenue' THEN 1
+            WHEN los_category = 'Other Income' THEN 2
+            WHEN los_category = 'Production & Ad Valorem Taxes' THEN 3
+            WHEN los_category = 'Workover Expenses' THEN 4
+            WHEN los_category = 'P & A Expenses' THEN 5
+            WHEN los_category = 'Lease Operating Expenses' THEN 6
+            WHEN los_category = 'Capital Expenses' THEN 7
+            WHEN los_category = 'Leasehold' THEN 8
+            WHEN los_category = 'Midstream' THEN 9
+            WHEN los_category = 'Inventory' THEN 10
+            WHEN los_category = 'Derivatives' THEN 11
+            WHEN los_category = 'G&A' THEN 12         
+            ELSE NULL
+        END AS los_category_line_number 
+
+FROM final
+ order by los_line_number

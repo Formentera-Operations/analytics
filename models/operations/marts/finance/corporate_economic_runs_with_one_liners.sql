@@ -1,4 +1,8 @@
-
+{{
+    config(
+        snowflake_warehouse=set_warehouse_size('M') if target.name in ['prod', 'ci'] else target.warehouse,
+    )
+}}
 
 with corporate_scenarios as (
     select *

@@ -17,7 +17,13 @@ wellview as (
 
 company as (
     Select *
-    from {{ ref('dim_companies') }} c
+    from {{ ref('dim_companies') }} 
+),
+
+oda as (
+    select *
+    from {{ ref('int_oda_wells') }}
+        where not "PropertyReferenceCode" = 'DNU'
 ),
 
 prodstatus as (
@@ -42,8 +48,9 @@ route as (
 tbl as (
     Select
         w."Abandon Date"
-        ,p."API 10"
+        ,IFNULL(p."API 10", o."ApiNumber") AS "API 10"
         ,case
+            when c.company_name is null and p."AssetCo" is null then o."CompanyName"
             when c.company_name is null then 
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 'Formentera South Texas, LP'
@@ -65,10 +72,11 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
                     when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
                     else p."AssetCo" end)
-            when c.company_name is null and p."AssetCo" is null and not w."Asset Company" is null then w."Asset Company"
+            when o."CompanyName" is null then w."Asset Company"
             else c.company_name
         end as "Asset Company"
         ,case
+            when c.company_code is null and p."AssetCo" is null then o."CompanyCode"
             when c.company_code is null then 
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 810
@@ -90,50 +98,36 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 300
                     when lower(p."AssetCo") = 'snyder drillco' then 500
                     else left(p."Property Number", 3) end)
-                when c.company_code is null and p."AssetCo" is null and not w."Company Code" is null then w."Company Code"
+                when o."CompanyCode" is null then w."Company Code"
             else c.company_code end
         as "Asset Company Code"
-        --,c.company_name as "Asset Company"
-        --,c.company_full_name as "Asset Company full Name"
         ,p."Completion Record ID"
-        ,p."Completion Status"
-        --,w."Asset Company" as "WV Asset Company"
-        --,p."AssetCo"
-        ,p."District" AS "Business Unit"
-        --,w."District"
-        ,p."Unit Create Date (UTC)"
+        ,case when p."Completion Status" is null then o."WellStatusTypeName" else p."Completion Status" end as "Completion Status"
+        ,case when p."District" is null then o."SEARCHKEY" else p."District" end as "Business Unit"
+        ,case when p."Unit Create Date (UTC)" is null then o."Created Date" else p."Unit Create Date (UTC)" end as "Unit Create Date (UTC)"
         ,CAST(w."On Production Date" AS date) AS "First Prod Date"
         ,case
             when p."First Sale Date" is null and not w."First Sales Date" is null then CAST(w."First Sales Date" AS date)
             when w."First Sales Date" is null and not p."First Sale Date" is null then CAST(p."First Sale Date" AS date)
             else CAST(w."First Sales Date" AS date)
         end as "First Sales Date"           
-        --,w."First Sales Date"
-        --,p."First Sale Date"
         ,p."Current Facility"
         ,p."Facility Name"
         ,r."Foreman"
         ,p."Foreman Area"
-        ,case
-            when p."Operator" like 'Fromentera%' then 1
-            when w."Operator Name" like 'Fromentera%' then 1
-            when p."Is Operated" is null then 0
-            else p."Is Operated"
-        end as "Is Operated"
-        ,p."Is Operated" as "PV Is Operated"
-       /* ,p."Operated Descriptor" as "PV Operated Descriptor"
-        ,w."Operated Descriptor" as "WV Operated Descriptor"
-        ,p."Operator" as "PV Operator"
-        ,w."Operator Name" as "WV Operator"*/
+        ,case when p."Is Operated" is null then o.OP_IS_OPERATED else p."Is Operated" end as "PV Is Operated"
         ,greatest(
             coalesce(p."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
-            coalesce(w."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z')
+            coalesce(w."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z'),
+            coalesce(o."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z')
             ) as "Last Mod Date (UTC)"
         ,w."Last Approved MIT Date"
         ,w."Last Write To Database"
         ,w."Lat/Long Datum"
         ,w."Latitude Degrees"
         ,w."Longitude Degrees"
+        ,o."SEARCHKEY" as "ODA Asset"
+        ,o."FIELD" as "ODA Field"
         ,w."UTM Easting Meters"
         ,w."UTM Northing Meters"
         ,w."Master Lock Date"
@@ -142,8 +136,8 @@ tbl as (
         ,s."Status Record ID" as "Prod Status Record ID"
         ,p."Producing Method"
         ,p."Property EID"
-        ,p."Unit Name" AS "Property Name"
-        ,p."Well Name" as "Prodview Well Name"
+        ,case when p."Unit Name" is null then o."Name" else p."Unit Name" end AS "Property Name"
+        ,p."Well Name" as "PV Well Name"
         ,p."Property Number"
         ,w."Regulatory Effective Date"
         ,p."Regulatory Field Name"
@@ -152,20 +146,17 @@ tbl as (
             when w."Rig Release Date" is null and not p."Rig Release Date" is null then CAST(p."Rig Release Date" AS date)
             else CAST(w."Rig Release Date" AS date)
         end as "Rig Release Date"    
-        --,w."Rig Release Date"
-        --,p."Rig Release Date"
         ,r."Route Record ID"
         ,r."Route Name"
         ,CAST(w."Spud Date" AS date) as "Spud Date"
-        --,p."Spud Date"
         ,w."System Lock Date"
         ,p."Unit Record ID"
-        ,p."Unit Type"
-        ,P."Unit Sub Type"
-        ,p."Cost Center" as "Well Code"
+        ,case when p."Unit Type" is null then o."PropertyReferenceCode" else p."Unit Type" end as "Unit Type"
+        ,case when P."Unit Sub Type" is null then o."CostCenterTypeName" else p."Unit Sub Type" end as "Unit Sub Type"
+        ,case when p."Cost Center" is null then o."Code" else p."Cost Center" end as "Well Code"
         ,w."Well ID"
-        ,w."Well Name"
-        ,p."Legal Well Name" as "Well Name Legal"
+        ,case when w."Well Name" is null then o."Name" else w."Well Name" end as "Well Name"
+        ,case when p."Legal Well Name" is null then o."LegalDescription" else p."Legal Well Name" end as "Well Name Legal"
     from prodview p
     left join wellview w 
     on p."WellView Well ID" = w."Well ID"
@@ -175,21 +166,85 @@ tbl as (
     on p."Unit Record ID" = s."Unit Record ID" and s.rn = 1
     left join route r
     on p."Current Route" = r."Route Record ID"
-    --on CAST(LEFT(p."Cost Center", 3) as text) = CAST(c.company_code as text)
+    full outer join oda o 
+    on p."Cost Center" = o."Code"
+),
+
+assetwellcode as (
+    select
+        "API 10"
+        ,"Abandon Date"
+        ,"Asset Company"
+        ,"Asset Company Code"
+        ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
+        ,case 
+            when "Well Code" is null then cast(floor("Asset Company Code") as varchar)
+            when "Asset Company Code" is null then "Well Code"
+            else cast(concat(cast(floor("Asset Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar)
+        end as "Asset-Well Key"
+        ,"Business Unit"
+        ,"Completion Record ID"
+        ,"Completion Status"
+        ,"Current Facility"
+        ,"Facility Name"
+        ,"First Prod Date"
+        ,"First Sales Date"
+        ,"Foreman"
+        ,"Foreman Area"
+        ,"Last Approved MIT Date"
+        ,"Last Mod Date (UTC)"
+        ,"Last Write To Database"
+        ,"Lat/Long Datum"
+        ,"Latitude Degrees"
+        ,"Longitude Degrees"
+        ,"Master Lock Date"
+        ,"ODA Asset"
+        ,"ODA Field"
+        ,"Ops Effective Date"
+        ,"Permit Date"
+        ,"Prod Status Record ID"
+        ,"Producing Method"
+        ,"Property EID"
+        ,"Property Name"
+        ,"Property Number"
+        ,"PV Is Operated"
+        ,"PV Well Name"
+        ,"Regulatory Effective Date"
+        ,"Regulatory Field Name"
+        ,"Rig Release Date"
+        ,"Route Name"
+        ,"Route Record ID"
+        ,"Spud Date"
+        ,"System Lock Date"
+        ,"Unit Create Date (UTC)"
+        ,case when "Unit Record ID" is null then
+            (case 
+                when "Well Code" is null then cast(floor("Asset Company Code") as varchar)
+                when "Asset Company Code" is null then "Well Code"
+            else cast(concat(cast(floor("Asset Company Code") as varchar), '-' ,cast("Well Code" as varchar)) as varchar) end
+            ) else "Unit Record ID" end as "Unit Record ID"
+        ,"Unit Sub Type"
+        ,"Unit Type"
+        ,"UTM Easting Meters"
+        ,"UTM Northing Meters"
+        ,"Well Code"
+        ,"Well ID"
+        ,"Well Name"
+        ,"Well Name Legal"
+    FROM tbl
 ),
 
 ranked AS (
     SELECT
-        t.*,
+        *,
         ROW_NUMBER() OVER (
             PARTITION BY "Unit Record ID"
             ORDER BY "Last Mod Date (UTC)" DESC
         ) AS rn
-    FROM tbl t
+    FROM assetwellcode
 )
 
-SELECT *
-    ,concat(floor("Asset Company Code"), ':', ' ', "Asset Company") as "Asset Company Full Name"
+SELECT 
+    *
 FROM ranked
 WHERE rn = 1
---and "Asset Company" LIKE '%King%'

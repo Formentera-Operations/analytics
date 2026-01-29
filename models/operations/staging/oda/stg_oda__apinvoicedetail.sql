@@ -11,14 +11,12 @@ renamed as (
         afeid as afe_id,
         allocationparentid as allocation_parent_id,
         companyid as company_id,
-        createeventid as create_event_id,
         distributioncompanyid as distribution_company_id,
         expensedeckid as expense_deck_id,
         expensedeckrevisionid as expense_deck_revision_id,
         expensedecksetid as expense_deck_set_id,
         invoiceid as invoice_id,
         sourcewellallocationdeckrevisionid as source_well_allocation_deck_revision_id,
-        updateeventid as update_event_id,
         vendorid as vendor_id,
         wellallocationdeckid as well_allocation_deck_id,
         wellid as well_id,
@@ -47,7 +45,7 @@ renamed as (
         updatedate as updated_at,
 
         -- metadata
-        _meta_op,
+        "_meta/op" as _meta_op,
         flow_published_at,
         flow_document
 

@@ -98,7 +98,7 @@ models:
           - relationships:
               arguments:
                 to: ref("stg_oda__account_v2")
-                field: id
+                field: account_id
 
       - name: journal_date_key
         description: Date key for the journal entry, used for date-based lookups
@@ -246,121 +246,52 @@ models:
 
       - name: record_update_date
         description: Timestamp when the record was last updated
-
-  - name: stg_oda__afe_v2
-    description: |
-      Staging model for Authorization for Expenditure (AFE) data from Quorum OnDemand Accounting v2.
-      AFEs are used to request, track, and manage capital project budgets and expenditures.
-    columns:
-      - name: id
-        description: Unique identifier for the AFE record
-        data_tests:
-          - unique
-          - not_null
-
-      - name: afe_v2_identity
-        description: Unique identity number for the AFE in v2 system
-        data_tests:
-          - not_null
-
-      - name: code
-        description: Business identifier/number for the AFE
-        data_tests:
-          - not_null
-          - unique
-
-      - name: code_sort
-        description: AFE code formatted for sorting purposes
-        data_tests:
-          - not_null
-
-      - name: name
-        description: Short name or title of the AFE
-        data_tests:
-          - not_null
-
-      - name: full_name
-        description: Complete name of the AFE
-        data_tests:
-          - not_null
-
-      - name: afe_type_id
-        description: Foreign key to AFE type classification
-        data_tests:
-          - not_null
-
-      - name: afe_type_code
-        description: Code representing the type of AFE
-        data_tests:
-          - not_null
-
-      - name: application_type_id
-        description: Foreign key to application type
-        data_tests:
-          - not_null
-
-      - name: application_type_code
-        description: Code indicating how the AFE is applied
-        data_tests:
-          - not_null
-
-      - name: budget_usage_type_id
-        description: Foreign key to budget usage type
-        data_tests:
-          - not_null
-
-      - name: budget_usage_type_code
-        description: Code indicating how the budget is used
-        data_tests:
-          - not_null
-
-      - name: field_id
-        description: Foreign key to field
-
-      - name: operating_group_id
-        description: Foreign key to operating group
-
-      - name: default_company_code
-        description: Code of the default company for this AFE
-        data_tests:
-          - not_null
-
-      - name: create_date
-        description: Timestamp when the record was created
-        data_tests:
-          - not_null
-
-      - name: flow_published_at
-        description: Timestamp when the record was published to the data flow
-        data_tests:
-          - not_null
-
   - name: stg_oda__account_v2
     description: |
       Staging model for Chart of Accounts data from Quorum OnDemand Accounting.
       This model standardizes column names and structures account information for downstream consumption.
     columns:
-      - name: id
+      - name: account_id
         description: Unique identifier for the account
         data_tests:
           - unique
           - not_null
 
-      - name: code
+      - name: account_v2_identity
+        description: Legacy identity key for the account
+
+      - name: n_id
+        description: Numeric identifier from source system
+
+      - name: account_code
         description: Account code used for identification
         data_tests:
           - not_null
           - unique
 
-      - name: name
+      - name: account_name
         description: Short name of the account
         data_tests:
           - not_null
 
-      - name: full_name
+      - name: account_full_name
         description: Full descriptive name of the account
         data_tests:
           - not_null
+
+      - name: main_account
+        description: Main account segment
+
+      - name: sub_account
+        description: Sub account segment
+
+      - name: account_sort
+        description: Sorting value for the account
+        data_tests:
+          - not_null
+
+      - name: key_sort
+        description: Additional sorting key for the account
 
       - name: account_type_id
         description: Foreign key to account type
@@ -379,48 +310,88 @@ models:
                 to: ref("stg_oda__account_sub_types")
                 field: account_subtype_id
 
-      - name: active
+      - name: is_active
         description: Flag indicating if the account is currently active
         data_tests:
           - not_null
 
-      - name: normally_debit
+      - name: is_normally_debit
         description: Flag indicating if the account normally has a debit balance
         data_tests:
           - not_null
 
-      - name: account_sort
-        description: Sorting value for the account
-        data_tests:
-          - not_null
+      - name: is_accrual
+        description: Derived flag indicating if account name contains 'accru'
 
-      - name: key_sort
-        description: Additional sorting key for the account
-
-      - name: summarize_in_gl_reports
+      - name: is_summarize_in_gl_reports
         description: Flag indicating if account should be summarized in GL reports
         data_tests:
           - not_null
 
-      - name: summarize_in_jib_invoice
+      - name: is_summarize_in_jib_invoice
         description: Flag indicating if account should be summarized in JIB invoices
         data_tests:
           - not_null
 
-      - name: bank_recon_performed
+      - name: jib_summary_id
+        description: JIB summary identifier for account grouping
+
+      - name: is_bank_recon_performed
         description: Flag indicating if bank reconciliation is performed for this account
         data_tests:
           - not_null
 
-      - name: create_date
-        description: Timestamp when the record was created
+      - name: changed_since_printed
+        description: Flag/counter for changes since last print
+
+      - name: is_generate_fixed_asset_candidates
+        description: Flag indicating if fixed asset candidates should be generated
+
+      - name: is_remeasure_at_current
+        description: Flag for currency remeasurement at current rate
+
+      - name: is_translate_at_current
+        description: Flag for currency translation at current rate
+
+      - name: afe_usage_type_id
+        description: Usage type for AFE (Authorization for Expenditure) entries
+
+      - name: alternate_reference_usage_type_id
+        description: Usage type for alternate reference entries
+
+      - name: entry_classification_usage_type_id
+        description: Usage type for entry classification
+
+      - name: expense_distribution_usage_type_id
+        description: Usage type for expense distribution
+
+      - name: manual_entry_usage_type_id
+        description: Usage type for manual entries
+
+      - name: well_usage_type_id
+        description: Usage type for well-related entries
+
+      - name: location_grouping_id
+        description: Location grouping identifier
+
+      - name: last_change_code
+        description: Code indicating last type of change
+
+      - name: created_at
+        description: Timestamp when the record was created in source system
         data_tests:
           - not_null
 
-      - name: update_date
-        description: Timestamp when the record was last updated
+      - name: updated_at
+        description: Timestamp when the record was last updated in source system
 
       - name: flow_published_at
         description: Timestamp when the record was published to the data flow
         data_tests:
           - not_null
+
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+        data_tests:
+          - not_null
+  

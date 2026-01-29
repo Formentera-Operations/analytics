@@ -7,9 +7,6 @@
 
     {% if not var("enable_dynamic_warehouse", false) %}
         {{ return(target.warehouse) }}
-    {% elif not execute %}
-        {# No need to switch warehouses during compilation #}
-        {{ return(target.warehouse) }}
     {% endif %}
 
     {% if var("available_warehouse_sizes", None) == None %}

@@ -73,7 +73,7 @@ sources:
           and well classification data.
         identifier: property_well_info_tb_barnett_sheet_1
         columns:
-          - name: propertywellmerrickid
+          - name: property_well_merrick_id
             description: Primary key matching completion merrickid
             data_tests:
               - unique
@@ -203,26 +203,26 @@ sources:
           different completion types with 69 configuration parameters.
         identifier: completion_allocation_type_tb_sheet_1
         columns:
-          - name: allocationtype
+          - name: allocation_type
             description: Primary key - allocation type code
             data_tests:
               - unique
               - not_null
-          - name: allocationname
+          - name: allocation_name
             description: Descriptive name for allocation type
           - name: description
             description: Detailed explanation of allocation methodology
-          - name: activeflag
+          - name: active_flag
             description: Indicates if allocation type is currently in use
-          - name: d_allocationmethod
+          - name: d_allocation_method
             description: Daily allocation calculation method
-          - name: m_allocationmethod
+          - name: m_allocation_method
             description: Monthly allocation calculation method
-          - name: s_testsenabledflag
+          - name: s_tests_enabled_flag
             description: Indicates if well testing is enabled
-          - name: s_unitstype flag
+          - name: s_units_type_flag
             description: Units of measure flag
-          - name: s_carryforwardflag
+          - name: s_carry_forward_flag
             description: Carry forward configuration for periods
             
       - name: tank_allocation_type_tb_sheet_1
@@ -324,29 +324,29 @@ sources:
           measurements.
         identifier: tank_strapping_tb_barnett_sheet_1
         columns:
-          - name: tankid
+          - name: tank_id
             description: Foreign key to tank table
             data_tests:
               - not_null
-          - name: recorddate
+          - name: record_date
             description: Date of strapping record
             data_tests:
               - not_null
           - name: description
             description: Strapping description/notes
-          - name: purchaserbeid
+          - name: purchaser_beid
             description: Purchaser business entity ID
-          - name: totaltankcapacity
+          - name: total_tank_capacity
             description: Total tank capacity in barrels
-          - name: effectivedate
+          - name: effective_date
             description: Date strapping becomes effective
-          - name: datetimestamp
+          - name: date_time_stamp
             description: Record creation/modification timestamp
-          - name: userdatestamp
+          - name: user_date_stamp
             description: User action date
-          - name: userid
+          - name: user_id
             description: User who created/modified record
-          - name: rowuid
+          - name: row_uid
             description: Unique row identifier (GUID)
             data_tests:
               - unique
@@ -693,21 +693,21 @@ sources:
           system with 26 classification dimensions.
         identifier: cross_reference_tb_barnett_sheet_1
         columns:
-          - name: merrickid
+          - name: merrick_id
             description: Object merrick ID being referenced
             data_tests:
               - not_null
-          - name: merricktype
+          - name: merrick_type
             description: Object type classification
             data_tests:
               - not_null
           - name: uniqueid
             description: Alternate unique identifier
-          - name: objectname
+          - name: object_name
             description: Object name/description
-          - name: objectnumber
+          - name: object_number
             description: Business object number
-          - name: objecttype
+          - name: object_type
             description: Additional type classification
           - name: accountingid
             description: Accounting system identifier
@@ -715,27 +715,27 @@ sources:
             description: Production system identifier
           - name: engineeringid
             description: Engineering system identifier
-          - name: divisionid
+          - name: division_id
             description: Division assignment
-          - name: accountingteamid
+          - name: accounting_team_id
             description: Accounting team assignment
-          - name: drillingteamid
+          - name: drilling_team_id
             description: Drilling team assignment
-          - name: productionteamid
+          - name: production_team_id
             description: Production team assignment
-          - name: groupid
+          - name: group_id
             description: Group classification
-          - name: fieldgroupid
+          - name: field_group_id
             description: Field group classification
-          - name: areaid
+          - name: area_id
             description: Area classification
-          - name: batteryid
+          - name: battery_id
             description: Battery classification
-          - name: stateid
+          - name: state_id
             description: State location
-          - name: countyid
+          - name: county_id
             description: County location
-          - name: activeflag
+          - name: active_flag
             description: Active record flag
           - name: recordcompletionflag
             description: Data completeness indicator
@@ -751,35 +751,35 @@ sources:
           Contains 16 columns with formula definitions and their application scope.
         identifier: object_formula_tb_barnett_sheet_1
         columns:
-          - name: objectid
+          - name: object_id
             description: Object merrick ID formula applies to
             data_tests:
               - not_null
-          - name: objecttype
+          - name: object_type
             description: Type of object (completion/tank/meter/equipment)
             data_tests:
               - not_null
-          - name: objectformulatype
+          - name: object_formula_type
             description: Type/category of formula calculation
             data_tests:
               - not_null
-          - name: startdate
+          - name: start_date
             description: Formula effective start date
             data_tests:
               - not_null
-          - name: enddate
+          - name: end_date
             description: Formula effective end date
           - name: formula
             description: Calculation formula expression
-          - name: activeflag
+          - name: active_flag
             description: Formula currently active
-          - name: deleteflag
+          - name: delete_flag
             description: Soft delete flag
-          - name: datetimestamp
+          - name: date_time_stamp
             description: Record timestamp
-          - name: userdatestamp
+          - name: user_date_stamp
             description: User action date
-          - name: userid
+          - name: user_id
             description: User identifier
 
 # =============================================================================

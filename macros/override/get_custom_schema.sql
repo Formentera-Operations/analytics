@@ -9,7 +9,7 @@
     {%- endif -%}
 
     {# Environment prefix for non-prod environments #}
-    {%- set env_prefix = target.name + '_' if target.name != 'prod' else '' -%}
+    {%- set env_prefix = target.name + '_' if target.name not in ['prod', 'ci'] else '' -%}
 
     {# If custom schema name is provided, use it with environment prefix #}
     {%- if custom_schema_name -%}
