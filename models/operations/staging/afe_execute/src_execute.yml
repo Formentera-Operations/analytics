@@ -3,18 +3,18 @@ version: 2
 sources:
   - name: afe_execute
     database: ESTUARY_DB
-    schema: AFE_RAW
+    schema: ESTUARY_SCHEMA
     tables:
-      - name: AFE
-      - name: AFENUMBER
-      - name: AFE_CUSTOM
-      - name: LUT_AFE_TYPE
-      - name: LUT_ACQUISITION
-      - name: USER
-      - name: ACTUAL_AMOUNTS
-      - name: FIELDCOST_AMOUNTS
-      - name: AFE_WELL
-      - name: AFE_WELL_CUSTOM
+      - name: EX_AFE
+      - name: EX_AFENUMBER
+      - name: EX_AFE_CUSTOM
+      - name: EX_LUT_AFE_TYPE
+      - name: EX_EX_LUT_ACQUISITION
+      - name: EX_USER
+      - name: EX_ACTUAL_AMOUNTS
+      - name: EX_FIELDCOST_AMOUNTS
+      - name: EX_AFE_WELL
+      - name: EX_AFE_WELL_CUSTOM
       - name: WELL
 
 
