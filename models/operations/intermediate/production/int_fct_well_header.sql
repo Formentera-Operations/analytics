@@ -50,7 +50,11 @@ tbl as (
         w."Abandon Date"
         ,IFNULL(p."API 10", o."ApiNumber") AS "API 10"
         ,case
-            when c.company_name is null and p."AssetCo" is null then o."CompanyName"
+            when c.company_name is null and p."AssetCo" is null then
+                (case
+                    when lower(o."CompanyName") = 'fp goldsmith' then 'FP Goldsmith LP'
+                    when lower(o."CompanyName") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
+                    else o."CompanyName" end)
             when c.company_name is null then 
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 'Formentera South Texas, LP'
