@@ -96,4 +96,4 @@ sources:
       - name: ODA_BATCH_ODA_PRODUCT
       - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
       - name: ODA_ARINVOICE
-      - name: ODA_ARINVOICE_DETAIL
+      - name: ODA_ARINVOICEDETAIL
