@@ -95,5 +95,5 @@ sources:
       - name: ODA_BATCH_ODA_REVISIONSTATE
       - name: ODA_BATCH_ODA_PRODUCT
       - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
-      - name: AR_INVOICE
-      - name: AR_INVOICE_DETAIL
+      - name: ODA_ARINVOICE
+      - name: ODA_ARINVOICE_DETAIL
