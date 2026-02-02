@@ -1,6 +1,6 @@
 with source as (
     
-    select * from {{ source('oda', 'ODA_BATCH_ODA_EXPENSEDECK_V2') }}
+    select * from {{ source('oda', 'ODA_EXPENSEDECK_V2') }}
 
 ),
 
