@@ -11,6 +11,7 @@ renamed as (
     ADVANCEINVOICEID                AS advance_invoice_id,
     ADVANCEPOSTINGEXCHANGERATEID    AS advance_posting_exchange_rate_id,
     COMPANYID                       AS company_id,
+    CODE                            AS code,
     GAINLOSSEXCHANGERATEID          AS gain_loss_exchange_rate_id,
     IMPORTDATAID                    AS import_data_id,
     INVOICETYPEID                   AS invoice_type_id,
@@ -35,7 +36,6 @@ renamed as (
     INVOICEAMOUNT                   AS invoice_amount,
 
     -- Strings
-    CODE                            AS code,
     CODESORT                        AS code_sort,
     DESCRIPTION                     AS description,
 
