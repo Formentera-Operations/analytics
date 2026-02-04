@@ -10,8 +10,8 @@ renamed as (
     VOUCHERID                       AS voucher_id,
     CASHACCOUNTID                   AS cash_account_id,
     OWNERID                         AS owner_id, 
-    PAYMENTTYPEID                    AS payment_type_id,
-
+    PAYMENTTYPEID                   AS payment_type_id,
+    PAYEECHECKNUMBER                AS payee_check_number, 
     
     -- Numerics
     PAYMENTAMOUNT                   AS payment_amount, 

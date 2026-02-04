@@ -4,7 +4,7 @@ with source as (
 
 renamed as (
     select
-           -- IDs
+    -- IDs
     ID                              AS id,
     ARINVOICE_V2IDENTITY            AS ar_invoice_v2_identity,
     ADJUSTMENTID                    AS adjustment_id,
