@@ -5,11 +5,18 @@
 ) }}
 
 with marketdata as(
-    select *
+    select 
+        pricing_index_code AS "Pricing Index Code",
+        pricing_index_name AS "Pricing Index Name",
+        product_type AS "Product Type",
+        greatest(as_of_date) AS "As Of Date",
+        delivery_date AS "Delivery Date",
+        price AS "Price"
     from {{ ref('int_aegis__market_data') }}
+    group by all
 )
 
 select
     *
 from marketdata
-where as_of_date > '2021-12-31'
+where "Delivery Date" > '2021-12-31'
