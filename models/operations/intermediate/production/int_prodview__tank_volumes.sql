@@ -15,7 +15,7 @@ facility as (
     select
         *
     from {{ ref('int_fct_well_header') }} 
-    where "Unit Type" = 'facility'
+    where not "Current Facility" is null
 )
 
 select
@@ -49,4 +49,4 @@ select
     --HC_LIQUID_ANALYSIS_TABLE,
 from tanks t
      left join facility f 
-     on f."Unit Record ID" = t.current_facility_id
+     on f."Current Facility" = t.current_facility_id
