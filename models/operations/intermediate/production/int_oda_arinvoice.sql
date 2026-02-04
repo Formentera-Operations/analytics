@@ -6,92 +6,54 @@
 {#
     Dimension: Company AR Invoice Summary
     
-    Purpose: FP Company AR Invoice Summary
-    Grain: AR Invoice Total (by Invoice/Voucher) per Owner per Well 
-    
-    Use cases:
-    - Review AR Invoices & Status
+    -- Layer 1: Base Invoice Model
+    -- Purpose: Extract and standardize AR invoice data
+    -- Dependencies: Base tables only
     
     Sources:
     - stg_oda__arinvoice_v2
     - stg_oda__company_v2
     - stg_oda__owner_v2
     - stg_oda__entity_v2
-    - stg_oda_entity_v2
-    - stg_oda_voucher_v2
     - stg_oda_wells
 #}
 
-    with arinvoice_summary as (
+    with ar_invoices as (
         select 
-      -- =================================================================
-        -- AR Summary
-     -- =================================================================
-        i.code,
-        i.invoice_amount,
-        v.Code                   AS voucher_code,
-        Case         
-                 When i.Posted  = '1' Then 'Y'
-                 Else 'N'
-                 End
-                                 AS posted,   
-        Case        
-                 When i.is_overage_invoice = '1' Then 'Y'
-                 Else 'N'
-                 End
-                                 AS is_overage_invoice,
-        Case        
-                 When i.include_in_accrual_report = '1' Then 'Y'
-                 Else 'N'
-                 End
-                                 AS include_in_accrual_report,
+        c.code                          as Company_Code,
+        c.name                          as Company_Name,
+        i.owner_id                      as Owner_ID,
+        e.code                          as Owner_Code,
+        i.well_id                       as Well_ID,
+        w.code                          as Well_Code,
+        w.name                          as Well_Name,
+        i.code                          as Invoice_Number,
+        i.id                            as Invoice_ID,
+        i.invoice_type_id               as Invoice_Type_ID,
+        w.hold_all_billing              as Hold_Billing,
+        i.voucher_id                    as Voucher_ID,
+        i.posted                        as Posted,
+        Case 
+            When i.invoice_type_id = 5 Then i.description
+            When i.invoice_type_id = 0 Then i.description
+            When i.invoice_type_id = 1 Then i.description
+            Else w.name
+            End As Invoice_Description,
+        Case 
+            When i.invoice_type_id = 5 Then 'Misc'
+            When i.invoice_type_id = 0 Then 'Adv'
+            When i.invoice_type_id = 1 Then 'Cls'
+            Else 'JIB'
+            End As Invoice_Type,
+        i.invoice_date                  as Invoice_Date,
+        i.invoice_amount                as Total_Invoice_Amount,
+        Case
+            When i.invoice_type_id = 5 Then 1
+            When i.invoice_type_id = 0 Then 2
+            Else 1
+            End As Sort_Order        
         
-         Case       
-                 When i.invoice_type_id  = '0' Then 'ADVANCE'
-                 When i.invoice_type_id  = '1' Then 'CLOSEOUT'
-                 When i.invoice_type_id   = '2' Then 'GAS'
-                 When i.invoice_type_id   = '3' Then 'INTEREST'
-                 When i.invoice_type_id   = '4' Then 'JIB'
-                 When i.invoice_type_id   = '5' Then 'MISC'
-                 When i.invoice_type_id   = '6' Then 'REVENUE'
-                 When i.invoice_type_id   = '7' Then 'REVSTMT'
-                 Else ''
-                 End
-                                 AS invoice_type,
-                       
         
-        Case       
-                 When i.statement_status_id = '0' Then 'OPEN'
-                 When i.statement_status_id = '1' Then 'CLOSED'
-                 When i.statement_status_id = '2' Then 'NEVER'      
-                 Else ''
-                 End
-                                 AS statement_status,
-        
-
-    -- =================================================================
-        --Company, Owner, Well Attributes
-    -- =================================================================   
-        c.Code                    AS company_code,
-        e.Code                    AS owner_code,
-        e.Name                    AS owner_name,
-        w.Code                    AS well_code,
-        w.Name                    AS well_name,    
-    -- =================================================================
-        --Accounting Dates
-    -- =================================================================    
-        i.invoice_date,
-        i.invoice_date_key,
-        i.accrual_date,
-        i.advance_invoice_date,
-
-     -- =================================================================
-        --Change Dates
-    -- =================================================================      
-        i.create_date,
-        i.update_date,
-        i.record_insert_date,
-        i.record_update_date
         
         FROM {{ref('stg_oda__arinvoice_v2') }} i
 
@@ -104,13 +66,13 @@
         LEFT JOIN {{ref('stg_oda__entity_v2')}} e
         ON e.Id = o.entity_id
 
-        LEFT JOIN {{ref('stg_oda__voucher_v2')}} v
-        ON v.id = i.voucher_id
+       -- LEFT JOIN {{ref('stg_oda__voucher_v2')}} v
+       -- ON v.id = i.voucher_id
 
         LEFT JOIN {{ref('stg_oda__wells')}} w
         ON w.id = i.well_id
         
-        
+        Where i.Posted = 1
     )
-        select * from arinvoice_summary
+        select * from ar_invoices
 
