@@ -4,22 +4,24 @@
 ) }}
 
 {#
-    Dimension: Company AR Invoice Summary
-    Core Invoice Data (JIB, Advances, Closeout, Misc Invoices)
+    Dimension: Company AR Invoice Adjustments
+    Adjustment transactions (advances applied, cross-clears, etc.)
     
-    -- Layer 1: Base Invoice Model
-    -- Purpose: Extract and standardize AR invoice data
+    -- Layer 1: Adjustment Details Model
+    -- Purpose: Extract and standardize adjustment transaction data
     -- Dependencies: Base tables only
     
     Sources:
+    - stg_oda__arinvoiceadjustment
+    - stg_oda__arinvoiceadjustmentdetail
     - stg_oda__arinvoice_v2
+    - stg_oda__voucher_v2
     - stg_oda__company_v2
     - stg_oda__owner_v2
     - stg_oda__entity_v2
     - stg_oda__wells
 #}
-
-    with ar_invoices as (
+with ar_adjustments as (
         select 
         c.code                          as Company_Code,
         c.name                          as Company_Name,
@@ -33,30 +35,32 @@
         i.id                            as Invoice_ID,
         i.invoice_type_id               as Invoice_Type_ID,
         w.hold_all_billing              as Hold_Billing,
-        i.voucher_id                    as Voucher_ID,
+        aria.voucher_id                 as Voucher_ID,
         Case 
-            When i.invoice_type_id = 5 Then i.description
-            When i.invoice_type_id = 0 Then i.description
-            When i.invoice_type_id = 1 Then i.description
-            Else w.name
+            When aria.adjustment_type_id = 0 Then 'Application of Advance'
+            When aria.adjustment_type_id = 1 Then REPLACE(ariad.Description, 'XClear with Inv#', 'Cross Clear Inv#')
+            Else 'Adjustment'
             End As Invoice_Description,
         Case 
-            When i.invoice_type_id = 5 Then 'Misc'
-            When i.invoice_type_id = 0 Then 'Adv'
-            When i.invoice_type_id = 1 Then 'Cls'
-            Else 'JIB'
+            When aria.adjustment_type_id = 0 Then 'AAdv'
+            When aria.adjustment_type_id = 1 Then 'Xclear'
+            Else 'Adj'
             End As Invoice_Type,
-        i.invoice_date                  as Invoice_Date,
-        i.invoice_amount                as Total_Invoice_Amount,
-        Case
-            When i.invoice_type_id = 5 Then 1
-            When i.invoice_type_id = 0 Then 2
-            Else 1
-            End As Sort_Order        
+        aria.adjustment_date                  as Invoice_Date,
+        ariad.adjustment_detail_amount        as Total_Invoice_Amount,
+        2                                     as Sort_Order
         
         
+        FROM {{ref('stg_oda__arinvoiceadjustmentdetail')}} ariad
         
-        FROM {{ref('stg_oda__arinvoice_v2') }} i
+        INNER JOIN {{ref('stg_oda__arinvoiceadjustment') }} aria
+        ON aria.id = ariad.invoice_adjustment_id
+
+        INNER JOIN {{ref('stg_oda__voucher_v2')}} v
+        ON v.id = aria.voucher_id
+
+        INNER JOIN {{ref('stg_oda__arinvoice_v2')}} i
+        ON i.id = ariad.invoice_id
 
         INNER JOIN {{ref('stg_oda__company_v2')}} c
         ON c.id = i.company_id
@@ -67,13 +71,11 @@
         INNER JOIN {{ref('stg_oda__entity_v2')}} e
         ON e.Id = o.entity_id
 
-       -- LEFT JOIN {{ref('stg_oda__voucher_v2')}} v
-       -- ON v.id = i.voucher_id
-
         LEFT JOIN {{ref('stg_oda__wells')}} w
         ON w.id = i.well_id
         
         Where i.Posted = 1
+        and v.Posted = 1
+        
     )
-        select * from ar_invoices
-
+        select * from ar_adjustments

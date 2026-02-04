@@ -13,12 +13,12 @@
     
     Sources:
     - stg_oda__arinvoicenetteddetail
-    - stg_oda_arinvoice_v2
+    - stg_oda__arinvoice_v2
     - stg_oda__voucher_v2
     - stg_oda__company_v2
     - stg_oda__owner_v2
     - stg_oda__entity_v2
-    - stg_oda_wells
+    - stg_oda__wells
 #}
 
 with ar_netting as (
