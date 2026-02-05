@@ -16,7 +16,7 @@
   with ar_adjustment_agg as (
         select 
         invoice_id,
-        SUM(Total_Invoice_Amount) as Total_Net,
+        SUM(Total_Invoice_Amount) as Total_Adjustments,
         
         FROM {{ ref('int_oda_ar_adjustments') }}
 
