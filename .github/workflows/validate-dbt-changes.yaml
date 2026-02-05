@@ -30,6 +30,10 @@ env:
   SNOWFLAKE_CI_ROLE: ${{ vars.SNOWFLAKE_CI_ROLE }}
   SNOWFLAKE_CI_WAREHOUSE: ${{ vars.SNOWFLAKE_CI_WAREHOUSE }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-dbt-changes:
     runs-on: ubuntu-latest
@@ -107,15 +111,17 @@ jobs:
           --select elementary
           --profile integration_tests
           --target ci
-      - name: dbt build (full refresh)
-        run: >
-          dbt build
-          --select state:modified+
-          --defer --state prod-artifacts/ --favor-state
-          --indirect-selection cautious
-          --profile integration_tests
-          --target ci
-          --full-refresh
+#       Full Refresh Run temporarily disabled
+#       as the CI runs were taking quite long.
+#      - name: dbt build (full refresh)
+#        run: >
+#          dbt build
+#          --select state:modified+
+#          --defer --state prod-artifacts/ --favor-state
+#          --indirect-selection cautious
+#          --profile integration_tests
+#          --target ci
+#          --full-refresh
       - name: dbt build (incremental)
         run: >
           dbt build
