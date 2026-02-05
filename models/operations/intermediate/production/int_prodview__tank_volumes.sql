@@ -4,25 +4,29 @@
         materialized='view'
     )
 }}
-with tanks as (
+with tankvol as (
     select
         *
      From {{ ref('stg_prodview__tank_daily_volumes') }}
      where is_deleted = false
 )
 ,
-facility as (
+tanks as (
     select
         *
-    from {{ ref('int_fct_well_header') }} 
-    where not "Current Facility" is null
+    from {{ ref('stg_prodview__tanks') }}
 )
-
+,
+units as (
+    select
+        *
+    from {{ ref('stg_prodview__units') }}
+)
 select
     tank_record_id AS "Tank Record ID",
     --parent_record_id AS "Parent Record ID",
     --flow_network_id AS "Flow Network ID",
-    tank_id AS "Tank ID",
+    v.tank_id AS "Tank ID",
     --tank_table AS "Tank Table",
     tank_date AS "Date",
     opening_total_volume_bbl AS "Opening Total Volume (bbl)",
@@ -44,9 +48,14 @@ select
     change_gas_equivalent_oil_cond_volume_mcf AS "Change in Gas Equivalent of Oil/Cond Volume (Mcf)",
     change_water_volume_bbl AS "Change in Water Volume (bbl)",
     change_sand_volume_bbl AS "Change in Sand Volume (bbl)",
-    current_facility_id AS "Current Facility ID"
+    current_facility_id AS "Current Facility ID",
+    unit_id AS "Unit ID",
+    "Unit Type"
     --HC_LIQUID_ANALYSIS_ID,
     --HC_LIQUID_ANALYSIS_TABLE,
-from tanks t
-     left join facility f 
-     on f."Current Facility" = t.current_facility_id
+from tankvol v
+     left join tanks t
+     on v.tank_id = t.tank_id
+     right join units u
+     on t.unit_id = u."Unit Record ID"
+     where not "Unit ID" is null
