@@ -12,7 +12,7 @@ renamed as (
     select
         -- Primary identifiers
         idrec as tank_id,
-        idrecparent as parent_tank_id,
+        idrecparent as unit_id,
         idflownet as flow_network_id,
         
         -- Tank information
