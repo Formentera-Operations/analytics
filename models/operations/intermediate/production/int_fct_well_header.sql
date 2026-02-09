@@ -50,8 +50,12 @@ tbl as (
         w."Abandon Date"
         ,IFNULL(p."API 10", o."ApiNumber") AS "API 10"
         ,case
-            when c.company_name is null and p."AssetCo" is null then o."CompanyName"
-            when c.company_name is null then 
+            when c.company_name is null and p."AssetCo" is null then
+               (case
+                    when lower(o."CompanyName") = 'fp goldsmith' then 'FP Goldsmith LP'
+                    when lower(o."CompanyName") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
+                    else o."CompanyName" end)                           
+            when c.company_name is null and not p."AssetCo" is null then
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 'Formentera South Texas, LP'
                     when lower(p."AssetCo") = 'fp balboa la' then 'FP Balboa LA LLC'
@@ -71,13 +75,14 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler midstream' then 'FP Wheeler Upstream LLC'
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 'FP Wheeler Upstream LLC'
                     when lower(p."AssetCo") = 'snyder drillco' then 'Snyder Drill Co LP'
+                    when lower(p."AssetCo") = 'fp griffin' then 'FP Griffin'
                     else p."AssetCo" end)
-            when o."CompanyName" is null then w."Asset Company"
+            when c.company_name is null and o."CompanyName" is null and p."AssetCo" is null then w."Asset Company"
             else c.company_name
         end as "Asset Company"
         ,case
             when c.company_code is null and p."AssetCo" is null then o."CompanyCode"
-            when c.company_code is null then 
+            when c.company_code is null and not p."AssetCo" is null then 
                 (case
                     when lower(p."AssetCo") = 'fp south texas' then 810
                     when lower(p."AssetCo") = 'fp balboa la' then 707
@@ -97,8 +102,9 @@ tbl as (
                     when lower(p."AssetCo") = 'fp wheeler midstream' then 300
                     when lower(p."AssetCo") = 'fp wheeler upstream' then 300
                     when lower(p."AssetCo") = 'snyder drillco' then 500
+                    when lower(p."AssetCo") = 'fp griffin' then 818
                     else left(p."Property Number", 3) end)
-                when o."CompanyCode" is null then w."Company Code"
+                when c.company_code is null and o."CompanyCode" is null and p."AssetCo" is null then w."Company Code"
             else c.company_code end
         as "Asset Company Code"
         ,p."Completion Record ID"
@@ -161,7 +167,7 @@ tbl as (
     left join wellview w 
     on p."WellView Well ID" = w."Well ID"
     left join company c
-    on p."Company Code" = c.company_code
+    on p."Company Code"= c.company_code
     left join prodstatus s
     on p."Unit Record ID" = s."Unit Record ID" and s.rn = 1
     left join route r

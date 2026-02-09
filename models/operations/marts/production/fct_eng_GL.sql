@@ -33,7 +33,8 @@ gl as (
         ,afe_type_code AS "AFE Type Code"
         ,afe_type_label AS "AFE Type Label"
         ,afe_type_full_name AS "AFE Type Full Name"
-        ,Posted
+        ,posted as "Posted"
+        ,posted_date as "Posted Date"
         ,journal_date as "Journal Date"
         ,journal_date_key as "Journal Date Key"
         ,cash_date as "Cash Date"
@@ -47,6 +48,8 @@ gl as (
         ,net_volume as "Net Volume"
         ,gross_amount as "Gross Value"
         ,gross_volume as "Gross Volume"
+        ,reference as "Reference Number"
+        ,reference_type as "Reference Type"
         ,well_code as "Well Code"
         ,well_name as "Well Name"
         ,CASE
@@ -85,7 +88,10 @@ Select
     ,"Main Account"
     ,"Net Value"
     ,"Net Volume"
-    ,"POSTED"
+    ,"Posted"
+    ,"Posted Date"
+    ,"Reference Number"
+    ,"Reference Type"
     ,"Sub Account"
     ,"NRI Actual"
     ,"NRI Expected"
@@ -94,7 +100,7 @@ Select
     ,"Well Code"
     ,"Well Name"
 from gl
-WHERE Posted = 'Y'
+WHERE "Posted" = 'Y'
 AND "Journal Date" > '2021-12-31'
 --AND "Main Account" in (310,311,312,313,314,315,316,317,328,701,702,703,840,850,860,870,704,900,715,901,807,903,830,806,802,318,935,704,705)
 --AND NOT "Combined Account" in ('850-35', '850-36')

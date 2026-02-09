@@ -1,6 +1,6 @@
 with source as (
     
-    select * from {{ source('oda', 'ODA_BATCH_ODA_REVENUEDECKPARTICIPANT') }}
+    select * from {{ source('oda', 'ODA_REVENUEDECKPARTICIPANT') }}
 
 ),
 
@@ -10,7 +10,7 @@ renamed as (
         -- Primary key and deck identifiers
         ID as id,
         DECKREVISIONID as deck_revision_id,
-        REVENUEDECKPARTICIPANTIDENTITY as expense_deck_participant_identity,
+        REVENUEDECKPARTICIPANTIDENTITY as revenue_deck_participant_identity,
         ISMEMO as is_memo,
         
         -- Entity details
