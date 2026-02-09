@@ -56,6 +56,29 @@ sources:
       - name: PVT_PVUNITAGREEMT
       - name: PVT_PVUNITAGREEMTPARTNER
       - name: PVT_PVUNITCOMPFLUIDLEVEL
+      - name: PVT_PVUNITCOMPPUMP
+        description: >
+          Artificial lift / pump installation records. Primary entity table (not an extension).
+          Contains equipment details (make, model, serial number), install/removal dates,
+          and power rating. Parent of PVT_PVUNITCOMPPUMPROD (rod pump configs).
+          Links up to completion records via IDRECPARENT.
+        columns:
+          - name: IDREC
+            description: Unique record ID (PK)
+          - name: IDRECPARENT
+            description: FK to parent completion record
+          - name: IDFLOWNET
+            description: Well/flownet identifier
+          - name: NAME
+            description: Pump name (e.g. "Gas Lift", "Plunger Lift")
+          - name: TYP
+            description: Pump type classification
+          - name: POWERRATING
+            description: Power rating stored in watts. Convert to HP via / 745.6999
+          - name: DTTMSTART
+            description: Install date
+          - name: DTTMEND
+            description: Removal date (null if currently installed)
       - name: PVT_PVUNITCOMPPUMPROD
         description: >
           Rod pump configuration records. Parent table containing static pump specs
