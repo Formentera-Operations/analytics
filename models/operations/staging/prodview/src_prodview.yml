@@ -56,5 +56,49 @@ sources:
       - name: PVT_PVUNITAGREEMT
       - name: PVT_PVUNITAGREEMTPARTNER
       - name: PVT_PVUNITCOMPFLUIDLEVEL
+      - name: PVT_PVUNITCOMPPUMPROD
+        description: >
+          Rod pump configuration records. Parent table containing static pump specs
+          (pump diameter). Links up to completion records via IDRECPARENT and down
+          to daily operational entries in PVT_PVUNITCOMPPUMPRODENTRY.
+        columns:
+          - name: IDREC
+            description: Unique record ID (PK)
+          - name: IDRECPARENT
+            description: FK to parent completion record
+          - name: IDFLOWNET
+            description: Well/flownet identifier
+          - name: PUMPDIAMETER
+            description: Pump bore diameter stored in meters. Convert to inches via / 0.0254
+
+      - name: PVT_PVUNITCOMPPUMPRODENTRY
+        description: >
+          Rod pump daily operational entries. Child table of PVT_PVUNITCOMPPUMPROD.
+          Contains daily measurements including SPM, stroke length, run time %,
+          and calculated volume per day. Ordered by DTTM.
+          Note: ~14% of records are "Seed Record" placeholders with null operational data.
+        columns:
+          - name: IDREC
+            description: Unique record ID (PK)
+          - name: IDRECPARENT
+            description: FK to parent pump config record (PVT_PVUNITCOMPPUMPROD.IDREC)
+          - name: IDFLOWNET
+            description: Well/flownet identifier
+          - name: DTTM
+            description: Observation date
+          - name: SPM
+            description: Strokes per minute. No unit conversion needed.
+          - name: STROKELENGTH
+            description: Stroke length stored in meters. Convert to inches via / 0.0254
+          - name: USERNUM1
+            description: Run Time (%) stored as decimal. Convert to percentage via / 0.01
+          - name: VOLPERDAYCALC
+            description: Calculated volume per day stored in cubic meters. Convert to BBL/DAY via / 0.1589873
+          - name: COM
+            description: Comments / free text
+          - name: USERTXT1
+            description: Crank position (e.g. "2 of 4"). Formentera-specific usage.
+          - name: USERTXT2
+            description: Crank rotation direction (CW/CCW). Formentera-specific usage.
 
 
