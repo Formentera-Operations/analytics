@@ -9,5 +9,5 @@
     Select
         *
     FROM {{ ref('int_prodview__tank_volumes') }}
-        where "Date" > '2021-12-31'
+        where "Date" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)
         and not "Current Facility ID" is null

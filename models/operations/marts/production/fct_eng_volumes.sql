@@ -10,7 +10,7 @@ WITH prodvolume as (
     Select
         *
     FROM {{ ref('int_prodview__production_volumes') }}
-        where "Prod Date" > '2021-12-31' and "Prod Date" < CAST(GETDATE() AS date) - 1
+        where "Prod Date" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year) and "Prod Date" < CAST(GETDATE() AS date) - 1
 )
 
 ,bounds AS (

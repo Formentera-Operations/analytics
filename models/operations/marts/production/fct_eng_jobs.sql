@@ -34,4 +34,4 @@ WITH jobs as (
 
 Select *
 from jobs
-where "Job Start Date" > '2021-12-31'
+where "Job Start Date" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)

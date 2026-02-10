@@ -35,6 +35,6 @@ Select
     *
     ,("Budget - Gross BOE" / 24) as "Budget - Gross BOE/hr"
 from prodtarget
-where "Prod Date" > '2021-12-31'
+where "Prod Date" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)
 and "Target Type" = 'Budget'
 order by "Prod Date" Desc
