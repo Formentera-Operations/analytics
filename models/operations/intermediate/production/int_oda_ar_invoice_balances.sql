@@ -23,10 +23,10 @@ with ar_invoice_balances as (
 
         i.invoice_id                            AS invoice_id,
         i.Total_Invoice_Amount 
-         + coalesce('p.Total_Payments', '0') 
-        + coalesce('a.Total_Adjustments', '0')
-        + coalesce('n.Total_Net', '0')     AS Remaining_Balance,
-         coalesce('m.exclude_pair', '0')    AS exclude_pair
+         + coalesce(p.Total_Payments, 0) 
+        + coalesce(a.Total_Adjustments, 0)
+        + coalesce(n.Total_Net, 0)     AS Remaining_Balance,
+         coalesce(m.exclude_pair, 0)    AS exclude_pair
         
         FROM {{ ref('int_oda_ar_invoice') }} i 
         
