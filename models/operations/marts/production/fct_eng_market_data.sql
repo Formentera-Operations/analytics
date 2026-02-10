@@ -57,5 +57,5 @@ select
     *
 from ngl_comp
 where rn = 1
-and "Delivery Date" > '2021-12-31'
+and "Delivery Date" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)
 order by "Pricing Index Name", "Product Type", "Delivery Date" , "As Of Date" asc

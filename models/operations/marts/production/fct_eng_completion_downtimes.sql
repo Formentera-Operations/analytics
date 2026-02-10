@@ -12,3 +12,5 @@ WITH downtimes as (
 
 Select *
 from downtimes
+WHERE "First Day" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)
+ORDER BY "First Day"
