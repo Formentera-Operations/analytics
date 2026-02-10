@@ -10,6 +10,7 @@ WITH jobs as (
         ,"AFE Cost Type"
         ,"AFE Number"
         ,"AFE Total Amount"
+        ,"API 10 Number"
         ,"Duration Start To End Days"
         ,CAST("Job End Datetime" as date) AS "Job End Date"
         ,CAST("Calculated End Datetime" as date) AS "Job End Date Calculated"
@@ -26,8 +27,11 @@ WITH jobs as (
         ,"Total Field Estimate"
         ,"Well ID"
         ,"Wellview Job Category"
+        ,"Well Code"
+        ,"Well Type"
     FROM {{ ref('int_wellview_job') }}
 )
 
 Select *
 from jobs
+where "Job Start Date" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)
