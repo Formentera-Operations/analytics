@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "dbt": {
+      "command": "uvx",
+      "args": ["--env-file", ".env.dbt-mcp", "dbt-mcp"]
+    }
+  }
+}
