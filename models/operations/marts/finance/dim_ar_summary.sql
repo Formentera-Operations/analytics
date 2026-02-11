@@ -32,8 +32,10 @@ with ar_summary as
             i.is_overage_invoice        AS is_overage_invoice,
             i.accrual_date              AS accrual_date,
             i.include_in_accrual_report AS include_in_accrual_report,
-            e.Code                      AS owner_code,
-            v.Code                      AS voucher_code,
+            e.code                      AS owner_code,
+            e.name                      AS owner_name,
+            o.hold_billing              AS hold_billing,  
+            v.code                      AS voucher_code,
             Case 
 			  When i.invoice_type_id = 0 Then 'ADVANCE'
 			  When i.invoice_type_id = 1 Then 'CLOSEOUT'
