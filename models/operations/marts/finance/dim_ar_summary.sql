@@ -6,9 +6,7 @@
 
 {#
     Dimension: AR Summary
-    -- 
-    
-
+    -- AR Invoice Summary by Owner / Well
     
     Sources:
     - stg_oda__ar_invoice_v2
