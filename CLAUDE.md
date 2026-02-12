@@ -15,6 +15,35 @@ Oil & gas analytics platform built on **dbt + Snowflake**. Two tenants: Formente
 - **Always validate with `dbt show`** before declaring a model complete — check row counts, NULLs, and grain
 - **CI runs `state:modified+`** — your changes will be built along with all downstream models; think about blast radius
 
+## Local Development & Snowflake Connection
+
+See `docs/LOCAL_SETUP.md` for full setup instructions. Key gotchas for Claude Code sessions:
+
+### Connection details
+- **Account:** `YL35090.south-central-us.azure` (Azure South Central US)
+- **Auth:** RSA keypair (`~/.snowflake/rsa_key.p8`)
+- **Role:** `DBT_ROLE` | **Warehouse:** `DBT_WH` | **Database:** `FO_RAW_DB`
+- **Dev schema:** `dbt_<developer_name>` (e.g., `dbt_rob_stover`)
+
+### Gotchas
+
+| Gotcha | Wrong | Right |
+|--------|-------|-------|
+| Account format | `FORMENTERA-DATAHUB` (org-account format) | `YL35090.south-central-us.azure` (locator + region) |
+| Username | Snowflake NAME (e.g., `ROBSTOVER`) | Snowflake LOGIN_NAME email (e.g., `FIRST.LAST@FORMENTERAOPS.COM`) |
+| Python version | 3.14+ (breaks `mashumaro` dependency) | 3.12 |
+| Auth method | `externalbrowser` or Snowflake OAuth (needs browser) | RSA keypair (headless, works in CLI and Claude Code) |
+
+### Running dbt locally
+
+```bash
+# Activate the venv (required for all dbt commands)
+source .venv/bin/activate
+
+# Or run directly without activating
+.venv/bin/dbt <command>
+```
+
 ## Source Systems
 
 | Source | System | Domain | Key Tables |
