@@ -10,3 +10,6 @@ prod-artifacts/
 
 # dbt MCP server (personal paths - see .env.dbt-mcp.example)
 .env.dbt-mcp
+
+# Local Claude Code scripts
+scripts/
