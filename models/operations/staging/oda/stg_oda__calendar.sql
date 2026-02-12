@@ -1,6 +1,6 @@
 with source as (
-    
-    select * from {{ source('oda', 'ODA_BATCH_MDM_CALENDAR') }}
+
+    select * from {{ source('oda', 'MDM_CALENDAR') }}
 
 ),
 
@@ -9,13 +9,13 @@ renamed as (
     select
         -- Primary key
         DATEKEY as date_key,
-        
+
         -- Date information
         DATE as date,
         DAY as day,
         DAYSUFFIX as day_suffix,
         DAYOFYEAR as day_of_year,
-        
+
         -- Week information
         WEEKDAY as weekday,
         WEEKDAYNAME as weekday_name,
@@ -29,7 +29,7 @@ renamed as (
         FIRSTDATEOFWEEK as first_date_of_week,
         LASTDATEOFWEEK as last_date_of_week,
         DOWINMONTH as dow_in_month,
-        
+
         -- Month information
         MONTH as month,
         MONTHNAME as month_name,
@@ -40,21 +40,21 @@ renamed as (
         MONTHYEARNAME as month_year_name,
         FIRSTDATEOFMONTH as first_date_of_month,
         LASTDATEOFMONTH as last_date_of_month,
-        
+
         -- Quarter information
         QUARTER as quarter,
         QUARTERNAME as quarter_name,
         FIRSTDATEOFQUATER as first_date_of_quarter,
         LASTDATEOFQUATER as last_date_of_quarter,
-        
+
         -- Year information
         YEAR as year,
         FIRSTDATEOFYEAR as first_date_of_year,
         LASTDATEOFYEAR as last_date_of_year,
-        
+
         -- Metadata
         FLOW_PUBLISHED_AT as flow_published_at,
-        
+
         -- Full document JSON for reference
         FLOW_DOCUMENT as flow_document
 
