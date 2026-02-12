@@ -30,6 +30,19 @@ Oil & gas analytics platform built on **dbt + Snowflake**. Two tenants: Formente
 
 **CDC pattern:** ODA tables arrive via Estuary CDC. Soft deletes are indicated by `"_meta/op" = 'd'` — filter these out in staging. The `FLOW_PUBLISHED_AT` column tracks CDC timestamps.
 
+## Deep Context Files
+
+The `context/` directory contains detailed source system documentation, business domain definitions, and entity specifications. **Read the relevant context file before building or modifying models in that domain.**
+
+| Type | Location | Contents |
+|------|----------|----------|
+| **Sources** | `context/sources/{source}.md` | System overview, data model hierarchy, join patterns, unit conversions, gotchas, user-defined field mappings |
+| **Domains** | `context/domains/{domain}.md` | Business logic, metric definitions, canonical tables, business rules |
+| **Entities** | `context/entities/{entity}.md` | Cross-system entity resolution, identifier mappings, key relationships |
+
+Available context files:
+- `context/sources/prodview.md` — Peloton ProdView (production volumes, allocations, completions, artificial lift, tanks, meters)
+
 ## Model Layers & Conventions
 
 ### Staging (`models/operations/staging/`)
