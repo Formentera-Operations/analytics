@@ -43,7 +43,7 @@ models:
           timestamp_column: _flow_published_at
     description: |
       Staging model for General Ledger entries from Quorum OnDemand Accounting.
-      This is a critical table that contains all financial transactions across the organization, 
+      This is a critical table that contains all financial transactions across the organization,
       including journal entries, accounts payable/receivable transactions, and automated postings.
       The model standardizes raw GL data by:
       - Converting status flags to boolean
@@ -99,6 +99,8 @@ models:
               arguments:
                 to: ref("stg_oda__account_v2")
                 field: account_id
+              config:
+                severity: warn  # CDC sync lag — GL entries may reference accounts not yet synced via Estuary
 
       - name: journal_date_key
         description: Date key for the journal entry, used for date-based lookups
@@ -187,6 +189,8 @@ models:
               arguments:
                 to: ref("stg_oda__afe_v2")
                 field: id
+              config:
+                severity: warn  # CDC sync lag — GL entries may reference AFEs not yet synced via Estuary
 
       - name: created_at
         description: Timestamp when the record was created
@@ -394,4 +398,3 @@ models:
         description: Timestamp when record was loaded by dbt
         data_tests:
           - not_null
-  
