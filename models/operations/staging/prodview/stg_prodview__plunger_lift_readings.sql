@@ -18,7 +18,7 @@ source as (
 renamed as (
     select
         -- identifiers
-        trim(idrec)::varchar as plunger_entry_id,
+        trim(idrec)::varchar as id_rec,
         trim(idrecparent)::varchar as plunger_lift_id,
         trim(idflownet)::varchar as flow_network_id,
 
@@ -26,7 +26,7 @@ renamed as (
         dttm::timestamp_ntz as entry_date,
 
         -- operating parameters
-        {{ pv_kpa_to_psi('plungeronpressure') }} as plunger_on_pressure_psi,
+        {{ pv_kpa_to_psi('plungeronpressure') }}::float as plunger_on_pressure_psi,
 
         -- trip counts
         tripcounttotal::float as total_trips,
@@ -34,15 +34,15 @@ renamed as (
         tripcountfail::float as failed_trips,
 
         -- duration metrics
-        {{ pv_seconds_to_minutes('duron') }} as duration_on_minutes,
-        {{ pv_seconds_to_minutes('duroff') }} as duration_off_minutes,
-        {{ pv_days_to_hours('afterflowtime') }} as after_flow_time_hours,
+        {{ pv_seconds_to_minutes('duron') }}::float as duration_on_minutes,
+        {{ pv_seconds_to_minutes('duroff') }}::float as duration_off_minutes,
+        {{ pv_days_to_hours('afterflowtime') }}::float as after_flow_time_hours,
 
         -- travel time metrics
-        {{ pv_seconds_to_minutes('traveltimeavg') }} as travel_time_avg_minutes,
-        {{ pv_seconds_to_minutes('traveltimemax') }} as travel_time_max_minutes,
-        {{ pv_seconds_to_minutes('traveltimemin') }} as travel_time_min_minutes,
-        {{ pv_seconds_to_minutes('traveltimetarget') }} as travel_time_target_minutes,
+        {{ pv_seconds_to_minutes('traveltimeavg') }}::float as travel_time_avg_minutes,
+        {{ pv_seconds_to_minutes('traveltimemax') }}::float as travel_time_max_minutes,
+        {{ pv_seconds_to_minutes('traveltimemin') }}::float as travel_time_min_minutes,
+        {{ pv_seconds_to_minutes('traveltimetarget') }}::float as travel_time_target_minutes,
 
         -- descriptive fields
         trim(com)::varchar as comments,
@@ -70,7 +70,7 @@ renamed as (
         syslockmeui::boolean as is_locked_ui,
         syslockchildrenui::boolean as is_children_locked_ui,
 
-        -- ingestion metadata
+        -- fivetran metadata
         _fivetran_deleted::boolean as _fivetran_deleted,
         _fivetran_synced::timestamp_tz as _fivetran_synced
 
@@ -82,12 +82,12 @@ filtered as (
     from renamed
     where
         coalesce(_fivetran_deleted, false) = false
-        and plunger_entry_id is not null
+        and id_rec is not null
 ),
 
 enhanced as (
     select
-        {{ dbt_utils.generate_surrogate_key(['plunger_entry_id']) }} as plunger_reading_sk,
+        {{ dbt_utils.generate_surrogate_key(['id_rec']) }} as plunger_reading_sk,
         *,
         current_timestamp() as _loaded_at
     from filtered
@@ -98,7 +98,7 @@ final as (
         plunger_reading_sk,
 
         -- identifiers
-        plunger_entry_id,
+        id_rec,
         plunger_lift_id,
         flow_network_id,
 

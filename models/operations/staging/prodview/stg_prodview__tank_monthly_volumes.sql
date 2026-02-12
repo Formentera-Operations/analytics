@@ -18,7 +18,7 @@ source as (
 renamed as (
     select
         -- identifiers
-        trim(idrec)::varchar as tank_calculation_id,
+        trim(idrec)::varchar as id_rec,
         trim(idrecparent)::varchar as parent_tank_id,
         trim(idflownet)::varchar as flow_network_id,
 
@@ -29,33 +29,33 @@ renamed as (
         month::int as calculation_month,
 
         -- opening inventory volumes
-        {{ pv_cbm_to_bbl('volstarttotal') }} as opening_total_volume_bbl,
-        {{ pv_cbm_to_bbl('volstarthcliq') }} as opening_hcliq_volume_bbl,
-        {{ pv_cbm_to_mcf('volstarthcliqgaseq') }} as opening_gas_equivalent_hcliq_volume_mcf,
-        {{ pv_cbm_to_bbl('volstartwater') }} as opening_water_volume_bbl,
-        {{ pv_cbm_to_bbl('volstartsand') }} as opening_sand_volume_bbl,
+        {{ pv_cbm_to_bbl('volstarttotal') }}::float as opening_total_volume_bbl,
+        {{ pv_cbm_to_bbl('volstarthcliq') }}::float as opening_hcliq_volume_bbl,
+        {{ pv_cbm_to_mcf('volstarthcliqgaseq') }}::float as opening_gas_equivalent_hcliq_volume_mcf,
+        {{ pv_cbm_to_bbl('volstartwater') }}::float as opening_water_volume_bbl,
+        {{ pv_cbm_to_bbl('volstartsand') }}::float as opening_sand_volume_bbl,
 
         -- opening quality measurements
-        {{ pv_decimal_to_pct('bswstart') }} as opening_bsw_total_pct,
-        {{ pv_decimal_to_pct('sandcutstart') }} as opening_sand_cut_total_pct,
+        {{ pv_decimal_to_pct('bswstart') }}::float as opening_bsw_total_pct,
+        {{ pv_decimal_to_pct('sandcutstart') }}::float as opening_sand_cut_total_pct,
 
         -- closing inventory volumes
-        {{ pv_cbm_to_bbl('volendtotal') }} as closing_total_volume_bbl,
-        {{ pv_cbm_to_bbl('volendhcliq') }} as closing_hcliq_volume_bbl,
-        {{ pv_cbm_to_mcf('volendhcliqgaseq') }} as closing_gas_equiv_hcliq_volume_mcf,
-        {{ pv_cbm_to_bbl('volendwater') }} as closing_water_volume_bbl,
-        {{ pv_cbm_to_bbl('volendsand') }} as closing_sand_volume_bbl,
+        {{ pv_cbm_to_bbl('volendtotal') }}::float as closing_total_volume_bbl,
+        {{ pv_cbm_to_bbl('volendhcliq') }}::float as closing_hcliq_volume_bbl,
+        {{ pv_cbm_to_mcf('volendhcliqgaseq') }}::float as closing_gas_equiv_hcliq_volume_mcf,
+        {{ pv_cbm_to_bbl('volendwater') }}::float as closing_water_volume_bbl,
+        {{ pv_cbm_to_bbl('volendsand') }}::float as closing_sand_volume_bbl,
 
         -- closing quality measurements
-        {{ pv_decimal_to_pct('bswend') }} as closing_bsw_total_pct,
-        {{ pv_decimal_to_pct('sandcutend') }} as closing_sand_cut_total_pct,
+        {{ pv_decimal_to_pct('bswend') }}::float as closing_bsw_total_pct,
+        {{ pv_decimal_to_pct('sandcutend') }}::float as closing_sand_cut_total_pct,
 
         -- change in inventory
-        {{ pv_cbm_to_bbl('volchgtotal') }} as change_in_total_volume_bbl,
-        {{ pv_cbm_to_bbl('volchghcliq') }} as change_in_hcliq_volume_bbl,
-        {{ pv_cbm_to_mcf('volchghcliqgaseq') }} as change_in_gas_equivalent_hcliq_volume_mcf,
-        {{ pv_cbm_to_bbl('volchgwater') }} as change_in_water_volume_bbl,
-        {{ pv_cbm_to_bbl('volchgsand') }} as change_in_sand_volume_bbl,
+        {{ pv_cbm_to_bbl('volchgtotal') }}::float as change_in_total_volume_bbl,
+        {{ pv_cbm_to_bbl('volchghcliq') }}::float as change_in_hcliq_volume_bbl,
+        {{ pv_cbm_to_mcf('volchghcliqgaseq') }}::float as change_in_gas_equivalent_hcliq_volume_mcf,
+        {{ pv_cbm_to_bbl('volchgwater') }}::float as change_in_water_volume_bbl,
+        {{ pv_cbm_to_bbl('volchgsand') }}::float as change_in_sand_volume_bbl,
 
         -- facility and analysis references
         trim(idrecfacility)::varchar as current_facility_id,
@@ -75,7 +75,7 @@ renamed as (
         syslockmeui::boolean as is_locked_ui,
         syslockchildrenui::boolean as is_children_locked_ui,
 
-        -- ingestion metadata
+        -- fivetran metadata
         _fivetran_deleted::boolean as _fivetran_deleted,
         _fivetran_synced::timestamp_tz as _fivetran_synced
 
@@ -87,12 +87,12 @@ filtered as (
     from renamed
     where
         coalesce(_fivetran_deleted, false) = false
-        and tank_calculation_id is not null
+        and id_rec is not null
 ),
 
 enhanced as (
     select
-        {{ dbt_utils.generate_surrogate_key(['tank_calculation_id']) }} as tank_monthly_volume_sk,
+        {{ dbt_utils.generate_surrogate_key(['id_rec']) }} as tank_monthly_volume_sk,
         *,
         current_timestamp() as _loaded_at
     from filtered
@@ -103,7 +103,7 @@ final as (
         tank_monthly_volume_sk,
 
         -- identifiers
-        tank_calculation_id,
+        id_rec,
         parent_tank_id,
         flow_network_id,
 

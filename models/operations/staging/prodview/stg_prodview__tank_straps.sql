@@ -39,7 +39,7 @@ renamed as (
         syslockmeui::boolean as is_locked_ui,
         syslockchildrenui::boolean as is_children_locked_ui,
 
-        -- ingestion metadata
+        -- fivetran metadata
         _fivetran_deleted::boolean as _fivetran_deleted,
         _fivetran_synced::timestamp_tz as _fivetran_synced
 

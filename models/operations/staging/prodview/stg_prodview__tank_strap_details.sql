@@ -23,11 +23,11 @@ renamed as (
         trim(idflownet)::varchar as flow_network_id,
 
         -- strap data
-        trim(level)::varchar as tank_level,
-        {{ pv_cbm_to_bbl('factor') }} as volume_factor_bbl,
-        {{ pv_cbm_to_bbl('volor') }} as volume_override_bbl,
+        level::float as tank_level,
+        {{ pv_cbm_to_bbl('factor') }}::float as volume_factor_bbl,
+        {{ pv_cbm_to_bbl('volor') }}::float as volume_override_bbl,
         incrementcalc::float as increments_calculated,
-        {{ pv_cbm_to_bbl('volcalc') }} as volume_calculated_bbl,
+        {{ pv_cbm_to_bbl('volcalc') }}::float as volume_calculated_bbl,
         sysseq::int as sequence,
 
         -- system / audit
@@ -42,7 +42,7 @@ renamed as (
         syslockmeui::boolean as is_locked_ui,
         syslockchildrenui::boolean as is_children_locked_ui,
 
-        -- ingestion metadata
+        -- fivetran metadata
         _fivetran_deleted::boolean as _fivetran_deleted,
         _fivetran_synced::timestamp_tz as _fivetran_synced
 

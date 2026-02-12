@@ -36,10 +36,10 @@ renamed as (
         dttminv::timestamp_ntz as inventory_date,
 
         -- volumes
-        {{ pv_cbm_to_bbl('volhcliq') }} as oil_condensate_volume_bbl,
-        {{ pv_cbm_to_mcf('volgas') }} as gas_volume_mcf,
-        {{ pv_cbm_to_bbl('volwater') }} as water_volume_bbl,
-        {{ pv_cbm_to_bbl('volsand') }} as sand_volume_bbl,
+        {{ pv_cbm_to_bbl('volhcliq') }}::float as oil_condensate_volume_bbl,
+        {{ pv_cbm_to_mcf('volgas') }}::float as gas_volume_mcf,
+        {{ pv_cbm_to_bbl('volwater') }}::float as water_volume_bbl,
+        {{ pv_cbm_to_bbl('volsand') }}::float as sand_volume_bbl,
 
         -- flags
         keepwhole::boolean as is_keep_whole,
@@ -56,7 +56,7 @@ renamed as (
         syslockmeui::boolean as is_locked_ui,
         syslockchildrenui::boolean as is_children_locked_ui,
 
-        -- ingestion metadata
+        -- fivetran metadata
         _fivetran_deleted::boolean as _fivetran_deleted,
         _fivetran_synced::timestamp_tz as _fivetran_synced
 

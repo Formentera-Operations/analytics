@@ -18,7 +18,7 @@ source as (
 renamed as (
     select
         -- identifiers
-        trim(idrec)::varchar as plunger_lift_id,
+        trim(idrec)::varchar as id_rec,
         trim(idrecparent)::varchar as completion_id,
         trim(idflownet)::varchar as flow_network_id,
 
@@ -34,11 +34,11 @@ renamed as (
         syslockmeui::boolean as is_locked_ui,
         syslockchildrenui::boolean as is_children_locked_ui,
 
-        -- ingestion metadata
+        -- fivetran metadata
         _fivetran_deleted::boolean as _fivetran_deleted,
         _fivetran_synced::timestamp_tz as _fivetran_synced,
 
-        -- equipment details (calculation must follow simple targets per ST06)
+        -- equipment details
         displacement / 1.104078437E-06 as displacement_rate_bbl_per_day_per_100rpm
 
     from source
@@ -49,12 +49,12 @@ filtered as (
     from renamed
     where
         coalesce(_fivetran_deleted, false) = false
-        and plunger_lift_id is not null
+        and id_rec is not null
 ),
 
 enhanced as (
     select
-        {{ dbt_utils.generate_surrogate_key(['plunger_lift_id']) }} as plunger_lift_sk,
+        {{ dbt_utils.generate_surrogate_key(['id_rec']) }} as plunger_lift_sk,
         *,
         current_timestamp() as _loaded_at
     from filtered
@@ -65,7 +65,7 @@ final as (
         plunger_lift_sk,
 
         -- identifiers
-        plunger_lift_id,
+        id_rec,
         completion_id,
         flow_network_id,
 
