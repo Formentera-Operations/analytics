@@ -10,9 +10,6 @@ macros:
         ```
         {% raw %}{{ config(snowflake_warehouse=set_warehouse_size("L")) }}{% endraw %}
         ```
-    config:
-      docs:
-        show: true
     arguments:
       - name: size
         type: string
