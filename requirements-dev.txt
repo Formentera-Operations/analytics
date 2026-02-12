@@ -1,0 +1,7 @@
+# Development dependencies — not required for dbt runtime
+# Install with: pip install -r requirements-dev.txt
+-r requirements.txt
+sqlfluff==3.3.1
+sqlfluff-templater-dbt==3.3.1
+yamllint==1.35.1
+pre-commit==4.1.0
