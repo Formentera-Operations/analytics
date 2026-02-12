@@ -19,7 +19,7 @@
 #}
 
 with units as (
-    select 
+    select
         "Property EID" as eid,
         "Unit Record ID" as unit_id,
         "Regulatory ID" as regulatory_id,
@@ -49,47 +49,21 @@ with units as (
         "Is Operated" as is_operated,
         "Unit Sub Type" as unit_sub_type
     from {{ ref('stg_prodview__units') }}
-    where 
-        "Unit Sub Type" ilike '%well%' 
-        and "Property EID" is not null 
+    where
+        "Unit Sub Type" ilike '%well%'
+        and "Property EID" is not null
         and "Completion Status" != 'INACTIVE'
 ),
 
 -- Get current status from status table with engineer-approved mapping
 -- Join key: units."Current Completion Status" -> status."Status Record ID"
+-- Uses normalize_well_status UDF for canonical UPPER_SNAKE_CASE output
 status_mapped as (
     select
         "Status Record ID" as status_record_id,
         "Status" as status_raw,
         "Status Date" as status_date,
-        -- Engineer-approved status mapping (Parker & team)
-        case "Status"
-            -- Producing statuses
-            when 'Active' then 'Producing'
-            when 'Completing' then 'Producing'
-            when 'ESP' then 'Producing'
-            when 'ESP - OWNED' then 'Producing'
-            when 'FLOWING' then 'Producing'
-            when 'Flowing' then 'Producing'
-            when 'FLOWING - CASING' then 'Producing'
-            when 'FLOWING - TUBING' then 'Producing'
-            when 'GAS LIFT' then 'Producing'
-            when 'Producer' then 'Producing'
-            
-            -- Shut In statuses
-            when 'INACTIVE' then 'Shut In'
-            when 'INACTIVE COMPLETED' then 'Shut In'
-            when 'INACTIVE INJECTOR' then 'Shut In'
-            when 'INACTIVE PRODUCER' then 'Shut In'
-            when 'SHUT IN' then 'Shut In'
-            when 'Shut-In' then 'Shut In'
-            
-            -- Injecting
-            when 'INJECTING' then 'Injecting'
-            
-            -- Pass through if not mapped
-            else "Status"
-        end as status_clean
+        {{ function('normalize_well_status') }}("Status") as status_clean
     from {{ ref('stg_prodview__status') }}
 ),
 
@@ -98,7 +72,9 @@ daily_production as (
     select
         "Unit Record ID" as unit_id,
         "Allocation Date" as production_date,
-        coalesce("Allocated Oil bbl", 0) + coalesce("Allocated Condensate bbl", 0) + coalesce("Allocated NGL bbl", 0) as total_oil_bbl,
+        coalesce("Allocated Oil bbl", 0)
+        + coalesce("Allocated Condensate bbl", 0)
+        + coalesce("Allocated NGL bbl", 0) as total_oil_bbl,
         coalesce("Allocated Gas mcf", 0) as total_gas_mcf
     from {{ ref('stg_prodview__daily_allocations') }}
     where "Allocation Date" is not null
@@ -115,7 +91,7 @@ first_production as (
 
 -- Join units with current status and first production date
 source as (
-    select 
+    select
         u.*,
         s.status_raw as prodview_status_raw,
         s.status_clean as prodview_status_clean,
@@ -130,8 +106,8 @@ deduplicated as (
     select *
     from source
     qualify row_number() over (
-        partition by eid 
-        order by 
+        partition by eid
+        order by
             case when prodview_status_clean is not null then 0 else 1 end,
             unit_id desc
     ) = 1
