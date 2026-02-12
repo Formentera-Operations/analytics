@@ -15,7 +15,6 @@ renamed as (
         RECORDUPDATEDATE as "RecordUpdateDate",
         USERFIELDNAME as "UserFieldName",
         USERFIELDVALUESTRING as "UserFieldValueString",
-        "_meta/op",
         FLOW_PUBLISHED_AT,
         FLOW_DOCUMENT
     from source
