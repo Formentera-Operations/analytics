@@ -1,6 +1,6 @@
 name: Validate dbt changes
 
-on:
+"on":
   workflow_dispatch:
   pull_request:
     paths:
@@ -77,7 +77,7 @@ jobs:
         run: >
           dbt parse
           --profile integration_tests
-          --target prod
+          --target ci
           --target-path prod-artifacts/
       - name: Store production artifacts
         uses: actions/upload-artifact@v4
