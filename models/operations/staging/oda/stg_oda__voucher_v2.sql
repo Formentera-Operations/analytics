@@ -31,8 +31,6 @@ renamed as (
         -- Currency information
         CURRENCYID as currency_id,
         CONVERTCURRENCYTYPEID as convert_currency_type_id,
-        EXCHANGERATEID as exchange_rate_id,
-
         -- Company information
         ORIGINATINGCOMPANYID as originating_company_id,
 
@@ -55,7 +53,6 @@ renamed as (
         UPDATEEVENTID as update_event_id,
         RECORDINSERTDATE as record_insert_date,
         RECORDUPDATEDATE as record_update_date,
-        "_meta/op" as operation_type,
         FLOW_PUBLISHED_AT as flow_published_at,
 
         -- Full document JSON for reference
