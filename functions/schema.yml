@@ -1,0 +1,84 @@
+functions:
+  - name: normalize_state_abbrev
+    description: >
+      Converts US state names to standard 2-letter abbreviations.
+      Handles full names (e.g., 'Texas' → 'TX') and passes through
+      values that are already abbreviated.
+    config:
+      database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
+      schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'udfs' }}"
+      volatility: deterministic
+      tags:
+        - well_360
+        - udf
+    arguments:
+      - name: state_value
+        data_type: varchar
+        description: Raw state name or abbreviation from any source system
+    returns:
+      data_type: varchar
+      description: 2-letter US state abbreviation (uppercase)
+
+  - name: normalize_well_config
+    description: >
+      Normalizes well configuration/trajectory values to canonical types:
+      HORIZONTAL, VERTICAL, DIRECTIONAL, or UNKNOWN. Handles variants
+      from WellView and Enverus (e.g., 'Deviated' → 'DIRECTIONAL',
+      'Multi-Lateral' → 'HORIZONTAL').
+    config:
+      database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
+      schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'udfs' }}"
+      volatility: deterministic
+      tags:
+        - well_360
+        - udf
+    arguments:
+      - name: config_value
+        data_type: varchar
+        description: Raw well configuration or trajectory value
+    returns:
+      data_type: varchar
+      description: "One of: HORIZONTAL, VERTICAL, DIRECTIONAL, UNKNOWN"
+
+  - name: normalize_producing_method
+    description: >
+      Normalizes producing/lift method values to canonical types.
+      Maps variants from ProdView and Enverus (e.g., 'Pumping' → 'ROD_PUMP',
+      'Plunger Lift - Conv' → 'PLUNGER_LIFT'). Returns null for status values
+      that appear in method fields (e.g., 'Shut In', 'Plugged & Abandoned').
+    config:
+      database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
+      schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'udfs' }}"
+      volatility: deterministic
+      tags:
+        - well_360
+        - udf
+    arguments:
+      - name: method_value
+        data_type: varchar
+        description: Raw producing method or lift type value
+    returns:
+      data_type: varchar
+      description: Canonical lift method (ROD_PUMP, GAS_LIFT, ESP, etc.) or null
+
+  - name: normalize_well_status
+    description: >
+      Normalizes well status values from all source systems (ProdView, ODA,
+      Enverus, Combo Curve) to a canonical UPPER_SNAKE_CASE vocabulary.
+      Handles abbreviations (e.g., 'SI' → 'SHUT_IN', 'TA' → 'TEMP_ABANDONED'),
+      ProdView lift statuses treated as producing (e.g., 'ESP', 'Gas Lift'),
+      and Enverus lifecycle stages ('DUC', 'PERMITTED', 'DRILLED').
+    config:
+      database: "{{ {'prod': 'FO_STAGE_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
+      schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'udfs' }}"
+      volatility: deterministic
+      tags:
+        - well_360
+        - udf
+    arguments:
+      - name: status_value
+        data_type: varchar
+        description: Raw well status from any source system
+    returns:
+      data_type: varchar
+      description: Canonical status (PRODUCING, SHUT_IN, INJECTING, TEMP_ABANDONED, etc.)
