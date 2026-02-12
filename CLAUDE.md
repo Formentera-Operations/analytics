@@ -325,8 +325,33 @@ dbt show --select model_name --limit 10
 # Run tests only
 dbt test --select model_name
 
+# Lint SQL — run on changed files before committing
+sqlfluff lint models/path/to/changed_model.sql
+
+# Lint YAML — check schema files
+yamllint -c .yamllint.yml models/path/to/schema.yml
+
 # Check lineage before modifying a model
 # Use the dbt MCP server: get_model_lineage_dev(model_id="model_name", direction="children", recursive=true)
+```
+
+## Linting
+
+**SQLFluff** is configured in `.sqlfluff` with the Snowflake dialect and dbt templater. Key conventions enforced:
+
+- Lowercase keywords, functions, data types, and boolean/null literals
+- 4-space indentation, trailing commas, max 120-char lines
+- Identifier casing enforced on aliases only (source columns arrive UPPERCASE from Snowflake)
+- CTEs preferred over nested subqueries
+
+**Disabled rules:**
+- `RF02` (unqualified references) — too noisy for join-heavy intermediate models
+- `RF05` (special characters in identifiers) — ProdView staging uses quoted descriptive aliases
+
+**Pre-commit hooks** run SQLFluff and yamllint on changed files automatically. Install with:
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
 ```
 
 ## File Organization
