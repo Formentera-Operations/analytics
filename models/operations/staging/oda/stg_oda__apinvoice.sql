@@ -1,5 +1,5 @@
 with source as (
-    select * from {{ source('oda', 'APINVOICE') }}
+    select * from {{ source('oda', 'ODA_APINVOICE') }}
 ),
 
 renamed as (
@@ -68,7 +68,7 @@ renamed as (
         updatedate as updated_at,
 
         -- metadata
-       --_meta_op,
+        --_meta_op,
         flow_published_at,
         flow_document
 

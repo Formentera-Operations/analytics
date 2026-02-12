@@ -5,11 +5,15 @@ max_line_length = 120
 large_file_skip_byte_limit = 40000
 
 # Disabled rules:
+# AL09 — Self-alias (e.g., ID as id). Standard Snowflake pattern to rename UPPERCASE
+#         source columns to lowercase in staging. Pervasive across 430+ models.
 # RF02 — Unqualified references. Too noisy for join-heavy intermediate models (13+ joins).
+# RF04 — Keywords as identifiers. Common column names (name, date, description) are SQL
+#         keywords but work fine unquoted in Snowflake and are deeply embedded.
 # RF05 — Special chars in identifiers. ProdView staging models use quoted descriptive
 #         aliases like "Completion Record ID" — deeply embedded legacy pattern.
 rules = core,capitalisation,layout,convention,structure,references,ambiguous,jinja
-exclude_rules = RF02,RF05
+exclude_rules = AL09,RF02,RF04,RF05
 
 # Comma style
 [sqlfluff:layout:type:comma]

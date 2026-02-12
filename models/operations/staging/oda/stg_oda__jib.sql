@@ -1,5 +1,5 @@
 with source as (
-    select * from {{ source('oda', 'JIB') }}
+    select * from {{ source('oda', 'ODA_JIB') }}
 ),
 
 renamed as (
