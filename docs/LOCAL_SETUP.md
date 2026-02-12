@@ -92,7 +92,7 @@ default:
       user: <YOUR_SNOWFLAKE_LOGIN_NAME>
       private_key_path: <HOME_DIR>/.snowflake/rsa_key.p8
       role: DBT_ROLE
-      database: FO_RAW_DB
+      database: FO_DEV_DB
       warehouse: DBT_WH
       schema: dbt_<your_name>
       threads: 8

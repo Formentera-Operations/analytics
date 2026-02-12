@@ -22,7 +22,7 @@ See `docs/LOCAL_SETUP.md` for full setup instructions. Key gotchas for Claude Co
 ### Connection details
 - **Account:** `YL35090.south-central-us.azure` (Azure South Central US)
 - **Auth:** RSA keypair (`~/.snowflake/rsa_key.p8`)
-- **Role:** `DBT_ROLE` | **Warehouse:** `DBT_WH` | **Database:** `FO_RAW_DB`
+- **Role:** `DBT_ROLE` | **Warehouse:** `DBT_WH` | **Database:** `FO_DEV_DB`
 - **Dev schema:** `dbt_<developer_name>` (e.g., `dbt_rob_stover`)
 
 ### Gotchas
