@@ -9,7 +9,10 @@ with
 
 source as (
     select * from {{ source('prodview', 'PVT_PVUNITCOMPPUMP') }}
-        qualify 1 = row_number() over (partition by idrec order by _fivetran_synced desc)
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
@@ -96,8 +99,9 @@ renamed as (
 filtered as (
     select *
     from renamed
-    where coalesce(_fivetran_deleted, false) = false
-      and id_rec is not null
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and id_rec is not null
 ),
 
 enhanced as (
@@ -105,10 +109,7 @@ enhanced as (
         {{ dbt_utils.generate_surrogate_key(['id_rec']) }} as artificial_lift_sk,
         *,
         -- flag whether pump is currently installed (no removal date)
-        case
-            when removal_date is null then true
-            else false
-        end as is_active,
+        (removal_date is null) as is_active,
         current_timestamp() as _loaded_at
     from filtered
 ),
