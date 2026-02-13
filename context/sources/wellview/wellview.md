@@ -207,6 +207,8 @@ Tables with `*Link` suffix (e.g., `wvCompletionLink`, `wvIntegrityItemLink`, `wv
 - **Performance** — avoid recomputing expensive rollups in dbt when the system already provides them
 - **Do not** treat as source-of-truth — they can lag behind real data
 
+See [`calc_table_blueprint.md`](calc_table_blueprint.md) for the full analytics abstraction — entity hierarchies, metric catalog, grain map, semantic layer roadmap, and staging priorities.
+
 ## Schema Reference
 
 Detailed column-level schemas are in `context/sources/wellview/`.

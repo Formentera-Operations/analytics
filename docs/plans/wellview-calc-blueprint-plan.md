@@ -102,14 +102,14 @@ AFE (2 AFE*Calc in other.yaml)
 
 ## Implementation Steps
 
-1. **Write the blueprint document** at `context/sources/wellview/calc_table_blueprint.md`
+1. [x] **Write the blueprint document** at `context/sources/wellview/calc_table_blueprint.md`
    - Pull entity/measure analysis from the exploration results
    - Organize into the structure above
    - Keep it concise and actionable (target ~400 lines)
 
-2. **Update `wellview.md`** — add a pointer to the blueprint in the "Calc Tables" section (one line: "See `calc_table_blueprint.md` for the full analytics abstraction")
+2. [x] **Update `wellview.md`** — add a pointer to the blueprint in the "Calc Tables" section (one line: "See `calc_table_blueprint.md` for the full analytics abstraction")
 
-3. **Commit and push** on `docs/wellview-context` branch
+3. [ ] **Commit and push** on `docs/wellview-context` branch
 
 ## What This Does NOT Do
 
