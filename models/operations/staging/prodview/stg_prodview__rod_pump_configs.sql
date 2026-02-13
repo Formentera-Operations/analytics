@@ -9,6 +9,10 @@ with
 
 source as (
     select * from {{ source('prodview', 'PVT_PVUNITCOMPPUMPROD') }}
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
@@ -19,8 +23,7 @@ renamed as (
         trim(idflownet)::varchar as id_flownet,
 
         -- pump specifications
-        -- Peloton conversion: PUMPDIAMETER stored in meters, divide by 0.0254 for inches
-        pumpdiameter::float / 0.0254 as pump_diameter_in,
+        {{ pv_meters_to_inches('pumpdiameter') }}::float as pump_diameter_in,
 
         -- system / audit
         trim(syscreateuser)::varchar as created_by,
@@ -44,8 +47,9 @@ renamed as (
 filtered as (
     select *
     from renamed
-    where coalesce(_fivetran_deleted, false) = false
-      and id_rec is not null
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and id_rec is not null
 ),
 
 enhanced as (

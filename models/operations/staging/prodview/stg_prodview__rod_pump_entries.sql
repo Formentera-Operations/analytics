@@ -9,6 +9,10 @@ with
 
 source as (
     select * from {{ source('prodview', 'PVT_PVUNITCOMPPUMPRODENTRY') }}
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
@@ -24,12 +28,9 @@ renamed as (
         -- operational measurements
         -- Peloton conversion: SPM requires no conversion
         spm::float as spm,
-        -- Peloton conversion: STROKELENGTH stored in meters, divide by 0.0254 for inches
-        strokelength::float / 0.0254 as stroke_length_in,
-        -- Peloton conversion: USERNUM1 is Run Time (%), stored as decimal, divide by 0.01 for %
-        usernum1::float / 0.01 as run_time_pct,
-        -- Peloton conversion: VOLPERDAYCALC stored in cubic meters, divide by 0.1589873 for BBL/DAY
-        volperdaycalc::float / 0.1589873 as vol_per_day_calc_bbl,
+        {{ pv_meters_to_inches('strokelength') }}::float as stroke_length_in,
+        {{ pv_decimal_to_pct('usernum1') }}::float as run_time_pct,
+        {{ pv_cbm_to_bbl_per_day('volperdaycalc') }}::float as vol_per_day_calc_bbl,
 
         -- comments and user fields
         trim(com)::varchar as comments,
@@ -61,8 +62,9 @@ renamed as (
 filtered as (
     select *
     from renamed
-    where coalesce(_fivetran_deleted, false) = false
-      and id_rec is not null
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and id_rec is not null
 ),
 
 enhanced as (
@@ -70,10 +72,7 @@ enhanced as (
         {{ dbt_utils.generate_surrogate_key(['id_rec']) }} as rod_pump_entry_sk,
         *,
         -- flag seed records (system placeholders with no operational data)
-        case
-            when lower(trim(comments)) = 'seed record' then true
-            else false
-        end as is_seed_record,
+        coalesce(lower(trim(comments)) = 'seed record', false) as is_seed_record,
         current_timestamp() as _loaded_at
     from filtered
 ),
