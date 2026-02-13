@@ -4,7 +4,7 @@
 
 Peloton WellView is Formentera's **well master data and drilling operations system**. It tracks well headers, wellbore geometry, directional surveys, casing/tubing/rod strings, completions, zones, drilling jobs, daily reports, costs, stimulations, perforations, reservoir tests, production failures, artificial lift settings, and well integrity. It is the **system of record for well construction and drilling operations**.
 
-- **Vendor:** Peloton (now part of Quorum)
+- **Vendor:** Peloton
 - **Version:** WellView 12.0
 - **Snowflake database:** `PELOTON_FORMENTERAOPS_FORMENTERAOPS_WV120`
 - **Snowflake schemas:**
