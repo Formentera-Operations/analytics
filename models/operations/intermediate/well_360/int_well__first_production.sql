@@ -8,28 +8,28 @@
 {#
     First Production Date from Daily Allocations
     =============================================
-    
+
     Derives the TRUE first production date by finding the earliest date
     with non-zero hydrocarbon production in daily allocation data.
-    
+
     This is more accurate than WellView/Enverus dates which may reflect
     acquisition date rather than actual first production.
-    
+
     Source: stg_prodview__daily_allocations
-    Grain: One row per Unit Record ID
+    Grain: One row per unit record ID
 #}
 
 with daily_production as (
     select
-        "Unit Record ID" as unit_id,
-        "Allocation Date" as production_date,
+        id_rec_unit as unit_id,
+        allocation_date as production_date,
         -- Sum all hydrocarbon volumes
-        coalesce("Allocated Oil bbl", 0) 
-            + coalesce("Allocated Condensate bbl", 0) 
-            + coalesce("Allocated NGL bbl", 0) as total_oil_bbl,
-        coalesce("Allocated Gas mcf", 0) as total_gas_mcf
+        coalesce(allocated_oil_bbl, 0)
+        + coalesce(allocated_condensate_bbl, 0)
+        + coalesce(allocated_ngl_bbl, 0) as total_oil_bbl,
+        coalesce(allocated_gas_mcf, 0) as total_gas_mcf
     from {{ ref('stg_prodview__daily_allocations') }}
-    where "Allocation Date" is not null
+    where allocation_date is not null
 ),
 
 -- Find first date with non-zero hydrocarbon production
@@ -52,8 +52,8 @@ first_any_record as (
 )
 
 select
-    coalesce(fhc.unit_id, far.unit_id) as unit_id,
-    fhc.first_hc_production_date,  -- First date with actual HC production
-    far.first_allocation_date       -- First date with any allocation record
+    fhc.first_hc_production_date,
+    far.first_allocation_date,  -- First date with actual HC production
+    coalesce(fhc.unit_id, far.unit_id) as unit_id       -- First date with any allocation record
 from first_hc_production fhc
 full outer join first_any_record far on fhc.unit_id = far.unit_id

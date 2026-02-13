@@ -4,13 +4,12 @@
     tags=['marts', 'facts']
 ) }}
 
-WITH downtimes as (
-    Select
-        *
-    FROM {{ ref('int_prodview__completion_downtimes') }}
+with downtimes as (
+    select *
+    from {{ ref('int_prodview__completion_downtimes') }}
 )
 
-Select *
+select *
 from downtimes
-WHERE "First Day" > LAST_DAY(DATEADD(year, -3,CURRENT_DATE()), year)
-ORDER BY "First Day"
+where first_day > last_day(dateadd(year, -3, current_date()), year)
+order by first_day
