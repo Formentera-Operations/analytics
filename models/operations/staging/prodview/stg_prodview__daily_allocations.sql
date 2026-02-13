@@ -1,232 +1,481 @@
-{{ config(
-    materialized='view',
-    tags=['prodview', 'allocations', 'daily', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['prodview', 'staging', 'formentera']
+    )
+}}
 
-with source_data as (
+with
+
+source as (
     select * from {{ source('prodview', 'PVT_PVUNITALLOCMONTHDAY') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
     select
-        -- Primary identifiers
-        idrec as "Allocation Record ID",
-        idrecparent as "Allocation Parent Record ID",
-        idflownet as "Flow Net ID",
-        idrecunit as "Unit Record ID",
-        idrecunittk as "Unit Table",
-        idreccomp as "Completion Record ID",
-        idreccomptk as "Completion Table",
-        idreccompzone as "Reporting/Contact Interval Record ID",
-        idreccompzonetk as "Reporting/Contact Interval Table",
-        
-        -- Date/Time information
-        dttm as "Allocation Date",
-        year as "Allocation Year",
-        month as "Allocation Month",
-        dayofmonth as "Allocation Day of Month",
-        
-        -- Operational time (converted to hours)
-        durdown / 0.0416666666666667 as "Downtime Hours",
-        durop / 0.0416666666666667 as "Operating Time Hours",
-        
-        -- Gathered volumes (converted to US units)
-        volprodgathhcliq / 0.158987294928 as "Gathered HCLiq bbl",
-        volprodgathgas / 28.316846592 as "Gathered Gas mcf",
-        volprodgathwater / 0.158987294928 as "Gathered Water bbl",
-        volprodgathsand / 0.158987294928 as "Gathered Sand bbl",
-        
-        -- Allocated volumes (converted to US units)
-        volprodallochcliq / 0.158987294928 as "Allocated HCLiq bbl",
-        volprodallocoil / 0.158987294928 as "Allocated Oil bbl",
-        volprodalloccond / 0.158987294928 as "Allocated Condensate bbl",
-        volprodallocngl / 0.158987294928 as "Allocated NGL bbl",
-        volprodallochcliqgaseq / 28.316846592 as "Allocated Gas Equivalent of HCLiq mcf",
-        volprodallocgas / 28.316846592 as "Allocated Gas mcf",
-        volprodallocwater / 0.158987294928 as "Allocated Water bbl",
-        volprodallocsand / 0.158987294928 as "Allocated Sand bbl",
-        
-        -- Allocation factors (unitless ratios)
-        AllocFactHCLiq AS "Allocation Factor HCLiq",
-        AllocFactGas AS "Allocation Factor Gas",
-        AllocFactWater AS "Allocation Factor Water",
-        AllocFactSand AS "Allocation Factor Sand",
-        
-        -- New production volumes (converted to US units)
-        volnewprodallochcliq / 0.158987294928 as "New Production HCLiq bbl",
-        volnewprodallocoil / 0.158987294928 as "New Production Oil bbl",
-        volnewprodalloccond / 0.158987294928 as "New Production Condensate bbl",
-        volnewprodallocngl / 0.158987294928 as "New Production Ngl bbl",
-        volnewprodallochcliqgaseq / 28.316846592 as "New Production Hcliq Gas Equivalent mcf",
-        volnewprodallocgas / 28.316846592 as "New Production Gas mcf",
-        volnewprodallocwater / 0.158987294928 as "New Production Water bbl",
-        volnewprodallocsand / 0.158987294928 as "New Production Sand bbl",
+        -- identifiers
+        trim(idrec)::varchar as id_rec,
+        trim(idrecparent)::varchar as id_rec_parent,
+        trim(idflownet)::varchar as id_flownet,
+        trim(idrecunit)::varchar as id_rec_unit,
+        trim(idrecunittk)::varchar as id_rec_unit_tk,
+        trim(idreccomp)::varchar as id_rec_comp,
+        trim(idreccomptk)::varchar as id_rec_comp_tk,
+        trim(idreccompzone)::varchar as id_rec_comp_zone,
+        trim(idreccompzonetk)::varchar as id_rec_comp_zone_tk,
 
-        
-        wihcliq / 0.01 as "Working Interest Oil Cond pct",
-        wigas / 0.01 as "Working Interest Gas pct",
-        wiwater / 0.01 as "Working Interest Water pct",
-        wisand / 0.01 as "Working Interest Sand pct",
+        -- date/time
+        dttm::timestamp_ntz as allocation_date,
+        year::int as allocation_year,
+        month::int as allocation_month,
+        dayofmonth::int as allocation_day_of_month,
 
-        -- Net revenue interest (converted to percentages)
-        nrihcliq / 0.01 as "Net Revenue Interest Oil Cond pct",
-        nrigas / 0.01 as "Net Revenue Interest Gas pct",
-        nriwater / 0.01 as "Net Revenue Interest Water pct",
-        nrisand / 0.01 as "Net Revenue Interest Sand pct",
+        -- operational time (days → hours)
+        ({{ pv_days_to_hours('durdown') }})::float as downtime_hours,
+        ({{ pv_days_to_hours('durop') }})::float as operating_time_hours,
 
-        -- Lost production due to downtime (converted to US units)
-        vollosthcliq / 0.158987294928 as "Deferred Oil Condensate Production bbl",
-        vollostgas / 28.316846592 as "Deferred Gas Production mcf",
-        vollostwater / 0.158987294928 as "Deferred Water Production bbl",
-        vollostsand / 0.158987294928 as "Deferred Sand Production bbl",
+        -- gathered volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volprodgathhcliq') }})::float as gathered_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volprodgathgas') }})::float as gathered_gas_mcf,
+        ({{ pv_cbm_to_bbl('volprodgathwater') }})::float as gathered_water_bbl,
+        ({{ pv_cbm_to_bbl('volprodgathsand') }})::float as gathered_sand_bbl,
 
-        -- Difference from target (converted to US units)
-        voldifftargethcliq / 0.158987294928 as "Difference From Target Hcliq bbl",
-        voldifftargetoil / 0.158987294928 as "Difference From Target Oil bbl",
-        voldifftargetcond / 0.158987294928 as "Difference From Target Condensate bbl",
-        voldifftargetngl / 0.158987294928 as "Difference From Target Ngl bbl",
-        voldifftargetgas / 28.316846592 as "Difference From Target Gas mcf",
-        voldifftargetwater / 0.158987294928 as "Difference From Target Water bbl",
-        voldifftargetsand / 0.158987294928 as "Difference From Target Sand bbl",
+        -- allocated volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volprodallochcliq') }})::float as allocated_hcliq_bbl,
+        ({{ pv_cbm_to_bbl('volprodallocoil') }})::float as allocated_oil_bbl,
+        ({{ pv_cbm_to_bbl('volprodalloccond') }})::float as allocated_condensate_bbl,
+        ({{ pv_cbm_to_bbl('volprodallocngl') }})::float as allocated_ngl_bbl,
+        ({{ pv_cbm_to_mcf('volprodallochcliqgaseq') }})::float as allocated_gas_eq_hcliq_mcf,
+        ({{ pv_cbm_to_mcf('volprodallocgas') }})::float as allocated_gas_mcf,
+        ({{ pv_cbm_to_bbl('volprodallocwater') }})::float as allocated_water_bbl,
+        ({{ pv_cbm_to_bbl('volprodallocsand') }})::float as allocated_sand_bbl,
 
-        -- Recoverable load/lift - Starting volumes (converted to US units)
-        volstartremainrecovhcliq / 0.158987294928 as "Starting Load Oil Condensate bbl",
-        volstartremainrecovgas / 28.316846592 as "Starting Lift Gas mcf",
-        volstartremainrecovwater / 0.158987294928 as "Starting Load Water bbl",
-        volstartremainrecovsand / 0.158987294928 as "Starting Sand bbl",
+        -- allocation factors (unitless)
+        allocfacthcliq::float as alloc_factor_hcliq,
+        allocfactgas::float as alloc_factor_gas,
+        allocfactwater::float as alloc_factor_water,
+        allocfactsand::float as alloc_factor_sand,
 
-        -- Recoverable load/lift - Recovered volumes (converted to US units)
-        volrecovhcliq / 0.158987294928 as "Recovered Load Oil Condensate bbl",
-        volrecovgas / 28.316846592 as "Recovered Lift Gas mcf",
-        volrecovwater / 0.158987294928 as "Recovered Load Water bbl",
-        volrecovsand / 0.158987294928 as "Recovered Sand bbl",
+        -- new production volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volnewprodallochcliq') }})::float as new_prod_hcliq_bbl,
+        ({{ pv_cbm_to_bbl('volnewprodallocoil') }})::float as new_prod_oil_bbl,
+        ({{ pv_cbm_to_bbl('volnewprodalloccond') }})::float as new_prod_condensate_bbl,
+        ({{ pv_cbm_to_bbl('volnewprodallocngl') }})::float as new_prod_ngl_bbl,
+        ({{ pv_cbm_to_mcf('volnewprodallochcliqgaseq') }})::float as new_prod_hcliq_gas_eq_mcf,
+        ({{ pv_cbm_to_mcf('volnewprodallocgas') }})::float as new_prod_gas_mcf,
+        ({{ pv_cbm_to_bbl('volnewprodallocwater') }})::float as new_prod_water_bbl,
+        ({{ pv_cbm_to_bbl('volnewprodallocsand') }})::float as new_prod_sand_bbl,
 
-        -- Recoverable load/lift - Injected volumes (converted to US units)
-        volinjectrecovgas / 28.316846592 as "Injected Lift Gas bbl",
-        volinjectrecovhcliq / 0.158987294928 as "Injected Load Oil Condensate bbl",
-        volinjectrecovwater / 0.158987294928 as "Injected Load Water bbl",
-        volinjectrecovsand / 0.158987294928 as "Injected Sand bbl",
+        -- working interest (decimal → pct)
+        ({{ pv_decimal_to_pct('wihcliq') }})::float as wi_hcliq_pct,
+        ({{ pv_decimal_to_pct('wigas') }})::float as wi_gas_pct,
+        ({{ pv_decimal_to_pct('wiwater') }})::float as wi_water_pct,
+        ({{ pv_decimal_to_pct('wisand') }})::float as wi_sand_pct,
 
-        -- Recoverable load/lift - Remaining volumes (converted to US units)
-        volremainrecovhcliq / 0.158987294928 as "Remaining Load Oil Condensate bbl",
-        volremainrecovgas / 28.316846592 as "Remaining Lift Gas mcf",
-        volremainrecovwater / 0.158987294928 as "Remaining Load Water bbl",
-        volremainrecovsand / 0.158987294928 as "Remaining Sand bbl",
+        -- net revenue interest (decimal → pct)
+        ({{ pv_decimal_to_pct('nrihcliq') }})::float as nri_hcliq_pct,
+        ({{ pv_decimal_to_pct('nrigas') }})::float as nri_gas_pct,
+        ({{ pv_decimal_to_pct('nriwater') }})::float as nri_water_pct,
+        ({{ pv_decimal_to_pct('nrisand') }})::float as nri_sand_pct,
 
-        -- Opening inventory (converted to US units)
-        volstartinvhcliq / 0.158987294928 as "Opening Inventory Oil Condensate bbl",
-        volstartinvhcliqgaseq / 28.316846592 as "Opening Inventory Gas Equivalent Oil Cond mcf",
-        volstartinvwater / 0.158987294928 as "Opening Inventory Water bbl",
-        volstartinvsand / 0.158987294928 as "Opening Inventory Sand bbl",
+        -- deferred production (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('vollosthcliq') }})::float as deferred_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('vollostgas') }})::float as deferred_gas_mcf,
+        ({{ pv_cbm_to_bbl('vollostwater') }})::float as deferred_water_bbl,
+        ({{ pv_cbm_to_bbl('vollostsand') }})::float as deferred_sand_bbl,
 
-        -- Closing inventory (converted to US units)
-        volendinvhcliq / 0.158987294928 as "Closing Inventory Oil Condensate bbl",
-        volendinvhcliqgaseq / 28.316846592 as "Closing Inventory Gas Equiv Oil Condensate mcf",
-        volendinvwater / 0.158987294928 as "Closing Inventory Water bbl",
-        volendinvsand / 0.158987294928 as "Closing Inventory Sand bbl",
+        -- difference from target (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('voldifftargethcliq') }})::float as diff_target_hcliq_bbl,
+        ({{ pv_cbm_to_bbl('voldifftargetoil') }})::float as diff_target_oil_bbl,
+        ({{ pv_cbm_to_bbl('voldifftargetcond') }})::float as diff_target_condensate_bbl,
+        ({{ pv_cbm_to_bbl('voldifftargetngl') }})::float as diff_target_ngl_bbl,
+        ({{ pv_cbm_to_mcf('voldifftargetgas') }})::float as diff_target_gas_mcf,
+        ({{ pv_cbm_to_bbl('voldifftargetwater') }})::float as diff_target_water_bbl,
+        ({{ pv_cbm_to_bbl('voldifftargetsand') }})::float as diff_target_sand_bbl,
 
-        -- Change in inventory (converted to US units)
-        volchginvhcliq / 0.158987294928 as "Change In Inventory Oil Condensate bbl",
-        volchginvhcliqgaseq / 28.316846592 as "Change In Inventory Gas Equivalent Oil Cond mcf",
-        volchginvwater / 0.158987294928 as "Change In Inventory Water bbl",
-        volchginvsand / 0.158987294928 as "Change In Inventory Sand bbl",
+        -- recoverable load/lift - starting volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volstartremainrecovhcliq') }})::float as starting_load_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volstartremainrecovgas') }})::float as starting_lift_gas_mcf,
+        ({{ pv_cbm_to_bbl('volstartremainrecovwater') }})::float as starting_load_water_bbl,
+        ({{ pv_cbm_to_bbl('volstartremainrecovsand') }})::float as starting_sand_bbl,
 
-        -- Dispositions - Sales (converted to US units)
-        voldispsalehcliq / 0.158987294928 as "Disposed Allocated Sales Hcliq bbl",
-        voldispsaleoil / 0.158987294928 as "Disposed Allocated Sales Oil bbl",
-        voldispsalecond / 0.158987294928 as "Disposed Allocated Sales Condensate bbl",
-        voldispsalengl / 0.158987294928 as "Disposed Allocated Sales Ngl bbl",
-        voldispsalegas / 28.316846592 as "Disposed Allocated Sales Gas mcf",
+        -- recoverable load/lift - recovered volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volrecovhcliq') }})::float as recovered_load_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volrecovgas') }})::float as recovered_lift_gas_mcf,
+        ({{ pv_cbm_to_bbl('volrecovwater') }})::float as recovered_load_water_bbl,
+        ({{ pv_cbm_to_bbl('volrecovsand') }})::float as recovered_sand_bbl,
 
-        -- Dispositions - Gas uses (converted to US units)
-        voldispfuelgas / 28.316846592 as "Disposed Allocated Fuel Gas mcf",
-        voldispflaregas / 28.316846592 as "Disposed Allocated Flare Gas mcf",
-        voldispincinerategas / 28.316846592 as "Disposed Allocated Incineration Gas mcf",
-        voldispventgas / 28.316846592 as "Disposed Allocated Vent Gas mcf",
-        voldispinjectgas / 28.316846592 as "Disposed Allocated Injected Gas mcf",
-        voldispinjectwater / 0.158987294928 as "Disposed Allocated Injected Water bbl",
+        -- recoverable load/lift - injected volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_mcf('volinjectrecovgas') }})::float as injected_lift_gas_mcf,
+        ({{ pv_cbm_to_bbl('volinjectrecovhcliq') }})::float as injected_load_hcliq_bbl,
+        ({{ pv_cbm_to_bbl('volinjectrecovwater') }})::float as injected_load_water_bbl,
+        ({{ pv_cbm_to_bbl('volinjectrecovsand') }})::float as injected_sand_bbl,
 
-        -- Injection well volumes (converted to US units)
-        volinjecthcliq / 0.158987294928 as "Injection Well Oil Cond bbl",
-        volinjectgas / 28.316846592 as "Injection Well Gas mcf",
-        volinjectwater / 0.158987294928 as "Injection Well Water bbl",
-        volinjectsand / 0.158987294928 as "Injection Well Sand bbl",
+        -- recoverable load/lift - remaining volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volremainrecovhcliq') }})::float as remaining_load_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volremainrecovgas') }})::float as remaining_lift_gas_mcf,
+        ({{ pv_cbm_to_bbl('volremainrecovwater') }})::float as remaining_load_water_bbl,
+        ({{ pv_cbm_to_bbl('volremainrecovsand') }})::float as remaining_sand_bbl,
 
-        -- Cumulative production (converted to US units)
-        volprodcumhcliq / 0.158987294928 as "Cumulated Hcliq bbl",
-        volprodcumoil / 0.158987294928 as "Cumulated Oil bbl",
-        volprodcumcond / 0.158987294928 as "Cumulated Condensate bbl",
-        volprodcumngl / 0.158987294928 as "Cumulated Ngl bbl",
-        volprodcumgas / 28.316846592 as "Cumulated Gas mcf",
-        volprodcumwater / 0.158987294928 as "Cumulated Water bbl",
-        volprodcumsand / 0.158987294928 as "Cumulated Sand bbl",
+        -- opening inventory (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volstartinvhcliq') }})::float as opening_inv_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volstartinvhcliqgaseq') }})::float as opening_inv_gas_eq_hcliq_mcf,
+        ({{ pv_cbm_to_bbl('volstartinvwater') }})::float as opening_inv_water_bbl,
+        ({{ pv_cbm_to_bbl('volstartinvsand') }})::float as opening_inv_sand_bbl,
 
-        -- Heat content (converted to US units)
-        heatprodgath / 1055055852.62 as "Gathered Heat mmbtu",
-        factheatgath / 37258.9458078313 as "Gathered Heat Factor btu Per ft3",
-        heatprodalloc / 1055055852.62 as "Allocated Heat mmbtu",
-        factheatalloc / 37258.9458078313 as "Allocated Heat Factor btu Per ft3",
-        heatnewprodalloc / 1055055852.62 as "New Production Heat mmbtu",
-        heatdispsale / 1055055852.62 as "Disposed Sales Heat mmbtu",
-        heatdispfuel / 1055055852.62 as "Disposed Fuel Heat mmbtu",
-        heatdispflare / 1055055852.62 as "Disposed Flare Heat mmbtu",
-        heatdispvent / 1055055852.62 as "Disposed Vent Heat mmbtu",
-        heatdispincinerate / 1055055852.62 as "Disposed Incinerate Heat mmbtu",
+        -- closing inventory (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volendinvhcliq') }})::float as closing_inv_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volendinvhcliqgaseq') }})::float as closing_inv_gas_eq_hcliq_mcf,
+        ({{ pv_cbm_to_bbl('volendinvwater') }})::float as closing_inv_water_bbl,
+        ({{ pv_cbm_to_bbl('volendinvsand') }})::float as closing_inv_sand_bbl,
 
-        -- Density (converted to API gravity)
-        power(nullif(densityalloc, 0), -1) / 7.07409872233005E-06 + -131.5 as "Allocated Density api",
-        power(nullif(densitysale, 0), -1) / 7.07409872233005E-06 + -131.5 as "Sales Density api",
+        -- change in inventory (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volchginvhcliq') }})::float as chg_inv_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volchginvhcliqgaseq') }})::float as chg_inv_gas_eq_hcliq_mcf,
+        ({{ pv_cbm_to_bbl('volchginvwater') }})::float as chg_inv_water_bbl,
+        ({{ pv_cbm_to_bbl('volchginvsand') }})::float as chg_inv_sand_bbl,
 
-        -- Reference IDs for related records
-        idrecmeasmeth as "Last Measurement Method Record ID",
-        idrecmeasmethtk as "Last Measurement Method Table",
-        idrecfluidlevel as "Last Fluid Level Record ID",
-        idrecfluidleveltk as "Last Fluid Level Table",
-        idrectest as "Last Test Record ID",
-        idrectesttk as "Last Test Table",
-        idrecparam as "Last Completion Parameter Record ID",
-        idrecparamtk as "Completion Parameter Record ID Table",
-        idrecdowntime as "Downtime Record ID",
-        idrecdowntimetk as "Downtime Table",
-        idrecdeferment as "Deferment Record ID",
-        idrecdefermenttk as "Deferment Table",
-        idrecgasanalysis as "Gas Analysis Record ID",
-        idrecgasanalysistk as "Gas Analysis Table",
-        idrechcliqanalysis as "Hc Liquid Analysis Record ID",
-        idrechcliqanalysistk as "Hc Liquid Analysis Table",
-        idrecoilanalysis as "Oil Properties Record ID",
-        idrecoilanalysistk as "Oil Properties Table",
-        idrecwateranalysis as "Water Properties Record ID",
-        idrecwateranalysistk as "Water Properties Table",
-        idrecstatus as "Status Record ID",
-        idrecstatustk as "Status Table",
-        idrecpumpentry as "Last Pump Entry Record ID",
-        idrecpumpentrytk as "Last Pump Entry Table",
-        idrecfacility as "Reporting Facility Record ID",
-        idrecfacilitytk as "Reporting Facility Table",
-        idreccalcset as "Calc Settings Record ID",
-        idreccalcsettk as "Calc Settings Table",
+        -- dispositions - sales (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('voldispsalehcliq') }})::float as disp_sales_hcliq_bbl,
+        ({{ pv_cbm_to_bbl('voldispsaleoil') }})::float as disp_sales_oil_bbl,
+        ({{ pv_cbm_to_bbl('voldispsalecond') }})::float as disp_sales_condensate_bbl,
+        ({{ pv_cbm_to_bbl('voldispsalengl') }})::float as disp_sales_ngl_bbl,
+        ({{ pv_cbm_to_mcf('voldispsalegas') }})::float as disp_sales_gas_mcf,
 
-        -- Other operational metrics
-        pumpeff / 0.01 as "Pump Efficiency pct",
+        -- dispositions - gas uses (cbm → mcf)
+        ({{ pv_cbm_to_mcf('voldispfuelgas') }})::float as disp_fuel_gas_mcf,
+        ({{ pv_cbm_to_mcf('voldispflaregas') }})::float as disp_flare_gas_mcf,
+        ({{ pv_cbm_to_mcf('voldispincinerategas') }})::float as disp_incineration_gas_mcf,
+        ({{ pv_cbm_to_mcf('voldispventgas') }})::float as disp_vent_gas_mcf,
+        ({{ pv_cbm_to_mcf('voldispinjectgas') }})::float as disp_injected_gas_mcf,
+        ({{ pv_cbm_to_bbl('voldispinjectwater') }})::float as disp_injected_water_bbl,
 
-        -- System fields
-        syscreatedate as "Created At (UTC)",
-        syscreateuser as "Created By",
-        sysmoddate as "Last Mod At (UTC)",
-        sysmoduser as "Last Mod By",
-        systag as "System Tag",
-        syslockdate as "System Lock Date (UTC)",
-        syslockme as "System Lock Me",
-        syslockchildren as "System Lock Children",
-        syslockmeui as "System Lock Me UI",
-        syslockchildrenui as "System Lock Children UI",
+        -- injection well volumes (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volinjecthcliq') }})::float as injection_well_hcliq_bbl,
+        ({{ pv_cbm_to_mcf('volinjectgas') }})::float as injection_well_gas_mcf,
+        ({{ pv_cbm_to_bbl('volinjectwater') }})::float as injection_well_water_bbl,
+        ({{ pv_cbm_to_bbl('volinjectsand') }})::float as injection_well_sand_bbl,
 
-        -- Fivetran fields
-        _fivetran_synced as "Fivetran Synced At"
+        -- cumulative production (cbm → bbl/mcf)
+        ({{ pv_cbm_to_bbl('volprodcumhcliq') }})::float as cum_hcliq_bbl,
+        ({{ pv_cbm_to_bbl('volprodcumoil') }})::float as cum_oil_bbl,
+        ({{ pv_cbm_to_bbl('volprodcumcond') }})::float as cum_condensate_bbl,
+        ({{ pv_cbm_to_bbl('volprodcumngl') }})::float as cum_ngl_bbl,
+        ({{ pv_cbm_to_mcf('volprodcumgas') }})::float as cum_gas_mcf,
+        ({{ pv_cbm_to_bbl('volprodcumwater') }})::float as cum_water_bbl,
+        ({{ pv_cbm_to_bbl('volprodcumsand') }})::float as cum_sand_bbl,
 
-    from source_data
+        -- heat content (joules → mmbtu, J/m³ → btu/ft³)
+        ({{ pv_joules_to_mmbtu('heatprodgath') }})::float as gathered_heat_mmbtu,
+        ({{ pv_jm3_to_btu_per_ft3('factheatgath') }})::float as gathered_heat_factor_btu_per_ft3,
+        ({{ pv_joules_to_mmbtu('heatprodalloc') }})::float as allocated_heat_mmbtu,
+        ({{ pv_jm3_to_btu_per_ft3('factheatalloc') }})::float as allocated_heat_factor_btu_per_ft3,
+        ({{ pv_joules_to_mmbtu('heatnewprodalloc') }})::float as new_prod_heat_mmbtu,
+        ({{ pv_joules_to_mmbtu('heatdispsale') }})::float as disp_sales_heat_mmbtu,
+        ({{ pv_joules_to_mmbtu('heatdispfuel') }})::float as disp_fuel_heat_mmbtu,
+        ({{ pv_joules_to_mmbtu('heatdispflare') }})::float as disp_flare_heat_mmbtu,
+        ({{ pv_joules_to_mmbtu('heatdispvent') }})::float as disp_vent_heat_mmbtu,
+        ({{ pv_joules_to_mmbtu('heatdispincinerate') }})::float as disp_incinerate_heat_mmbtu,
+
+        -- density (kg/m³ → API gravity)
+        (power(nullif(densityalloc, 0), -1) / 7.07409872233005e-06 + -131.5)::float as allocated_density_api,
+        (power(nullif(densitysale, 0), -1) / 7.07409872233005e-06 + -131.5)::float as sales_density_api,
+
+        -- reference IDs for related records
+        trim(idrecmeasmeth)::varchar as id_rec_meas_method,
+        trim(idrecmeasmethtk)::varchar as id_rec_meas_method_tk,
+        trim(idrecfluidlevel)::varchar as id_rec_fluid_level,
+        trim(idrecfluidleveltk)::varchar as id_rec_fluid_level_tk,
+        trim(idrectest)::varchar as id_rec_test,
+        trim(idrectesttk)::varchar as id_rec_test_tk,
+        trim(idrecparam)::varchar as id_rec_param,
+        trim(idrecparamtk)::varchar as id_rec_param_tk,
+        trim(idrecdowntime)::varchar as id_rec_downtime,
+        trim(idrecdowntimetk)::varchar as id_rec_downtime_tk,
+        trim(idrecdeferment)::varchar as id_rec_deferment,
+        trim(idrecdefermenttk)::varchar as id_rec_deferment_tk,
+        trim(idrecgasanalysis)::varchar as id_rec_gas_analysis,
+        trim(idrecgasanalysistk)::varchar as id_rec_gas_analysis_tk,
+        trim(idrechcliqanalysis)::varchar as id_rec_hcliq_analysis,
+        trim(idrechcliqanalysistk)::varchar as id_rec_hcliq_analysis_tk,
+        trim(idrecoilanalysis)::varchar as id_rec_oil_analysis,
+        trim(idrecoilanalysistk)::varchar as id_rec_oil_analysis_tk,
+        trim(idrecwateranalysis)::varchar as id_rec_water_analysis,
+        trim(idrecwateranalysistk)::varchar as id_rec_water_analysis_tk,
+        trim(idrecstatus)::varchar as id_rec_status,
+        trim(idrecstatustk)::varchar as id_rec_status_tk,
+        trim(idrecpumpentry)::varchar as id_rec_pump_entry,
+        trim(idrecpumpentrytk)::varchar as id_rec_pump_entry_tk,
+        trim(idrecfacility)::varchar as id_rec_facility,
+        trim(idrecfacilitytk)::varchar as id_rec_facility_tk,
+        trim(idreccalcset)::varchar as id_rec_calc_set,
+        trim(idreccalcsettk)::varchar as id_rec_calc_set_tk,
+
+        -- operational metrics
+        ({{ pv_decimal_to_pct('pumpeff') }})::float as pump_efficiency_pct,
+
+        -- system / audit
+        trim(syscreateuser)::varchar as created_by,
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(sysmoduser)::varchar as modified_by,
+        sysmoddate::timestamp_ntz as modified_at_utc,
+        syslockdate::timestamp_ntz as lock_date_utc,
+        syslockme::boolean as is_locked,
+        syslockchildren::boolean as is_children_locked,
+        syslockmeui::boolean as is_locked_ui,
+        syslockchildrenui::boolean as is_children_locked_ui,
+        trim(systag)::varchar as record_tag,
+
+        -- fivetran metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
+
+    from source
+),
+
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and id_rec is not null
+),
+
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['id_rec']) }} as daily_allocation_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+final as (
+    select
+        daily_allocation_sk,
+
+        -- identifiers
+        id_rec,
+        id_rec_parent,
+        id_flownet,
+        id_rec_unit,
+        id_rec_unit_tk,
+        id_rec_comp,
+        id_rec_comp_tk,
+        id_rec_comp_zone,
+        id_rec_comp_zone_tk,
+
+        -- date/time
+        allocation_date,
+        allocation_year,
+        allocation_month,
+        allocation_day_of_month,
+
+        -- operational time
+        downtime_hours,
+        operating_time_hours,
+
+        -- gathered volumes
+        gathered_hcliq_bbl,
+        gathered_gas_mcf,
+        gathered_water_bbl,
+        gathered_sand_bbl,
+
+        -- allocated volumes
+        allocated_hcliq_bbl,
+        allocated_oil_bbl,
+        allocated_condensate_bbl,
+        allocated_ngl_bbl,
+        allocated_gas_eq_hcliq_mcf,
+        allocated_gas_mcf,
+        allocated_water_bbl,
+        allocated_sand_bbl,
+
+        -- allocation factors
+        alloc_factor_hcliq,
+        alloc_factor_gas,
+        alloc_factor_water,
+        alloc_factor_sand,
+
+        -- new production volumes
+        new_prod_hcliq_bbl,
+        new_prod_oil_bbl,
+        new_prod_condensate_bbl,
+        new_prod_ngl_bbl,
+        new_prod_hcliq_gas_eq_mcf,
+        new_prod_gas_mcf,
+        new_prod_water_bbl,
+        new_prod_sand_bbl,
+
+        -- working interest
+        wi_hcliq_pct,
+        wi_gas_pct,
+        wi_water_pct,
+        wi_sand_pct,
+
+        -- net revenue interest
+        nri_hcliq_pct,
+        nri_gas_pct,
+        nri_water_pct,
+        nri_sand_pct,
+
+        -- deferred production
+        deferred_hcliq_bbl,
+        deferred_gas_mcf,
+        deferred_water_bbl,
+        deferred_sand_bbl,
+
+        -- difference from target
+        diff_target_hcliq_bbl,
+        diff_target_oil_bbl,
+        diff_target_condensate_bbl,
+        diff_target_ngl_bbl,
+        diff_target_gas_mcf,
+        diff_target_water_bbl,
+        diff_target_sand_bbl,
+
+        -- recoverable load/lift - starting
+        starting_load_hcliq_bbl,
+        starting_lift_gas_mcf,
+        starting_load_water_bbl,
+        starting_sand_bbl,
+
+        -- recoverable load/lift - recovered
+        recovered_load_hcliq_bbl,
+        recovered_lift_gas_mcf,
+        recovered_load_water_bbl,
+        recovered_sand_bbl,
+
+        -- recoverable load/lift - injected
+        injected_lift_gas_mcf,
+        injected_load_hcliq_bbl,
+        injected_load_water_bbl,
+        injected_sand_bbl,
+
+        -- recoverable load/lift - remaining
+        remaining_load_hcliq_bbl,
+        remaining_lift_gas_mcf,
+        remaining_load_water_bbl,
+        remaining_sand_bbl,
+
+        -- opening inventory
+        opening_inv_hcliq_bbl,
+        opening_inv_gas_eq_hcliq_mcf,
+        opening_inv_water_bbl,
+        opening_inv_sand_bbl,
+
+        -- closing inventory
+        closing_inv_hcliq_bbl,
+        closing_inv_gas_eq_hcliq_mcf,
+        closing_inv_water_bbl,
+        closing_inv_sand_bbl,
+
+        -- change in inventory
+        chg_inv_hcliq_bbl,
+        chg_inv_gas_eq_hcliq_mcf,
+        chg_inv_water_bbl,
+        chg_inv_sand_bbl,
+
+        -- dispositions - sales
+        disp_sales_hcliq_bbl,
+        disp_sales_oil_bbl,
+        disp_sales_condensate_bbl,
+        disp_sales_ngl_bbl,
+        disp_sales_gas_mcf,
+
+        -- dispositions - gas uses
+        disp_fuel_gas_mcf,
+        disp_flare_gas_mcf,
+        disp_incineration_gas_mcf,
+        disp_vent_gas_mcf,
+        disp_injected_gas_mcf,
+        disp_injected_water_bbl,
+
+        -- injection well volumes
+        injection_well_hcliq_bbl,
+        injection_well_gas_mcf,
+        injection_well_water_bbl,
+        injection_well_sand_bbl,
+
+        -- cumulative production
+        cum_hcliq_bbl,
+        cum_oil_bbl,
+        cum_condensate_bbl,
+        cum_ngl_bbl,
+        cum_gas_mcf,
+        cum_water_bbl,
+        cum_sand_bbl,
+
+        -- heat content
+        gathered_heat_mmbtu,
+        gathered_heat_factor_btu_per_ft3,
+        allocated_heat_mmbtu,
+        allocated_heat_factor_btu_per_ft3,
+        new_prod_heat_mmbtu,
+        disp_sales_heat_mmbtu,
+        disp_fuel_heat_mmbtu,
+        disp_flare_heat_mmbtu,
+        disp_vent_heat_mmbtu,
+        disp_incinerate_heat_mmbtu,
+
+        -- density
+        allocated_density_api,
+        sales_density_api,
+
+        -- reference IDs
+        id_rec_meas_method,
+        id_rec_meas_method_tk,
+        id_rec_fluid_level,
+        id_rec_fluid_level_tk,
+        id_rec_test,
+        id_rec_test_tk,
+        id_rec_param,
+        id_rec_param_tk,
+        id_rec_downtime,
+        id_rec_downtime_tk,
+        id_rec_deferment,
+        id_rec_deferment_tk,
+        id_rec_gas_analysis,
+        id_rec_gas_analysis_tk,
+        id_rec_hcliq_analysis,
+        id_rec_hcliq_analysis_tk,
+        id_rec_oil_analysis,
+        id_rec_oil_analysis_tk,
+        id_rec_water_analysis,
+        id_rec_water_analysis_tk,
+        id_rec_status,
+        id_rec_status_tk,
+        id_rec_pump_entry,
+        id_rec_pump_entry_tk,
+        id_rec_facility,
+        id_rec_facility_tk,
+        id_rec_calc_set,
+        id_rec_calc_set_tk,
+
+        -- operational metrics
+        pump_efficiency_pct,
+
+        -- system / audit
+        created_by,
+        created_at_utc,
+        modified_by,
+        modified_at_utc,
+        lock_date_utc,
+        is_locked,
+        is_children_locked,
+        is_locked_ui,
+        is_children_locked_ui,
+        record_tag,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

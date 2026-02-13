@@ -5,6 +5,7 @@ name: Validate dbt changes
   pull_request:
     paths:
       - .github/workflows/validate-dbt-changes.yaml
+      - functions/**
       - macros/**
       - models/**
       - seeds/**
@@ -122,6 +123,12 @@ jobs:
 #          --profile integration_tests
 #          --target ci
 #          --full-refresh
+      - name: Deploy UDFs
+        run: >
+          dbt run
+          --select "resource_type:function"
+          --profile integration_tests
+          --target ci
       - name: dbt build (incremental)
         run: >
           dbt build

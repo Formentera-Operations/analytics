@@ -9,10 +9,10 @@
     ProdView Well Attributes
     ========================
     Prepares ProdView data for Well 360 integration.
-    
+
     Source Priority: Primary for well name, is_operated, and status (per engineer feedback)
     Deduplication: Uses most recent unit_id per EID
-    
+
     Note: ProdView is unit-centric, so we filter to well-type units only
     Note: Status comes from stg_prodview__status with engineer-approved mapping
     Note: First production date derived from daily allocations (true first HC production)
@@ -56,28 +56,28 @@ with units as (
 ),
 
 -- Get current status from status table with engineer-approved mapping
--- Join key: units."Current Completion Status" -> status."Status Record ID"
+-- Join key: units."Current Completion Status" -> status.id_rec
 -- Uses normalize_well_status UDF for canonical UPPER_SNAKE_CASE output
 status_mapped as (
     select
-        "Status Record ID" as status_record_id,
-        "Status" as status_raw,
-        "Status Date" as status_date,
-        {{ function('normalize_well_status') }}("Status") as status_clean
+        id_rec as status_record_id,
+        status as status_raw,
+        status_date,
+        {{ function('normalize_well_status') }}(status) as status_clean
     from {{ ref('stg_prodview__status') }}
 ),
 
 -- First production date from daily allocations (true first HC production)
 daily_production as (
     select
-        "Unit Record ID" as unit_id,
-        "Allocation Date" as production_date,
-        coalesce("Allocated Oil bbl", 0)
-        + coalesce("Allocated Condensate bbl", 0)
-        + coalesce("Allocated NGL bbl", 0) as total_oil_bbl,
-        coalesce("Allocated Gas mcf", 0) as total_gas_mcf
+        id_rec_unit as unit_id,
+        allocation_date as production_date,
+        coalesce(allocated_oil_bbl, 0)
+        + coalesce(allocated_condensate_bbl, 0)
+        + coalesce(allocated_ngl_bbl, 0) as total_oil_bbl,
+        coalesce(allocated_gas_mcf, 0) as total_gas_mcf
     from {{ ref('stg_prodview__daily_allocations') }}
-    where "Allocation Date" is not null
+    where allocation_date is not null
 ),
 
 first_production as (
