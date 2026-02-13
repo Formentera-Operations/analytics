@@ -47,9 +47,8 @@ select
     current_facility_id as "Current Facility ID",
     t.id_rec_parent as "Unit ID",
     "Unit Type"
-from units as u
-left join tanks as t
-    on u."Unit Record ID" = t.id_rec_parent
-left join tankvol as v
-    on t.id_rec = v.tank_id
-where t.id_rec_parent is not null
+from tankvol as v
+inner join tanks as t
+    on v.tank_id = t.id_rec
+inner join units as u
+    on t.id_rec_parent = u."Unit Record ID"
