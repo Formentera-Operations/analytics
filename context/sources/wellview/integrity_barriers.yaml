@@ -1,0 +1,144 @@
+# Peloton WellView: Integrity & Barriers
+# Integrity programs/items/criteria/values, well barriers/types/links/annotations
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+wvIntegrity: Well integrity program. +parent
+  Typ1(s100) #Program Type
+  Typ2(s100) #Program Subtype
+  Typ3(s100) #Program Type 3
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Com(txt2k) #Comment
+  ProgramStateTyp(s100) #Program State Type
+  ProgramStateColorCalc(int_calc) #Program State Color
+
+wvIntegrityItem: The items and details that make up the integrity program. The combination of 'Integrity Item.Type 1' - 'Integrity Item.Type 2' - 'Integrity Item.Ty... +parent
+  Typ1(s100) #Type 1
+  Typ2(s100) #Type 2
+  Typ3(s100) #Type 3
+  Typ4(s100) #Type 4
+  ActionTyp(s100) #Category
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  ResponsiblePerson(s50) #Responsible Person
+  RequiredBy(s50) #Required By
+  RequiredByReg(bool) #Regulatory Requirement?
+  Com(txt2k) #Comment
+  RiskTyp1(s100) #Primary Risk
+  RiskTyp2(s100) #Primary Risk Cause
+  RiskLevel(s50) #Risk Level
+  RiskDes(s100) #Other Risk Description
+  RiskMitigationCom(txt2k) #Risk Mitigation Comments
+  ValueName(s50) #Value Name
+  ValueUnitLabel(s10) #Value Unit
+  SensorIDA(s50) #SensorIDA
+  SensorIDB(s50) #SensorIDB
+  DtTmCurrentStateCalc(dt_calc) #Current State Date
+  CurrentStateCalc(s50_calc) #Current Integrity State
+  CurrentStateColorCalc(int_calc) #Current Integrity State Color
+  CurrentStateNoteCalc(txt2k_calc) #Current Explanation of State
+  DtTmNextCalc(dt_calc) #Next Value Date
+  LastValueStateCalc(s50_calc) #Last Value Integrity State
+  LastValueStateColorCalc(int_calc) #Last Value Integrity State Color
+  LastValueStateNoteCalc(txt2k_calc) #Last Value Explanation of State
+  StateGreenMinCalc(dbl_calc) #Green Min Calc
+  StateGreenMaxCalc(dbl_calc) #Green Max Calc
+  StateYellowMinCalc(dbl_calc) #Yellow Min Calc
+  StateYellowMaxCalc(dbl_calc) #Yellow Max Calc
+  StateOrangeMinCalc(dbl_calc) #Orange Min Calc
+  StateOrangeMaxCalc(dbl_calc) #Orange Max Calc
+  StateRedMinCalc(dbl_calc) #Red Min Calc
+  StateRedMaxCalc(dbl_calc) #Red Max Calc
+
+wvIntegrityItemLink: Link the relevant equipment for this integrity item. +parent
+  IDRecItem(s32) #Associated Items
+  Com(txt2k) #Comment
+
+wvIntegrityItemCriteria: Well integrity item criteria. +parent
+  StateTyp(s100) #State Type
+  StateColorCalc(int_calc) #State Color
+  StateMin(dbl) #State Min
+  StateMax(dbl) #State Max
+  StateOperator(s50) #State Operator
+  DaysMax(dbl_days) #Min Threshold
+  StateDes(s100) #State Description
+
+wvIntegrityItemValue: Values (readings) by date. +parent
+  DtTm(dt) #Date
+  Value(dbl) #Value Number
+  ValueDes(s100) #Value Description
+  ValueVerified(bool) #Verified?
+  StateCalc(s50_calc) #Integrity State
+  StateColorCalc(int_calc) #Integrity State Color
+  StateNoteCalc(txt2k_calc) #Explanation of State
+  IDRecItem(s32) #Reference Item
+  ReportedBy(s50) #Reported By
+  ExcludeDtTmCalcFlag(bool) #Exclude from Date Calcs
+  Com(txt2k) #Comment
+  ActionRqd(bool) #Action Required?
+  ActionRqdTyp(s100) #Action Required Type
+  ActionRqdCom(txt2k) #Action Required Comment
+
+wvWellBarrier: Definition of well barriers/envelopes and their start and end dates. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RequiredBy(s50) #Required By
+  IDRecWellbore(s32) #Wellbore
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+
+wvWellBarrierTyp: Identification of well barriers - Primary, Secondary, etc. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  IncludeMud(bool) #Include Mud?
+  BarrierNoCalc(s10_calc) #Barrier Number
+  Com(txt2k) #Comment
+
+wvWellBarrierTypLink: Link the 'Well Barrier Type' to associated equipment by date. +parent
+  IDRecItem(s32) #Associated Items
+  Des(s255) #Draw Style
+  DesStringCalc(s100_calc) #Linked String Description
+  DepthTopCalc(dbl_m_calc) #Linked Component Top Depth
+  DepthBtmCalc(dbl_m_calc) #Linked Component Bottom Depth
+  ItemNoCalc(s10_calc) #Item Number
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Com(txt2k) #Comment
+  Qualifier(txt2k) #Qualifier
+  IDRecLastTestCalc(s32_calc) #Most Recent Test
+  IDRecLastStatusCalc(s32_calc) #Most Recent Status
+  IDRecProblemCalc(s32_calc) #Most Recent Failure
+
+wvWellBarrierTypAnnot: Annotations for the 'Well Barrier Type'. +parent
+  Depth(dbl_m) #Depth
+  Annotation(s100) #Annotation
+
+wvWellBarrierTypPresRating: Pressure changes over time for the entire barrier. +parent
+  DtTm(dt) #Date
+  Pres(dbl_kPa) #Pressure
+  PresRefMeasure(s50) #Pressure Measurement Location
+  Reason(s100) #Reason for Change
+  Note(s255) #Note

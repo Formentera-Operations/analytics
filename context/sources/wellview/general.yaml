@@ -1,0 +1,206 @@
+# Peloton WellView: General
+# Well header, elevation history, aliases, status history, reference wells
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__well_header, stg_wellview__well_status_history, stg_wellview__reference_wells
+
+wvWellHeader: The well header information describes the well in general.
+  WellName(s100) #Well Name
+  WellIDA(s50) #API10
+  WellIDB(s50) #CostCenter
+  WellIDC(s50) #EID
+  WellIDD(s50) #Producing Formation
+  WellIDE(s50) #Producing Method
+  Lease(s50) #Lease
+  LeaseCode(s50) #State Lease ID (Parent)
+  PadName(s50) #Pad Name
+  PadCode(s50) #Facility Name
+  Operator(s50) #Operator
+  OperatorCode(s50) #Operated Descriptor
+  WellLicenseNo(s50) #Unique Well Identifier
+  WellLicensee(s50) #Licensee
+  GovAuthority(s50) #Government Authority
+  Basin(s100) #Basin
+  BasinCode(s50) #Basin Code
+  FieldName(s50) #Field Name
+  FieldCode(s50) #Regulatory Field Name
+  WellTyp1(s100) #Well Type
+  WellTyp2(s100) #Well Subtype
+  CurrentWellTyp1Calc(s100_calc) #Current Well Type
+  CurrentWellTyp2Calc(s100_calc) #Current Well Sub-Type
+  PrimaryFluidDes(s100) #Fluid Type
+  CurrentPrimaryFluidDesCalc(s100_calc) #Current Fluid Type
+  WellConfig(s50) #Well Configuration Type
+  WellboreNoCalc(int_calc) #Number of Wellbores
+  CurrentWellStatus1(s50) #Well Status
+  CurrentWellStatus2(s50) #Well Sub-Status
+  CurrentWellStatus1Calc(s100_calc) #Current Well Status
+  CurrentWellStatus2Calc(s100_calc) #Current Well Sub-Status
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  WellClass(s50) #Sour Class
+  EnvironmentSensitive(bool) #Environment Sensitive?
+  HiH2S(bool) #High H2S?
+  HiSITP(bool) #High SITP?
+  LocationSensitive(bool) #Location Sensitive?
+  RiskClass(s50) #Risk Class
+  ElvOrigKB(dbl_m) #Original KB Elevation
+  ElvGround(dbl_m) #Ground Elevation
+  ElvCasFlange(dbl_m) #Casing Flange Elevation
+  ElvTubHead(dbl_m) #Tubing Head Elevation
+  ElvMudLine(dbl_m) #Mud Line Elevation
+  ElvLAT(dbl_m) #Lowest Astronomical Tide Elevation
+  IDRecElvHistoryCalc(s32_calc) #Active Working/Other Elevation
+  KBtoTubCalc(dbl_m_calc) #KB-Tubing Head Distance
+  KBtoCasCalc(dbl_m_calc) #KB-Casing Flange Distance
+  KBtoGrdCalc(dbl_m_calc) #KB-Ground Distance
+  KBtoMudCalc(dbl_m_calc) #KB-Mud Line Distance
+  KBtoOtherCalc(dbl_m_calc) #KB-Other Distance
+  OthertoTubCalc(dbl_m_calc) #Other-Tubing Head Distance
+  OthertoCasCalc(dbl_m_calc) #Other-Casing Flange Distance
+  OthertoGrdCalc(dbl_m_calc) #Other-Ground Distance
+  OthertoMudCalc(dbl_m_calc) #Other-Mud Line Distance
+  WaterDepthRef(s50) #Water Depth Reference
+  WaterDepth(dbl_m) #Water Depth
+  TDCalc(dbl_m_calc) #Total Depth
+  TDAllCalc(s255_calc) #Total Depth (All)
+  TDTVDAllCalc(s255_calc) #Total Depth All (TVD)
+  PBTDAllCalc(s255_calc) #PBTD (All)
+  DisplaceUnwrapCalc(dbl_m_calc) #Unwrapped Displace
+  DtTmWellLic(dt) #Permit Date
+  DtTmSpud(dt) #Spud Date
+  DtTmRR(dt) #Rig Release Date
+  DtTmFirstProdEst(dt) #Estimated On Production Date
+  DtTmFirstProd(dt) #On Production Date
+  DtTmZoneOnProdFirstCalc(dt_calc) #First Zone on Production Date
+  DtTmLastProdEst(dt) #Estimated Last Production Date
+  DtTmLastProd(dt) #Last Production Date
+  DtTmAbandonEst(dt) #Estimated Abandonment Date
+  DtTmAbandon(dt) #Abandon Date
+  DtTmWellClass(dt) #H2S Certificate Approval Date
+  DurSpudtoTodayCalc(dbl_days_calc) #Age of Well
+  LocationTyp(s100) #Onshore or Offshore Designation
+  LegalSurveyTyp(s100) #Legal Survey Type
+  LegalSurveySubTyp(s100) #Legal Survey Subtype
+  LocationNote(s255) #JOA Name
+  LegalSurveyLoc(s100) #Surface Legal Location
+  NSDist(dbl_m) #North/South Distance
+  NSFlag(s5) #North/South Reference
+  EWDist(dbl_m) #East/West Distance
+  EWFlag(s5) #East/West Reference
+  TownName(s50) #Nearest Town
+  TownDist(dbl_m) #Distance to Nearest Town
+  TownFlag(s5) #Nearest Town Ref Direction
+  TownStateProv(s50) #Nearest Town State/Prov
+  LocationRef(s50) #Location Reference
+  Area(s50) #Asset Company
+  County(s50) #CountyParish
+  StateProv(s50) #State/Province
+  Country(s50) #Country
+  FieldOffice(s50) #Field Office
+  FieldOfficeCode(s50) #DistrictOffice
+  District(s100) #District
+  Division(s100) #Division
+  DivisionCode(s100) #Company Code
+  DirectionsToWell(txt2k) #Directions To Well
+  LatLongSource(s50) #Lat/Long Data Source
+  LatLongDatum(s50) #Lat/Long Datum
+  Latitude(dbl_deg) #Latitude
+  Longitude(dbl_deg) #Longitude
+  UTMSource(s50) #UTM Source
+  UTMGridZone(int) #UTM Grid Zone
+  UTMx(dbl_m) #UTM Easting
+  UTMy(dbl_m) #UTM Northing
+  Platform(s50) #Route
+  Slot(s50) #DSU
+  IDRecProdSettingCalc(s32_calc) #Production Setting
+  CasingRunCalc(int_calc) #Number of Casing Strings
+  ProblemFlag(bool) #Problem with the Well?
+  IDRecProblemCalc(s32_calc) #Production Failure
+  ProblemTotalCalc(dbl_calc) #Total Number of Failures
+  ProblemLast12MonthCalc(dbl_calc) #Number of Failures in last 12 months
+  Operated(bool) #Operated?
+  SurfaceRights(s50) #Surface Rights
+  Agent(s50) #Agent
+  LocalTimeZone(dbl_days) #Local Time Zone
+  LastJobCalc(s200_calc) #Last Job
+  LastJobReportCalc(s200_calc) #Last Daily Ops Report
+  Com(txt2k) #Land Legal Description
+  UserTxt1(s100) #RTP Lease Clause
+  UserTxt2(s100) #Election Days
+  UserTxt3(s100) #Payout Penalty (%)
+  UserTxt4(s100) #Order Number
+  UserTxt5(s100) #MAWP (psig)
+  UserTxt6(s100) #MAWP Weak Point Description
+  UserTxt7(s100) #MAASP (psig)
+  UserTxt8(s100) #UIC Permit Pressure (psig)
+  UserTxt9(s100) #UIC Permit Rate (bpd)
+  UserTxt10(s100) #Acquisition Accounting ID
+  UserBoolean1(bool) #Last Well on Lease?
+  UserBoolean2(bool) #BLM?
+  UserBoolean3(bool) #Fed Surface?
+  UserBoolean4(bool) #Split Estate?
+  UserBoolean5(bool) #FO Drilled?
+  UserNum1(dbl) #WI
+  UserNum2(dbl) #NRI - Total
+  UserNum3(dbl) #NRI - WI only
+  UserNum4(dbl) #Override Decimal
+  UserNum5(dbl) #Mineral Royalty Decimal
+  UserNum6(dbl) #Shut In Clock (Days)
+  UserDtTm1(dt) #First Sales Date
+  UserDtTm2(dt) #Ops Effective Date
+  UserDtTm3(dt) #Regulatory Effective Date
+  UserDtTm4(dt) #Last Approved MIT Date
+  UserDtTm5(dt) #JOA Date
+
+wvElevationHistory: History of other reference elevations. Ex. KB Elv from a second rig, service rig, etc. Use 'Elevation History.Active Other/Work Elevation' to indic... +parent
+  ElvDtTmStart(dt) #Start Date
+  ElvDtTmEnd(dt) #End Date
+  ElvOther(dbl_m) #Other Elevation
+  ElvOtherLabel(s5) #Other Elevation Label
+  ActualFlag(bool) #Active Other/Work Elevation
+  ElvOtherNote(s255) #Other Elevation Note
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+
+wvWellAlias: History or Well ID changes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #Alias Type
+  Typ2(s100) #Alias Subtype
+  ChangeTyp(s100) #Change Type
+  Value(s50) #Value
+  Source(s50) #Source
+  Com(txt2k) #Comment
+
+wvWellStatusHistory: Well status history. +parent
+  DtTm(dt) #Date
+  WellStatus1(s50) #Well Status
+  WellStatus2(s50) #Well Sub-Status
+  WellTyp1(s100) #Well Type
+  WellTyp2(s100) #Well Subtype
+  Source(s50) #Source
+  PrimaryFluidDes(s100) #Fluid Type
+  Com(txt2k) #Comment
+
+wvRefWells: This table allows you to link to related wells. +parent
+  IDRecRefWell(s32) #Reference Well Link
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecItem(s32) #WellView Data Link
+  Dist(dbl_m) #Distance to Well
+  Com(txt2k) #Comment

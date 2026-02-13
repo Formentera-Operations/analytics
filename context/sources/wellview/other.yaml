@@ -1,0 +1,208 @@
+# Peloton WellView: Other
+# Polymorphic tables (attributes, attachments, comments, sign-off, locations), time curves, curve interpretations, AFE summary calcs
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+wvAttributes: Additional attributes. +parent
+  Typ1(s100) #Attribute Type
+  Typ2(s100) #Attribute Subtype
+  AttribValue(s100) #Value
+  DtTm(dt) #Date
+  Com(txt2k) #Comment
+  UserNum(dbl) #User Num 1
+
+wvAttachment: Attach relevant files. +parent
+  Des(s100) #Description
+  AttachIDA(s50) #Ref #
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Com(txt2k) #Comment
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  AttachURL(txt2k) #File Name
+
+wvComment: Additional comments. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  CommentBy(s50) #Comment By
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+
+wvSignOff: Sign off the well or specific tables. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  DtTm(dt) #Date
+  Name(s50) #Name
+  Role(s50) #Role
+  Verified(bool) #Verified?
+  Com(txt2k) #Comment
+
+wvLocLatLongUTM: Global location (latitude, longitude, UTMx, UTMy) table. The Surface location is defined in 'Well Header'. +parent
+  Des(s100) #Description
+  LatLongSource(s50) #Lat Long Data Source
+  Latitude(dbl_deg) #Latitude
+  Longitude(dbl_deg) #Longitude
+  UTMGridZone(int) #UTM Grid Zone
+  UTMSource(s50) #UTM Source
+  UTMx(dbl_m) #UTM Easting
+  UTMy(dbl_m) #UTM Northing
+  Com(txt2k) #Comment
+
+wvTimeCurve: Time based logs. +parent
+  Category(s100) #Category
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  UnitLabel(s20) #Units
+  DisplayFlag(bool) #Display?
+  DtTmStartRef(dt) #Reference Start Date
+  DtTmEndRef(dt) #Reference End Date
+  Contractor(s50) #Company
+  Analyst(s50) #Analyst
+  IDRecItem(s32) #Link
+  IDRecJob(s32) #Job
+  IDRecWellBore(s32) #Wellbore
+  ExcludeFromExport(bool) #Exclude From Export?
+  Source(s100) #Source
+  Com(txt2k) #Comment
+  UserTxt1(s100) #User Text1
+  UserTxt2(s100) #User Text2
+  UserTxt3(s100) #User Text3
+
+wvCurveInterp: Interpretation of sensor data. +parent
+  Category(s100) #Category
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Typ3(s100) #Type3
+  Typ4(s100) #Type4
+  Mnemonic(s50) #Mnemonic
+  APICode(s50) #API Code
+  UnitLabel(s10) #Units
+  Des(s100) #Description
+  Source(s100) #Source
+  Analyst(s50) #Analyst
+  Contractor(s50) #Company
+  TypCurve(s100) #Curve Type
+  Com(txt2k) #Comment
+  UserTxt1(s100) #User Text1
+  UserTxt2(s100) #User Text2
+  UserTxt3(s100) #User Text3
+
+wvCurveInterpDtl: Interpretation of sensor data - details. +parent
+  Typ1(s100) #Type1
+  Typ2(s100) #Type2
+  Typ3(s100) #Type3
+  Typ4(s100) #Type4
+  Typ1234ColorCalc(int_calc) #Type 1234 Color
+  Des(s100) #Description
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurationCalc(dbl_days_calc) #Duration
+  DurationCumCalc(dbl_days_calc) #Cum Duration
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth(TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  DepthBtmToTopCalc(dbl_m_calc) #Bit Depth Progress
+  ValueAvg(dbl) #Value Avg
+  ValueMax(dbl) #Value Max
+  ValueMed(dbl) #Value Median
+  ValueMin(dbl) #Value Min
+  ValueStdDev(dbl) #Value Std Dev
+  IDRecWellBoreCalc(s32_calc) #Wellbore
+  IDRecStringCalc(s32_calc) #Drill String
+  IDRecJobCalc(s32_calc) #Job
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecJobRigCalc(s32_calc) #Rig/Service Unit
+  InclEndCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  InclStartCalc(dbl_deg_calc) #Top Inclination
+  DaysFromSpudCalc(dbl_days_calc) #Days From Spud
+  UserTxt1(s100) #User Text1
+  UserTxt2(s100) #User Text2
+  UserTxt3(s100) #User Text3
+  DisplayFlag(bool) #Display?
+  Exclude(bool) #Exclude?
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvAFECalc: Summary of AFE and associated costs for the well (across jobs). +parent
+  AFENumber(s100_calc) #AFE Number
+  AFENumberSupp(s100_calc) #Supplemental AFE Number
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostNormAFE(dbl_cost_calc) #Normalized AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE  Supplemental Amount
+  CostNormAFESup(dbl_cost_calc) #Normalized AFE Supplemental Amt
+  CostAFETotal(dbl_cost_calc) #AFE + Supp Amount
+  CostNormAFETotal(dbl_cost_calc) #Normalized AFE + Supp Amt
+  CostFieldEst(dbl_cost_calc) #Field Est
+  CostNormFieldEst(dbl_cost_calc) #Normalized Field Est
+  CostVar(dbl_cost_calc) #AFE - Field Estimate
+  CostNormVar(dbl_cost_calc) #Normalized AFE - Field Estimate
+  CostFinalInvoice(dbl_cost_calc) #Final Invoice
+  CostNormFinalInvoice(dbl_cost_calc) #Normalized Final Invoice
+  CostAFEFinalVar(dbl_cost_calc) #AFE - Final Invoice
+  CostNormAFEFinalVar(dbl_cost_calc) #Normalized AFE - Final Invoice
+  CostFieldFinalVar(dbl_cost_calc) #Field - Final Invoice
+  CostNormFieldFinalVar(dbl_cost_calc) #Normalized Field - Final Invoice
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+  CostAFEForecastVar(dbl_cost_calc) #AFE - Forecast
+  CostForecastFieldVar(dbl_cost_calc) #Forecast - Field Est
+  CostNormAFEForecastVar(dbl_cost_calc) #Normalized AFE - Forecast
+  CostNormForecastFieldVar(dbl_cost_calc) #Normalized Forecast - Field
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvAFECostSumCalc: Cumulative costs by AFE for all Jobs in the well. Costs broken down by codes and description. AFE variance with Field Estimates and Final Invoiced ... +parent
+  AFENumber(s100_calc) #AFE Number
+  AFENumberSupp(s100_calc) #Supplemental AFE Number
+  Des(s100_calc) #Cost Description
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Code5(s100_calc) #Code 5
+  Code6(s100_calc) #Code 6
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostNormAFE(dbl_cost_calc) #Normalized AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE Supp Amount
+  CostNormAFESup(dbl_cost_calc) #Normalized AFE Supp Amount
+  CostAFETotal(dbl_cost_calc) #AFE + Supp Amount
+  CostNormAFETotal(dbl_cost_calc) #Normalized AFE + Supp Amount
+  CostFieldEst(dbl_cost_calc) #Field Est
+  CostNormFieldEst(dbl_cost_calc) #Normalized Field Est
+  CostVar(dbl_cost_calc) #AFE - Field Estimate
+  CostNormVar(dbl_cost_calc) #Normalized AFE - Field Est
+  CostFinalInvoice(dbl_cost_calc) #Final Invoice
+  CostNormFinalInvoice(dbl_cost_calc) #Normalized Final Invoice
+  CostAFEFinalVar(dbl_cost_calc) #AFE - Final Invoice
+  CostNormAFEFinalVar(dbl_cost_calc) #Normalized AFE - Final Invoice
+  CostFieldFinalVar(dbl_cost_calc) #Field - Final Invoice
+  CostNormFieldFinalVar(dbl_cost_calc) #Normalized Field - Final Invoice
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+  CostAFEForecastVar(dbl_cost_calc) #AFE - Forecast
+  CostForecastFieldVar(dbl_cost_calc) #Forecast - Field Est
+  CostNormAFEForecastVar(dbl_cost_calc) #Normalized AFE - Forecast
+  CostNormForecastFieldVar(dbl_cost_calc) #Normalized Forecast - Field

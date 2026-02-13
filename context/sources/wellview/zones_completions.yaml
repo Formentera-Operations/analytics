@@ -1,0 +1,204 @@
+# Peloton WellView: Zones & Completions
+# Zone definitions, zone statuses/allocations/production types, completions, completion zones/statuses/links
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__zones
+
+wvZone: Licensed producing (or injecting) intervals. Zones are 'wellbore contact intervals'. They represent a physical section of the wellbore. +parent
+  ZoneName(s50) #Zone Name
+  ZoneCode(s50) #Zone Code
+  IDRecWellBore(s32) #Wellbore
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Depth Btm (TVD)
+  DepthRef(dbl_m) #Reference Depth
+  DepthTVDRefCalc(dbl_m_calc) #Depth Ref (TVD)
+  IconName(s255) #Icon
+  ZoneIDA(s50) #Zone API #
+  Objective(s100) #Objective
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  DepthTopToBtmCalc(dbl_m_calc) #Depth Bottom - Depth Top
+  Com(txt2k) #Comment
+  ZoneLicenseNo(s50) #Zone License Number
+  ZoneLicensee(s50) #Zone Licensee
+  DtTmZoneLic(dt) #Zone License Date
+  DtTmZoneOnProdEst(dt) #Estimated On Production Date
+  DtTmZoneOnProd(dt) #First Production Date
+  DtTmZoneLastProdEst(dt) #Estimated Last Production Date
+  DtTmZoneLastProd(dt) #Last Production Date
+  DtTmZoneAbandonEst(dt) #Estimated Abandonment Date
+  DtTmZoneAbandon(dt) #Abandon Date
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  CurrentStatusCalc(s50_calc) #Current Status
+  FieldName(s50) #Field Name
+  FieldCode(s50) #Field Code
+  IDRecLastCompletionCalc(s32_calc) #Last Completion
+  ReservoirCalc(s255_calc) #Reservoir
+  UnitName(s50) #Unit Name
+  UnitCode(s50) #Unit Code
+  DataSource(s50) #Data Source
+  ZoneIDB(s50) #Zone ID B
+  ZoneIDC(s50) #Zone ID C
+  ZoneIDD(s50) #Zone ID D
+  ZoneIDE(s50) #Zone ID E
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserTxt6(s50) #User Text 6
+
+wvZoneStatus: Status of the 'Zone' by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  FluidDes(s100) #Fluid Type
+  Typ(s100) #Zone Type
+  MethodProd(s50) #Production Method
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvZoneFormationCalc: Calculation of the formation(s). EQN: 'Zone.Top Depth' < 'Wellbore Formation.Final Bottom MD' and 'Zone.Bottom Depth' >= 'Wellbore Formation.Final ... +parent
+  IDRecFormation(s32_calc) #Formation
+
+wvZoneAlloc: This table allows you to allocate a product and fraction on a specified date. +parent
+  DtTm(dt) #Start Date
+  Product(s100) #Product
+  Allocation(dbl) #Allocation
+  Source(s50) #Source
+  Note(s255) #Comment
+
+wvZoneAlias: History of 'Zone' ID changes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #ID Type
+  Typ2(s100) #ID Subtype
+  ChangeTyp(s100) #Change Type
+  Value(s50) #Value
+  Source(s50) #Source
+  Com(txt2k) #Comment
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvZoneProdTypCalc: Distinct list of 'Production Volume.activyttyp' for this 'Zone'. +parent
+  ActivityTyp(s50_calc) #Activity Type
+  DurationProd(dbl_days_calc) #Total Producing Time
+  DurationDown(dbl_days_calc) #Total Downtime
+  RatioDurationProd(dbl_pct_calc) #% Producing Time
+  RatioDurationDown(dbl_pct_calc) #% Downtime
+  VolumeOil(dbl_m3_calc) #Volume Oil
+  VolumeCond(dbl_m3_calc) #Volume Condensate
+  VolumeResGas(dbl_m3_calc) #Volume Reservoir Gas
+  VolumeWater(dbl_m3_calc) #Volume Water
+  VolumeLiquidOther(dbl_m3_calc) #Volume Other Liquid
+  VolumeGasOther(dbl_m3_calc) #Volume Other Gas
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvZoneProdTypDataCalc: Summarized production data by 'Production Volume.Activity Type'. +parent
+  DtTmStart(dt_calc) #Start Date
+  DtTmEnd(dt_calc) #End Date
+  DurationProd(dbl_days_calc) #Producing Time
+  DurationProdCum(dbl_days_calc) #Cumulative Producing Time
+  DurationDown(dbl_days_calc) #Downtime
+  DurationDownCum(dbl_days_calc) #Cumulative Downtime
+  RatioDurationProd(dbl_pct_calc) #% Producing Time
+  RatioDurationCumProd(dbl_pct_calc) #Cumulative % Producing Time
+  RatioDurationDown(dbl_pct_calc) #% Downtime
+  RatioDurationCumDown(dbl_pct_calc) #Cumulative % Downtime
+  VolumeOil(dbl_m3_calc) #Volume Oil
+  VolumeCumOil(dbl_m3_calc) #Cumulative Volume Oil
+  VolumeCond(dbl_m3_calc) #Volume Condensate
+  VolumeCumCond(dbl_m3_calc) #Cumulative Volume Condensate
+  VolumeResGas(dbl_m3_calc) #Volume Reservoir Gas
+  VolumeCumResGas(dbl_m3_calc) #Cumulative Volume Reservoir Gas
+  VolumeWater(dbl_m3_calc) #Volume Water
+  VolumeCumWater(dbl_m3_calc) #Cumulative Volume Water
+  VolumeLiquidOther(dbl_m3_calc) #Volume Other Liquid
+  VolumeCumLiquidOther(dbl_m3_calc) #Cumulative Volume Other Liquid
+  VolumeGasOther(dbl_m3_calc) #Volume Other Gas
+  VolumeCumGasOther(dbl_m3_calc) #Cumulative Volume Other Gas
+  RateOil(dbl_m3pd_calc) #Rate Oil
+  RateCondensate(dbl_m3pd_calc) #Rate Condensate
+  RateResGas(dbl_m3pd_calc) #Rate Reservoir Gas
+  RateWater(dbl_m3pd_calc) #Rate Water
+  RateLiquidOther(dbl_m3pd_calc) #Rate Other Liquid
+  RateGasOther(dbl_m3pd_calc) #Rate Other Gas
+  RatioResGasOil(dbl_m3pm3_calc) #Gas Oil Ratio
+  RatioWaterOil(dbl_m3pm3_calc) #Water Cut
+  RatioWaterResGas(dbl_m3pm3_calc) #Water Gas Ratio
+
+wvCompletion: A wellbore completion is comprised of one or more wellbore contact intervals ('Zone'). +parent
+  CompletionName(s50) #Surface Commingle Number
+  CompletionCode(s50) #Completion Code
+  DtTmOnProd(dt) #POP Date
+  DtTmAbandon(dt) #Abandon Date
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  CurrentStatusCalc(s50_calc) #Current Status
+  DepthRefTop(dbl_m) #Reference Top Depth
+  DepthRefBtm(dbl_m) #Reference Bottom Depth
+  Com(txt2k) #Comment
+  CompletionLicenseNo(s50) #Completion License Number
+  CompletionLicensee(s50) #Completion Licensee
+  DtTmLicense(dt) #Completion License Date
+  FieldName(s50) #Field Name
+  FieldCode(s50) #Field Code
+  UnitName(s50) #Unit Name
+  UnitCode(s50) #Unit Code
+  CompletionIDA(s50) #Completion API #
+  CompletionIDB(s50) #Completion ID B
+  CompletionIDC(s50) #Completion ID C
+  CompletionIDD(s50) #Completion ID D
+  CompletionIDE(s50) #Completion ID E
+  CompIDPA(s50) #Production Accounting Identifier for Completion
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+
+wvCompletionZone: Commingled 'Zone' that participate in this completion relationship. +parent
+  IDRecZone(s32) #Zone
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Note(s255) #Note
+
+wvCompletionStatus: Status of the 'Completion' by date. +parent
+  DtTm(dt) #Status Date
+  Status1(s50) #Status
+  Status2(s50) #Sub Status
+  FluidDes(s100) #Fluid Type
+  Typ1(s100) #Completion Type
+  Typ2(s100) #Completion Subtype
+  MethodProd(s50) #Production Method
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment
+
+wvCompletionLink: Define the completion relationship (flow path) by linking to 'Tubing String', 'Casing String', etc. +parent
+  IDRecItem(s32) #Associated Items
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Note(s255) #Note
+
+wvCompletionAlias: History of completion ID changes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #ID Type
+  Typ2(s100) #ID Subtype
+  ChangeTyp(s100) #Change Type
+  Value(s50) #Value
+  Source(s50) #Source
+  Com(txt2k) #Comment

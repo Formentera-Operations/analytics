@@ -1,0 +1,610 @@
+# Peloton WellView: Casing, Cement & Wellheads
+# Casing strings/components, cement stages/fluids/additives, wellheads, leak-off tests
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__casing_strings, stg_wellview__casing_components, stg_wellview__casing_tally, stg_wellview__cement_activities,
+#   stg_wellview__cement_stages, stg_wellview__cement_stage_fluids, stg_wellview__wellheads, stg_wellview__wellhead_components
+
+wvRiser: Riser information including run dates, depths and component details. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Description
+  DtTmRun(dt) #Run Date
+  DepthBtm(dbl_m) #Bottom Depth
+  Tension(dbl_N) #Set Tension
+  Com(txt2k) #Comment
+  LengthCalc(dbl_m_calc) #Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  SzODNomMaxCalc(dbl_m_calc) #Riser Nominal OD
+  WtPerLengthCalc(dbl_kgpm_calc) #Weight/Length
+  GradeCalc(s20_calc) #Riser Grade
+  SzIDNomMinCalc(dbl_m_calc) #Riser Min Nominal ID
+  WtCalc(dbl_N_calc) #Calc Riser Weight
+  WtHangPrelatch(dbl_N) #Weight Hang Prelatch
+  WtHangUnlatch(dbl_N) #Weight Hang Unlatch
+  WtHangChangeCalc(dbl_N_calc) #Weight Growth
+  DtTmPull(dt) #Pull Date
+  DtTmPropPull(dt) #Proposed Pull Date
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+
+wvRiserComp: Component details including OD, weight, grade. +parent
+  Des(s100) #Description
+  IconName(s255) #Icon
+  SzODNom(dbl_m) #Nominal OD Size
+  SzIDNom(dbl_m) #Nominal ID Size
+  WtPerLength(dbl_kgpm) #Wt Per Length
+  Grade(s20) #Grade
+  Length(dbl_m) #Length
+  Joints(int) #Joints
+  ConnTyp(s100) #Connect Type
+  Com(txt2k) #Comment
+  SzDrift(dbl_m) #Drift
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  Make(s100) #Make
+  CoatingInner(s20) #Inner Coating
+  CoatingOuter(s20) #Outer Coating
+  ItemNoCalc(s10_calc) #Item Number
+  RefID(s50) #Reference ID
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+
+wvCas: Casing string information including run date, set depth. +parent
+  ProposedOrActual(s100) #Proposed/Actual Run
+  Des(s100) #Casing Description
+  DepthBtm(dbl_m) #Set Depth
+  DtTmRun(dt) #Run Date
+  IDRecJobRun(s32) #Run Job
+  IDRecWellBore(s32) #Wellbore
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version
+  DtTmPickup(dt) #Pick Up Date
+  DtTmOnBottom(dt) #On Bottom Date
+  DtTmOutOfHole(dt) #Out of Hole Date
+  Tapered(bool) #Tapered?
+  Tension(dbl_N) #Set Tension
+  OperatingPressLimit(dbl_kPa) #Operating Pressure Limit
+  StringWtUp(dbl_N) #String Weight Up
+  StringWtDown(dbl_N) #String Weight Down
+  TravelEquipWt(dbl_N) #Travelling Equipment Weight
+  Contractor(s50) #Make-Up Contractor
+  LatPosition(s20) #Lateral Position
+  Centralizers(s100) #Centralizers
+  Scratchers(s100) #Scratchers
+  CentralizersStandOffAvg(dbl_pct) #Casing Standoff Avg
+  CentralizersStandOffMin(dbl_pct) #Casing Standoff Min
+  CentralizersNoTallyCalc(int_calc) ## Centralizers (Tally)
+  VolumeShoeTrack(dbl_m3) #Shoe Track Volume
+  DtTmPull(dt) #Pull Date
+  IDRecJobPull(s32) #Pull Job
+  PullReason(s100) #Pull Reason
+  PullReasonDetail(s100) #Pull Reason Details
+  DtTmPropPull(dt) #Proposed Pull Date
+  DtTmCutPull(dt) #Cut/Pull Date
+  DepthCutPull(dbl_m) #Depth Cut/Pull
+  DepthTVDCutPullCalc(dbl_m_calc) #Depth Cut/Pull (TVD)
+  ReasonCutPull(s100) #Reason Cut/Pull
+  NoteCutPull(s255) #Cut/Pull Note
+  DtTmPropCutPull(dt) #Proposed Cut/Pull Date
+  SzODNomMaxCalc(dbl_m_calc) #String Nominal OD
+  SzODNomCompMaxCalc(dbl_m_calc) #Max Nominal OD
+  SzIDNomMinCalc(dbl_m_calc) #String Nominal ID
+  SzIDNomCompMinCalc(dbl_m_calc) #Min Nominal ID
+  WtPerLengthCalc(dbl_kgpm_calc) #Weight/Length
+  GradeCalc(s20_calc) #String Grade
+  ConnThrdTopCalc(s20_calc) #Top Connection
+  SzDriftMinCalc(dbl_m_calc) #String Min Drift
+  LengthCalc(dbl_m_calc) #Length
+  StickUpKBCalc(dbl_m_calc) #Stick Up
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Set Depth (TVD)
+  VolumeInternalCalc(dbl_m3_calc) #String Internal Volume
+  LeakOffPresCalc(dbl_kPa_calc) #Leak Off Pressure
+  LeakOffDensityFluidCalc(dbl_kgpm3_calc) #Leak Off Equivalent Fluid Density
+  TotalStretchSumCalc(dbl_m_calc) #Total Stretch
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  WellboreSzCalc(dbl_m_calc) #Wellbore Size
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  ComponentsCalc(txt2k_calc) #String Components
+  CompCasDimCalc(txt2k_calc) #Tapered String Dimensions
+  CompCasDimSzODNomCalc(s100_calc) #Tapered String OD
+  DurOnBottomToPickUpCalc(dbl_days_calc) #On Bottom - Pick Up Duration
+  DurRunToPullCalc(dbl_days_calc) #Duration Run to Pull
+  DepthOnBtmToPickUpCalc(dbl_mpd_calc) #Set Depth/(On Btm - PU)
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  ComplexityIndex(s50) #Complexity Index
+
+wvCasComp: Casing component details including OD, weight, grade. +parent
+  Des(s100) #Item Description
+  IconName(s255) #Icon
+  SzODNom(dbl_m) #OD Nominal
+  SzIDNom(dbl_m) #ID
+  WtPerLength(dbl_kgpm) #Weight/Length
+  Grade(s20) #Grade
+  Length(dbl_m) #Length
+  Joints(int) #Joints
+  CompSubTyp(s100) #Equipment Type
+  ConnTypTop(s20) #Top Connection Type
+  ConnThrdTop(s20) #Top Connection Thread
+  ConnSzTop(dbl_m) #Top Connection Size
+  UpsetTop(s20) #Top Upset
+  ConnTgtPerfTop(s50) #Top Connection Target Performance
+  ConnTypBtm(s20) #Bottom Connection Type
+  ConnThrdBtm(s20) #Bottom Connection Thread
+  ConnSzBtm(dbl_m) #Bottom Connection Size
+  UpsetBtm(s20) #Bottom Upset
+  ConnTgtPerfBtm(s50) #Bottom Connection Target Performance
+  TorqueMin(dbl_Nm) #Make-up Torque
+  ConnectCalc(s50_calc) #Connections
+  ConnectAltCalc(s50_calc) #Connections (Alt)
+  SzDrift(dbl_m) #Drift
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  LengthTallyCalc(dbl_m_calc) #Tally Length
+  JointsTallyCalc(int_calc) #Joints in Tally
+  WeightCalc(dbl_N_calc) #Weight
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  VolumeDispCalc(dbl_m3_calc) #Volume Displaced (Open End)
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced (Open End)
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  SzODMax(dbl_m) #Max OD
+  DepthTopCorrected(dbl_m) #Corrected Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s20) #Material
+  UsedClass(s10) #Class
+  Com(txt2k) #Comment
+  ItemNoCalc(s10_calc) #Item Number
+  DesJtCalc(s100_calc) #Description-#Jts
+  RefID(s50) #Reference ID
+  CentralizersNoTallyCalc(int_calc) ## Centralizers (Tally)
+  CurrentStatusCalc(s100_calc) #Current Status
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  TorqueMax(dbl_Nm) #Max Torque
+  TensileMax(dbl_N) #Max Tensile Strength
+  PresCollapse(dbl_kPa) #Collapse Pressure
+  PresBurst(dbl_kPa) #Burst Pressure
+  PresAxialInner(dbl_kPa) #Axial Inner Pressure
+  PresAxialOuter(dbl_kPa) #Axial Outer Pressure
+  HeatRating(s20) #Heat Rating
+  DtTmManufacture(dt) #Manufacture Date
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+
+wvCasCompECP: Additional external casing packer details for the casing component. +extension
+  Typ(s100) #Type
+  ReqSet(s50) #Setting Requirement
+  ReqRelease(s50) #Release Requirements
+  InflationMeth(s20) #Inflation Method
+  SelectiveInfl(bool) #Selective Inflation?
+  InflFluidTyp(s100) #Inflation Fluid Type
+  InflFluidDen(dbl_kgpm3) #Inflation Fluid Density
+  SVPresSet(dbl_kPa) #AV Setting Pressure
+  SVPresAct(dbl_kPa) #AV Acting Pressure
+  ICVPresSet(dbl_kPa) #ICV Setting Pressure
+  ICVPresAct(dbl_kPa) #ICV Activation Pressure
+  ECPLoad(dbl_N) #ECP Load
+  SealLoad(dbl_N) #Seal Load
+  InflVol(dbl_m3) #Inflation Volume
+  EquivHoleSz(dbl_m) #Equivalent Hole Size
+  KnockOffRod(bool) #Knock Off Rod?
+  DepthBtmACP(dbl_m) #ACP Bottom Depth
+
+wvCasCompLnrHngr: Additional liner hanger details for the casing component. +extension
+  Retrievable(bool) #Retrievable?
+  ElastomerTyp(s100) #Elastomer Type
+  SealTypAnnulus(s100) #Annulus Seal Type
+  SealTypNeck(s100) #Neck Seal Type
+  ElemCenter(dbl_m) #Element Center Depth
+  SzPolishBore(dbl_m) #Polish Bore Size
+  LenPolishBore(dbl_m) #Polish Bore Length
+  Slips(s100) #Slip Description
+  SetMech(s50) #Set Mechanics
+  SettingProcedure(txt2k) #Setting Procedure
+  UnsettingProcedure(txt2k) #Unsetting Procedure
+  Note(s100) #Note
+
+wvCasCompSlottedLnr: Additional slotted liner details for the casing component. +extension
+  PercentOpenArea(dbl_pct) #% Open Area
+  OpeningMinDimension(dbl_m) #Perforation Min Dimension
+  OpeningMaxDimension(dbl_m) #Perforation Max Dimension
+  CentersLengthwise(dbl_m) #Axial Perf Spacing
+  PerfRows(int) #Perf Rows
+  BlankTop(dbl_m) #Blank Top Length
+  BlankBottom(dbl_m) #Blank Bottom Length
+  SlotDes(s100) #Slot Description
+  SlotPattern(s50) #Slot Pattern
+  SlotLength(dbl_m) #Slot Length
+  SlotWidth(dbl_m) #Slot Width
+  SlotFrequency(dbl) #Slot Frequency
+  ScreenGauge(dbl_gauge) #Screen Gauge
+
+wvCasCompTally: Individual joints run for the selected casing component. +parent
+  Length(dbl_m) #Length
+  RefNo(int) #Reference #
+  JointRun(bool) #Run?
+  Centralized(bool) #Centralized?
+  CentralizersNo(int) ## Centralizers
+  CentralizersDes(s50) #Centralizer Note
+  ExtJewelry(s50) #External Jewelry
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  RunNoCalc(dbl_calc) #Run Number
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  VolumeInternalCumCalc(dbl_m3_calc) #Cum Internal Volume
+  RefID(s50) #Reference ID
+  HeatNo(dbl) #Heat Number
+
+wvCasCompAcc: Accessories related to this component. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  Sz(dbl_m) #Size
+  SzDes(s100) #Size Description
+  Length(dbl_m) #Length
+  DistanceFromBtm(dbl_m) #Distance from Bottom
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s50) #Material
+  MaxPres(dbl_kPa) #Max Pres
+  ConditionRun(s50) #Condition Run
+  ConditionPull(s50) #Condition Pull
+  HoursStart(dbl_days) #Starting Hours
+  DtTmManufacture(dt) #Manufacture Date
+  ModifyDes(s100) #Modification Description
+  RefID(s50) #Reference ID
+  Note(s255) #Note
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+
+wvCasCompStatus: Status of component by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  IconName(s255) #Icon Override
+  Note(s255) #Note
+
+wvCasCompPresRating: Burst and collapse pressure changes over time. +parent
+  DtTm(dt) #Date
+  PresBurst(dbl_kPa) #Burst Pressure
+  PresCollapse(dbl_kPa) #Collapse Pressure
+  PresAxialInner(dbl_kPa) #Axial Inner Pressure
+  PresAxialOuter(dbl_kPa) #Axial Outer Pressure
+  Reason(s100) #Reason for Change
+  Note(s255) #Note
+
+wvCement: Description of the overall cement activity. +parent
+  ProposedOrActual(s100) #Proposed/Actual Run
+  Des(s100) #Description
+  CementTyp(s100) #Type
+  CementSubTyp(s100) #Subtype
+  IDRecString(s32) #String
+  DtTmStart(dt) #Cementing Start Date
+  DtTmEnd(dt) #Cementing End Date
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  Contractor(s50) #Cementing Company
+  ContractSupt(s50) #Cementing Supervisor
+  Objective(s50) #Cement Objective
+  EvalMethod(s100) #Evaluation Method
+  DesEval(txt2k) #Cement Evaluation Results
+  Com(txt2k) #Comment
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DurCalc(dbl_days_calc) #Duration
+  AmtCementTotalCalc(dbl_kg_calc) #Amount
+  VolPumpedTotalCalc(dbl_m3_calc) #Volume Pumped
+  DtTmCutPull(dt) #Cut Date
+  DepthCutPull(dbl_m) #Depth Cut
+  ReasonCutPull(s100) #Reason Cut
+  NoteCutPull(s255) #Cut/Pull Note
+  DtTmPropCutPull(dt) #Proposed Cut Date
+
+wvCementStage: Description of the cement stage(s) for the cement activity. +parent
+  StageNum(int) #Stage Number
+  Des(s100) #Description
+  Objective(s50) #Objective
+  Com(txt2k) #Comment
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  MeasMethod(s20) #Top Measurement Method
+  DtTmStartPump(dt) #Pump Start Date
+  DtTmEndPump(dt) #Pump End Date
+  TopPlug(bool) #Top Plug?
+  BtmPlug(bool) #Bottom Plug?
+  RatePumpStart(dbl_m3pd) #Initial Pump Rate
+  RatePumpEnd(dbl_m3pd) #Final Pump Rate
+  RatePumpAvg(dbl_m3pd) #Avg Pump Rate
+  PresPumpEnd(dbl_kPa) #Final Pump Pressure
+  PresPlugBump(dbl_kPa) #Plug Bump Pressure
+  PresHeld(dbl_kPa) #Pressure Held
+  DtTmReleasedPres(dt) #Pressure Release Date
+  PlugFailed(bool) #Plug Failed?
+  FloatFailed(bool) #Float Failed?
+  FullReturn(bool) #Full Return?
+  VolReturnCmnt(dbl_m3) #Cement Volume Return
+  VolLost(dbl_m3) #Volume Lost
+  VolInFrm(dbl_m3) #Volume Squeezed in to Formation
+  Reciprocated(bool) #Pipe Reciprocated?
+  RecipStroke(dbl_m) #Reciprocation Stroke Length
+  RecipRate(dbl_spm) #Reciprocation Rate
+  Rotated(bool) #Pipe Rotated?
+  RotateRPM(dbl_rpm) #Pipe RPM
+  PipeMoveNote(s255) #Pipe Movement Note
+  DepthTagged(dbl_m) #Tagged Depth
+  TagMethod(s50) #Tag Method
+  WeightTagged(dbl_N) #Tag Weight
+  DepthDrillOut(dbl_m) #Depth Plug Drilled Out To
+  DtTmTagged(dt) #Tag Cement Date
+  DtTmDrillOut(dt) #Drill Out Date
+  ODDrillOut(dbl_m) #Drill Out Diameter
+  DurDrillOutToPumpEndCalc(dbl_days_calc) #Drill Out - Pump End Duration
+  DtTmPropDrillOut(dt) #Proposed Drill Out Date
+
+wvCementStageFluid: Each of the fluids that make up each stage, such as preflush, lead slurry, tail slurry, or displacement. +parent
+  Typ(s100) #Fluid Type
+  DepthTopEst(dbl_m) #Estimated Top
+  DepthBtmEst(dbl_m) #Estimated Bottom Depth
+  DepthTVDBtmEstCalc(dbl_m_calc) #Est Bottom Depth (TVD)
+  DepthTVDTopEstCalc(dbl_m_calc) #Est Top Depth(TVD)
+  Objective(s50) #Objective
+  DtTmMix(dt) #Mixed Date
+  DtTmStartPump(dt) #Pump Start Date
+  DtTmEndPump(dt) #Pump End Date
+  CmtClass(s50) #Class
+  AmtCement(dbl_kg) #Amount
+  MixWaterRatio(dbl_m3pkg) #Mix H20 Ratio
+  WaterSource(s50) #Water Source
+  Yield(dbl_m3pkg) #Yield
+  VolPumped(dbl_m3) #Volume Pumped
+  ExcessPumped(dbl_pct) #Percent Excess Pumped
+  Filtrate(dbl_m3pd) #Filtrate
+  Density(dbl_kgpm3) #Density
+  PlasticVis(dbl_Pas) #Plastic Viscosity
+  YieldPt(dbl_kPa) #Yield Point
+  TempVisc(dbl_degC) #Fan Temperature
+  ThickenTm(dbl_days) #Thickening Time
+  ThickenTemp(dbl_degC) #Thickening Temp
+  ComprStr2(dbl_kPa) #2nd Compressive Strength
+  ComprStr1(dbl_kPa) #1st Compressive Strength
+  ComprStrTm2(dbl_days) #Time of 2nd Compressive Strength Test
+  ComprStrTm1(dbl_days) #Time of 1st Compressive Strength Test
+  ComprStrTemp(dbl_degC) #Temperature for Compressive Strength
+  PresFinal(dbl_kPa) #Final Pressure
+  PresFrictionLoss(dbl_kPa) #Friction Pressure Loss
+  RateAvg(dbl_m3pd) #Average Rate
+  FreeWater(dbl_pct) #Free Water
+  DesFluid(txt2k) #Fluid Description
+  Com(txt2k) #Comment
+
+wvCementStageFluidAdd: Additives in the cement stage fluid. +parent
+  Des(s100) #Additive
+  Typ(s100) #Type
+  Amount(dbl) #Amount
+  AmountUnitLabel(s10) #Amount Units
+  Conc(dbl) #Concentration
+  ConcUnitLbl(s10) #Conc Unit label
+
+wvCementStageFluidVisc: Viscometer readings for the fluid. +parent
+  ViscRPM(dbl_rpm) #Viscometer RPM
+  ViscValue(dbl_kPa) #Viscometer Reading
+
+wvWellhead: Wellhead details including installation date, size, make, model and working pressure. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Typ(s100) #Type
+  Make(s100) #Make
+  Profile(s50) #Profile
+  Service(s50) #Service
+  WorkPres(dbl_kPa) #Working Pressure
+  Sz(dbl_m) #Size
+  DepthBtm(dbl_m) #Set Depth
+  DtTmStart(dt) #Install Date
+  IDRecString(s32) #Annulus
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment
+  PropRunVersionNo(int) #Proposed Version
+  Class(s100) #Class
+  MaxPres(dbl_kPa) #Max Pres
+  ProductSpecLevel(s50) #Product Specification Level
+  TempRating(dbl_degC) #Temp Rating
+  TempRatingDes(s50) #Temp Rating Des
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DtTmOverHaul(dt) #Overhaul Date
+  DtTmPropEnd(dt) #Proposed Removal Date
+  RemoveReason(s100) #Remove Reason
+  DtTmEnd(dt) #Removal Date
+
+wvWellheadComp: Define the vertical components in the stack. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  SzID(dbl_m) #ID
+  IDRecString(s32) #String
+  Sect(s10) #Section
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  WorkPres(dbl_kPa) #Working Pressure
+  MaxPres(dbl_kPa) #Max Pres
+  Service(s20) #Service
+  ConnTopTyp(s100) #Top Connection Type
+  ConnTopSz(dbl_m) #Top Connection Size
+  WorkPresTop(dbl_kPa) #Top Working Pressure
+  ConnBtmSz(dbl_m) #Bottom Connection Size
+  ConnBtmTyp(s100) #Bottom Connection Type
+  WorkPresBtm(dbl_kPa) #Bottom Working Pressure
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  DtTmManufacture(dt) #Manufacture Date
+  IconName(s255) #Icon
+  Length(dbl_m) #Length (Drawing)
+  SzODNom(dbl_m) #OD Nominal
+  SzIDNom(dbl_m) #ID Nominal
+  VolumeVoid(dbl_m3) #Void Volume
+  ProductSpecLevel(s50) #Product Specification Level
+  MinBore(dbl_m) #Min Bore
+  PackoffType(s100) #Packoff Type
+  Material(s20) #Material
+  TempRating(dbl_degC) #Temp Rating
+  RefID(s50) #Reference ID
+  Com(txt2k) #Comment
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+  Usertxt(s255) #User Text
+
+wvWellheadCompSub: Wellhead equipment outlet information including the equipment attached to the outlet. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  SzID(dbl_m) #ID
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  IDRecString(s32) #String Link Override
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  DtTmManufacture(dt) #Manufacture Date
+  ConnTopTyp(s100) #Top Connection Type
+  ConnTopSz(dbl_m) #Top Connection Size
+  WorkPresTop(dbl_kPa) #Top Working Pressure
+  ConnBtmTyp(s100) #Bottom Connection Type
+  ConnBtmSz(dbl_m) #Bottom Connection Size
+  WorkPresBtm(dbl_kPa) #Bottom Working Pressure
+  SzODNom(dbl_m) #OD (Drawing)
+  SzIDNom(dbl_m) #ID (Drawing)
+  Length(dbl_m) #Length (Drawing)
+  IconName(s255) #Icon
+  LatOrder(int) #Lateral Order
+  LatPosition(s20) #Lateral Position
+  VertPosition(s20) #Vertical Position
+  WorkPres(dbl_kPa) #Outlet Working Pressure
+  MaxPres(dbl_kPa) #Outlet Max Pressure
+  Service(s20) #Service
+  ProductSpecLevel(s50) #Product Specification Level
+  MinBore(dbl_m) #Min Bore
+  VolumeVoid(dbl_m3) #Void Volume
+  Material(s20) #Material
+  TempRating(dbl_degC) #Temp Rating
+  RefID(s50) #Reference ID
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+  Usertxt(s255) #User Text
+
+wvWellheadCompSubAcc: Accessories related to this component. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  Sz(dbl_m) #Size
+  SzDes(s100) #Size Description
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s50) #Material
+  ConditionRun(s50) #Condition Installed
+  ConditionPull(s50) #Condition Removed
+  MaxPres(dbl_kPa) #Max Pres
+  TempRating(dbl_degC) #Temp Rating
+  ModifyDes(s100) #Modification Description
+  DtTmManufacture(dt) #Manufacture Date
+  DistanceFromBtm(dbl_m) #Distance from Bottom
+  HoursStart(dbl_days) #Starting Hours
+  Length(dbl_m) #Length
+  RefID(s50) #Reference ID
+  Note(s255) #Note
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+
+wvWellheadCompAcc: Accessories related to this component. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  Sz(dbl_m) #Size
+  SzDes(s100) #Size Description
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s50) #Material
+  MaxPres(dbl_kPa) #Max Pres
+  TempRating(dbl_degC) #Temp Rating
+  ConditionRun(s50) #Condition Install
+  ConditionPull(s50) #Condition Removed
+  DistanceFromBtm(dbl_m) #Distance from Bottom
+  HoursStart(dbl_days) #Starting Hours
+  Length(dbl_m) #Length
+  RefID(s50) #Reference ID
+  DtTmManufacture(dt) #Manufacture Date
+  ModifyDes(s100) #Modification Description
+  Note(s255) #Note
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+
+wvTestLeakOff: Leak off test details including pressure, density, and volume. +parent
+  TestTyp(s100) #Test Type
+  DtTm(dt) #Test Date
+  IDRecCas(s32) #Last Casing String Run
+  IDRecFrm(s32) #Wellbore Formation Tested
+  LeakOffOccurred(bool) #Leak Off Occurred?
+  LeakOffPres(dbl_kPa) #Applied Surface Pressure
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  FluidTyp(s100) #Fluid Type
+  DensityFluid(dbl_kgpm3) #Fluid Density
+  LeakOffRate(dbl_m3pd) #Leak Off Rate Avg
+  VolPumped(dbl_m3) #Volume Pumped
+  LeakOffPresCalc(dbl_kPa_calc) #Leak Off Pressure
+  LeakOffDensityFluidCalc(dbl_kgpm3_calc) #Leak Off Equivalent Fluid Density
+  DataSource(s50) #Data Source
+  Com(txt2k) #Comment
+
+wvTestLeakOffData: Test data details including time, pressure, and volume. +parent
+  Tm(dbl_days) #Time
+  Pres(dbl_kPa) #Pressure
+  Vol(dbl_m3) #Volume
+  Note(s255) #Note
