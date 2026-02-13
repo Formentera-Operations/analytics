@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: dim_job
+    description: >
+      Job dimension sourced from WellView. One row per drilling/completions job.
+      Enriched with well EID (FK to well_360) and latest rig assignment.
+    columns:
+      - name: job_sk
+        description: Surrogate key (MD5 hash of Job ID)
+        tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: WellView natural key (IDRec)
+        tests:
+          - unique
+          - not_null
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+      - name: job_type_primary
+        description: Primary job classification (e.g., Drilling, Completion, Workover)
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: dim_wellbore
+    description: >
+      Wellbore dimension sourced from WellView. One row per wellbore.
+      Includes depth, directional, and profile classification attributes.
+    columns:
+      - name: wellbore_sk
+        description: Surrogate key (MD5 hash of record_id)
+        tests:
+          - unique
+          - not_null
+      - name: wellbore_id
+        description: WellView natural key (record_id)
+        tests:
+          - unique
+          - not_null
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+
+  - name: dim_phase
+    description: >
+      Phase dimension sourced from WellView job program phases. One row per phase.
+      Linked to dim_job via job_sk for parent job context.
+    columns:
+      - name: phase_sk
+        description: Surrogate key (MD5 hash of record_id)
+        tests:
+          - unique
+          - not_null
+      - name: phase_id
+        description: WellView natural key (record_id)
+        tests:
+          - unique
+          - not_null
+      - name: job_sk
+        description: FK to dim_job
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+
+  - name: bridge_job_afe
+    description: >
+      Bridge table linking jobs to AFE records. Many-to-many: a job can have
+      multiple AFEs, and an AFE can fund multiple jobs. Carries gross AFE amounts.
+    columns:
+      - name: job_afe_sk
+        description: Surrogate key (MD5 hash of job_afe_id)
+        tests:
+          - unique
+          - not_null
+      - name: job_afe_id
+        description: WellView natural key for the job-AFE relationship
+        tests:
+          - unique
+          - not_null
+      - name: job_sk
+        description: FK to dim_job
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+      - name: afe_number
+        description: AFE number identifier
+        tests:
+          - not_null:
+              config:
+                severity: warn

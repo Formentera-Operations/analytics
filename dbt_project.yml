@@ -71,6 +71,10 @@ models:
         +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'marts' }}"
         +materialized: table
         +tags: ["marts", "fo"]
+        drilling:
+          +materialized: table
+          +tags: ['drilling', 'mart']
+          +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'drilling' }}"
         griffin:
           +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'griffin' }}"
           +materialized: table
