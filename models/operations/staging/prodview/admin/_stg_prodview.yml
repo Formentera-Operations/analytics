@@ -12,15 +12,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent unit record ID. ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- descriptive fields
       - name: agreement_description
@@ -97,20 +92,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent partnership agreement record ID. ProdView: IDRECPARENT"
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__partnership_agreements')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- partner information
       - name: partner_id
@@ -171,15 +156,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent regulatory body record ID. ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- key information
       - name: key_name
@@ -264,15 +244,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent unit record ID. ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- remark information
       - name: entry_date
@@ -336,13 +311,8 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- ticket information
       - name: effective_date

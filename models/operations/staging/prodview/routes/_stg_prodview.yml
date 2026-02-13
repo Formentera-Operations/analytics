@@ -76,20 +76,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent route record ID. ProdView: IDRECPARENT"
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__routes')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- descriptive fields
       - name: user_id

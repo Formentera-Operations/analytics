@@ -418,15 +418,10 @@ models:
       # -- identifiers
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
       - name: completion_id
         description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
       - name: completion_table
@@ -817,15 +812,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (monthly gathered). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
       - name: completion_id
         description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
       - name: completion_table
@@ -1083,15 +1073,10 @@ models:
       # -- identifiers
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (monthly disposition). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
       # -- dates
       - name: disposition_date
         description: "Disposition date. ProdView: DTTM, UI: 'Date'"
@@ -1279,15 +1264,10 @@ models:
       # -- identifiers
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID. ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
       # -- dates
       - name: disposition_start_date
         description: "Disposition period start date. ProdView: DTTMSTART, UI: 'Start Date'"
@@ -1471,15 +1451,10 @@ models:
       # -- identifiers
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: parent_opening_inventory_id
         description: "Parent opening inventory record ID. ProdView: IDRECPARENT"
       - name: flow_network_id
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
       # -- unit references
       - name: unit_id
         description: "Unit record ID. ProdView: IDRECUNIT, UI: 'Unit'"

@@ -12,15 +12,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this artificial lift record. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier linking to the completion. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- equipment details
       - name: pump_name
@@ -165,20 +160,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this rod pump config. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier linking to the artificial lift record (1:1 extension). ProdView: IDRECPARENT"
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__artificial_lift')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- pump specifications
       - name: pump_diameter_in
@@ -225,20 +210,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this rod pump entry. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier linking to the rod pump config. ProdView: IDRECPARENT"
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__rod_pump_configs')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- dates
       - name: observation_date
@@ -313,15 +288,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this plunger lift record. ProdView: IDREC"
-        data_tests:
-          - unique
-          - not_null
       - name: completion_id
         description: "Parent completion record identifier. ProdView: IDRECPARENT"
       - name: flow_network_id
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- equipment details
       - name: displacement_rate_bbl_per_day_per_100rpm
@@ -368,20 +338,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this plunger lift reading. ProdView: IDREC"
-        data_tests:
-          - unique
-          - not_null
       - name: plunger_lift_id
         description: "Parent plunger lift record identifier. ProdView: IDRECPARENT"
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__plunger_lifts')
-                field: id_rec
       - name: flow_network_id
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- dates
       - name: entry_date

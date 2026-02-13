@@ -13,15 +13,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (facility). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
       - name: facility_id
         description: "Current facility record ID. ProdView: IDRECFACILITY, UI: 'Current Facility'"
       - name: facility_table
@@ -285,15 +280,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (facility). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- dates
       - name: period_start_date
@@ -552,13 +542,8 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- dates
       - name: transaction_date

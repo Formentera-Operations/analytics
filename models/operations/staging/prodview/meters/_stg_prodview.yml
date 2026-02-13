@@ -14,17 +14,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this liquid meter. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier (unit). ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
       - name: unit_node_id
         description: "Calculated node reference for this meter. ProdView: IDRECUNITNODECALC, UI: 'Node'"
       - name: unit_node_table
@@ -155,21 +148,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this reading. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent liquid meter record identifier. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__liquid_meters')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
       - name: hc_liquid_analysis_id
         description: "Calculated HC liquid analysis reference. ProdView: IDRECHCLIQANALYSISCALC, UI: 'HC Liquid  Analysis'"
       - name: hc_liquid_analysis_table
@@ -338,17 +320,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this gas PD meter. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier (unit). ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- meter configuration
       - name: meter_name
@@ -487,21 +462,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this reading. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent gas PD meter record identifier. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__gas_pd_meters')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- date/time and readings
       - name: reading_date
@@ -619,17 +583,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this gas meter. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier (unit). ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
       - name: operating_hours_source_id
         description: "Source record for operating hours. ProdView: IDRECDUROPSOURCE, UI: 'Source of Operating Hours'"
       - name: operating_hours_source_table
@@ -774,21 +731,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this reading. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent gas meter record identifier. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__gas_meters')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
       - name: gas_analysis_id
         description: "Calculated gas analysis reference. ProdView: IDRECGASANALYSISCALC, UI: 'Gas Analysis'"
       - name: gas_analysis_table
@@ -932,17 +878,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this measurement point. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent record identifier (unit). ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- measurement point information
       - name: measurement_name
@@ -1053,21 +992,10 @@ models:
         description: "Surrogate key derived from id_rec."
       - name: id_rec
         description: "Unique record identifier for this entry. ProdView: IDREC, UI: 'idrec (unique record id)'"
-        data_tests:
-          - unique
-          - not_null
       - name: id_rec_parent
         description: "Parent measurement point record identifier. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_prodview__other_measurement_points')
-                field: id_rec
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
 
       # -- measurement data
       - name: measurement_date

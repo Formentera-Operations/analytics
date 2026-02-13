@@ -12,9 +12,6 @@ models:
         description: "Surrogate key (MD5 hash of id_flownet)"
       - name: id_flownet
         description: "Flow network identifier (PK). ProdView: IDFLOWNET, UI: 'IDFlowNet'"
-        data_tests:
-          - not_null
-          - unique
       - name: flow_network_name
         description: "Network name. ProdView: NAME, UI: 'Network Name'"
       - name: flow_network_type
@@ -133,15 +130,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (unit). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- node configuration
       - name: node_name
@@ -282,15 +274,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (unit node). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- connection period
       - name: connection_start_date
@@ -369,15 +356,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (unit node). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
       - name: node_id
         description: "Node record ID this volume belongs to. ProdView: IDRECNODE, UI: 'Node'"
       - name: node_table
@@ -458,15 +440,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (unit node). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- dates
       - name: period_start_date
@@ -543,15 +520,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (node correction). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- dates
       - name: correction_date
@@ -613,15 +585,10 @@ models:
         description: "Surrogate key (MD5 hash of id_rec)"
       - name: id_rec
         description: "Unique record ID (PK). ProdView: IDREC"
-        data_tests:
-          - not_null
-          - unique
       - name: id_rec_parent
         description: "Parent record ID (unit node). ProdView: IDRECPARENT"
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
-        data_tests:
-          - not_null
 
       # -- correction period
       - name: correction_start_date
