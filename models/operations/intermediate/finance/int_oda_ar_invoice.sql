@@ -32,7 +32,7 @@
         i.code                          as Invoice_Number,
         i.id                            as Invoice_ID,
         i.invoice_type_id               as Invoice_Type_ID,
-        w.hold_all_billing              as Hold_Billing,
+        coalesce(w.hold_all_billing, 0)              as Hold_Billing,
         i.voucher_id                    as Voucher_ID,
         Case 
             When i.invoice_type_id = 5 Then i.description
