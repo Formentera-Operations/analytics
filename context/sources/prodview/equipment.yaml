@@ -1,0 +1,177 @@
+# Peloton Prodview: Equipment
+# Equipment and compressors with service records, downtimes, runtime entries
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dbl_day=day dbl_sec=seconds
+#   dbl_calc=double(calc) dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitEquip: Equipment +parent
+  Name(s50) #Equipment Name
+  Make(s50) #Make
+  Model(s50) #Model
+  Typ(s50) #Type
+  TypRecording(s50) #Recording Type
+  PowerRating(double, watt) #Power Rating
+  EnergySource(s50) #Energy Source
+  IDRecLoc(s32) #Equipment Location
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #MeasPtCode
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #DSCode
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  IDEquipment(s32) #Equipment Link
+  sysSeq(int) #Sequence
+
+pvUnitEquipService: Service Requirements +parent
+  Typ1(s50) #Service Type
+  Typ2(s50) #Service Subtype
+  DurBetwnService(dbl_days) #Duration Between Service
+  DtTmNextCalc(dt_calc) #Next Service Due
+  Com(txt2k) #Comment
+
+pvUnitEquipServiceRec: Service Records +parent | History of service performed on this equipment
+  DtTm(dt) #Date
+  ServicedBy(s50) #Serviced By
+  Com(txt2k) #Comment
+
+pvUnitEquipDownTm: Equipment Downtimes +parent
+  TypDownTm(s20) #Type of Downtime Entry
+  DtTmStart(dt) #First Day
+  DurDownStartDay(dbl_days) #Hours Down
+  CodeDownTm1(s50) #Downtime Code
+  CodeDownTm2(s50) #Downtime Code 2
+  CodeDownTm3(s50) #Downtime Code 3
+  DtTmEnd(dt) #Last Day
+  DurDownEndDay(dbl_days) #Downtime on Last Day
+  DurOpCalc(double, days, calculated) #Operating Days Since Last DT
+  DurDownCalc(double, days, calculated) #Downtime
+  Com(txt2k) #Comments
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5
+
+pvUnitEquipUnit: Related Units or Nodes +parent
+  IDRecUnit(s32) #Unit or Node
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+
+pvUnitEquipMeas: Related Measurements +parent
+  IDRecMeas(s32) #Measurement
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Com(txt255) #Note
+
+pvUnitCompressor: Compressors +parent
+  Name(s50) #Compressor Name
+  Make(s50) #Make
+  Model(s50) #Model
+  Typ(s50) #Type
+  TypRecording(s50) #Recording Type
+  PowerRating(double, watt) #Power Rating
+  EnergySource(s50) #Energy Source
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #MPHID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  sysSeq(int) #Sequence
+
+pvUnitCompressorEntry: Compressor Entries +parent | Interstage Temperatures and Pressures
+  DtTm(dt) #Date Time
+  VibStage1(bool) #Compressor Credit?
+  PresUser1(dbl_kPa) #Suction Press
+  PresStage1(dbl_kPa) #Inter Press
+  PresUser2(dbl_kPa) #Discharge Press
+  PresStage2(dbl_kPa) #Seperator Pres
+  PresStage3(dbl_kPa) #Sales Line Pres
+  TempUser1(dbl_degC) #Suction Temp
+  TempUser2(dbl_degC) #Discharge Temp
+  PresUser3(dbl_kPa) #Oil Press Comp
+  TempUser3(dbl_degC) #Engine Oil Temp
+  UserNum1(double, rotations per minute) #Engine RPM
+  Com(txt255) #Comments
+  TempStage1(dbl_degC) #Interstage Temperature 1
+  TempStage2(dbl_degC) #Interstage Temperature 2
+  TempStage3(dbl_degC) #Interstage Temperature 3
+  PresStage4(dbl_kPa) #Interstage Pressure 4
+  TempStage4(dbl_degC) #Interstage Temperature 4
+  PresStage5(dbl_kPa) #Interstage Pressure 5
+  TempStage5(dbl_degC) #Interstage Temperature 5
+  PresInWat(dbl_kPa) #Water Pressure
+  TempInWat(dbl_degC) #Water Temperature
+  PresWatStage1(dbl_kPa) #Water Out Pressure 1
+  TempWatStage1(dbl_degC) #Water Out Temperature 1
+  PresWatStage2(dbl_kPa) #Water Out Pressure 2
+  TempWatStage2(dbl_degC) #Water Out Temperature 2
+  PresWatStage3(dbl_kPa) #Water Out Pressure 3
+  TempWatStage3(dbl_degC) #Water Out Temperature 3
+  PresWatStage4(dbl_kPa) #Water Out Pressure 4
+  TempWatStage4(dbl_degC) #Water Out Temperature 4
+  PresWatStage5(dbl_kPa) #Water Out Pressure 5
+  TempWatStage5(dbl_degC) #Water Out Temperature 5
+  VibStage2(bool) #Vibration Stage 2?
+  VibStage3(bool) #Vibration Stage 3?
+  VibStage4(bool) #Vibration Stage 4?
+  VibStage5(bool) #Vibration Stage 5?
+  PresSystem(dbl_kPa) #System Pressure
+  TempAirIntake(dbl_degC) #Ambient Temperature
+  ElectricCurrent(double, amp) #Electric Current
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5

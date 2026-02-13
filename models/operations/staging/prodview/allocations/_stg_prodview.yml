@@ -1,0 +1,1514 @@
+version: 2
+
+models:
+  - name: stg_prodview__daily_allocations
+    description: >
+      ProdView daily allocation calculations — allocated production volumes per completion
+      per day. This is the most-queried ProdView table and the foundation for all production
+      reporting. Includes gathered/allocated/new-production volumes, WI/NRI percentages,
+      disposition breakdowns, inventory, cumulative production, heat content, and density.
+      One row per completion per day. Source: PVT_PVUNITALLOCMONTHDAY.
+    columns:
+      # -- surrogate key
+      - name: daily_allocation_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: id_rec_parent
+        description: "Parent record ID (monthly allocation). ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+      - name: id_rec_unit
+        description: "Unit (well/pad) record ID. ProdView: IDRECUNIT, UI: 'Unit'"
+      - name: id_rec_unit_tk
+        description: "Unit table key. ProdView: IDRECUNITTK, UI: 'Unit Table'"
+      - name: id_rec_comp
+        description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
+      - name: id_rec_comp_tk
+        description: "Completion table key. ProdView: IDRECCOMPTK, UI: 'Completion Table'"
+      - name: id_rec_comp_zone
+        description: "Reporting/contact interval record ID. ProdView: IDRECCOMPZONE, UI: 'Reporting/Contact Interval'"
+      - name: id_rec_comp_zone_tk
+        description: "Reporting/contact interval table key. ProdView: IDRECCOMPZONETK, UI: 'Reporting/Contact Interval Table'"
+
+      # -- date/time
+      - name: allocation_date
+        description: "Allocation date. ProdView: DTTM, UI: 'Date'"
+      - name: allocation_year
+        description: "Allocation year. ProdView: YEAR, UI: 'Year'"
+      - name: allocation_month
+        description: "Allocation month. ProdView: MONTH, UI: 'Month'"
+      - name: allocation_day_of_month
+        description: "Day of month. ProdView: DAYOFMONTH, UI: 'Day'"
+
+      # -- operational time
+      - name: downtime_hours
+        description: "Downtime in hours. Converted from days via pv_days_to_hours. ProdView: DURDOWN, UI: 'Downtime'"
+      - name: operating_time_hours
+        description: "Operating time in hours. Converted from days via pv_days_to_hours. ProdView: DUROP, UI: 'Operating Time'"
+
+      # -- gathered volumes
+      - name: gathered_hcliq_bbl
+        description: "Gathered hydrocarbon liquid volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODGATHHCLIQ, UI: 'Gathered HCLiq'"
+      - name: gathered_gas_mcf
+        description: "Gathered gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODGATHGAS, UI: 'Gathered Gas'"
+      - name: gathered_water_bbl
+        description: "Gathered water volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODGATHWATER, UI: 'Gathered Water'"
+      - name: gathered_sand_bbl
+        description: "Gathered sand volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODGATHSAND, UI: 'Gathered Sand'"
+
+      # -- allocated volumes
+      - name: allocated_hcliq_bbl
+        description: "Allocated hydrocarbon liquid volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCHCLIQ, UI: 'Allocated HCLiq'"
+      - name: allocated_oil_bbl
+        description: "Allocated oil volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCOIL, UI: 'Allocated Oil'"
+      - name: allocated_condensate_bbl
+        description: "Allocated condensate volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCCOND, UI: 'Allocated Cond'"
+      - name: allocated_ngl_bbl
+        description: "Allocated NGL volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCNGL, UI: 'Allocated NGL'"
+      - name: allocated_gas_eq_hcliq_mcf
+        description: "Allocated gas equivalent of HCLiq in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODALLOCHCLIQGASEQ, UI: 'Allocated Gas Equivalent of HCLiq'"
+      - name: allocated_gas_mcf
+        description: "Allocated gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODALLOCGAS, UI: 'Allocated Gas'"
+      - name: allocated_water_bbl
+        description: "Allocated water volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCWATER, UI: 'Allocated Water'"
+      - name: allocated_sand_bbl
+        description: "Allocated sand volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCSAND, UI: 'Allocated Sand'"
+
+      # -- allocation factors
+      - name: alloc_factor_hcliq
+        description: "Allocation factor for hydrocarbon liquids (unitless ratio). ProdView: ALLOCFACTHCLIQ, UI: 'Allocation Factor HCLiq'"
+      - name: alloc_factor_gas
+        description: "Allocation factor for gas (unitless ratio). ProdView: ALLOCFACTGAS, UI: 'Allocation Factor Gas'"
+      - name: alloc_factor_water
+        description: "Allocation factor for water (unitless ratio). ProdView: ALLOCFACTWATER, UI: 'Allocation Factor Water'"
+      - name: alloc_factor_sand
+        description: "Allocation factor for sand (unitless ratio). ProdView: ALLOCFACTSAND, UI: 'Allocation Factor Sand'"
+
+      # -- new production volumes
+      - name: new_prod_hcliq_bbl
+        description: "New production hydrocarbon liquid in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCHCLIQ, UI: 'New Production HCLiq'"
+      - name: new_prod_oil_bbl
+        description: "New production oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCOIL, UI: 'New Production Oil'"
+      - name: new_prod_condensate_bbl
+        description: "New production condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCCOND, UI: 'New Production Cond'"
+      - name: new_prod_ngl_bbl
+        description: "New production NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCNGL, UI: 'New Production NGL'"
+      - name: new_prod_hcliq_gas_eq_mcf
+        description: "New production gas equivalent of HCLiq in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLNEWPRODALLOCHCLIQGASEQ, UI: 'New Production of Gas Equivalent of HCLiq'"
+      - name: new_prod_gas_mcf
+        description: "New production gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLNEWPRODALLOCGAS, UI: 'New Production Gas'"
+      - name: new_prod_water_bbl
+        description: "New production water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCWATER, UI: 'New Production Water'"
+      - name: new_prod_sand_bbl
+        description: "New production sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCSAND, UI: 'New Production Sand'"
+
+      # -- working interest
+      - name: wi_hcliq_pct
+        description: "Working interest for oil/condensate as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WIHCLIQ, UI: 'Working Interest Oil/Cond'"
+      - name: wi_gas_pct
+        description: "Working interest for gas as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WIGAS, UI: 'Working Interest Gas'"
+      - name: wi_water_pct
+        description: "Working interest for water as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WIWATER, UI: 'Working Interest Water'"
+      - name: wi_sand_pct
+        description: "Working interest for sand as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WISAND, UI: 'Working Interest Sand'"
+
+      # -- net revenue interest
+      - name: nri_hcliq_pct
+        description: "Net revenue interest for oil/condensate as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRIHCLIQ, UI: 'Net Revenue Interest Oil/Cond'"
+      - name: nri_gas_pct
+        description: "Net revenue interest for gas as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRIGAS, UI: 'Net Revenue Interest Gas'"
+      - name: nri_water_pct
+        description: "Net revenue interest for water as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRIWATER, UI: 'Net Revenue Interest Water'"
+      - name: nri_sand_pct
+        description: "Net revenue interest for sand as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRISAND, UI: 'Net Revenue Interest Sand'"
+
+      # -- deferred production
+      - name: deferred_hcliq_bbl
+        description: "Deferred oil/condensate production in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLLOSTHCLIQ, UI: 'Deferred Oil/Condensate Production'"
+      - name: deferred_gas_mcf
+        description: "Deferred gas production in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLLOSTGAS, UI: 'Deferred Gas Production'"
+      - name: deferred_water_bbl
+        description: "Deferred water production in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLLOSTWATER, UI: 'Deferred Water Production'"
+      - name: deferred_sand_bbl
+        description: "Deferred sand production in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLLOSTSAND, UI: 'Deferred Sand Production'"
+
+      # -- difference from target
+      - name: diff_target_hcliq_bbl
+        description: "Difference from target HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETHCLIQ, UI: 'Difference from Target HCLiq'"
+      - name: diff_target_oil_bbl
+        description: "Difference from target oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETOIL, UI: 'Difference from Target Oil'"
+      - name: diff_target_condensate_bbl
+        description: "Difference from target condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETCOND, UI: 'Difference from Target Cond'"
+      - name: diff_target_ngl_bbl
+        description: "Difference from target NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETNGL, UI: 'Difference from Target NGL'"
+      - name: diff_target_gas_mcf
+        description: "Difference from target gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDIFFTARGETGAS, UI: 'Difference from Target Gas'"
+      - name: diff_target_water_bbl
+        description: "Difference from target water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETWATER, UI: 'Difference from Target Water'"
+      - name: diff_target_sand_bbl
+        description: "Difference from target sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETSAND, UI: 'Difference from Target Sand'"
+
+      # -- recoverable load/lift - starting
+      - name: starting_load_hcliq_bbl
+        description: "Starting load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTREMAINRECOVHCLIQ, UI: 'Starting Load Oil/Condensate'"
+      - name: starting_lift_gas_mcf
+        description: "Starting lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLSTARTREMAINRECOVGAS, UI: 'Starting Lift Gas'"
+      - name: starting_load_water_bbl
+        description: "Starting load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTREMAINRECOVWATER, UI: 'Starting Load Water'"
+      - name: starting_sand_bbl
+        description: "Starting sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTREMAINRECOVSAND, UI: 'Starting Sand'"
+
+      # -- recoverable load/lift - recovered
+      - name: recovered_load_hcliq_bbl
+        description: "Recovered load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLRECOVHCLIQ, UI: 'Recovered Load Oil/Condensate'"
+      - name: recovered_lift_gas_mcf
+        description: "Recovered lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLRECOVGAS, UI: 'Recovered Lift Gas'"
+      - name: recovered_load_water_bbl
+        description: "Recovered load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLRECOVWATER, UI: 'Recovered Load Water'"
+      - name: recovered_sand_bbl
+        description: "Recovered sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLRECOVSAND, UI: 'Recovered Sand'"
+
+      # -- recoverable load/lift - injected
+      - name: injected_lift_gas_mcf
+        description: "Injected lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLINJECTRECOVGAS, UI: 'Injected Lift Gas'"
+      - name: injected_load_hcliq_bbl
+        description: "Injected load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTRECOVHCLIQ, UI: 'Injected Load Oil/Condensate'"
+      - name: injected_load_water_bbl
+        description: "Injected load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTRECOVWATER, UI: 'Injected Load Water'"
+      - name: injected_sand_bbl
+        description: "Injected sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTRECOVSAND, UI: 'Injected Sand'"
+
+      # -- recoverable load/lift - remaining
+      - name: remaining_load_hcliq_bbl
+        description: "Remaining load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINRECOVHCLIQ, UI: 'Remaining Load Oil/Condensate'"
+      - name: remaining_lift_gas_mcf
+        description: "Remaining lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLREMAINRECOVGAS, UI: 'Remaining Lift Gas'"
+      - name: remaining_load_water_bbl
+        description: "Remaining load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINRECOVWATER, UI: 'Remaining Load Water'"
+      - name: remaining_sand_bbl
+        description: "Remaining sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINRECOVSAND, UI: 'Remaining Sand'"
+
+      # -- opening inventory
+      - name: opening_inv_hcliq_bbl
+        description: "Opening inventory oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTINVHCLIQ, UI: 'Opening Inventory Oil/Condensate'"
+      - name: opening_inv_gas_eq_hcliq_mcf
+        description: >-
+          Opening inventory gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLSTARTINVHCLIQGASEQ, UI: 'Opening Inventory Gas Equivalent of Oil/Cond'
+      - name: opening_inv_water_bbl
+        description: "Opening inventory water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTINVWATER, UI: 'Opening Inventory Water'"
+      - name: opening_inv_sand_bbl
+        description: "Opening inventory sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTINVSAND, UI: 'Opening Inventory Sand'"
+
+      # -- closing inventory
+      - name: closing_inv_hcliq_bbl
+        description: "Closing inventory oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDINVHCLIQ, UI: 'Closing Inventory Oil/Condensate'"
+      - name: closing_inv_gas_eq_hcliq_mcf
+        description: >-
+          Closing inventory gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLENDINVHCLIQGASEQ, UI: 'Closing Inventory Gas Equiv of Oil/Condensate'
+      - name: closing_inv_water_bbl
+        description: "Closing inventory water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDINVWATER, UI: 'Closing Inventory Water'"
+      - name: closing_inv_sand_bbl
+        description: "Closing inventory sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDINVSAND, UI: 'Closing Inventory Sand'"
+
+      # -- change in inventory
+      - name: chg_inv_hcliq_bbl
+        description: "Change in inventory oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGINVHCLIQ, UI: 'Change in Inventory Oil/Condensate'"
+      - name: chg_inv_gas_eq_hcliq_mcf
+        description: >-
+          Change in inventory gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLCHGINVHCLIQGASEQ, UI: 'Change in Inventory Gas Equivalent of Oil/Cond'
+      - name: chg_inv_water_bbl
+        description: "Change in inventory water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGINVWATER, UI: 'Change in Inventory Water'"
+      - name: chg_inv_sand_bbl
+        description: "Change in inventory sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGINVSAND, UI: 'Change in Inventory Sand'"
+
+      # -- dispositions - sales
+      - name: disp_sales_hcliq_bbl
+        description: "Disposed allocated sales HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALEHCLIQ, UI: 'Disposed Allocated Sales HCLiq'"
+      - name: disp_sales_oil_bbl
+        description: "Disposed allocated sales oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALEOIL, UI: 'Disposed Allocated Sales Oil'"
+      - name: disp_sales_condensate_bbl
+        description: "Disposed allocated sales condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALECOND, UI: 'Disposed Allocated Sales Cond'"
+      - name: disp_sales_ngl_bbl
+        description: "Disposed allocated sales NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALENGL, UI: 'Disposed Allocated Sales NGL'"
+      - name: disp_sales_gas_mcf
+        description: "Disposed allocated sales gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPSALEGAS, UI: 'Disposed Allocated Sales Gas'"
+
+      # -- dispositions - gas uses
+      - name: disp_fuel_gas_mcf
+        description: "Disposed allocated fuel gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPFUELGAS, UI: 'Disposed Allocated Fuel Gas'"
+      - name: disp_flare_gas_mcf
+        description: "Disposed allocated flare gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPFLAREGAS, UI: 'Disposed Allocated Flare Gas'"
+      - name: disp_incineration_gas_mcf
+        description: "Disposed allocated incineration gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPINCINERATEGAS, UI: 'Disposed Allocated Incineration Gas'"
+      - name: disp_vent_gas_mcf
+        description: "Disposed allocated vent gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPVENTGAS, UI: 'Disposed Allocated Vent Gas'"
+      - name: disp_injected_gas_mcf
+        description: "Disposed allocated injected gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPINJECTGAS, UI: 'Disposed Allocated Injected Gas'"
+      - name: disp_injected_water_bbl
+        description: "Disposed allocated injected water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPINJECTWATER, UI: 'Disposed Allocated Injected Water'"
+
+      # -- injection well volumes
+      - name: injection_well_hcliq_bbl
+        description: "Injection well oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTHCLIQ, UI: 'Injection Well - Oil/Cond'"
+      - name: injection_well_gas_mcf
+        description: "Injection well gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLINJECTGAS, UI: 'Injection Well - Gas'"
+      - name: injection_well_water_bbl
+        description: "Injection well water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTWATER, UI: 'Injection Well - Water'"
+      - name: injection_well_sand_bbl
+        description: "Injection well sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTSAND, UI: 'Injection Well - Sand'"
+
+      # -- cumulative production
+      - name: cum_hcliq_bbl
+        description: "Cumulated HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMHCLIQ, UI: 'Cumulated HCLiq'"
+      - name: cum_oil_bbl
+        description: "Cumulated oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMOIL, UI: 'Cumulated Oil'"
+      - name: cum_condensate_bbl
+        description: "Cumulated condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMCOND, UI: 'Cumulated Cond'"
+      - name: cum_ngl_bbl
+        description: "Cumulated NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMNGL, UI: 'Cumulated NGL'"
+      - name: cum_gas_mcf
+        description: "Cumulated gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODCUMGAS, UI: 'Cumulated Gas'"
+      - name: cum_water_bbl
+        description: "Cumulated water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMWATER, UI: 'Cumulated Water'"
+      - name: cum_sand_bbl
+        description: "Cumulated sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMSAND, UI: 'Cumulated Sand'"
+
+      # -- heat content
+      - name: gathered_heat_mmbtu
+        description: "Gathered heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATPRODGATH, UI: 'Gathered Heat'"
+      - name: gathered_heat_factor_btu_per_ft3
+        description: "Gathered heat factor in BTU/ft3. Converted from J/m3 via pv_jm3_to_btu_per_ft3. ProdView: FACTHEATGATH, UI: 'Gathered Heat Factor'"
+      - name: allocated_heat_mmbtu
+        description: "Allocated heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATPRODALLOC, UI: 'Allocated Heat'"
+      - name: allocated_heat_factor_btu_per_ft3
+        description: "Allocated heat factor in BTU/ft3. Converted from J/m3 via pv_jm3_to_btu_per_ft3. ProdView: FACTHEATALLOC, UI: 'Allocated Heat Factor'"
+      - name: new_prod_heat_mmbtu
+        description: "New production heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATNEWPRODALLOC, UI: 'New Production Heat'"
+      - name: disp_sales_heat_mmbtu
+        description: "Disposed sales heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPSALE, UI: 'Disposed Sales Heat'"
+      - name: disp_fuel_heat_mmbtu
+        description: "Disposed fuel heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPFUEL, UI: 'Disposed Fuel Heat'"
+      - name: disp_flare_heat_mmbtu
+        description: "Disposed flare heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPFLARE, UI: 'Disposed Flare Heat'"
+      - name: disp_vent_heat_mmbtu
+        description: "Disposed vent heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPVENT, UI: 'Disposed Vent Heat'"
+      - name: disp_incinerate_heat_mmbtu
+        description: "Disposed incinerate heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPINCINERATE, UI: 'Disposed Incinerate Heat'"
+
+      # -- density
+      - name: allocated_density_api
+        description: "Allocated density in API gravity. Converted from kg/m3 via formula. ProdView: DENSITYALLOC, UI: 'Allocated Density'"
+      - name: sales_density_api
+        description: "Sales density in API gravity. Converted from kg/m3 via formula. ProdView: DENSITYSALE, UI: 'Sales Density'"
+
+      # -- reference IDs
+      - name: id_rec_meas_method
+        description: "Last measurement method record ID. ProdView: IDRECMEASMETH, UI: 'Last Measurement Method'"
+      - name: id_rec_meas_method_tk
+        description: "Last measurement method table key. ProdView: IDRECMEASMETHTK, UI: 'Last Measurement Method Table'"
+      - name: id_rec_fluid_level
+        description: "Last fluid level record ID. ProdView: IDRECFLUIDLEVEL, UI: 'Last Fluid Level'"
+      - name: id_rec_fluid_level_tk
+        description: "Last fluid level table key. ProdView: IDRECFLUIDLEVELTK, UI: 'Last Fluid Level Table'"
+      - name: id_rec_test
+        description: "Last test record ID. ProdView: IDRECTEST, UI: 'Last Test'"
+      - name: id_rec_test_tk
+        description: "Last test table key. ProdView: IDRECTESTTK, UI: 'Last Test Table'"
+      - name: id_rec_param
+        description: "Last parameter record ID. ProdView: IDRECPARAM, UI: 'Last Param'"
+      - name: id_rec_param_tk
+        description: "Last parameter table key. ProdView: IDRECPARAMTK, UI: 'Last Param Table'"
+      - name: id_rec_downtime
+        description: "Downtime record ID. ProdView: IDRECDOWNTIME, UI: 'Downtime'"
+      - name: id_rec_downtime_tk
+        description: "Downtime table key. ProdView: IDRECDOWNTIMETK, UI: 'Downtime Table'"
+      - name: id_rec_deferment
+        description: "Deferment record ID. ProdView: IDRECDEFERMENT, UI: 'Deferment'"
+      - name: id_rec_deferment_tk
+        description: "Deferment table key. ProdView: IDRECDEFERMENTTK, UI: 'Deferment Table'"
+      - name: id_rec_gas_analysis
+        description: "Gas analysis record ID. ProdView: IDRECGASANALYSIS, UI: 'Gas Analysis'"
+      - name: id_rec_gas_analysis_tk
+        description: "Gas analysis table key. ProdView: IDRECGASANALYSISTK, UI: 'Gas Analysis Table'"
+      - name: id_rec_hcliq_analysis
+        description: "HC liquid analysis record ID. ProdView: IDRECHCLIQANALYSIS, UI: 'HC Liquid  Analysis'"
+      - name: id_rec_hcliq_analysis_tk
+        description: "HC liquid analysis table key. ProdView: IDRECHCLIQANALYSISTK, UI: 'HC Liquid  Analysis Table'"
+      - name: id_rec_oil_analysis
+        description: "Oil properties record ID. ProdView: IDRECOILANALYSIS, UI: 'Oil Properties'"
+      - name: id_rec_oil_analysis_tk
+        description: "Oil properties table key. ProdView: IDRECOILANALYSISTK, UI: 'Oil Properties Table'"
+      - name: id_rec_water_analysis
+        description: "Water properties record ID. ProdView: IDRECWATERANALYSIS, UI: 'Water Properties'"
+      - name: id_rec_water_analysis_tk
+        description: "Water properties table key. ProdView: IDRECWATERANALYSISTK, UI: 'Water Properties Table'"
+      - name: id_rec_status
+        description: "Status record ID. ProdView: IDRECSTATUS, UI: 'Status'"
+      - name: id_rec_status_tk
+        description: "Status table key. ProdView: IDRECSTATUSTK, UI: 'Status Table'"
+      - name: id_rec_pump_entry
+        description: "Last pump entry record ID. ProdView: IDRECPUMPENTRY, UI: 'Last Pump Entry'"
+      - name: id_rec_pump_entry_tk
+        description: "Last pump entry table key. ProdView: IDRECPUMPENTRYTK, UI: 'Last Pump Entry Table'"
+      - name: id_rec_facility
+        description: "Reporting facility record ID. ProdView: IDRECFACILITY, UI: 'Reporting Facility'"
+      - name: id_rec_facility_tk
+        description: "Reporting facility table key. ProdView: IDRECFACILITYTK, UI: 'Reporting Facility Table'"
+      - name: id_rec_calc_set
+        description: "Calculation settings record ID. ProdView: IDRECCALCSET, UI: 'Calc Settings'"
+      - name: id_rec_calc_set_tk
+        description: "Calculation settings table key. ProdView: IDRECCALCSETTK, UI: 'Calc Settings Table'"
+
+      # -- operational metrics
+      - name: pump_efficiency_pct
+        description: "Pump efficiency as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: PUMPEFF, UI: 'Pump Efficiency'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  - name: stg_prodview__monthly_allocations
+    description: >
+      ProdView monthly allocation calculations — monthly rollup of allocated production
+      volumes per completion. Contains the same volume categories as daily allocations
+      but aggregated to the month level with start/end date range.
+      One row per completion per month. Source: PVT_PVUNITALLOCMONTH.
+    columns:
+      # -- surrogate key
+      - name: monthly_allocation_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+      - name: id_rec_parent
+        description: "Parent record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+      - name: completion_id
+        description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
+      - name: completion_table
+        description: "Completion table key. ProdView: IDRECCOMPTK, UI: 'Completion Table'"
+      - name: reporting_contact_interval_id
+        description: "Reporting/contact interval record ID. ProdView: IDRECCOMPZONE, UI: 'Reporting/Contact Interval'"
+      - name: reporting_contact_interval_table
+        description: "Reporting/contact interval table key. ProdView: IDRECCOMPZONETK, UI: 'Reporting/Contact Interval Table'"
+
+      # -- dates
+      - name: allocation_start_date
+        description: "Allocation period start date. ProdView: DTTMSTART, UI: 'Start Date'"
+      - name: allocation_end_date
+        description: "Allocation period end date. ProdView: DTTMEND, UI: 'End Date'"
+      - name: allocation_year
+        description: "Allocation year. ProdView: YEAR, UI: 'Year'"
+      - name: allocation_month
+        description: "Allocation month. ProdView: MONTH, UI: 'Month'"
+
+      # -- operational time
+      - name: downtime_hours
+        description: "Downtime in hours. Converted from days via pv_days_to_hours. ProdView: DURDOWN, UI: 'Downtime'"
+      - name: operating_time_hours
+        description: "Operating time in hours. Converted from days via pv_days_to_hours. ProdView: DUROP, UI: 'Operating Time'"
+
+      # -- gathered volumes
+      - name: gathered_hcliq_bbl
+        description: "Gathered oil/condensate volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODGATHHCLIQ, UI: 'Gathered Oil/Condensate'"
+      - name: gathered_gas_mcf
+        description: "Gathered gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODGATHGAS, UI: 'Gathered Gas'"
+      - name: gathered_water_bbl
+        description: "Gathered water volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODGATHWATER, UI: 'Gathered Water'"
+      - name: gathered_sand_bbl
+        description: "Gathered sand volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODGATHSAND, UI: 'Gathered Sand'"
+
+      # -- allocated volumes
+      - name: allocated_hcliq_bbl
+        description: "Allocated HCLiq volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCHCLIQ, UI: 'Allocated HCLiq'"
+      - name: allocated_oil_bbl
+        description: "Allocated oil volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCOIL, UI: 'Allocated Oil'"
+      - name: allocated_condensate_bbl
+        description: "Allocated condensate volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCCOND, UI: 'Allocated Cond'"
+      - name: allocated_ngl_bbl
+        description: "Allocated NGL volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCNGL, UI: 'Allocated NGL'"
+      - name: allocated_hcliq_gas_equivalent_mcf
+        description: "Allocated gas equivalent of oil/condensate in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODALLOCHCLIQGASEQ, UI: 'Allocated Gas Equivalent of Oil/Cond'"
+      - name: allocated_gas_mcf
+        description: "Allocated gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODALLOCGAS, UI: 'Allocated Gas'"
+      - name: allocated_water_bbl
+        description: "Allocated water volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCWATER, UI: 'Allocated Water'"
+      - name: allocated_sand_bbl
+        description: "Allocated sand volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODALLOCSAND, UI: 'Allocated Sand'"
+
+      # -- allocation factors
+      - name: allocation_factor_hcliq
+        description: "Allocation factor for oil/condensate (unitless ratio). ProdView: ALLOCFACTHCLIQ, UI: 'Allocation Factor Oil/Condensate'"
+      - name: allocation_factor_gas
+        description: "Allocation factor for gas (unitless ratio). ProdView: ALLOCFACTGAS, UI: 'Allocation Factor Gas'"
+      - name: allocation_factor_water
+        description: "Allocation factor for water (unitless ratio). ProdView: ALLOCFACTWATER, UI: 'Allocation Factor Water'"
+      - name: allocation_factor_sand
+        description: "Allocation factor for sand (unitless ratio). ProdView: ALLOCFACTSAND, UI: 'Allocation Factor Sand'"
+
+      # -- new production volumes
+      - name: new_production_hcliq_bbl
+        description: "New production HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCHCLIQ, UI: 'New Production HCLiq'"
+      - name: new_production_oil_bbl
+        description: "New production allocated oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCOIL, UI: 'New Production Allocated Oil'"
+      - name: new_production_condensate_bbl
+        description: "New production allocated condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCCOND, UI: 'New Production Allocated Cond'"
+      - name: new_production_ngl_bbl
+        description: "New production allocated NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCNGL, UI: 'New Production Allocated NGL'"
+      - name: new_production_hcliq_gas_equivalent_mcf
+        description: >-
+          New production gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLNEWPRODALLOCHCLIQGASEQ, UI: 'New Production of Gas Equivalent of Oil/Cond'
+      - name: new_production_gas_mcf
+        description: "New production gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLNEWPRODALLOCGAS, UI: 'New Production Gas'"
+      - name: new_production_water_bbl
+        description: "New production water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCWATER, UI: 'New Production Water'"
+      - name: new_production_sand_bbl
+        description: "New production sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLNEWPRODALLOCSAND, UI: 'New Production Sand'"
+
+      # -- working interest
+      - name: working_interest_oil_cond_pct
+        description: "Working interest for oil/condensate as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WIHCLIQ, UI: 'Working Interest Oil/Cond'"
+      - name: working_interest_gas_pct
+        description: "Working interest for gas as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WIGAS, UI: 'Working Interest Gas'"
+      - name: working_interest_water_pct
+        description: "Working interest for water as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WIWATER, UI: 'Working Interest Water'"
+      - name: working_interest_sand_pct
+        description: "Working interest for sand as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: WISAND, UI: 'Working Interest Sand'"
+
+      # -- net revenue interest
+      - name: net_revenue_interest_oil_cond_pct
+        description: "Net revenue interest for oil/condensate as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRIHCLIQ, UI: 'Net Revenue Interest Oil/Cond'"
+      - name: net_revenue_interest_gas_pct
+        description: "Net revenue interest for gas as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRIGAS, UI: 'Net Revenue Interest Gas'"
+      - name: net_revenue_interest_water_pct
+        description: "Net revenue interest for water as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRIWATER, UI: 'Net Revenue Interest Water'"
+      - name: net_revenue_interest_sand_pct
+        description: "Net revenue interest for sand as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: NRISAND, UI: 'Net Revenue Interest Sand'"
+
+      # -- deferred production
+      - name: deferred_oil_condensate_production_bbl
+        description: "Deferred oil/condensate production in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLLOSTHCLIQ, UI: 'Deferred Oil/Condensate Production'"
+      - name: deferred_gas_production_mcf
+        description: "Deferred gas production in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLLOSTGAS, UI: 'Deferred Gas Production'"
+      - name: deferred_water_production_bbl
+        description: "Deferred water production in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLLOSTWATER, UI: 'Deferred Water Production'"
+      - name: deferred_sand_production_bbl
+        description: "Deferred sand production in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLLOSTSAND, UI: 'Deferred Sand Production'"
+
+      # -- difference from target
+      - name: difference_from_target_hcliq_bbl
+        description: "Difference from target HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETHCLIQ, UI: 'Difference from Target HCLiq'"
+      - name: difference_from_target_oil_bbl
+        description: "Difference from target oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETOIL, UI: 'Difference from Target Oil'"
+      - name: difference_from_target_condensate_bbl
+        description: "Difference from target condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETCOND, UI: 'Difference from Target Cond'"
+      - name: difference_from_target_ngl_bbl
+        description: "Difference from target NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETNGL, UI: 'Difference from Target NGL'"
+      - name: difference_from_target_gas_mcf
+        description: "Difference from target gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDIFFTARGETGAS, UI: 'Difference from Target Gas'"
+      - name: difference_from_target_water_bbl
+        description: "Difference from target water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETWATER, UI: 'Difference from Target Water'"
+      - name: difference_from_target_sand_bbl
+        description: "Difference from target sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDIFFTARGETSAND, UI: 'Difference from Target Sand'"
+
+      # -- recoverable load/lift - starting
+      - name: starting_load_oil_condensate_bbl
+        description: "Starting load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTREMAINRECOVHCLIQ, UI: 'Starting Load Oil/Condensate'"
+      - name: starting_lift_gas_mcf
+        description: "Starting lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLSTARTREMAINRECOVGAS, UI: 'Starting Lift Gas'"
+      - name: starting_load_water_bbl
+        description: "Starting load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTREMAINRECOVWATER, UI: 'Starting Load Water'"
+      - name: starting_sand_bbl
+        description: "Starting sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTREMAINRECOVSAND, UI: 'Starting Sand'"
+
+      # -- recoverable load/lift - recovered
+      - name: recovered_load_oil_condensate_bbl
+        description: "Recovered load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLRECOVHCLIQ, UI: 'Recovered Load Oil/Condensate'"
+      - name: recovered_lift_gas_mcf
+        description: "Recovered lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLRECOVGAS, UI: 'Recovered Lift Gas'"
+      - name: recovered_load_water_bbl
+        description: "Recovered load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLRECOVWATER, UI: 'Recovered Load Water'"
+      - name: recovered_sand_bbl
+        description: "Recovered sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLRECOVSAND, UI: 'Recovered Sand'"
+
+      # -- recoverable load/lift - injected
+      - name: injected_lift_gas_mcf
+        description: "Injected lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLINJECTRECOVGAS, UI: 'Injected Lift Gas'"
+      - name: injected_load_oil_condensate_bbl
+        description: "Injected load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTRECOVHCLIQ, UI: 'Injected Load Oil/Condensate'"
+      - name: injected_load_water_bbl
+        description: "Injected load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTRECOVWATER, UI: 'Injected Load Water'"
+      - name: injected_sand_bbl
+        description: "Injected sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTRECOVSAND, UI: 'Injected Sand'"
+
+      # -- recoverable load/lift - remaining
+      - name: remaining_load_oil_condensate_bbl
+        description: "Remaining load oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINRECOVHCLIQ, UI: 'Remaining Load Oil/Condensate'"
+      - name: remaining_lift_gas_mcf
+        description: "Remaining lift gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLREMAINRECOVGAS, UI: 'Remaining Lift Gas'"
+      - name: remaining_load_water_bbl
+        description: "Remaining load water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINRECOVWATER, UI: 'Remaining Load Water'"
+      - name: remaining_sand_bbl
+        description: "Remaining sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINRECOVSAND, UI: 'Remaining Sand'"
+
+      # -- opening inventory
+      - name: opening_inventory_oil_condensate_bbl
+        description: "Opening inventory oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTINVHCLIQ, UI: 'Opening Inventory Oil/Condensate'"
+      - name: opening_inventory_gas_equivalent_oil_cond_mcf
+        description: >-
+          Opening inventory gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLSTARTINVHCLIQGASEQ, UI: 'Opening Inventory Gas Equivalent of Oil/Cond'
+      - name: opening_inventory_water_bbl
+        description: "Opening inventory water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTINVWATER, UI: 'Opening Inventory Water'"
+      - name: opening_inventory_sand_bbl
+        description: "Opening inventory sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTINVSAND, UI: 'Opening Inventory Sand'"
+
+      # -- closing inventory
+      - name: closing_inventory_oil_condensate_bbl
+        description: "Closing inventory oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDINVHCLIQ, UI: 'Closing Inventory Oil/Condensate'"
+      - name: closing_inventory_gas_equiv_oil_condensate_mcf
+        description: >-
+          Closing inventory gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLENDINVHCLIQGASEQ, UI: 'Closing Inventory Gas Equiv of Oil/Condensate'
+      - name: closing_inventory_water_bbl
+        description: "Closing inventory water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDINVWATER, UI: 'Closing Inventory Water'"
+      - name: closing_inventory_sand_bbl
+        description: "Closing inventory sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDINVSAND, UI: 'Closing Inventory Sand'"
+
+      # -- change in inventory
+      - name: change_in_inventory_oil_condensate_bbl
+        description: "Change in inventory oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGINVHCLIQ, UI: 'Change in Inventory Oil/Condensate'"
+      - name: change_in_inventory_gas_equivalent_oil_cond_mcf
+        description: >-
+          Change in inventory gas equivalent of oil/cond in MCF. m3->MCF.
+          ProdView: VOLCHGINVHCLIQGASEQ, UI: 'Change in Inventory Gas Equivalent of Oil/Cond'
+      - name: change_in_inventory_water_bbl
+        description: "Change in inventory water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGINVWATER, UI: 'Change in Inventory Water'"
+      - name: change_in_inventory_sand_bbl
+        description: "Change in inventory sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGINVSAND, UI: 'Change in Inventory Sand'"
+
+      # -- dispositions - sales
+      - name: disposed_allocated_sales_hcliq_bbl
+        description: "Disposed allocated sales HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALEHCLIQ, UI: 'Disposed Allocated Sales HCLiq'"
+      - name: disposed_allocated_sales_oil_bbl
+        description: "Disposed allocated sales oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALEOIL, UI: 'Disposed Allocated Sales Oil'"
+      - name: disposed_allocated_sales_condensate_bbl
+        description: "Disposed allocated sales condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALECOND, UI: 'Disposed Allocated Sales Cond'"
+      - name: disposed_allocated_sales_ngl_bbl
+        description: "Disposed allocated sales NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPSALENGL, UI: 'Disposed Allocated Sales NGL'"
+      - name: disposed_allocated_sales_gas_mcf
+        description: "Disposed allocated sales gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPSALEGAS, UI: 'Disposed Allocated Sales Gas'"
+
+      # -- dispositions - gas uses
+      - name: disposed_allocated_fuel_gas_mcf
+        description: "Disposed allocated fuel gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPFUELGAS, UI: 'Disposed Allocated Fuel Gas'"
+      - name: disposed_allocated_flare_gas_mcf
+        description: "Disposed allocated flare gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPFLAREGAS, UI: 'Disposed Allocated Flare Gas'"
+      - name: disposed_allocated_incineration_gas_mcf
+        description: "Disposed allocated incineration gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPINCINERATEGAS, UI: 'Disposed Allocated Incineration Gas'"
+      - name: disposed_allocated_vent_gas_mcf
+        description: "Disposed allocated vent gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPVENTGAS, UI: 'Disposed Allocated Vent Gas'"
+      - name: disposed_allocated_injected_gas_mcf
+        description: "Disposed allocated injected gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLDISPINJECTGAS, UI: 'Disposed Allocated Injected Gas'"
+      - name: disposed_allocated_injected_water_bbl
+        description: "Disposed allocated injected water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLDISPINJECTWATER, UI: 'Disposed Allocated Injected Water'"
+
+      # -- injection well volumes
+      - name: injection_well_oil_cond_bbl
+        description: "Injection well oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTHCLIQ, UI: 'Injection Well - Oil/Cond'"
+      - name: injection_well_gas_mcf
+        description: "Injection well gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLINJECTGAS, UI: 'Injection Well - Gas'"
+      - name: injection_well_water_bbl
+        description: "Injection well water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTWATER, UI: 'Injection Well - Water'"
+      - name: injection_well_sand_bbl
+        description: "Injection well sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLINJECTSAND, UI: 'Injection Well - Sand'"
+
+      # -- cumulative production
+      - name: cumulated_hcliq_bbl
+        description: "Cumulated HCLiq in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMHCLIQ, UI: 'Cumulated HCLiq'"
+      - name: cumulated_oil_bbl
+        description: "Cumulated oil in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMOIL, UI: 'Cumulated Oil'"
+      - name: cumulated_condensate_bbl
+        description: "Cumulated condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMCOND, UI: 'Cumulated Cond'"
+      - name: cumulated_ngl_bbl
+        description: "Cumulated NGL in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMNGL, UI: 'Cumulated NGL'"
+      - name: cumulated_gas_mcf
+        description: "Cumulated gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLPRODCUMGAS, UI: 'Cumulated Gas'"
+      - name: cumulated_water_bbl
+        description: "Cumulated water in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMWATER, UI: 'Cumulated Water'"
+      - name: cumulated_sand_bbl
+        description: "Cumulated sand in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLPRODCUMSAND, UI: 'Cumulated Sand'"
+
+      # -- heat content
+      - name: gathered_heat_mmbtu
+        description: "Gathered heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATPRODGATH, UI: 'Gathered Heat'"
+      - name: gathered_heat_factor_btu_per_ft3
+        description: "Gathered heat factor in BTU/ft3. Converted from J/m3 via pv_jm3_to_btu_per_ft3. ProdView: FACTHEATGATH, UI: 'Gathered Heat Factor'"
+      - name: allocated_heat_mmbtu
+        description: "Allocated heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATPRODALLOC, UI: 'Allocated Heat'"
+      - name: allocated_heat_factor_btu_per_ft3
+        description: "Allocated heat factor in BTU/ft3. Converted from J/m3 via pv_jm3_to_btu_per_ft3. ProdView: FACTHEATALLOC, UI: 'Allocated Heat Factor'"
+      - name: new_production_heat_mmbtu
+        description: "New production heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATNEWPRODALLOC, UI: 'New Production Heat'"
+      - name: disposed_sales_heat_mmbtu
+        description: "Disposed sales heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPSALE, UI: 'Disposed Sales Heat'"
+      - name: disposed_fuel_heat_mmbtu
+        description: "Disposed fuel heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPFUEL, UI: 'Disposed Fuel Heat'"
+      - name: disposed_flare_heat_mmbtu
+        description: "Disposed flare heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPFLARE, UI: 'Disposed Flare Heat'"
+      - name: disposed_vent_heat_mmbtu
+        description: "Disposed vent heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPVENT, UI: 'Disposed Vent Heat'"
+      - name: disposed_incinerate_heat_mmbtu
+        description: "Disposed incinerate heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEATDISPINCINERATE, UI: 'Disposed Incinerate Heat'"
+
+      # -- density
+      - name: allocated_density_api
+        description: "Allocated density in API gravity. Converted from kg/m3 via formula. ProdView: DENSITYALLOC, UI: 'Allocated Density'"
+      - name: sales_density_api
+        description: "Sales density in API gravity. Converted from kg/m3 via formula. ProdView: DENSITYSALE, UI: 'Sales Density'"
+
+      # -- reference IDs
+      - name: last_measurement_method_id
+        description: "Last measurement method record ID. ProdView: IDRECMEASMETH, UI: 'Last Measurement Method'"
+      - name: last_measurement_method_table
+        description: "Last measurement method table key. ProdView: IDRECMEASMETHTK, UI: 'Last Measurement Method Table'"
+      - name: last_fluid_level_id
+        description: "Last fluid level record ID. ProdView: IDRECFLUIDLEVEL, UI: 'Last Fluid Level'"
+      - name: last_fluid_level_table
+        description: "Last fluid level table key. ProdView: IDRECFLUIDLEVELTK, UI: 'Last Fluid Level Table'"
+      - name: last_test_id
+        description: "Last test record ID. ProdView: IDRECTEST, UI: 'Last Test'"
+      - name: last_test_table
+        description: "Last test table key. ProdView: IDRECTESTTK, UI: 'Last Test Table'"
+      - name: last_param_id
+        description: "Last parameter record ID. ProdView: IDRECPARAM, UI: 'Last Param'"
+      - name: last_param_table
+        description: "Last parameter table key. ProdView: IDRECPARAMTK, UI: 'Last Param Table'"
+      - name: downtime_id
+        description: "Downtime record ID. ProdView: IDRECDOWNTIME, UI: 'Downtime'"
+      - name: downtime_table
+        description: "Downtime table key. ProdView: IDRECDOWNTIMETK, UI: 'Downtime Table'"
+      - name: deferment_id
+        description: "Deferment record ID. ProdView: IDRECDEFERMENT, UI: 'Deferment'"
+      - name: deferment_table
+        description: "Deferment table key. ProdView: IDRECDEFERMENTTK, UI: 'Deferment Table'"
+      - name: gas_analysis_id
+        description: "Gas analysis record ID. ProdView: IDRECGASANALYSIS, UI: 'Gas Analysis'"
+      - name: gas_analysis_table
+        description: "Gas analysis table key. ProdView: IDRECGASANALYSISTK, UI: 'Gas Analysis Table'"
+      - name: hc_liquid_analysis_id
+        description: "HC liquid analysis record ID. ProdView: IDRECHCLIQANALYSIS, UI: 'HC Liquid  Analysis'"
+      - name: hc_liquid_analysis_table
+        description: "HC liquid analysis table key. ProdView: IDRECHCLIQANALYSISTK, UI: 'HC Liquid  Analysis Table'"
+      - name: oil_properties_id
+        description: "Oil properties record ID. ProdView: IDRECOILANALYSIS, UI: 'Oil Properties'"
+      - name: oil_properties_table
+        description: "Oil properties table key. ProdView: IDRECOILANALYSISTK, UI: 'Oil Properties Table'"
+      - name: water_properties_id
+        description: "Water properties record ID. ProdView: IDRECWATERANALYSIS, UI: 'Water Properties'"
+      - name: water_properties_table
+        description: "Water properties table key. ProdView: IDRECWATERANALYSISTK, UI: 'Water Properties Table'"
+      - name: status_id
+        description: "Status record ID. ProdView: IDRECSTATUS, UI: 'Status'"
+      - name: status_table
+        description: "Status table key. ProdView: IDRECSTATUSTK, UI: 'Status Table'"
+      - name: last_pump_entry_id
+        description: "Last pump entry record ID. ProdView: IDRECPUMPENTRY, UI: 'Last Pump Entry'"
+      - name: last_pump_entry_table
+        description: "Last pump entry table key. ProdView: IDRECPUMPENTRYTK, UI: 'Last Pump Entry Table'"
+      - name: reporting_facility_id
+        description: "Reporting facility record ID. ProdView: IDRECFACILITY, UI: 'Reporting Facility'"
+      - name: reporting_facility_table
+        description: "Reporting facility table key. ProdView: IDRECFACILITYTK, UI: 'Reporting Facility Table'"
+      - name: calc_settings_id
+        description: "Calculation settings record ID. ProdView: IDRECCALCSET, UI: 'Calc Settings'"
+      - name: calc_settings_table
+        description: "Calculation settings table key. ProdView: IDRECCALCSETTK, UI: 'Calc Settings Table'"
+
+      # -- operational metrics
+      - name: pump_efficiency_pct
+        description: "Pump efficiency as percentage. Converted from decimal via pv_decimal_to_pct. ProdView: PUMPEFF, UI: 'Pump Efficiency'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ── Gathered Daily Volumes ────────────────────────────────────────────
+  - name: stg_prodview__gathered_daily_volumes
+    description: >
+      ProdView gathered daily volumes — daily completion-level gathered
+      production with rates, rate changes, tolerance flags, prorated volumes,
+      recoverable load/lift, deferred production, and injection volumes.
+      One row per completion per day. Source: PVT_PVUNITCOMPGATHMONTHDAYCALC.
+    columns:
+      # -- identifiers
+      - name: gathered_daily_volume_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (monthly gathered). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+      - name: completion_id
+        description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
+      - name: completion_table
+        description: "Completion table key. ProdView: IDRECCOMPTK"
+      # -- dates
+      - name: gathered_date
+        description: "Gathered production date. ProdView: DTTM, UI: 'Date'"
+      - name: gathered_year
+        description: "Gathered year. ProdView: YEAR"
+      - name: gathered_month
+        description: "Gathered month. ProdView: MONTH"
+      - name: day_of_month
+        description: "Day of month. ProdView: DAYOFMONTH"
+      # -- operational time
+      - name: operating_time_hours
+        description: "Operating time in hours. days→hours. ProdView: DUROP, UI: 'Operating Time'"
+      - name: downtime_hours
+        description: "Downtime in hours. days→hours. ProdView: DURDOWN, UI: 'Downtime'"
+      # -- gathered production volumes
+      - name: total_liquid_bbl
+        description: "Total liquid in BBL. m3→BBL. ProdView: VOLTOTALLIQ, UI: 'Total Liquid'"
+      - name: gathered_oil_condensate_bbl
+        description: "Gathered oil/cond in BBL. m3→BBL. ProdView: VOLHCLIQ, UI: 'Oil/Condensate'"
+      - name: gathered_gas_mcf
+        description: "Gathered gas in MCF. m3→MCF. ProdView: VOLGAS, UI: 'Gas'"
+      - name: gathered_water_bbl
+        description: "Gathered water in BBL. m3→BBL. ProdView: VOLWATER, UI: 'Water'"
+      - name: gathered_sand_bbl
+        description: "Gathered sand in BBL. m3→BBL. ProdView: VOLSAND, UI: 'Sand'"
+      - name: casing_gas_mcf
+        description: "Casing gas in MCF. m3→MCF. ProdView: VOLCASINGGAS, UI: 'Casing Gas'"
+      # -- new gathered production
+      - name: new_gathered_oil_condensate_bbl
+        description: "New gathered oil/cond in BBL. ProdView: VOLNEWPRODGATHHCLIQ, UI: 'New Gathered Oil/Condensate'"
+      - name: new_gathered_gas_mcf
+        description: "New gathered gas in MCF. ProdView: VOLNEWPRODGATHGAS, UI: 'New Gathered Gas'"
+      - name: new_gathered_water_bbl
+        description: "New gathered water in BBL. ProdView: VOLNEWPRODGATHWATER, UI: 'New Gathered Water'"
+      - name: new_gathered_sand_bbl
+        description: "New gathered sand in BBL. ProdView: VOLNEWPRODGATHSAND, UI: 'New Gathered Sand'"
+      # -- prorated production
+      - name: prorated_hcliq_bbl
+        description: "Prorated oil/cond in BBL. ProdView: VOLPRORATEDHCLIQ, UI: 'Prorated Oil/Condensate'"
+      - name: prorated_gas_mcf
+        description: "Prorated gas in MCF. ProdView: VOLPRORATEDGAS, UI: 'Prorated Gas'"
+      - name: prorated_water_bbl
+        description: "Prorated water in BBL. ProdView: VOLPRORATEDWATER, UI: 'Prorated Water'"
+      - name: prorated_sand_bbl
+        description: "Prorated sand in BBL. ProdView: VOLPRORATEDSAND, UI: 'Prorated Sand'"
+      # -- recoverable load/lift - starting
+      - name: starting_load_oil_condensate_bbl
+        description: "Starting load oil/cond in BBL. ProdView: VOLGATHSTARTREMAINRECOVHCLIQ"
+      - name: starting_lift_gas_mcf
+        description: "Starting lift gas in MCF. ProdView: VOLGATHSTARTREMAINRECOVGAS"
+      - name: starting_load_water_bbl
+        description: "Starting load water in BBL. ProdView: VOLGATHSTARTREMAINRECOVWATER"
+      - name: starting_sand_bbl
+        description: "Starting sand in BBL. ProdView: VOLGATHSTARTREMAINRECOVSAND"
+      # -- recoverable load/lift - recovered
+      - name: recovered_load_oil_condensate_bbl
+        description: "Recovered load oil/cond in BBL. ProdView: VOLGATHRECOVHCLIQ"
+      - name: recovered_lift_gas_mcf
+        description: "Recovered lift gas in MCF. ProdView: VOLGATHRECOVGAS"
+      - name: recovered_load_water_bbl
+        description: "Recovered load water in BBL. ProdView: VOLGATHRECOVWATER"
+      - name: recovered_sand_bbl
+        description: "Recovered sand in BBL. ProdView: VOLGATHRECOVSAND"
+      # -- recoverable load/lift - injected
+      - name: injected_lift_gas_mcf
+        description: "Injected lift gas in MCF. ProdView: VOLGATHINJECTRECOVGAS"
+      - name: injected_load_oil_condensate_bbl
+        description: "Injected load oil/cond in BBL. ProdView: VOLGATHINJECTRECOVHCLIQ"
+      - name: injected_load_water_bbl
+        description: "Injected load water in BBL. ProdView: VOLGATHINJECTRECOVWATER"
+      - name: injected_sand_bbl
+        description: "Injected sand in BBL. ProdView: VOLGATHINJECTRECOVSAND"
+      # -- recoverable load/lift - remaining
+      - name: remaining_load_oil_condensate_bbl
+        description: "Remaining load oil/cond in BBL. ProdView: VOLGATHREMAINRECOVHCLIQ"
+      - name: remaining_lift_gas_mcf
+        description: "Remaining lift gas in MCF. ProdView: VOLGATHREMAINRECOVGAS"
+      - name: remaining_load_water_bbl
+        description: "Remaining load water in BBL. ProdView: VOLGATHREMAINRECOVWATER"
+      - name: remaining_sand_bbl
+        description: "Remaining sand in BBL. ProdView: VOLGATHREMAINRECOVSAND"
+      # -- fluid properties
+      - name: gas_oil_ratio_mcf_per_bbl
+        description: "Gas-oil ratio in MCF/BBL. ProdView: GOR, UI: 'GOR'"
+      # -- production rates
+      - name: rate_total_liquid_bbl_per_day
+        description: "Total liquid rate BBL/day. ProdView: RATETOTALLIQ, UI: 'Rate Total Liquid'"
+      - name: rate_oil_condensate_bbl_per_day
+        description: "Oil/cond rate BBL/day. ProdView: RATEHCLIQ, UI: 'Rate Oil/Condensate'"
+      - name: gas_rate_mcf_per_day
+        description: "Gas rate MCF/day. ProdView: RATEGAS, UI: 'Rate Gas'"
+      - name: water_rate_bbl_per_day
+        description: "Water rate BBL/day. ProdView: RATEWATER, UI: 'Rate Water'"
+      - name: sand_rate_bbl_per_day
+        description: "Sand rate BBL/day. ProdView: RATESAND, UI: 'Rate Sand'"
+      # -- change in rates
+      - name: change_in_total_liquid_rate_bbl_per_day
+        description: "Change in total liquid rate. ProdView: RATECHGTOTALLIQ"
+      - name: change_in_oil_condensate_rate_bbl_per_day
+        description: "Change in oil/cond rate. ProdView: RATECHGHCLIQ"
+      - name: change_in_gas_rate_mcf_per_day
+        description: "Change in gas rate. ProdView: RATECHGGAS"
+      - name: change_in_water_rate_bbl_per_day
+        description: "Change in water rate. ProdView: RATECHGWATER"
+      - name: change_in_sand_rate_bbl_per_day
+        description: "Change in sand rate. ProdView: RATECHGSAND"
+      # -- percent change in rates
+      - name: pct_change_total_liquid_rate_pct
+        description: "Pct change in total liquid rate. ProdView: PCTCHGTOTLIQ"
+      - name: pct_change_oil_condensate_rate_pct
+        description: "Pct change in oil/cond rate. ProdView: PCTCHGHCLIQ"
+      - name: pct_change_gas_rate_pct
+        description: "Pct change in gas rate. ProdView: PCTCHGGAS"
+      - name: pct_change_water_rate_pct
+        description: "Pct change in water rate. ProdView: PCTCHGWATER"
+      - name: pct_change_sand_rate_pct
+        description: "Pct change in sand rate. ProdView: PCTCHGSAND"
+      # -- rate tolerance flags
+      - name: all_products_rate_within_tolerance
+        description: "All product rates within tolerance. ProdView: RATEINTOL"
+      - name: oil_condensate_rate_within_tolerance
+        description: "Oil/cond rate within tolerance. ProdView: RATEHCLIQINTOL"
+      - name: gas_rate_within_tolerance
+        description: "Gas rate within tolerance. ProdView: RATEGASINTOL"
+      - name: water_rate_within_tolerance
+        description: "Water rate within tolerance. ProdView: RATEWATERINTOL"
+      - name: sand_rate_within_tolerance
+        description: "Sand rate within tolerance. ProdView: RATESANDINTOL"
+      # -- deferred production
+      - name: deferred_oil_condensate_production_bbl
+        description: "Deferred oil/cond in BBL. ProdView: VOLLOSTHCLIQ"
+      - name: deferred_gas_production_mcf
+        description: "Deferred gas in MCF. ProdView: VOLLOSTGAS"
+      - name: deferred_water_production_bbl
+        description: "Deferred water in BBL. ProdView: VOLLOSTWATER"
+      - name: deferred_sand_production_bbl
+        description: "Deferred sand in BBL. ProdView: VOLLOSTSAND"
+      # -- difference from target
+      - name: difference_from_target_oil_condensate_bbl
+        description: "Diff from target oil/cond in BBL. ProdView: VOLDIFFTARGETHCLIQ"
+      - name: difference_from_target_gas_mcf
+        description: "Diff from target gas in MCF. ProdView: VOLDIFFTARGETGAS"
+      - name: difference_from_target_water_bbl
+        description: "Diff from target water in BBL. ProdView: VOLDIFFTARGETWATER"
+      - name: difference_from_target_sand_bbl
+        description: "Diff from target sand in BBL. ProdView: VOLDIFFTARGETSAND"
+      # -- injection volumes
+      - name: injection_well_oil_cond_bbl
+        description: "Injection well oil/cond in BBL. ProdView: VOLINJECTHCLIQ"
+      - name: injection_well_gas_mcf
+        description: "Injection well gas in MCF. ProdView: VOLINJECTGAS"
+      - name: injection_well_water_bbl
+        description: "Injection well water in BBL. ProdView: VOLINJECTWATER"
+      - name: injection_well_sand_bbl
+        description: "Injection well sand in BBL. ProdView: VOLINJECTSAND"
+      # -- reference IDs
+      - name: last_measurement_method_id
+        description: "Last measurement method record ID. ProdView: IDRECMEASMETH"
+      - name: last_measurement_method_table
+        description: "Last measurement method table key. ProdView: IDRECMEASMETHTK"
+      - name: last_fluid_level_id
+        description: "Last fluid level record ID. ProdView: IDRECFLUIDLEVEL"
+      - name: last_fluid_level_table
+        description: "Last fluid level table key. ProdView: IDRECFLUIDLEVELTK"
+      - name: last_test_id
+        description: "Last test record ID. ProdView: IDRECTEST"
+      - name: last_test_table
+        description: "Last test table key. ProdView: IDRECTESTTK"
+      - name: last_param_id
+        description: "Last parameter record ID. ProdView: IDRECPARAM"
+      - name: last_param_table
+        description: "Last parameter table key. ProdView: IDRECPARAMTK"
+      - name: downtime_id
+        description: "Downtime record ID. ProdView: IDRECDOWNTIME"
+      - name: downtime_table
+        description: "Downtime table key. ProdView: IDRECDOWNTIMETK"
+      - name: deferment_id
+        description: "Deferment record ID. ProdView: IDRECDEFERMENT"
+      - name: deferment_table
+        description: "Deferment table key. ProdView: IDRECDEFERMENTTK"
+      - name: gas_analysis_id
+        description: "Gas analysis record ID. ProdView: IDRECGASANALYSIS"
+      - name: gas_analysis_table
+        description: "Gas analysis table key. ProdView: IDRECGASANALYSISTK"
+      - name: hc_liquid_analysis_id
+        description: "HC liquid analysis record ID. ProdView: IDRECHCLIQANALYSIS"
+      - name: hc_liquid_analysis_table
+        description: "HC liquid analysis table key. ProdView: IDRECHCLIQANALYSISTK"
+      - name: oil_properties_id
+        description: "Oil properties record ID. ProdView: IDRECOILANALYSIS"
+      - name: oil_properties_table
+        description: "Oil properties table key. ProdView: IDRECOILANALYSISTK"
+      - name: water_properties_id
+        description: "Water properties record ID. ProdView: IDRECWATERANALYSIS"
+      - name: water_properties_table
+        description: "Water properties table key. ProdView: IDRECWATERANALYSISTK"
+      - name: status_id
+        description: "Status record ID. ProdView: IDRECSTATUS"
+      - name: status_table
+        description: "Status table key. ProdView: IDRECSTATUSTK"
+      - name: last_pump_entry_id
+        description: "Last pump entry record ID. ProdView: IDRECPUMPENTRY"
+      - name: last_pump_entry_table
+        description: "Last pump entry table key. ProdView: IDRECPUMPENTRYTK"
+      - name: reporting_facility_id
+        description: "Reporting facility record ID. ProdView: IDRECFACILITY"
+      - name: reporting_facility_table
+        description: "Reporting facility table key. ProdView: IDRECFACILITYTK"
+      # -- operational metrics
+      - name: pump_efficiency_pct
+        description: "Pump efficiency as pct. decimal→pct. ProdView: PUMPEFF, UI: 'Pump Efficiency'"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE"
+      - name: lock_date_utc
+        description: "Record lock timestamp. ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether locked in UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether children locked in UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt load timestamp"
+
+  # ── Daily Dispositions ─────────────────────────────────────────────────
+  - name: stg_prodview__daily_dispositions
+    description: >
+      ProdView daily disposition volumes — daily gas component breakdown
+      per completion per disposition node. Includes total fluid volumes and
+      individual component fractions (C1-C7+, N2, CO2, H2S, Other).
+      One row per completion per disposition per day. Source: PVT_PVUNITDISPMONTHDAY.
+    columns:
+      - name: daily_disposition_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (monthly disposition). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+      # -- dates
+      - name: disposition_date
+        description: "Disposition date. ProdView: DTTM, UI: 'Date'"
+      - name: disposition_year
+        description: "Disposition year. ProdView: YEAR, UI: 'Year'"
+      - name: disposition_month
+        description: "Disposition month. ProdView: MONTH, UI: 'Month'"
+      - name: day_of_month
+        description: "Day of month. ProdView: DAYOFMONTH, UI: 'Day'"
+      # -- unit and completion references
+      - name: unit_id
+        description: "Unit record ID. ProdView: IDRECUNIT, UI: 'Unit'"
+      - name: unit_table
+        description: "Unit table key. ProdView: IDRECUNITTK"
+      - name: completion_id
+        description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
+      - name: completion_table
+        description: "Completion table key. ProdView: IDRECCOMPTK"
+      - name: reporting_contact_interval_id
+        description: "Reporting/contact interval record ID. ProdView: IDRECCOMPZONE"
+      - name: reporting_contact_interval_table
+        description: "Reporting/contact interval table key. ProdView: IDRECCOMPZONETK"
+      # -- outlet and disposition references
+      - name: outlet_send_id
+        description: "Outlet send record ID. ProdView: IDRECOUTLETSEND, UI: 'Outlet Send'"
+      - name: outlet_send_table
+        description: "Outlet send table key. ProdView: IDRECOUTLETSENDTK"
+      - name: disposition_unit_node_id
+        description: "Disposition unit node record ID. ProdView: IDRECDISPUNITNODE"
+      - name: disposition_unit_node_table
+        description: "Disposition unit node table key. ProdView: IDRECDISPUNITNODETK"
+      - name: disposition_unit_id
+        description: "Disposition unit record ID. ProdView: IDRECDISPUNIT"
+      - name: disposition_unit_table
+        description: "Disposition unit table key. ProdView: IDRECDISPUNITTK"
+      # -- total fluid volumes
+      - name: hcliq_volume_bbl
+        description: "HCLiq volume in BBL. m3->BBL. ProdView: VOLHCLIQ, UI: 'HCLiq'"
+      - name: hcliq_gas_equivalent_mcf
+        description: "HCLiq gas equivalent in MCF. m3->MCF. ProdView: VOLHCLIQGASEQ, UI: 'Gas Equivalent of HCLiq'"
+      - name: gas_volume_mcf
+        description: "Gas volume in MCF. m3->MCF. ProdView: VOLGAS, UI: 'Gas'"
+      - name: water_volume_bbl
+        description: "Water volume in BBL. m3->BBL. ProdView: VOLWATER, UI: 'Water'"
+      - name: sand_volume_bbl
+        description: "Sand volume in BBL. m3->BBL. ProdView: VOLSAND, UI: 'Sand'"
+      # -- C1 (Methane) component volumes
+      - name: c1_liquid_volume_bbl
+        description: "C1 (Methane) liquid in BBL. m3->BBL. ProdView: VOLC1LIQ"
+      - name: c1_gas_equivalent_mcf
+        description: "C1 (Methane) gas equivalent in MCF. m3->MCF. ProdView: VOLC1GASEQ"
+      - name: c1_gas_volume_mcf
+        description: "C1 (Methane) gas in MCF. m3->MCF. ProdView: VOLC1GAS"
+      # -- C2 (Ethane) component volumes
+      - name: c2_liquid_volume_bbl
+        description: "C2 (Ethane) liquid in BBL. m3->BBL. ProdView: VOLC2LIQ"
+      - name: c2_gas_equivalent_mcf
+        description: "C2 (Ethane) gas equivalent in MCF. m3->MCF. ProdView: VOLC2GASEQ"
+      - name: c2_gas_volume_mcf
+        description: "C2 (Ethane) gas in MCF. m3->MCF. ProdView: VOLC2GAS"
+      # -- C3 (Propane) component volumes
+      - name: c3_liquid_volume_bbl
+        description: "C3 (Propane) liquid in BBL. m3->BBL. ProdView: VOLC3LIQ"
+      - name: c3_gas_equivalent_mcf
+        description: "C3 (Propane) gas equivalent in MCF. m3->MCF. ProdView: VOLC3GASEQ"
+      - name: c3_gas_volume_mcf
+        description: "C3 (Propane) gas in MCF. m3->MCF. ProdView: VOLC3GAS"
+      # -- iC4 (Iso-butane) component volumes
+      - name: ic4_liquid_volume_bbl
+        description: "iC4 (Iso-butane) liquid in BBL. m3->BBL. ProdView: VOLIC4LIQ"
+      - name: ic4_gas_equivalent_mcf
+        description: "iC4 (Iso-butane) gas equivalent in MCF. m3->MCF. ProdView: VOLIC4GASEQ"
+      - name: ic4_gas_volume_mcf
+        description: "iC4 (Iso-butane) gas in MCF. m3->MCF. ProdView: VOLIC4GAS"
+      # -- nC4 (Normal butane) component volumes
+      - name: nc4_liquid_volume_bbl
+        description: "nC4 (Normal butane) liquid in BBL. m3->BBL. ProdView: VOLNC4LIQ"
+      - name: nc4_gas_equivalent_mcf
+        description: "nC4 (Normal butane) gas equivalent in MCF. m3->MCF. ProdView: VOLNC4GASEQ"
+      - name: nc4_gas_volume_mcf
+        description: "nC4 (Normal butane) gas in MCF. m3->MCF. ProdView: VOLNC4GAS"
+      # -- iC5 (Iso-pentane) component volumes
+      - name: ic5_liquid_volume_bbl
+        description: "iC5 (Iso-pentane) liquid in BBL. m3->BBL. ProdView: VOLIC5LIQ"
+      - name: ic5_gas_equivalent_mcf
+        description: "iC5 (Iso-pentane) gas equivalent in MCF. m3->MCF. ProdView: VOLIC5GASEQ"
+      - name: ic5_gas_volume_mcf
+        description: "iC5 (Iso-pentane) gas in MCF. m3->MCF. ProdView: VOLIC5GAS"
+      # -- nC5 (Normal pentane) component volumes
+      - name: nc5_liquid_volume_bbl
+        description: "nC5 (Normal pentane) liquid in BBL. m3->BBL. ProdView: VOLNC5LIQ"
+      - name: nc5_gas_equivalent_mcf
+        description: "nC5 (Normal pentane) gas equivalent in MCF. m3->MCF. ProdView: VOLNC5GASEQ"
+      - name: nc5_gas_volume_mcf
+        description: "nC5 (Normal pentane) gas in MCF. m3->MCF. ProdView: VOLNC5GAS"
+      # -- C6 (Hexanes) component volumes
+      - name: c6_liquid_volume_bbl
+        description: "C6 (Hexanes) liquid in BBL. m3->BBL. ProdView: VOLC6LIQ"
+      - name: c6_gas_equivalent_mcf
+        description: "C6 (Hexanes) gas equivalent in MCF. m3->MCF. ProdView: VOLC6GASEQ"
+      - name: c6_gas_volume_mcf
+        description: "C6 (Hexanes) gas in MCF. m3->MCF. ProdView: VOLC6GAS"
+      # -- C7+ (Heptanes plus) component volumes
+      - name: c7_liquid_volume_bbl
+        description: "C7+ (Heptanes plus) liquid in BBL. m3->BBL. ProdView: VOLC7LIQ"
+      - name: c7_gas_equivalent_mcf
+        description: "C7+ (Heptanes plus) gas equivalent in MCF. m3->MCF. ProdView: VOLC7GASEQ"
+      - name: c7_gas_volume_mcf
+        description: "C7+ (Heptanes plus) gas in MCF. m3->MCF. ProdView: VOLC7GAS"
+      # -- N2 (Nitrogen) component volumes
+      - name: n2_liquid_volume_bbl
+        description: "N2 (Nitrogen) liquid in BBL. m3->BBL. ProdView: VOLN2LIQ"
+      - name: n2_gas_equivalent_mcf
+        description: "N2 (Nitrogen) gas equivalent in MCF. m3->MCF. ProdView: VOLN2GASEQ"
+      - name: n2_gas_volume_mcf
+        description: "N2 (Nitrogen) gas in MCF. m3->MCF. ProdView: VOLN2GAS"
+      # -- CO2 (Carbon dioxide) component volumes
+      - name: co2_liquid_volume_bbl
+        description: "CO2 liquid in BBL. m3->BBL. ProdView: VOLCO2LIQ"
+      - name: co2_gas_equivalent_mcf
+        description: "CO2 gas equivalent in MCF. m3->MCF. ProdView: VOLCO2GASEQ"
+      - name: co2_gas_volume_mcf
+        description: "CO2 gas in MCF. m3->MCF. ProdView: VOLCO2GAS"
+      # -- H2S (Hydrogen sulfide) component volumes
+      - name: h2s_liquid_volume_bbl
+        description: "H2S liquid in BBL. m3->BBL. ProdView: VOLH2SLIQ"
+      - name: h2s_gas_equivalent_mcf
+        description: "H2S gas equivalent in MCF. m3->MCF. ProdView: VOLH2SGASEQ"
+      - name: h2s_gas_volume_mcf
+        description: "H2S gas in MCF. m3->MCF. ProdView: VOLH2SGAS"
+      # -- Other components volumes
+      - name: other_components_liquid_volume_bbl
+        description: "Other components liquid in BBL. m3->BBL. ProdView: VOLOTHERCOMPLIQ"
+      - name: other_components_gas_equivalent_mcf
+        description: "Other components gas equivalent in MCF. m3->MCF. ProdView: VOLOTHERCOMPGASEQ"
+      - name: other_components_gas_volume_mcf
+        description: "Other components gas in MCF. m3->MCF. ProdView: VOLOTHERCOMPGAS"
+      # -- heat content
+      - name: heat_content_mmbtu
+        description: "Heat content in MMBTU. J->MMBTU. ProdView: HEAT, UI: 'Heat'"
+      # -- calculation set reference
+      - name: calc_settings_id
+        description: "Calculation settings record ID. ProdView: IDRECCALCSET"
+      - name: calc_settings_table
+        description: "Calculation settings table key (daily disp). ProdView: IDRECCALCSETTK"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE"
+      - name: lock_date_utc
+        description: "Record lock timestamp. ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether locked in UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether children locked in UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (daily disp)"
+      - name: _loaded_at
+        description: "dbt load timestamp (daily disp)"
+
+  # ── Monthly Dispositions ───────────────────────────────────────────────
+  - name: stg_prodview__monthly_dispositions
+    description: >
+      ProdView monthly disposition volumes — monthly gas component breakdown
+      per completion per disposition node. Same component structure as daily
+      but with start/end date range instead of single date.
+      One row per completion per disposition per month. Source: PVT_PVUNITDISPMONTH.
+    columns:
+      - name: monthly_disposition_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+      # -- dates
+      - name: disposition_start_date
+        description: "Disposition period start date. ProdView: DTTMSTART, UI: 'Start Date'"
+      - name: disposition_end_date
+        description: "Disposition period end date. ProdView: DTTMEND, UI: 'End Date'"
+      - name: disposition_year
+        description: "Disposition year. ProdView: YEAR, UI: 'Year'"
+      - name: disposition_month
+        description: "Disposition month. ProdView: MONTH, UI: 'Month'"
+      # -- completion references
+      - name: completion_id
+        description: "Completion record ID. ProdView: IDRECCOMP, UI: 'Completion'"
+      - name: completion_table
+        description: "Completion table key. ProdView: IDRECCOMPTK"
+      - name: reporting_contact_interval_id
+        description: "Reporting/contact interval record ID. ProdView: IDRECCOMPZONE"
+      - name: reporting_contact_interval_table
+        description: "Reporting/contact interval table key. ProdView: IDRECCOMPZONETK"
+      # -- outlet and disposition references
+      - name: outlet_send_id
+        description: "Outlet send record ID. ProdView: IDRECOUTLETSEND, UI: 'Outlet Send'"
+      - name: outlet_send_table
+        description: "Outlet send table key. ProdView: IDRECOUTLETSENDTK"
+      - name: disposition_unit_node_id
+        description: "Disposition unit node record ID. ProdView: IDRECDISPUNITNODE"
+      - name: disposition_unit_node_table
+        description: "Disposition unit node table key. ProdView: IDRECDISPUNITNODETK"
+      - name: disposition_unit_id
+        description: "Disposition unit record ID. ProdView: IDRECDISPUNIT"
+      - name: disposition_unit_table
+        description: "Disposition unit table key. ProdView: IDRECDISPUNITTK"
+      # -- total fluid volumes
+      - name: hcliq_volume_bbl
+        description: "HCLiq volume in BBL. m3->BBL. ProdView: VOLHCLIQ, UI: 'HCLiq'"
+      - name: hcliq_gas_equivalent_mcf
+        description: "HCLiq gas equivalent in MCF. m3->MCF. ProdView: VOLHCLIQGASEQ, UI: 'Gas Equivalent of HCLiq'"
+      - name: gas_volume_mcf
+        description: "Gas volume in MCF. m3->MCF. ProdView: VOLGAS, UI: 'Gas'"
+      - name: water_volume_bbl
+        description: "Water volume in BBL. m3->BBL. ProdView: VOLWATER, UI: 'Water'"
+      - name: sand_volume_bbl
+        description: "Sand volume in BBL. m3->BBL. ProdView: VOLSAND, UI: 'Sand'"
+      # -- C1 (Methane) component volumes
+      - name: c1_liquid_volume_bbl
+        description: "C1 (Methane) liquid in BBL. ProdView: VOLC1LIQ"
+      - name: c1_gas_equivalent_mcf
+        description: "C1 (Methane) gas equivalent in MCF. ProdView: VOLC1GASEQ"
+      - name: c1_gas_volume_mcf
+        description: "C1 (Methane) gas in MCF. ProdView: VOLC1GAS"
+      # -- C2 (Ethane) component volumes
+      - name: c2_liquid_volume_bbl
+        description: "C2 (Ethane) liquid in BBL. ProdView: VOLC2LIQ"
+      - name: c2_gas_equivalent_mcf
+        description: "C2 (Ethane) gas equivalent in MCF. ProdView: VOLC2GASEQ"
+      - name: c2_gas_volume_mcf
+        description: "C2 (Ethane) gas in MCF. ProdView: VOLC2GAS"
+      # -- C3 (Propane) component volumes
+      - name: c3_liquid_volume_bbl
+        description: "C3 (Propane) liquid in BBL. ProdView: VOLC3LIQ"
+      - name: c3_gas_equivalent_mcf
+        description: "C3 (Propane) gas equivalent in MCF. ProdView: VOLC3GASEQ"
+      - name: c3_gas_volume_mcf
+        description: "C3 (Propane) gas in MCF. ProdView: VOLC3GAS"
+      # -- iC4 (Iso-butane) component volumes
+      - name: ic4_liquid_volume_bbl
+        description: "iC4 (Iso-butane) liquid in BBL. ProdView: VOLIC4LIQ"
+      - name: ic4_gas_equivalent_mcf
+        description: "iC4 (Iso-butane) gas equivalent in MCF. ProdView: VOLIC4GASEQ"
+      - name: ic4_gas_volume_mcf
+        description: "iC4 (Iso-butane) gas in MCF. ProdView: VOLIC4GAS"
+      # -- nC4 (Normal butane) component volumes
+      - name: nc4_liquid_volume_bbl
+        description: "nC4 (Normal butane) liquid in BBL. ProdView: VOLNC4LIQ"
+      - name: nc4_gas_equivalent_mcf
+        description: "nC4 (Normal butane) gas equivalent in MCF. ProdView: VOLNC4GASEQ"
+      - name: nc4_gas_volume_mcf
+        description: "nC4 (Normal butane) gas in MCF. ProdView: VOLNC4GAS"
+      # -- iC5 (Iso-pentane) component volumes
+      - name: ic5_liquid_volume_bbl
+        description: "iC5 (Iso-pentane) liquid in BBL. ProdView: VOLIC5LIQ"
+      - name: ic5_gas_equivalent_mcf
+        description: "iC5 (Iso-pentane) gas equivalent in MCF. ProdView: VOLIC5GASEQ"
+      - name: ic5_gas_volume_mcf
+        description: "iC5 (Iso-pentane) gas in MCF. ProdView: VOLIC5GAS"
+      # -- nC5 (Normal pentane) component volumes
+      - name: nc5_liquid_volume_bbl
+        description: "nC5 (Normal pentane) liquid in BBL. ProdView: VOLNC5LIQ"
+      - name: nc5_gas_equivalent_mcf
+        description: "nC5 (Normal pentane) gas equivalent in MCF. ProdView: VOLNC5GASEQ"
+      - name: nc5_gas_volume_mcf
+        description: "nC5 (Normal pentane) gas in MCF. ProdView: VOLNC5GAS"
+      # -- C6 (Hexanes) component volumes
+      - name: c6_liquid_volume_bbl
+        description: "C6 (Hexanes) liquid in BBL. ProdView: VOLC6LIQ"
+      - name: c6_gas_equivalent_mcf
+        description: "C6 (Hexanes) gas equivalent in MCF. ProdView: VOLC6GASEQ"
+      - name: c6_gas_volume_mcf
+        description: "C6 (Hexanes) gas in MCF. ProdView: VOLC6GAS"
+      # -- C7+ (Heptanes plus) component volumes
+      - name: c7_liquid_volume_bbl
+        description: "C7+ (Heptanes plus) liquid in BBL. ProdView: VOLC7LIQ"
+      - name: c7_gas_equivalent_mcf
+        description: "C7+ (Heptanes plus) gas equivalent in MCF. ProdView: VOLC7GASEQ"
+      - name: c7_gas_volume_mcf
+        description: "C7+ (Heptanes plus) gas in MCF. ProdView: VOLC7GAS"
+      # -- N2 (Nitrogen) component volumes
+      - name: n2_liquid_volume_bbl
+        description: "N2 (Nitrogen) liquid in BBL. ProdView: VOLN2LIQ"
+      - name: n2_gas_equivalent_mcf
+        description: "N2 (Nitrogen) gas equivalent in MCF. ProdView: VOLN2GASEQ"
+      - name: n2_gas_volume_mcf
+        description: "N2 (Nitrogen) gas in MCF. ProdView: VOLN2GAS"
+      # -- CO2 (Carbon dioxide) component volumes
+      - name: co2_liquid_volume_bbl
+        description: "CO2 liquid in BBL. ProdView: VOLCO2LIQ"
+      - name: co2_gas_equivalent_mcf
+        description: "CO2 gas equivalent in MCF. ProdView: VOLCO2GASEQ"
+      - name: co2_gas_volume_mcf
+        description: "CO2 gas in MCF. ProdView: VOLCO2GAS"
+      # -- H2S (Hydrogen sulfide) component volumes
+      - name: h2s_liquid_volume_bbl
+        description: "H2S liquid in BBL. ProdView: VOLH2SLIQ"
+      - name: h2s_gas_equivalent_mcf
+        description: "H2S gas equivalent in MCF. ProdView: VOLH2SGASEQ"
+      - name: h2s_gas_volume_mcf
+        description: "H2S gas in MCF. ProdView: VOLH2SGAS"
+      # -- Other components volumes
+      - name: other_components_liquid_volume_bbl
+        description: "Other components liquid in BBL. ProdView: VOLOTHERCOMPLIQ"
+      - name: other_components_gas_equivalent_mcf
+        description: "Other components gas equivalent in MCF. ProdView: VOLOTHERCOMPGASEQ"
+      - name: other_components_gas_volume_mcf
+        description: "Other components gas in MCF. ProdView: VOLOTHERCOMPGAS"
+      # -- heat content
+      - name: heat_content_mmbtu
+        description: "Heat content in MMBTU. J->MMBTU. ProdView: HEAT, UI: 'Heat'"
+      # -- calculation set reference
+      - name: calc_settings_id
+        description: "Calculation settings record ID. ProdView: IDRECCALCSET"
+      - name: calc_settings_table
+        description: "Calculation settings table key (monthly disp). ProdView: IDRECCALCSETTK"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE"
+      - name: lock_date_utc
+        description: "Record lock timestamp. ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether locked in UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether children locked in UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (monthly disp)"
+      - name: _loaded_at
+        description: "dbt load timestamp (monthly disp)"
+
+  # ── Unit Opening Inventories ───────────────────────────────────────────
+  - name: stg_prodview__unit_opening_inventories
+    description: >
+      ProdView unit opening inventories — initial inventory volumes for a
+      unit at allocation start. Tracks oil/condensate, gas, water, and sand
+      volumes with origin unit/completion references and keep-whole flag.
+      One row per unit per inventory date. Source: PVT_PVOPENSTATEUNIT.
+    columns:
+      - name: unit_opening_inventory_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: parent_opening_inventory_id
+        description: "Parent opening inventory record ID. ProdView: IDRECPARENT"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+      # -- unit references
+      - name: unit_id
+        description: "Unit record ID. ProdView: IDRECUNIT, UI: 'Unit'"
+      - name: unit_table
+        description: "Unit table key. ProdView: IDRECUNITTK"
+      # -- origin references
+      - name: originating_unit_id
+        description: "Originating unit record ID. ProdView: IDRECUNITORIGIN, UI: 'Origin Unit'"
+      - name: originating_unit_table
+        description: "Originating unit table key. ProdView: IDRECUNITORIGINTK"
+      - name: originating_completion_id
+        description: "Originating completion record ID. ProdView: IDRECCOMPORIGIN, UI: 'Origin Completion'"
+      - name: originating_completion_table
+        description: "Originating completion table key. ProdView: IDRECCOMPORIGINTK"
+      # -- dates
+      - name: inventory_date
+        description: "Inventory date. ProdView: DTTMINV, UI: 'Inventory Date'"
+      # -- volumes
+      - name: oil_condensate_volume_bbl
+        description: "Oil/condensate volume in BBL. m3->BBL. ProdView: VOLHCLIQ, UI: 'Oil/Condensate'"
+      - name: gas_volume_mcf
+        description: "Gas volume in MCF. m3->MCF. ProdView: VOLGAS, UI: 'Gas'"
+      - name: water_volume_bbl
+        description: "Water volume in BBL. m3->BBL. ProdView: VOLWATER, UI: 'Water'"
+      - name: sand_volume_bbl
+        description: "Sand volume in BBL. m3->BBL. ProdView: VOLSAND, UI: 'Sand'"
+      # -- flags
+      - name: is_keep_whole
+        description: "Whether keep-whole flag is set. ProdView: KEEPWHOLE, UI: 'Keep Whole'"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG"
+      - name: lock_date_utc
+        description: "Record lock timestamp. ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether locked in UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether children locked in UI. ProdView: SYSLOCKCHILDRENUI"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt load timestamp"

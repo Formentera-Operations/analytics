@@ -72,6 +72,10 @@ Flow Network (pvFlowNetHeader)
 
 **IDFLOWNET:** Every table within the hierarchy carries the flow network ID. Use this for scoping queries and as a secondary join condition.
 
+## Schema Reference
+Detailed column-level schemas are in `context/sources/prodview/`.
+Load `_index.yaml` to find the right domain file for your task.
+
 ## Unit Conversions — Critical
 
 ProdView stores **all measurements in metric/SI units internally**. Every numeric value must be converted to imperial/oilfield units for Formentera's models.
@@ -96,30 +100,40 @@ ProdView stores **all measurements in metric/SI units internally**. Every numeri
 
 **Exception:** WiseRock-specific staging models (`stg_wiserock__pv_*`) consume raw metric values and do NOT use these macros.
 
-## Existing dbt Models (67 staging + 5 intermediate)
+## Existing dbt Models (53 staging + 5 intermediate)
 
-### Staging Models (67)
+### Staging Domain Map
 
-The staging layer has complete coverage of the core ProdView tables. Key models:
+The 53 ProdView staging models are organized into 9 domain subdirectories under `models/operations/staging/prodview/`:
+
+| Domain | Directory | Models | Source Tables | Description |
+|---|---|---|---|---|
+| **Completions** | `completions/` | 10 | pvUnit, pvUnitComp, pvUnitCompStatus, pvUnitCompParam, pvUnitCompTest, pvUnitCompDownTm, pvUnitCompTarget, pvUnitCompTargetDay, pvSysIntegration, pvUnitCompPumpHist | Well master, completions, status, parameters, tests, downtimes, targets, integrations, pump history |
+| **Artificial Lift** | `artificial_lift/` | 5 | pvUnitCompPump, pvUnitCompPumpRod, pvUnitCompPumpRodEntry, pvUnitCompPumpESP, pvUnitCompPumpESPEntry | Pump installations, rod pump configs/entries, ESP configs/entries |
+| **Meters** | `meters/` | 8 | pvUnitMeterLiq, pvUnitMeterGasPD, pvUnitMeterOrifice, pvUnitMeterRate, pvUnitMeterVirt + Factor/Entry variants | 5 meter types (liquid, gas PD, orifice, rate, virtual) with config, factors, and entries |
+| **Tanks** | `tanks/` | 7 | pvUnitTank, pvUnitTankEntry, pvUnitTankStrap, pvUnitTankStrapData, pvUnitTankStartInv, pvUnitTankMonthCalc, pvUnitTankMonthDayCalc | Tank master, readings, strap tables, starting inventories, daily/monthly volumes |
+| **Allocations** | `allocations/` | 6 | pvUnitCompAllocCalc, pvUnitCompAllocMonthCalc, pvUnitCompDispCalc, pvUnitCompDispMonthCalc, pvGathDayCalc, pvUnitOpenInv | Daily/monthly allocations, daily/monthly dispositions, gathered volumes, opening inventories |
+| **Flow Network** | `flow_network/` | 7 | pvFlowNetHeader, pvUnitNode, pvUnitNodeFlowTo, pvUnitNodeMonthDayCalc, pvUnitNodeMonthCalc, pvUnitNodeCorrDay, pvUnitNodeCorr | Network headers, nodes, connections, daily/monthly node volumes, corrections |
+| **Facilities** | `facilities/` | 3 | pvFacilityMonthDayCalc, pvFacilityMonthCalc, pvFacRecDispCalc | Daily/monthly facility volumes, daily facility receipts/dispositions |
+| **Routes** | `routes/` | 2 | pvRouteSetRoute, pvRouteSetRouteUser | Field data collection routes and route user assignments |
+| **Admin** | `admin/` | 5 | pvUnitAgreemt, pvUnitAgreemtPartner, pvFacilityRegBodyKey, pvUnitRemark, pvTicket | Partnership agreements, agreement partners, regulatory keys, remarks, tickets |
+
+### Key Staging Models
 
 | Model | Source Table | Domain | Notes |
 |---|---|---|---|
-| `stg_prodview__units` | PVT_PVUNIT | Well master | "Unit" = well/pad. Contains location, identifiers, status. Key fields: Property EID, API 10, Property Number, Combo Curve ID |
-| `stg_prodview__completions` | PVT_PVUNITCOMP | Well completions | Producing intervals. Key fields: Well Name, API 10, EID, POP Date, Spud Date, producing formation |
-| `stg_prodview__daily_allocations` | PVT_PVUNITALLOCMONTHDAY | Production volumes | **Most important table.** Daily allocated volumes per completion. All volume/NRI/WI conversions happen here |
-| `stg_prodview__monthly_allocations` | PVT_PVUNITALLOCMONTH | Production volumes | Monthly rollup of allocations |
-| `stg_prodview__completion_downtimes` | PVT_PVUNITCOMPDOWNTM | Production | Downtime events with reason codes |
-| `stg_prodview__completion_parameters` | PVT_PVUNITCOMPPARAM | Surveillance | Daily well parameters (pressures, temperatures, choke) |
-| `stg_prodview__status` | PVT_PVUNITCOMPSTATUS | Well status | Effective-dated status changes (Active, Shut-in, Abandoned, etc.) |
-| `stg_prodview__production_tests` | PVT_PVUNITCOMPTEST | Surveillance | Flow tests (oil/gas/water rates) |
-| `stg_prodview__artificial_lift` | PVT_PVUNITCOMPPUMP | Equipment | Pump installations (rod, ESP, PCP, jet, plunger) |
-| `stg_prodview__rod_pump_configs` | PVT_PVUNITCOMPPUMPROD | Equipment | Rod pump static specs (1:1 extension of artificial_lift) |
-| `stg_prodview__rod_pump_entries` | PVT_PVUNITCOMPPUMPRODENTRY | Equipment | Daily rod pump readings (SPM, stroke length, run time) |
-| `stg_prodview__tanks` | PVT_PVUNITTANK | Tanks | Tank master data |
-| `stg_prodview__tank_readings` | PVT_PVUNITTANKENTRY | Tanks | Tank gauge readings |
-| `stg_prodview__networks` | PVT_PVFLOWNETHEADER | Network | Flow network header (one per Formentera FN — only has 1) |
+| `stg_prodview__units` | PVT_PVUNIT | completions | "Unit" = well/pad. Contains location, identifiers, status. Key fields: Property EID, API 10, Property Number, Combo Curve ID |
+| `stg_prodview__completions` | PVT_PVUNITCOMP | completions | Producing intervals. Key fields: Well Name, API 10, EID, POP Date, Spud Date, producing formation |
+| `stg_prodview__daily_allocations` | PVT_PVUNITCOMPALLOCCALC | allocations | **Most important table.** Daily allocated volumes per completion. All volume/NRI/WI conversions happen here |
+| `stg_prodview__monthly_allocations` | PVT_PVUNITCOMPALLOCMONTHCALC | allocations | Monthly rollup of allocations |
+| `stg_prodview__completion_downtimes` | PVT_PVUNITCOMPDOWNTM | completions | Downtime events with reason codes |
+| `stg_prodview__completion_parameters` | PVT_PVUNITCOMPPARAM | completions | Daily well parameters (pressures, temperatures, choke) |
+| `stg_prodview__status` | PVT_PVUNITCOMPSTATUS | completions | Effective-dated status changes (Active, Shut-in, Abandoned, etc.) |
+| `stg_prodview__artificial_lift` | PVT_PVUNITCOMPPUMP | artificial_lift | Pump installations (rod, ESP, PCP, jet, plunger) |
+| `stg_prodview__rod_pump_entries` | PVT_PVUNITCOMPPUMPRODENTRY | artificial_lift | Daily rod pump readings (SPM, stroke length, run time) |
+| `stg_prodview__networks` | PVT_PVFLOWNETHEADER | flow_network | Flow network header (one per Formentera FN — only has 1) |
 
-**Note on column naming:** The existing staging models use **quoted descriptive aliases** (e.g., `"Allocated Gas mcf"`, `"Unit Record ID"`). This is a legacy pattern — these are human-readable display names, not snake_case. New staging models should follow the CLAUDE.md CTE pattern with snake_case.
+**Column naming convention:** All staging models use snake_case column names following the CLAUDE.md CTE pattern. Each `_stg_prodview.yml` file in every domain directory provides a full "Rosetta Stone" mapping from staging column names → ProdView source column names → UI display names.
 
 ### Intermediate Models (5 ProdView-specific)
 
@@ -137,7 +151,7 @@ Separate staging models in `staging/prodview/wiserock_tables/` that expose **raw
 
 ## Data Model Domains
 
-The ProdView data model has ~173 tables organized into these domains:
+The ProdView data model has ~179 tables organized into these domains:
 
 ### 1. Asset Master (Unit + Completion)
 The foundation. A **Unit** is ProdView's term for a well or producing entity. A **Completion** is a producing interval within a unit. Most Formentera wells have exactly one completion.
