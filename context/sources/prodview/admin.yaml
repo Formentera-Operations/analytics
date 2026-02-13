@@ -1,0 +1,165 @@
+# Peloton Prodview: Admin
+# Approval workflows, tasks, responsible teams, partner management, agreements
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitAgreemt: Partnership Agreements +parent
+  Des(s50) #Agreement Description
+  Typ1(s50) #Agreement Type
+  SubTyp1(s50) #Agreement Sub Type 1
+  SubTyp2(s50) #Agreement Sub Type 2
+  DtTmStart(dt) #Agreement Start Date
+  DtTmEnd(dt) #Agreement End Date
+  IDRecAppliesTo(s32) #Applies To
+  RefIDA(s50) #WI Partner
+  RefIDB(s50) #Reference ID B
+  RefIDC(s50) #Reference ID C
+  Com(txt2k) #Comment
+
+pvUnitAgreemtPartner: Agreement Partners +parent
+  IDRecPartner(s32) #Partner
+  TypFluidProd(s50) #Product Type
+  SubTypFluidProd(s50) #Sub Product Type
+  Interest(dbl_pct) #Interest
+  Com(txt2k) #Comment
+
+pvApproval: Approval Processes
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  IDRecItem(s32) #Related Item
+  Des(s100) #Description
+  Status(s50) #Status
+  IntegrationTyp(s100) #Integration
+  DtTmStart(dt) #Start Date
+  DtTmRequired(dt) #Required By Date
+  DtTmLatestPlanStartCalc(dt_calc) #Latest Start Date
+  Com(txt2k) #Comment
+
+pvApprovalStep: Process Steps +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  RequiredBy(s50) #Required By
+  DtTmAssigned(dt) #Assigned Date
+  DtTmRequired(dt) #Required Date
+  Status(s50) #Status
+  DurPlan(dbl_days) #Estimated Duration
+  DtTmStart(dt) #Start Date
+  DtTmApprovalCompleteOR(dt) #Approval Complete Date
+  DtTmLatestPlanStartCalc(dt_calc) #Latest Plan Start
+  DtTmEarliestPlanStartCalc(dt_calc) #Earliest Plan Start
+  PrereqCompleteCalc(boolean, calculated) #Prerequisites Complete?
+  DelivCompleteCalc(boolean, calculated) #Deliverables Completed?
+  DtTmDelivCompleteCalc(dt_calc) #Date Deliverables Completed
+  PreReqCalc(string 255, calculated) #Prerequisites
+  ApprovalCompleteCalc(boolean, calculated) #Approvals Complete?
+  DtTmApprovalCompleteCalc(dt_calc) #Date Approvals Complete
+  DurActCalc(double, days, calculated) #Actual Duration
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence
+
+pvApprovalStepDeliv: Deliverables +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  AssignToName(s50) #Assigned To Name
+  AssignToDept(s50) #Assigned To Department
+  AssignToEmail(s50) #Email
+  Completed(bool) #Complete?
+  DtTmComplete(dt) #Completion Date
+  CompletedBy(s50) #Completed By
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence
+
+pvApprovalStepPreReq: Prerequisites +parent | All <avStep>s that must be completed prior to starting activities on this <avStep>
+  IDRecStep(s32) #Prerequisite
+  Com(txt255) #Note
+  sysSeq(int) #Sequence
+
+pvApprovalStepRev: Approvers +parent | Approvals required for this <avStep>
+  Typ(s100) #Type
+  Company(s100) #Company
+  Role(s50) #Role
+  Title(s50) #Approvers Title
+  Name(s50) #Approvers Name
+  Email(s50) #Email
+  UserID(s50) #User ID
+  ApproveRqd(bool) #Approval Required?
+  Approved(bool) #Approved/Reviewed?
+  DtTm(dt) #Approval Date
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence
+
+pvApprovalStepRevAction: Action Required +parent
+  IDRecIssue(s32) #Issue of Concern
+  ActionRequired(bool) #Action Required?
+  Reason(s100) #Reason
+  sysSeq(int) #Sequence
+
+pvTask: Tasks | Tasks including request, assign, complete details.
+  Des(s100) #Description
+  Typ1(s50) #Type
+  Typ2(s50) #Sub Type
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence
+
+pvTaskDetail: Task Details +parent | Tasks including request, assign, complete details.
+  Des(s50) #Description
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Priority(s50) #Priority
+  IDRecItem(s32) #Link
+  AssignToName(s50) #Name Assigned To
+  DtTmActionRqd(dt) #Action Required Date
+  RequestCom(txt2k) #Request Comment
+  Status(s50) #Status
+  ActionComplete(bool) #Action Complete?
+  DtTmComplete(dt) #Completed Date
+  ActionCom(txt2k) #Action Comment
+
+pvRespTeam: Responsible Teams | Names, roles and contact information for personnel involved with this flow network.
+  Name(s50) #Name
+  Typ1(s50) #Type 1
+  Typ2(s50) #Type 2
+  IdRecRespMember1(s32) #Member Representative 1
+  IdRecRespMember2(s32) #Member Representative 2
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RptDist(s50) #Report Distribution
+  Com(txt2k) #Comment
+
+pvRespTeamMember: Responsible Team Members +parent | Names, roles and contact information for personnel involved with this flow network.
+  ContactName(s50) #Contact Name
+  Role(s50) #Role
+  Company(s50) #Company
+  Department(s50) #Department
+  Location(s50) #Location
+  PhoneOffice(s20) #Phone Office
+  PhoneMobile(s20) #Phone Mobile
+  PhonePager(s20) #Pager
+  PhoneHome(s20) #Phone Home
+  PhoneAlt(s20) #Phone Alternate #
+  Fax(s20) #Fax
+  Email(s255) #E-mail
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RptDist(s50) #Report Distribution
+  Com(txt2k) #Comment
+
+pvPartner: Partners
+  PartnerName(s50) #Partner Name
+  PartnerIDA(s50) #Partner ID
+  Com(txt2k) #Comment
+  IncludeInNet(bool) #Include Partner in Net
+
+pvPartnerContact: Partner Contacts +parent
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  Com(txt2k) #Comment

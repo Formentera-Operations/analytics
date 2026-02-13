@@ -1,0 +1,25 @@
+# Peloton Prodview Data Model - Schema Index
+# Source: Peloton WellView/Prodview -> Fivetran -> Snowflake (FORMENTERA-DATAHUB)
+# Snowflake naming: PVT_PV<ENTITYNAME> (e.g. PVT_PVUNITCOMPPUMP)
+# All measurements in SI/metric (m, m3, kPa, degC, watts)
+#
+# Load only the domain file(s) needed for your current task.
+# Common fields omitted from all files (on every table):
+#   System: IDFlowNet sysLock* sysMod* sysCreate* sysTag sysSecurityTyp
+#   Record: IDRec IDRecParent *TK columns
+
+# Total: 179 tables, 13 domains, ~46,031 tokens combined
+
+flow_network: flow_network.yaml  # 3 tables ~995tok | Top-level flow network grouping; calc settings define allocation rules, physical constants, tolerances
+completions: completions.yaml  # 26 tables ~9,018tok | Units (wells/pads), completions, and wellbore operational data: tests, downtimes, parameters, ratios, status, zones, allowables, targets, flowback tests
+artificial_lift: artificial_lift.yaml  # 11 tables ~1,483tok | Artificial lift equipment + daily entries for Rod, ESP, PCP, Jet, Plunger pump types; extension tables for type-specific fields
+tanks: tanks.yaml  # 12 tables ~3,772tok | Tank inventory: readings, straps, call-ins, initial inventory, deliveries, disposals, transfers, monthly/daily calcs, truck tickets
+meters: meters.yaml  # 18 tables ~4,856tok | 5 meter types (Liquid, Gas PD, Orifice, Rate, Virtual), each with factors and readings; plus other measurement points
+equipment: equipment.yaml  # 8 tables ~1,741tok | Equipment and compressors with service records, downtimes, runtime entries
+allocations: allocations.yaml  # 10 tables ~7,702tok | Production allocation, disposition, distribution, and balance at monthly/daily granularity
+nodes_and_flow: nodes_and_flow.yaml  # 9 tables ~1,992tok | Flow routing: nodes, outlet connections, corrections, shrinkage, monthly/daily calculations, pipes
+fluid_analysis: fluid_analysis.yaml  # 21 tables ~4,022tok | Gas/HCLiq/Oil/Water analysis groups with compositions (mole fractions) - both standalone and completion-level
+facilities: facilities.yaml  # 12 tables ~4,248tok | Multi-unit facility-level reporting, measurement points, production summaries, regulatory
+routes: routes.yaml  # 8 tables ~662tok | Field route management for data collection and operator assignments
+admin: admin.yaml  # 14 tables ~1,555tok | Approval workflows, tasks, responsible teams, partner management, agreements
+reference: reference.yaml  # 27 tables ~3,985tok | Remarks, tags, seals, regulatory bodies, opening states, chemicals, costs, events, checklists, comments

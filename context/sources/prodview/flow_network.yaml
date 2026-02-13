@@ -1,0 +1,76 @@
+# Peloton Prodview: Flow Network
+# Top-level flow network grouping; calc settings define allocation rules, physical constants, tolerances
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvFlowNetHeader: Networks | Single entity grouping used to deliniate assets by certain flow patterns. All of the assets that flo
+  Name(s50) #Network Name
+  Typ(s50) #Type
+  Com(txt2k) #Comment
+  IDRecUnitPrimary(s32) #Primary Unit
+  IDRecFacilityPrimary(s32) #Primary Facility
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  RptGatheredCalcs(bool) #Report Gathered Calculations
+  RptAllocations(bool) #Report Allocations
+  RptDispositions(bool) #Report Dispositions
+  RptComponentDispositions(bool) #Report Component Dispositions
+  RptNodeCalculations(bool) #Report Node Calculations
+  TrackDownholeInventory(bool) #Track Downhole Inventory
+  DtTmAllocProcessBegan(dt) #Date/Time the current allocation process began
+  DtTmLastAllocProcess(dt) #Date of last allocation process
+  UserLastAllocProcess(s50) #User Initiating the last allocation process
+  DtTmStart(dt) #Start Using/Allocating Flow Network
+  DtTmEnd(dt) #End Using/Allocating Flow Network
+
+pvCalcSet: Calculation Settings | Defines how the measurement and allocation calculations are performed for a defined period.
+  DtTmStart(dt) #Effective Date
+  SourcePhysConstants(s50) #Source of Physical Constants
+  BOE(dbl_m3pm3) #BOE
+  ShowSand(bool) #Show Sand
+  Com(txt255) #Note
+  TempBase(dbl_degC) #FN Base Temp
+  PresBase(dbl_kPa) #FN Base Pres
+  PresAtm(dbl_kPa) #Atmospheric Pressure
+  TempBase2(dbl_degC) #Federal Base Temperature
+  PresBase2(dbl_kPa) #Federal Base Pressure
+  TempBase3(dbl_degC) #Corporate Base Temperature
+  PresBase3(dbl_kPa) #Corporate Base Pressure
+  FactBase2Gas(dbl_m3pm3) #Federal Base Fact Gas
+  FactBase2HCLiq(dbl_m3pm3) #Federal Base Fact HCLiq
+  FactBase3Gas(dbl_m3pm3) #Corporate Base Fact Gas
+  FactBase3HCLiq(dbl_m3pm3) #Corporate Base Fact HCLiq
+  TreatHCLiquidAsGas(bool) #Treat Hydrocarbon Liquids as Gas
+  HeatAllocMeth(s50) #Heat Allocation Method
+  GasAllocMeth(s20) #Gas Allocation Method
+  PctBalHCLiq(dbl_pct) #Oil/Condensate Balance Tolerance
+  PctBalGas(dbl_pct) #Gas Balance Tolerance
+  PctBalWater(dbl_pct) #Water Balance Tolerance
+  PctBalSand(dbl_pct) #Sand Balance Tolerance
+  PctRateHCLiq(dbl_pct) #Oil/Condensate Rate Tolerance
+  PctRateGas(dbl_pct) #Gas Rate Tolerance
+  PctRateWater(dbl_pct) #Water Rate Tolerance
+  PctRateSand(dbl_pct) #Sand Rate Tolerance
+  AllowTodayEntry(bool) #Allow Today Entry?
+
+pvFNDPos: Flow Network Diagram Unit Positions | Positioning of the units within the flow network diagram.
+  Typ(s50) #Position Type
+  TblKey(s50) #Table Key
+  FldKey(s50) #Field Key
+  IdRecUnit(s32) #Unit Id
+  FilterValue(s255) #Value
+  VertSortFlowDiag(int) #Vertical Sort Order on Diagram
+  HorizSortFlowDiag(int) #Horizontal Sort Order on Diagram
+  AdminOnlyEdit(bool) #Admin Only Edit

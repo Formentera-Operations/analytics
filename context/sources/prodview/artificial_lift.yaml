@@ -1,0 +1,180 @@
+# Peloton Prodview: Artificial Lift
+# Artificial lift equipment + daily entries for Rod, ESP, PCP, Jet pump types; extension tables for type-specific fields
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitCompPump: Artificial Lifts +parent
+  Name(s50) #Pump Name
+  Make(s50) #Make
+  Model(s50) #Model
+  Size(dbl) #Size
+  Material(s50) #Material
+  Typ(s50) #Type
+  PowerRating(double, watt) #Power Rating
+  Controller(s50) #Controller
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  DaysInHoleCalc(dbl_calc) #Days In Hole
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5
+
+pvUnitCompPumpDepth: Artificial Lift Depths +parent
+  DtTm(dt) #Date
+  Depth(double, meter) #Depth
+  GasFreeDepth(double, meter) #Gas Free Depth
+  Com(txt255) #Note
+
+pvUnitCompPumpESP: ESP Details +ext,parent
+  ActiveStgs(int) #Number of Active Stages
+  HsngMat(s20) #Pump Housing Material
+  HsngStgs(int) #Number of Stages in Pump Housing
+  HydHeadDesign(double, meter) #Designed Hydrostatic Head
+  ImpellerMat(s20) #Impeller Material
+  PresInDesign(dbl_kPa) #Designed Intake Pressure
+  VolRateDesign(dbl_m3pd) #Designed Volumetric Rate
+
+pvUnitCompPumpESPEntry: ESP Entries +parent | ESP operating parameters for the time interval defined in <wvProdSetting>. To access this folder, se
+  DtTm(dt) #Date
+  ElectricCurrent(double, amp) #Motor Current
+  ElectricFreq(double, hertz) #Operating Frequency
+  ElectricVoltage(dbl_degC) #Motor Temp
+  RPM(dbl_kPa) #PIP
+  PresPumpIn(dbl_kPa) #Pump Intake Pressure
+  VolPerDay(dbl_kPa) #PDP
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+
+pvUnitCompPumpPCPEntry: PCP Entries +parent | RPM, Rod torque and electric current for the time interval defined in <wvProdSetting>. To access thi
+  DtTm(dt) #Date
+  ElectricCurrent(double, amp) #Electric Current
+  RodTorque(double, newton meters) #Rod Torque
+  RPM(integer, rotations per minute) #RPM
+  VolPerDayCalc(dbl_m3pd_calc) #Volume Throughput
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+
+pvUnitCompPumpRod: Rod Pump Details +ext,parent
+  PumpDiameter(double, meter) #Pump Diameter
+
+pvUnitCompPumpRodEntry: Rod Pump Entries +parent
+  DtTm(dt) #Date
+  SPM(double, strokes per minute) #Strokes Per Minute
+  StrokeLength(double, meter) #Current Stroke Length
+  UserNum1(dbl_pct) #Run Time
+  Com(txt2k) #Comments
+  VolPerDayCalc(dbl_m3pd_calc) #Volume Throughput
+  UserTxt1(s50) #Crank Hole
+  UserTxt2(s50) #Rotation
+  UserTxt3(s50) #User Text 3
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+
+pvUnitCompPumpPlunger: Plunger Lift Details +ext,parent
+  Displacement(dbl) #Displacement Rate
+
+pvUnitCompPumpPlungerEntry: Plunger Lift Entries +parent
+  DtTm(dt) #Date
+  PlungerOnPressure(dbl_kPa) #Plunger OnPressure
+  TripCountTotal(int) #Total Trips
+  TripCountSuccess(int) #Successful Trips
+  TripCountFail(int) #Failed Trips
+  DurOn(dbl_sec) #Duration On
+  DurOff(dbl_sec) #Duration Off
+  AfterFlowTime(dbl_day) #After Flow
+  TravelTimeAvg(dbl_sec) #Average Travel Time
+  TravelTimeMax(dbl_sec) #Maximum Travel Time
+  TravelTimeMin(dbl_sec) #Minimum Travel Time
+  TravelTimeTarget(dbl_sec) #Target Travel Time
+  Com(txt2k) #Note
+  UserTxt1(s50) #Plunger Make
+  UserTxt2(s50) #Plunger Model
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #Plunger Inspection Date
+  UserDtTm2(dt) #Plunger Replace Date
+  UserDtTm3(dt) #User Date 3
+
+pvUnitCompPumpJetEntry: Jet Pump Entries +parent
+  DtTm(dt) #Date
+  RPM(integer, rotations per minute) #RPM
+  PresCas(dbl_kPa) #Casing Pressure
+  PresInj(dbl_kPa) #Injection Pressure
+  PresSuction(dbl_kPa) #Suction Pressure
+  PresDischarge(dbl_kPa) #Discharge Pressure
+  PresManifold(dbl_kPa) #Manifold Pressure
+  PresIntake(dbl_kPa) #Intake Pressure
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  Com(txt2k) #Note
+
+pvUnitCompPumpJetFluid: Jet Pump Fluid +parent
+  DtTm(dt) #Date
+  Typ(s50) #Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  Com(txt2k) #Note

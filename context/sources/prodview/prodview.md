@@ -72,6 +72,10 @@ Flow Network (pvFlowNetHeader)
 
 **IDFLOWNET:** Every table within the hierarchy carries the flow network ID. Use this for scoping queries and as a secondary join condition.
 
+## Schema Reference
+Detailed column-level schemas are in `source_schemas/prodview/`.
+Load `_index.yaml` to find the right domain file for your task.
+
 ## Unit Conversions — Critical
 
 ProdView stores **all measurements in metric/SI units internally**. Every numeric value must be converted to imperial/oilfield units for Formentera's models.
@@ -147,7 +151,7 @@ Separate staging models in `staging/prodview/wiserock_tables/` that expose **raw
 
 ## Data Model Domains
 
-The ProdView data model has ~173 tables organized into these domains:
+The ProdView data model has ~179 tables organized into these domains:
 
 ### 1. Asset Master (Unit + Completion)
 The foundation. A **Unit** is ProdView's term for a well or producing entity. A **Completion** is a producing interval within a unit. Most Formentera wells have exactly one completion.

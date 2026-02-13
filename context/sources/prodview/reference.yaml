@@ -1,0 +1,381 @@
+# Peloton Prodview: Reference
+# Remarks, tags, seals, regulatory bodies, opening states, chemicals, costs, events, checklists, comments
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitEvent: Event Types +parent | Events causing gas/liquid discharges from this 'Unit'
+  Des(s50) #Description
+  Com(stringlong 100) #Note
+  RefIDA(s50) #Reference ID
+  UOMVol(s20) #Volume Units
+  TypFluid(s20) #Fluid Type
+  IDRecUnitNodeCalc(s32_calc) #Node
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  sysSeq(int) #Sequence
+
+pvUnitEventEntry: Event Entries +parent
+  DtTm(dt) #Date
+  Qty(int) #Number of events
+  Com(txt2k) #Comment
+  VolUncorrHCLiqCalc(dbl_m3_calc) #Oil/Condensate Volume
+  VolUncorrGasCalc(dbl_m3_calc) #Gas Volume
+  VolUncorrWaterCalc(dbl_m3_calc) #Water Volume
+  VolUncorrSandCalc(dbl_m3_calc) #Sand Volume
+  VolORHCLiq(dbl_m3) #Override Oil/Condensate
+  VolORGas(dbl_m3) #Override Gas
+  VolORWater(dbl_m3) #Override Water
+  VolORSand(dbl_m3) #Override Sand
+  VolHCLiqCalc(dbl_m3_calc) #Final Oil/Condensate Volume
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Final Gas Equivalent of Oil/Cond Volume
+  VolGasCalc(dbl_m3_calc) #Final Gas Volume
+  VolWaterCalc(dbl_m3_calc) #Final Water Volume
+  VolSandCalc(dbl_m3_calc) #Final Sand Volume
+  VolUncorrHeatCalc(double, joule, calculated) #Uncorrected Heat Calc
+  VolORHeat(double, joule per cubic meter) #Override Heat
+  VolHeatCalc(double, joule per cubic meter, calculated) #Final Heat Calc
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  IDRecFluidAnalysisCalc(s32_calc) #Fluid Analysis
+  DtTmStart(dt) #Start of Event
+  DtTmEnd(dt) #End of Event
+  DurOnOR(dbl_days) #Event Hours Override
+  DurOnCalc(double, days, calculated) #Event Hours
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserBool1(bool) #User Boolean 1
+  UserBool2(bool) #User Boolean 2
+
+pvUnitEventVol: Event Volumes +parent
+  DtTm(dt) #Effective Date
+  VolPerEvent(dbl) #Volume Discharged Per Event
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due
+  EventHeat(double, joule) #Heat per Event
+  FactHeat(double, joule per cubic meter) #Heat Factor
+  Com(txt2k) #Comment
+  Typ1(s50) #Event Type
+  Typ2(s50) #Event Sub Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+
+pvUnitChemRecur: Chemicals - Recurring +parent | In ProdView, you can keep an ongoing inventory of specific chemicals added to stimulate production. 
+  ProductName(s50) #Chemical Name
+  Typ(s50) #Type
+  Purpose(s50) #Purpose
+  Vendor(s50) #Vendor
+  IDRecLoc(s32) #Applied To
+  LocDetail(s50) #Location Detail
+  MeasMethod(s20) #Measurement Method
+  UOMAmount(s10) #Amount Unit
+  UOMPeriod(s20) #Rate Duration
+  CalcInventory(bool) #Calculate Inventory?
+  Com(stringlong 100) #Note
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+
+pvUnitChemRecurEntry: Recurring Chemical Entries +parent | In the Recurring Chemical Entries table, show the amount of chemical that is consumed. You enter the
+  DtTm(dt) #Date
+  Reading(dbl) #Reading
+  AmtInventoryAdd(dbl) #Inventory Added
+  AmtConsumedCalc(dbl_calc) #Amount Consumed
+  AmtInventoryCloseCalc(dbl_calc) #Closing Inventory
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+
+pvUnitChemInt: Chemicals - Intermittent +parent | Intermittent entry of chemicals.
+  DtTm(dt) #Date
+  IDRecLoc(s32) #Applied To
+  ProductName(s50) #Chemical Name
+  Typ(s50) #Type
+  Purpose(s50) #Purpose
+  Vendor(s50) #Vendor
+  AmtConsumed(dbl) #Amount Consumed
+  UOMAmount(s10) #Amount Unit
+  Com(stringlong 100) #Note
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+
+pvUnitJob: Unit Jobs +parent | Jobs performed and planned on this unit. Can be populated with information from SiteView and WellVie
+  ProjectName(s100) #Project Name
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  DtTmStart(datetime 8) #Start Date
+  DtTmEnd(datetime 8) #End Date
+  Status1(s50) #Primary Status
+  Status2(s50) #Secondary Status
+  AFENumber(s255) #AFE Reference Number
+  Contact(s50) #Job Contact
+
+pvUnitCost: Costs +parent
+  DtTm(dt) #Effective Date
+  CodeDes(s100) #Description
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  Cost(double, cost) #Cost
+  IDRecItem(s32) #Link
+
+pvUnitAssignOrig: Custom Origin Assignment +parent | Assign a custom originating 'Unit' for products.
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Reason(s50) #Assignment Reason
+  TypFluidBaseIn(s20) #Allocate Against Fluid Type
+  IDRecNode(s32) #Outlet
+  Com(txt2k) #Comment
+
+pvUnitChkList: Check Lists +parent
+  DtTm(dt) #Date
+
+pvUnitChkListItem: Daily Checklist Items +parent | Daily checklist of recurring activities.
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Value(s50) #Value
+  ActionRqd(bool) #Action Required?
+  IDRecItem(s32) #Link
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence
+
+pvUnitRemark: Remarks +parent | General location to store all types of remarks, comments or anything else of note.
+  DtTm(dt) #Entry Date
+  Typ(s50) #Type
+  IDRecItem(s32) #Link
+  ExplainedImbalance(bool) #Explains Imbalance?
+  Com(txt2k) #Comments
+  ActionRqd(bool) #Action Required?
+
+pvUnitOtherTag: Other Reference Tags +parent | Other reference tags. Used to specifiy SCADA, financial, regulatory or other reference tags for comp
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Value(s255) #Value
+  IDRecItem(s32) #Link
+  Com(txt255) #Note
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+
+pvUnitSeal: Seals +parent | Seals that are attached to meters, tanks or equipment and may need to be taken off and put back on w
+  Name(s50) #Name
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  IDRecItem(s32) #Link
+  Com(txt255) #Note
+  DtTmHide(dt) #Hide Record As Of
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence
+
+pvUnitSealEntry: Seal Entries +parent | Seal entries for each related parent seal tracking seals that were taken off and which were put back
+  DtTm(dt) #Date
+  Reason(s50) #Reason
+  ValveStatus(s50) #Valve Position
+  SealOff(txt2k) #Seal Off
+  SealOn(txt2k) #Seal On
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+
+pvUnitProb: Unit Problems +parent | Problems encountered on this completion. Can be populated with problems associated with this complet
+  Des(s100) #Failure Description
+  DtTmStart(dt) #Failure Date
+  DtTmEnd(dt) #Resolved Date
+  IDRecItem(s32) #Link
+  IDRecDownTm(s32) #Related Down Time
+  Typ(s100) #Type of Failure
+  Status(s50) #Status
+
+pvUnitRegBody: Regulatory Bodies +parent | Regulatory agencies that are being reported to for this particular asset.
+  RegBodyName(s50) #Regulatory Body Name
+  Com(stringlong 100) #Note
+
+pvUnitRegBodyKey: Regulatory Reporting Keys +parent | Keys used for regulatory reporting.
+  KeyName(s50) #Key
+  IDRecItem(s32) #Applies To
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  KeyValue1(s50) #Value 1
+  KeyValue2(s50) #Value 2
+  KeyValue3(s50) #Value 3
+  KeyNum1(dbl) #Value Number 1
+  KeyNum2(dbl) #Value Number 2
+  KeyNum3(dbl) #Value Number 3
+  Com(txt255) #Note
+
+pvUnitRegBodySubmission: Regulatory Reporting Submissions +parent | Regulatory reporting submissions.
+  Form(s50) #Regulatory Form Name
+  DtTmStartProd(dt) #Start Date
+  DtTmEndProd(dt) #End Date
+  DtTmSubmission(dt) #Submission Date
+  UserSubmission(s255) #Submission User
+  PPA(bool) #PPA?
+  DtTmPPA(dt) #PPA Date
+  UserPPA(s255) #PPA User
+
+pvOpenState: Opening States | Contains all inventories, recoverable volumes and cumulative production to date that allows allocati
+  DtTm(dt) #Date
+
+pvOpenStateComp: Completion Recoverables +parent | Recoverable fluid at the beginning of this period.
+  IDRecComp(s32) #Completion
+  VolAllocRemainRecovHCLiq(dbl_m3) #Allocated Recoverable Hydrocarbon Liquid Volume
+  VolAllocRemainRecovGas(dbl_m3) #Allocated Recoverable Gas Volume
+  VolAllocRemainRecovWater(dbl_m3) #Allocated Recoverable Water Volume
+  VolAllocRemainRecovSand(dbl_m3) #Allocated Recoverable Sand Volume
+  VolGathRemainRecovHCLiq(dbl_m3) #Gathered Recoverable Hydrocarbon Liquid Volume
+  VolGathRemainRecovGas(dbl_m3) #Gathered Recoverable Gas Volume
+  VolGathRemainRecovWater(dbl_m3) #Gathered Recoverable Water Volume
+  VolGathRemainRecovSand(dbl_m3) #Gathered Recoverable Sand Volume
+  RateNewProdAllocHCLiq(dbl_m3pd) #New Prod Oil/Cond Rate
+  RateNewProdAllocGas(dbl_m3pd) #New Prod Gas Rate
+  RateNewProdAllocWater(dbl_m3pd) #New Prod Water Rate
+  RateNewProdAllocSand(dbl_m3pd) #New Prod Sand Rate
+  RateGathDayTotLiq(dbl_m3pd) #Gath Day Total Liquids Rate
+  RateGathDayHCLiq(dbl_m3pd) #Gath Day Oil/Cond Rate
+  RateGathDayGas(dbl_m3pd) #Gath Day Gas Rate
+  RateGathDayWater(dbl_m3pd) #Gath Day Water Rate
+  RateGathDaySand(dbl_m3pd) #Gath Day Sand Rate
+  RateGathMonthTotLiq(dbl_m3pd) #Gath Month Total Liquids Rate
+  RateGathMonthHCLiq(dbl_m3pd) #Gath Month Oil/Cond Rate
+  RateGathMonthGas(dbl_m3pd) #Gath Month Gas Rate
+  RateGathMonthWater(dbl_m3pd) #Gath Month Water Rate
+  RateGathMonthSand(dbl_m3pd) #Gath Month Sand Rate
+  RateNewProdGathDayHCLiq(dbl_m3pd) #New Gath Day Oil/Cond Rate
+  RateNewProdGathDayGas(dbl_m3pd) #New Gath Day Gas Rate
+  RateNewProdGathDayWater(dbl_m3pd) #New Gath Day Water Rate
+  RateNewProdGathDaySand(dbl_m3pd) #New Gath Day Sand Rate
+  VolProdCumHCLiq(dbl_m3) #Cumulated HCLiq
+  VolProdCumOil(dbl_m3) #Cumulated Oil
+  VolProdCumCond(dbl_m3) #Cumulated Cond
+  VolProdCumNGL(dbl_m3) #Cumulated NGL
+  VolProdCumGas(dbl_m3) #Cumulated Gas
+  VolProdCumWater(dbl_m3) #Cumulated Water
+  VolProdCumSand(dbl_m3) #Cumulated Sand
+
+pvOpenStateUnit: Unit Opening Inventories +parent | The Unit Opening Inventories table provides a unit’s beginning values for a particular day to start 
+  IDRecUnit(s32) #Unit
+  IDRecUnitOrigin(s32) #Originating Unit
+  IDRecCompOrigin(s32) #Originating Completion
+  DtTmInv(dt) #Date Product Inventoried
+  VolHCLiq(dbl_m3) #Oil/Condensate Volume
+  VolGas(dbl_m3) #Gas Volume
+  VolWater(dbl_m3) #Water Volume
+  VolSand(dbl_m3) #Sand Volume
+  KeepWhole(bool) #Keep Whole?
+
+pvOpenStateTank: Tank Opening Inventories +parent | The Tank Opening Inventories table provides a tank’s opening inventory for a particular day to start
+  IDRecTank(s32) #Tank
+  VolHCLiq(dbl_m3) #Oil/Condensate Volume
+  VolGas(dbl_m3) #Gas Volume
+  VolWater(dbl_m3) #Water Volume
+  VolSand(dbl_m3) #Sand Volume
+
+pvOpenStateCompLoad: Comp Opening Load Inventories +parent | The Unit Opening Inventories table provides a completion's beginning values for a particular day to 
+  IDRecUnitComp(s32) #Completion
+  IDRecUnitOrigin(s32) #Originating Unit
+  IDRecCompOrigin(s32) #Originating Completion
+  DtTmInv(dt) #Date Product Inventoried
+  VolHCLiq(dbl_m3) #Oil/Condensate Volume
+  VolGas(dbl_m3) #Gas Volume
+  VolWater(dbl_m3) #Water Volume
+  VolSand(dbl_m3) #Sand Volume
+  KeepWhole(bool) #Keep Whole?
+
+pvAttachment: Attachments +parent
+  Des(s50) #Description
+  AttachIDA(s50) #Reference #
+  DtTm(dt) #Date
+  Typ1(s50) #Type 1
+  Typ2(s50) #Type 2
+  BatchPrint(bool) #Batch Print?
+  Com(txt2k) #Comment
+  TblKeyParent(string 52) #Table Key
+
+pvOtherTag: Other Reference Tags | Other reference tags. Used to specifiy SCADA, financial, regulatory or other reference tags for comp
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Value(s255) #Value
+  IDRecItem(s32) #Link
+  Com(txt255) #Note
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+
+pvComment: Comments +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  CommentBy(s50) #Comment By
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  TblKeyParent(string 52) #Table Key

@@ -1,0 +1,327 @@
+# Peloton Prodview: Fluid Analysis
+# Gas/HCLiq/Oil/Water analysis groups with compositions (mole fractions) - both standalone and completion-level
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitCompGasAnaly: Gas Analyses +parent | Link to gas analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecGasAnaly(s32) #Gas Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note
+
+pvUnitCompHCLiqAnaly: Hydrocarbon Liquid Analyses +parent | Link to hydrocarbon liquid analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecHCLiqAnaly(s32) #HC Liquid Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note
+
+pvUnitCompOilAnaly: Oil Analyses +parent | Link to oil analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecOilAnaly(s32) #Oil Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note
+
+pvUnitCompWaterAnaly: Water Analyses +parent | Link to water analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecWaterAnaly(s32) #Water Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note
+
+pvUnitAnaly: Fluid Analyses for Units +parent | Fluid Analyses used for ALL 'Tank's originating at this 'Unit'.
+  DtTmStart(dt) #Effective Date
+  IDRecHCLiqAnaly(s32) #HC Liquid Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note
+
+pvUnitLiquidDensity: Liquid Densities +parent | Density of oil, water and sand for products ticketed out of 'Unit'. Used for calculation of volumes 
+  DtTm(dt) #Effective Date
+  DensityHCLiq(dbl_kgpm3) #Density Oil/Condensate
+  DensityWater(dbl_kgpm3) #Density Water
+  DensitySand(dbl_kgpm3) #Density Sand
+  Com(txt255) #Note
+
+pvGasAnaly: Gas Analysis Groups | Group of gas analyses. Many nodes can point to this group and will be updated when a new analysis is
+  Name(s255) #Name
+  DtTmStartCalc(dt_calc) #Earliest Analysis in Group
+  DtTmEndCalc(dt_calc) #Last Analysis in Group
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  LocSampleCode(s255) #Sample Location Point Code
+  LocSampleName(s255) #Sample Location Point Name
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  Com(txt2k) #Comment
+
+pvGasAnalysis: Gas Analyses +parent
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  LocSample(s50) #Sample Location Point
+  Des(s255) #Sample Description
+  DontUse(bool) #Don't Use
+  DepthBtm(double, meter) #Bottom Depth
+  DepthTop(double, meter) #Top Depth
+  TestedBy(s50) #Sampler Company
+  RefNoLaboratory(s50) #Lab Ref #
+  RefNoTest(s50) #Test Ref #
+  Analyst(s50) #Analyst
+  RefNoSample(s50) #Sample Container Ref #
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  PresSeparator(dbl_kPa) #Separator Pressure
+  TempSample(dbl_degC) #Sample Temperature
+  TempReservoir(dbl_degC) #Reservoir Temperature
+  TempSampleRec(dbl_degC) #Received Sample Temperature
+  TempSeparator(dbl_degC) #Separator Temperature
+  PresSampleRec(dbl_kPa) #Received Sample Pressure
+  TempGaugeSource(dbl_degC) #Source Gauge Temperature
+  PresReservoir(dbl_kPa) #Reservoir Pressure
+  PresSample(dbl_kPa) #Sample Pressure
+  PresGaugeSource(dbl_kPa) #Source Gauge Pressure
+  GrossHeatMoistFree(double, joule per cubic meter) #Gross Heating Value Moisture Free
+  GrossHeatMoistAcidFree(double, joule per cubic meter) #Gross Heating Value Moisture+Acid Free
+  TempRefGrossHeat(dbl_degC) #Gross Heating Value Ref Temp
+  PresGrossHeatRef(dbl_kPa) #Gross Heating Value Ref Pres
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  TempRefTotalSample(dbl_degC) #Total Sample Ref Temp
+  MolecularMassTotalSampl(dbl) #Total Sample Molecular Mass
+  PresRefTotalSample(dbl_kPa) #Total Sample Ref Pres
+  DensityRelSample(dbl) #Total Sample Relative Density
+  DensityC7Plus(dbl_kgpm3) #C7+ Density
+  DensityRelC7Plus(dbl) #C7+ Relative Density
+  TempRefC7Plus(dbl_degC) #C7+ Ref Temp
+  PresRefC7Plus(dbl_kPa) #C7+ Ref Pressure
+  MolecularMassC7Plus(dbl) #C7+ Molecular Mass
+  PresPCSample(dbl_kPa) #Sample Pseudo Critical Pressure
+  PresPCAcidGasFree(dbl_kPa) #Acid Gas Free Pseudo Critical Pressure
+  TempPCSample(dbl_degC) #Sample Pseudo Critical Temp
+  TempPCAcidGasFree(dbl_degC) #Acid Gas Free Pseudo Critical Temp
+  H2S(dbl_pct) #H2S
+  H2SMethod(s50) #H2S Method
+  Com(txt2k) #Comment
+  PresVapourPentane(dbl_kPa) #Pentanes Plus Vapour Pressure
+
+pvGasAnalysisComp: Gas Compositions +parent
+  Component(s20) #Component
+  MoleFracAirFree(double, mol/mol) #Mole Fraction - Air Free as Received
+  MoleFracAirFreeAcidFree(double, mol/mol) #Mole Fraction - Air Free Acid Gas Free Received
+  Com(stringlong 50) #Note
+  sysSeq(int) #Sequence
+
+pvGasAnalysisCompCalc: Gas Composition Calcs +parent
+  Component(string 20, calculated) #Component
+  MoleFracAirFree(double, mol/mol, calculated) #Mole Fraction - Air Free as Received
+
+pvHCLiqAnaly: HC Liquid Analysis Groups | Group of liquid analyses. Many nodes can point to this group and will be updated when a new analysis
+  Name(s255) #Name
+  DtTmStartCalc(dt_calc) #Earliest Analysis in Group
+  DtTmEndCalc(dt_calc) #Last Analysis in Group
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  LocSampleCode(s255) #Sample Location Point Code
+  LocSampleName(s255) #Sample Location Point Name
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  Com(txt2k) #Comment
+
+pvHCLiqAnalysis: Hydrocarbon Liquid Analyses +parent
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  Des(s255) #Sample Description
+  TestedBy(s50) #Sampler Company
+  DontUse(bool) #Don't Use
+  DepthTop(double, meter) #Top Depth
+  DepthBtm(double, meter) #Bottom Depth
+  LocSample(s255) #Sample Location Point
+  RefNoLaboratory(s50) #Lab Ref #
+  Analyst(s50) #Analyst
+  RefNoTest(s50) #Test Ref #
+  RefNoSample(s50) #Sample Container Ref #
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  PresSeparator(dbl_kPa) #Separator Pressure
+  TempSeparator(dbl_degC) #Separator Temperature
+  PresReservoir(dbl_kPa) #Reservoir Pressure
+  TempReservoir(dbl_degC) #Reservoir Temperature
+  PresGaugeSource(dbl_kPa) #Source Gauge Pressure
+  TempGaugeSource(dbl_degC) #Source Gauge Temperature
+  PresSample(dbl_kPa) #Sample Pressure
+  TempSample(dbl_degC) #Sample Temperature
+  PresSampleRec(dbl_kPa) #Received Sample Pressure
+  TempSampleRec(dbl_degC) #Received Sample Temperature
+  FractionTyp(s50) #Fraction Type
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  TempRefSample(dbl_degC) #Total Sample Ref Temp
+  APISample(dbl_kgpm3) #Total Sample API
+  DensityRelSample(dbl) #Total Sample Relative Density
+  MolecularMassSample(dbl) #Total Sample Relative Molecular Mass
+  TempRefAPISample(dbl_degC) #Total Sample API Ref Temp
+  DensityC7Plus(dbl_kgpm3) #C7+ Density
+  DensityRelC7Plus(dbl) #C7+ Relative Density
+  APIC7Plus(dbl_kgpm3) #C7+ API
+  MolecularMassRelC7Plus(dbl) #C7+ Relative Molecular Mass
+  TempRefC7Plus(dbl_degC) #C7+ Ref Temp
+  TempRefAPIC7Plus(dbl_degC) #C7+  API Ref Temp
+  FactorGasEquivOR(dbl_m3pm3) #Gas Equivalent Factor
+  FactorGasEquivCalc(double, cubic meters per cubic meter, calculated) #Gas Equivalent Factor Calc
+  Com(txt2k) #Comment
+
+pvHCLiqAnalysisComp: Hydrocarbon Liquid Compositions +parent
+  Component(s20) #Component
+  MoleFrac(double, mol/mol) #Mole Fraction
+  MassFrac(double, kilograms per kilogram) #Mass Fraction
+  VolFrac(dbl_m3pm3) #Volume Fraction Calc
+  Com(stringlong 50) #Note
+  sysSeq(int) #Sequence
+
+pvHCLiqAnalysisCompCalc: Hydrocarbon Liquid Composition Calcs +parent
+  Component(string 20, calculated) #Component
+  MoleFrac(double, mol/mol, calculated) #Mole Fraction
+  MassFrac(double, kilograms per kilogram, calculated) #Mass Fraction
+  VolFrac(double, cubic meters per cubic meter, calculated) #Volume Fraction
+
+pvOilAnaly: Oil Analysis Groups | Group of liquid analyses. Many nodes can point to this group and will be updated when a new analysis
+  Name(s255) #Name
+  DtTmStartCalc(dt_calc) #Earliest Analysis in Group
+  DtTmEndCalc(dt_calc) #Last Analysis in Group
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  LocSampleCode(s255) #Sample Location Point Code
+  LocSampleName(s255) #Sample Location Point Name
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  Com(txt2k) #Comment
+
+pvOilAnalysis: Oil Properties +parent | Oil sample properties and distillation parameters.
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  Des(s255) #Sample Description
+  TestedBy(s50) #Sampler Company
+  DontUse(bool) #Don't Use
+  DepthTop(double, meter) #Top Depth
+  DepthBtm(double, meter) #Bottom Depth
+  LocSample(s255) #Sample Location Point
+  Color(s50) #Color
+  BSW(dbl_pct) #Basic Sediments &  Water
+  VolFracWater(dbl_m3pm3) #Water Fraction
+  VolFracSediment(dbl_m3pm3) #Sediment Fraction
+  DensityRelAsReceived(dbl) #Relative Density as Received
+  DensityRelAfterClean(dbl) #Relative Density after Cleaning
+  DensityAsReceived(dbl_kgpm3) #Density as Received
+  DensityAfterClean(dbl_kgpm3) #Density after Cleaning
+  DensityRefTemp(dbl_degC) #Density Ref Temp
+  APIGravityAsReceived(dbl_kgpm3) #API Gravity as Received
+  APIGravityAfterClean(dbl_kgpm3) #API Gravity after Cleaning
+  TempRefAPIGravity(dbl_degC) #API Ref Temp
+  Sulphur(dbl_kgpm3) #Sulphur
+  Salt(dbl_kgpm3) #Salt
+  PresVapour(dbl_kPa) #Reid Vapour Pressure
+  TempPourPoint(dbl_degC) #Temp Pour Point
+  WaxPercent(dbl_pct) #Percent Wax
+  Asphaltene(dbl_pct) #Percent Asphaltene
+  TempFlashPointCC(dbl_degC) #Temp Flash Point Closed Cup
+  TempFlashPointOC(dbl_degC) #Temp Flash Point Open Cup
+  Com(txt2k) #Comment
+  DistillMethod(s50) #Distillation Method
+  PresBarometric(dbl_kPa) #Barometric Pressure
+  TempRoom(dbl_degC) #Room Temperature
+  TempBoilInit(dbl_degC) #Temp Initial Boil Pt
+  VolFracNaptha(dbl_m3pm3) #Naptha Volume Fraction
+  TempRefNaptha(dbl_degC) #Naptha Temp Ref
+  VolFracKerosene(dbl_m3pm3) #Kerosene Volume Fraction
+  TempRefKerosene(dbl_degC) #Kerosene Temp Ref
+  VolFracLtGasOil(dbl_m3pm3) #Light Gas Oil Volume Fraction
+  TempRefLtGasOil(dbl_degC) #Light Gas Oil Temp Ref
+  VolFracRecovered(dbl_m3pm3) #Recovered Volume Fraction
+  VolFracResidue(dbl_m3pm3) #Residue Volume Fraction
+  VolFracDistillLoss(dbl_m3pm3) #Distillation Loss Volume Fraction
+
+pvOilAnalysisOilVis: Oil Viscosity +parent | Oil viscosity vs. temperature details.
+  Temperature(dbl_degC) #Temp
+  ViscDynamic(double, pascal seconds) #Dynamic Viscosity
+  ViscKinematic(double, square meters per day) #Kinematic Viscosity
+  Com(txt255) #Note
+
+pvOilAnalysisDistill: Oil Distillation +parent | Oil sample distilled volume vs. temperature details.
+  VolumeFrac(dbl_m3pm3) #Volume Fraction Distilled
+  Temperature(dbl_degC) #Temp
+  Com(txt255) #Note
+
+pvWaterAnaly: Water Analysis Groups | Group of liquid analyses. Many nodes can point to this group and will be updated when a new analysis
+  Name(s255) #Name
+  DtTmStartCalc(dt_calc) #Earliest Analysis in Group
+  DtTmEndCalc(dt_calc) #Last Analysis in Group
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  LocSampleCode(s255) #Sample Location Point Code
+  LocSampleName(s255) #Sample Location Point Name
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  Com(txt2k) #Comment
+
+pvWaterAnalysis: Water Properties +parent | Water property details. Dissolved solids, pH, density, etc.
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  Des(s255) #Sample Description
+  TestedBy(s50) #Sampler Company
+  DontUse(bool) #Don't Use
+  DepthTop(double, meter) #Top Depth
+  DepthBtm(double, meter) #Bottom Depth
+  LocSample(s255) #Sample Location Point
+  SolidsTotalEvap(dbl_kgpm3) #Total Dissolved Solids by Evap
+  TempRefSolidsTotalEvap(dbl_degC) #Evaporation Ref Temp
+  SolidsTotallIgnition(dbl_kgpm3) #Total Dissolved Solids at Ignition
+  pH(dbl) #pH
+  TempRefpH(dbl_degC) #pH Ref Temp
+  H2S(dbl_pct) #H2S
+  TempRefH2S(dbl_degC) #H2S Ref Temp
+  DensityRel(dbl_kgpm3) #Relative Density
+  TempRefDensityRel(dbl_degC) #Relative Density Ref Temp
+  Resistivity(double, ohm) #Resistivity
+  TempRefResistivity(dbl_degC) #Resistivity Ref Temp
+  Salinity(dbl_pct) #Salinity
+  RefractiveIndex(dbl) #Refractive Index
+  TempRefRefractiveIndex(dbl_degC) #Refractive Index Ref Temp
+
+pvWaterAnalysisComp: Water Composition +parent | Fraction of the water analysis broken out by component.
+  Ion(s20) #Component
+  CationAnion(s20) #Cation or Anion
+  Density(dbl_kgpm3) #Density
+  DensityEquiv(dbl) #Equivalent Density
+  MassFrac(double, kilograms per kilogram) #Mass Fraction
+  Com(txt255) #Note

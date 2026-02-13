@@ -15,3 +15,4 @@ repos:
       - id: yamllint
         args: [--strict, -c, .yamllint.yml]
         files: \.(yml|yaml)$
+        exclude: ^context/
