@@ -1,0 +1,20 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVUNITAGREEMT
+        description: "Partnership agreements — ownership and working interest agreements"
+      - name: PVT_PVUNITAGREEMTPARTNER
+        description: "Agreement partners — partner details within ownership agreements"
+      - name: PVT_PVUNITREGBODYKEY
+        description: "Regulatory reporting keys — state regulatory body identifiers (API, RRC)"
+      - name: PVT_PVUNITREMARK
+        description: "Remarks — free-text notes attached to units"
+      - name: PVT_PVTICKET
+        description: "Tickets — run tickets for oil/gas sales and transport"
