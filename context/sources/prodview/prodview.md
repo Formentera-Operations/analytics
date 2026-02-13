@@ -73,7 +73,7 @@ Flow Network (pvFlowNetHeader)
 **IDFLOWNET:** Every table within the hierarchy carries the flow network ID. Use this for scoping queries and as a secondary join condition.
 
 ## Schema Reference
-Detailed column-level schemas are in `source_schemas/prodview/`.
+Detailed column-level schemas are in `context/sources/prodview/`.
 Load `_index.yaml` to find the right domain file for your task.
 
 ## Unit Conversions — Critical
