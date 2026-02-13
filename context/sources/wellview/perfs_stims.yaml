@@ -1,0 +1,601 @@
+# Peloton WellView: Perfs, Stims & Swabs
+# Perforations, stimulation/frac summaries/stages/fluids/proppants, swabs
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__perforations, stg_wellview__stimulations, stg_wellview__stimulation_intervals, stg_wellview__stimulation_fluid_systems,
+#   stg_wellview__stimulation_fluid_additives, stg_wellview__stimulation_proppant, stg_wellview__swabs, stg_wellview__swab_details
+
+wvPerforation: Perforation details. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  Typ(s100) #Type
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IDRecWellBore(s32) #Wellbore
+  ShotDensity(dbl_shotpm) #Shot Density
+  ShotPlan(int) ## Shots Planned
+  ShotTotal(int) #Entered Shot Total
+  ShotsTotalCalc(int_calc) #Calculated Shot Total
+  ShotsTotalAltCalc(int_calc) #Calculated Shot Total (alt)
+  ShotsMisfireCalc(int_calc) ## Shots Misfired
+  DepthTopToBtmCalc(dbl_m_calc) #Depth Bottom - Depth Top
+  DepthMPPCalc(dbl_m_calc) #Depth MPP
+  IntNo(dbl) #Stage Number
+  CluserRefNo(dbl) #Cluster Reference #
+  Com(txt2k) #Comment
+  IDRecZoneOR(s32) #Zone
+  IDRecZoneCalc(s32_calc) #Linked Zone
+  FormationCalc(s255_calc) #Formation
+  ReservoirCalc(s255_calc) #Reservoir
+  IDRecLastCompletionCalc(s32_calc) #Last Completion
+  IDRecString(s32) #String Perforated
+  IDRecJob(s32) #Job
+  IDRecLog(s32) #Reference Log
+  Contractor(s50) #Perforation Company
+  SzHoleAct(dbl_m) #Estimated Actual Hole Diameter
+  SzHoleNom(dbl_m) #Nominal Hole Diameter
+  PenetrationNom(dbl_m) #Nominal Penetration
+  DepthCsngCollarRef(dbl_m) #Collar Ref Depth
+  DepthTVDCsngCollarRefCalc(dbl_m_calc) #Collar Ref Depth (TVD)
+  DistanceRefToTopCalc(dbl_m_calc) #Collar Ref - Top Depth
+  IconDrawShort(bool) #Draw Short?
+  GunDes(s100) #Gun Description
+  SzGun(dbl_m) #Gun Size
+  GunMetallurgy(s100) #Gun Metallurgy
+  GunCentralize(s50) #Gun Centralize
+  GunLeftInHole(bool) #Gun Left In Hole?
+  ConveyMeth(s20) #Conveyance Method
+  CarrierDes(s100) #Carrier Description
+  CarrierMake(s100) #Carrier Make
+  ChargeTyp(s100) #Charge Type
+  ChargeSz(dbl_kg) #Charge Size
+  ChargeMake(s100) #Charge Make
+  ExplosiveTyp(s100) #Explosive Type
+  Phasing(dbl_deg) #Phasing
+  Orientation(s20) #Orientation
+  OrientMethod(s20) #Orientation Method
+  Balance(s20) #Over/Under Balanced
+  BalancePres(dbl_kPa) #Over/Under Pressure
+  PresDesignBH(dbl_kPa) #Design BH Pressure
+  PresInitSurf(dbl_kPa) #Initial Surface Pressure
+  PresFinalSurf(dbl_kPa) #Final Surface Pressure
+  FluidTyp(s100) #Fluid Type
+  FluidDensity(dbl_kgpm3) #Fluid Density
+  DepthFluidBefore(dbl_m) #Fluid Depth Before Shot
+  DepthTVDFluidBeforeCalc(dbl_m_calc) #Fluid Depth Before (TVD)
+  DepthFluidAfter(dbl_m) #Fluid Depth After Shot
+  DepthTVDFluidAfterCalc(dbl_m_calc) #Fluid Depth After (TVD)
+  RateFluidBefore(dbl_mpd) #Fluid Rate Before Shot
+  RateFluidAfter(dbl_mpd) #Fluid Rate After Shot
+  DepthGauge(dbl_m) #Gauge Depth
+  DepthTVDGaugeCalc(dbl_m_calc) #Gauge Depth (TVD)
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  StatusPrimaryCalc(s100_calc) #Open or Closed
+  CurrentStatusCalc(s100_calc) #Current Status
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  PresBHTyp(s100) #BH Pressure Type
+  PresBH(dbl_kPa) #Bottom Hole Pressure
+  PresDatum(dbl_kPa) #Datum Pressure
+  PresMPP(dbl_kPa) #MPP Pressure
+  PresDuringPerf(dbl_kPa) #Pressure During Perforation
+  PresBHToDatumCalc(dbl_kPa_calc) #Pressure BH to Datum
+  PresBHToMPPCalc(dbl_kPa_calc) #Pressure BH to MPP
+  PresHHSurfToMPP(dbl_kPa) #Estimated HH from Surface to MPP
+  PresGradientGaugeToMPP(dbl_kPapm) #Pressure Gradient Gauge to MPP
+  PresBHSITPHHCalc(dbl_kPa_calc) #BH Pressure for SITP and HH
+  ShotsTotalAltPerDensityCalc(dbl_pm_calc) #Total Shots/Shot Density
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  IDRecOtherInHoleCalc(s32_calc) #Other In Hole
+  UserNum1(dbl_m3) #Vol Fluid
+
+wvPerforationStatus: Status of perforations by date and depth. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  StatusPrimary(s50) #Open or Closed
+  Status(s50) #Status
+  StatusColor(int) #Status Color
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+
+wvStim: Stimulation and treatment data including fractures. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  IconName(s255) #Icon
+  Contractor(s50) #Stim/Treat Company
+  ContractSupt(s50) #Stim/Treat Supervisor
+  DiversionContractor(s50) #Diversion Company
+  DiversionMethod(s50) #Diversion Method
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecJob(s32) #Job
+  IntervalNoDesign(int) #Design Number of Treatment Intervals
+  IntervalNo(int) #Actual Total Stages
+  IntervalNoCalc(int_calc) #Calculated Stages
+  Category(s100) #Category
+  CategoryWellsNo(int) #Number of Wells
+  Com(txt2k) #Comment
+  RateTreatAvg(dbl_m3pd) #Treat Rate Avg
+  RateTreatMax(dbl_m3pd) #Treat Rate Max
+  RateCleanAvgCalc(dbl_m3pd_calc) #Clean Rate Avg
+  RateCleanMaxCalc(dbl_m3pd_calc) #Clean Rate Max
+  RateSlurryAvgCalc(dbl_m3pd_calc) #Slurry Rate Avg
+  RateSlurryMaxCalc(dbl_m3pd_calc) #Slurry Rate Max
+  PresTreatAvg(dbl_kPa) #Treat Pressure Avg
+  PresTreatAvgCalc(dbl_kPa_calc) #Treat Pressure Avg (all stages)
+  PresTreatMax(dbl_kPa) #Treat Pressure Max
+  PresTreatMaxCalc(dbl_kPa_calc) #Treat Pressure Max (all stages)
+  PresBreakdownAvgCalc(dbl_kPa_calc) #Breakdown Pressure Avg
+  PresClosureAvgCalc(dbl_kPa_calc) #Closure Pressure Avg
+  PresScreenOutAvgCalc(dbl_kPa_calc) #Screen Out Pressure Avg
+  VolCleanTotal(dbl_m3) #Volume Clean Total OR
+  VolCleanTotalCalc(dbl_m3_calc) #Volume Clean Total
+  VolSlurryTotal(dbl_m3) #Volume Slurry Total OR
+  VolSlurryTotalCalc(dbl_m3_calc) #Volume Slurry Total
+  VolRecoveredTotal(dbl_m3) #Volume Recovered Total OR
+  VolRecoveredTotalCalc(dbl_m3_calc) #Volume Recovered Total
+  VolNetCleanCalc(dbl_m3_calc) #Total Clean - Recovered Volume
+  VolNetSlurryCalc(dbl_m3_calc) #Total Slurry-Recovered Volume
+  VolCO2Total(dbl_m3) #Volume CO2 Total OR
+  VolCO2TotalCalc(dbl_m3_calc) #Volume CO2 Total
+  VolN2Total(dbl_m3) #Volume N2 Total OR
+  VolN2TotalCalc(dbl_m3_calc) #Volume N2 Total
+  MassPropTotal(dbl_kg) #Proppant Total OR
+  MassPropTotalCalc(dbl_kg_calc) #Proppant Total
+  ConcBHAvgCalc(dbl_kgpm3_calc) #BH Conc Avg (all stages)
+  ConcBHMaxCalc(dbl_kgpm3_calc) #BH Conc Max (all stages)
+  ConcBHMinCalc(dbl_kgpm3_calc) #BH Conc Min (all stages)
+  ConcSurfAvgCalc(dbl_kgpm3_calc) #Surf Conc Avg (all stages)
+  ConcSurfMaxCalc(dbl_kgpm3_calc) #Surf Conc Max (all stages)
+  ConcSurfMinCalc(dbl_kgpm3_calc) #Surf Conc Min (all stages)
+  ConcIntAvgCalc(dbl_kgpm3_calc) #Conc @ Zone Avg (all stages)
+  DurPump(dbl_days) #Total Pump Duration
+  DurPumpCalc(dbl_days_calc) #Total Pump Duration
+  FluidEfficiency(dbl_pct) #Fluid Efficiency
+  PowerTotal(dbl_W) #Pump Power Total
+  TempTreat(dbl_degC) #Treat Temperature
+  TempTreatAvgCalc(dbl_degC_calc) #Treat Temperature Avg
+  ClosureGradientAvgCalc(dbl_kPapm_calc) #Closure Gradient Average
+  FracGradientAvgCalc(dbl_kPapm_calc) #Frac Gradient Average
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  DepthTopMinCalc(dbl_m_calc) #Min Top Depth
+  DepthBtmMaxCalc(dbl_m_calc) #Max Btm Depth
+  LengthCalc(dbl_m_calc) #Length (Gross)
+  LengthSumCalc(dbl_m_calc) #Length (Net)
+  DtTmStartMinCalc(dt_calc) #Min Start Date
+  DtTmEndMaxCalc(dt_calc) #Max End Date
+  DurationGrossCalc(dbl_days_calc) #Total Duration (Gross)
+  DurationNetCalc(dbl_days_calc) #Total Duration (Net)
+  CostTotalCalc(dbl_cost_calc) #Total Cost
+  ClusterSumCalc(int_calc) ## Clusters
+  ClustersPerIntNoCalc(dbl_pu_calc) #Clusters/Stage
+  OtherInHoleSumCalc(int_calc) #Total # Plugs
+  CostPerClusterCalc(dbl_cpu_calc) #Cost/Cluster
+  CostPerIntNoCalc(dbl_cpu_calc) #Cost/Stage
+  CostPerLengthCalc(dbl_cpm_calc) #Cost/Length (Gross)
+  CostPerLengthSumCalc(dbl_cpm_calc) #Cost/Length (Net)
+  CostPerMassPropTotalCalc(dbl_cpkg_calc) #Cost/Mass Proppant
+  LengthPerDurNetCalc(dbl_mpd_calc) #Length (Gross)/hr
+  LengthSumPerDurNetCalc(dbl_mpd_calc) #Length (Net)/hr
+  DurPumpPerDurNetCalc(dbl_pct_calc) #Total Pumping Hours/Day
+  IntervalNoPerDurNetCalc(dbl_upd_calc) #Stages/Day
+  MassPropTotalPerDurNetCalc(dbl_kgpd_calc) #Mass Proppant/Day
+  MassPropTotalPerIntNoCalc(dbl_kgpu_calc) #Mass Proppant/Stage
+  MassPropTotalPerIntPerDurCalc(dbl_kgpupd_calc) #Mass Proppant/Stage/Day
+  MassPropTotalPerLengthCalc(dbl_kgpm_calc) #Mass Proppant/Gross Length
+  MassPropTotalPerLengthSumCalc(dbl_kgpm_calc) #Mass Proppant/Net Length
+  VolCleanTotalPerLengthCalc(dbl_m3pm_calc) #Volume/Length (Gross)
+  OtherInHolePerDurNetCalc(dbl_upd_calc) #Plugs/Day
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserTxt1(s50) #User Text 1
+
+wvStimInt: The Stimulation interval/stage. +parent
+  IntRefNo(int) #Stage Number
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Interval Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurationCalc(dbl_days_calc) #Interval Duration
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  LengthCalc(dbl_m_calc) #Interval Length
+  LengthSpacingCalc(dbl_m_calc) #Spacing
+  IDRecWellBore(s32) #Wellbore
+  DeliveryMode(s50) #Delivery Mode
+  IDRecString(s32) #String (Deployment Method)
+  BallsNo(int) #Number of Balls
+  SzBalls(dbl_m) #Perf Ball Size
+  Exclude(bool) #Exclude?
+  Com(txt2k) #Comment
+  ShutInPresInitial(dbl_kPa) #Opening Wellhead Pressure
+  ShutInPresInst(dbl_kPa) #Instant. Shut-in Pressure
+  ShutInPres1(dbl_kPa) #1 minute Shut-In Pressure
+  ShutInPres3(dbl_kPa) #3 minute Shut-In Pressure
+  ShutInPres4(dbl_kPa) #4 minute Shut-In Pressure
+  ShutInPres5(dbl_kPa) #5 minute Shut-In Pressure
+  ShutInPres10(dbl_kPa) #10 minute Shut-In Pressure
+  ShutInPres15(dbl_kPa) #15 minute Shut-In Pressure
+  ShutInPresFinal(dbl_kPa) #Post Treatment Shut-in Pressure
+  ShutInPresBHFinal(dbl_kPa) #BH Post Treatment Shut-in Pressure
+  ShutInTmFinal(dbl_days) #Shut-in Time Final
+  ShutInPres1to4Calc(dbl_kPa_calc) #3 minute Bleed Off
+  VolCleanTotal(dbl_m3) #Volume Clean Total OR
+  VolCleanTotalCalc(dbl_m3_calc) #Volume Clean Total
+  VolSlurryTotal(dbl_m3) #Volume Slurry Total OR
+  VolSlurryTotalCalc(dbl_m3_calc) #Volume Slurry Total
+  VolRecoveredTotal(dbl_m3) #Volume Recovered Total OR
+  VolRecoveredTotalCalc(dbl_m3_calc) #Volume Recovered Total
+  VolCO2Total(dbl_m3) #Volume CO2 Total OR
+  VolCO2TotalCalc(dbl_m3_calc) #Volume CO2 Total
+  VolN2Total(dbl_m3) #Volume N2 Total OR
+  VolN2TotalCalc(dbl_m3_calc) #Volume N2 Total
+  VolNetCleanCalc(dbl_m3_calc) #Total Clean - Recovered Volume
+  VolNetSlurryCalc(dbl_m3_calc) #Total Slurry-Recovered Volume
+  ConcSurfAvg(dbl_kgpm3) #Surf Conc Avg
+  ConcSurfMax(dbl_kgpm3) #Surf Conc Max
+  ConcSurfMin(dbl_kgpm3) #Surf Conc Min
+  ConcBHAvg(dbl_kgpm3) #BH Conc Avg
+  ConcBHMax(dbl_kgpm3) #BH Conc Max
+  ConcBHMin(dbl_kgpm3) #BH Conc Min
+  ConcInt(dbl_kgpm3) #Concentration @ Zone
+  MassPropDesign(dbl_kg) #Proppant Designed
+  MassPropInFrm(dbl_kg) #Proppant In Formation
+  MassPropInWellbore(dbl_kg) #Proppant In Wellbore
+  MassPropReturn(dbl_kg) #Proppant Return to Surface
+  MassPropTotal(dbl_kg) #Proppant Total OR
+  MassPropTotalCalc(dbl_kg_calc) #Proppant Total
+  RatioPropDesignTotal(dbl_pct) #Proppant Total/Design Ratio
+  DepthTopProppant(dbl_m) #Est Sand Top Depth
+  PresBHMethod(s50) #BH Pressure Method
+  PresBreakdown(dbl_kPa) #Breakdown Pressure
+  PresBHBreakdown(dbl_kPa) #BH Breakdown Pressure
+  PresScreenOut(dbl_kPa) #Screen Out Pressure
+  PresClosure(dbl_kPa) #Closure Pressure
+  PresBHClosure(dbl_kPa) #BH Closure Pressure
+  PresClosureMethod(s50) #Closure Pressure Method
+  PresHyd(dbl_kPa) #Hydrostatic Pressure
+  PresTreatAvg(dbl_kPa) #Treat Pressure Avg
+  PresTreatMin(dbl_kPa) #Treat Pressure Min
+  PresTreatMax(dbl_kPa) #Treat Pressure Max
+  PresMaxMinTreatCalc(dbl_kPa_calc) #Treat Pressure Max - Min
+  PresAvgTubing(dbl_kPa) #Tubing Pressure Avg
+  PresMinTubing(dbl_kPa) #Tubing Pressure Min
+  PresMaxTubing(dbl_kPa) #Tubing Pressure Max
+  PresMaxMinTubingCalc(dbl_kPa_calc) #Tubing Pressure Max - Min
+  PresAvgCasing(dbl_kPa) #Casing Pressure Avg
+  PresMinCasing(dbl_kPa) #Casing Pressure Min
+  PresMaxCasing(dbl_kPa) #Casing Pressure Max
+  PresMaxMinCasingCalc(dbl_kPa_calc) #Casing Pressure Max - Min
+  PresAvgAnnulus(dbl_kPa) #Annulus Pres Avg
+  PresMinAnnulus(dbl_kPa) #Annulus Pressure Min
+  PresMaxAnnulus(dbl_kPa) #Annulus Pressure Max
+  PresMaxMinAnnulusCalc(dbl_kPa_calc) #Annulus Pressure Max - Min
+  PresFrictionLoss(dbl_kPa) #Friction Pressure Loss
+  PresSleeveShift(dbl_kPa) #Sleeve Shift Pressure
+  RateCleanAvg(dbl_m3pd) #Clean Rate Avg
+  RateCleanMax(dbl_m3pd) #Clean Rate Max
+  RateCleanMin(dbl_m3pd) #Clean Rate Min
+  RateSlurryAvg(dbl_m3pd) #Slurry Rate Avg
+  RateSlurryMax(dbl_m3pd) #Slurry Rate Max
+  RateSlurryMin(dbl_m3pd) #Slurry Rate Min
+  RateAvgAnnulus(dbl_m3pd) #Annulus Rate Avg
+  RateMaxAnnulus(dbl_m3pd) #Annulus Rate Max
+  RateAvgCasing(dbl_m3pd) #Casing Rate Avg
+  RateMaxCasing(dbl_m3pd) #Casing Rate Max
+  RateAvgTubing(dbl_m3pd) #Tubing Rate Avg
+  RateMaxTubing(dbl_m3pd) #Tubing Rate Max
+  RateBHAvg(dbl_m3pd) #BH Rate Avg
+  RateBHMax(dbl_m3pd) #BH Rate Max
+  RateBHMin(dbl_m3pd) #BH Rate Min
+  RateBreakdown(dbl_m3pd) #Breakdown Rate
+  PumpsOnLineNo(int) #Number of Pumps On Line
+  PumpsOnLineEndNo(int) #Number of Pumps On Line @ End
+  PumpsOnLineNoDifCalc(int_calc) ## Pumps Down
+  DurPump(dbl_days) #Pumping Duration
+  PumpPowerAvg(dbl_W) #Pump Power Avg
+  PumpPowerFluid(dbl_W) #Fluid Pump Power
+  PumpPowerCO2(dbl_W) #CO2 Pump Power
+  PumpPowerMax(dbl_W) #Pump Power Max
+  IDRecZoneOR(s32) #Zone
+  IDRecZoneCalc(s32_calc) #Linked Zone
+  FormationCalc(s255_calc) #Formation
+  ReservoirCalc(s255_calc) #Reservoir
+  NetPayEst(dbl_m) #Estimated Net Pay
+  PerfsOpenNoEst(int) #Estimated # of Open Perfs
+  PerfsOpenNoCalc(int_calc) ## of Open Perfs
+  PerfShotsAltCalc(int_calc) #Shot Total (alt)
+  PerfShotsPerOpenCalc(dbl_calc) #Shot Total/# Open Perfs
+  BreakDownGradient(dbl_kPapm) #BreakDown Gradient
+  ClosureGradient(dbl_kPapm) #Closure Gradient
+  DurClosure(dbl_days) #Closure Duration
+  FracDiagnosticMethod(s50) #Diagnostic Method
+  FracGradient(dbl_kPapm) #Frac Gradient
+  FracGradientEnd(dbl_kPapm) #Frac Gradient Post Treat
+  FracHeight(dbl_m) #Frac Height
+  FracLength(dbl_m) #Frac Length
+  FracWidth(dbl_m) #Frac Width
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  TempStaticAvg(dbl_degC) #Static Temperature
+  TempTreatAvg(dbl_degC) #Treat Temperature
+  FluidEfficiency(dbl_pct) #Fluid Efficiency
+  DepthTopElement(dbl_m) #Top Depth of Element
+  DepthBtmElement(dbl_m) #Bottom Depth of Element
+  GasVolLostDownhole(dbl_m3) #Gas Lost Downhole
+  GasVolLostSurface(dbl_m3) #Gas Lost Surface
+  GasVolLostTransport(dbl_m3) #Gas Lost Transport
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DtTmStartMinCalc(dt_calc) #Min Start Date
+  DtTmEndMaxCalc(dt_calc) #Max End Date
+  IDRecOtherInHoleCalc(s32_calc) #Other In Hole
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserTxt1(s50) #User Text 1
+
+wvStimIntFluid: Fluid system details for the stimulation. This is a normalized list of all fluid systems designed and/or used during the stimulation. +parent
+  FluidName(s50) #Fluid Name
+  Typ1(s100) #Fluid Type
+  Typ2(s255) #Fluid Subtype
+  Des(s255) #Description
+  Purpose(s50) #Purpose
+  EnvironmentTyp(s100) #Environment Type
+  Source(s50) #Source
+  Com(txt2k) #Comment
+  VendorFluidName(s100) #Vendor Fluid Name
+  Vendor(s100) #Vendor
+  VendorCode(s100) #Vendor Code
+  VolumeDesign(dbl_m3) #Design Volume
+  Volume(dbl_m3) #Volume
+  VolumeCalc(dbl_m3_calc) #Calculated Amount
+  RatioVolumeDesignCalc(dbl_m3pm3_calc) #Actual/Design Fluid Volume
+  FilterSz(dbl_m) #Filter Size
+  FluidDensity(dbl_kgpm3) #Fluid Density
+  pH(dbl) #pH
+  PresVapor(dbl_kPa) #Vapor Pressure
+  TempRef(dbl_degC) #Reference Temperature
+  Viscosity(dbl_Pas) #Viscosity
+  EvalMethod(s50) #Evaluation Method
+  MassTotal(dbl_kg) #Fluid Total Mass
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1
+
+wvStimIntFluidAdd: Fluid additive details for the fluid system. +parent
+  Typ1(s100) #Additive Type
+  Typ2(s100) #Additive Subtype
+  Des(s100) #Additive Name
+  Purpose(s50) #Purpose
+  VendorAddName(s100) #Vendor Additive Name
+  RefNo(s50) #Reference #
+  AmountDesign(dbl) #Design Amount
+  Amount(dbl) #Amount
+  UnitLabel(s10) #Units
+  MassTotalCalc(dbl_kg_calc) #Total Mass of Additive
+  VolTotalCalc(dbl_m3_calc) #Total Volume of Additive
+  ConcMax(dbl_pct) #Concentration Max
+  ConcMin(dbl_pct) #Concentration Min
+  Density(dbl_kgpm3) #Additive Density
+  Com(txt2k) #Comment
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1
+
+wvStimIntFluidAddComp: Fluid additive ingredients for the fluid system. +parent
+  Typ1(s100) #Add Comp Type
+  Typ2(s100) #Add Comp Subtype
+  Des(s100) #Ingredient Description
+  Amount(dbl) #Amount
+  UnitLabel(s10) #Units
+  ConcMax(dbl_pct) #Concentration Max
+  RefNo(s50) #Reference #
+  Note(s255) #Note
+
+wvStimIntProp: Proppant details. This is a normalized list of all proppants designed and\or used during the stimulation. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Desciption
+  Sz(s20) #Sand Size
+  AmountDesign(dbl_kg) #Design Amount
+  Amount(dbl_kg) #Amount
+  AmountCalc(dbl_kg_calc) #Calculated Amount
+  RatiotAmountDesignCalc(dbl_kgpkg_calc) #Actual/Design Proppant Mass
+  Note(s255) #Note
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvStimIntPerfCalc: Related Perf(s) are calculated based on depths defined by 'Stim/Frac Stage.Top Depth' - 'Stim/Frac Stage.Bottom Depth'. +parent
+  IDRecPerforation(s32_calc) #Associated Perf Interval
+  ShotsTotalAlt(int_calc) #Shot Total (alt)
+
+wvStimIntStg: Summary of the pumping schedule, also known as 'pumping stages', sub-stages or event level details. +parent
+  StageNum(int) #Sub Stage Number
+  StageTyp1(s100) #Sub Stage Type 1
+  StageTyp2(s100) #Sub Stage Type 2
+  Des(s100) #Stage Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecFluid(s32) #Link to Fluid System
+  IDRecProp(s32) #Link to Proppant
+  GasDes(s50) #Gas Description
+  Exclude(bool) #Exclude From Calcs?
+  Com(txt2k) #Comment
+  VolClean(dbl_m3) #Clean Volume
+  VolCleanCumCalc(dbl_m3_calc) #Cum Clean Volume
+  VolSlurry(dbl_m3) #Slurry Volume
+  VolSlurryCumCalc(dbl_m3_calc) #Cum Slurry Volume
+  VolRecovered(dbl_m3) #Recovered Volume
+  VolRecoveredCumCalc(dbl_m3_calc) #Cum Recovered Volume
+  VolCO2(dbl_m3) #CO2 Volume
+  VolCO2CumCalc(dbl_m3_calc) #Cum CO2 Volume
+  VolN2(dbl_m3) #N2 Volume
+  VolN2CumCalc(dbl_m3_calc) #Cum N2 Volume
+  VolNetCleanCalc(dbl_m3_calc) #Total Clean - Recovered Volume
+  VolNetSlurryCalc(dbl_m3_calc) #Total Slurry-Recovered Volume
+  PresSurfStart(dbl_kPa) #Surf Pressure Start
+  PresSurfEnd(dbl_kPa) #Surf Pressure End
+  PresSurfAvg(dbl_kPa) #Surf Pressure Avg
+  PresSurfMin(dbl_kPa) #Surf Pressure Min
+  PresSurfMax(dbl_kPa) #Surf Pressure Max
+  PresSurfMaxMinCalc(dbl_kPa_calc) #Surf Pressure Max - Min
+  PresBHStart(dbl_kPa) #BH Pressure Start
+  PresBHEnd(dbl_kPa) #BH Pressure End
+  PresBHAvg(dbl_kPa) #BH Pressure Avg
+  PresBHMin(dbl_kPa) #BH Pressure Min
+  PresBHMax(dbl_kPa) #BH Pressure Max
+  PresBHMaxMinCalc(dbl_kPa_calc) #BH Pressure Max - Min
+  PresZoneMax(dbl_kPa) #Max Pres Allowable for Zone
+  RateCleanStart(dbl_m3pd) #Clean Rate Start
+  RateCleanEnd(dbl_m3pd) #Clean Rate End
+  RateCleanAvg(dbl_m3pd) #Clean Rate Avg
+  RateCleanMin(dbl_m3pd) #Clean Rate Min
+  RateCleanMax(dbl_m3pd) #Clean Rate Max
+  RateSlurryStart(dbl_m3pd) #Slurry Rate Start
+  RateSlurryEnd(dbl_m3pd) #Slurry Rate End
+  RateSlurryAvg(dbl_m3pd) #Slurry Rate Avg
+  RateSlurryMin(dbl_m3pd) #Slurry Rate Min
+  RateSlurryMax(dbl_m3pd) #Slurry Rate Max
+  RateCO2SurfStart(dbl_m3pd) #CO2 Rate Start
+  RateCO2SurfEnd(dbl_m3pd) #CO2 Rate End
+  RateCO2SurfAvg(dbl_m3pd) #CO2 Rate Avg
+  RateCO2Min(dbl_m3pd) #CO2 Rate Min
+  RateCO2Max(dbl_m3pd) #CO2 Rate Max
+  RateCO2FoamStart(dbl_m3pd) #CO2 Foam Rate Start
+  RateCO2FoamEnd(dbl_m3pd) #CO2 Foam Rate End
+  FoamCO2Quality(dbl_pct) #Foam CO2 Quality
+  RateN2SurfStart(dbl_m3pd) #N2 Rate Start
+  RateN2SurfEnd(dbl_m3pd) #N2 Rate End
+  RateN2SurfAvg(dbl_m3pd) #N2 Rate Avg
+  RateN2Min(dbl_m3pd) #N2 Rate Min
+  RateN2Max(dbl_m3pd) #N2 Rate Max
+  RateN2FoamStart(dbl_m3pd) #N2 Foam Rate Start
+  RateN2FoamEnd(dbl_m3pd) #N2 Foam Rate End
+  FoamN2Quality(dbl_pct) #Foam N2 Quality
+  RatePumpSurfAvg(dbl_m3pd) #Surf Pump Rate Avg
+  RatePumpSurfStart(dbl_m3pd) #Surf Pump Rate Start
+  RatePumpSurfEnd(dbl_m3pd) #Surf Pump Rate End
+  RatePumpBHAvg(dbl_m3pd) #BH Pump Rate Avg
+  RatePumpBHStart(dbl_m3pd) #BH Pump Rate Start
+  RatePumpBHEnd(dbl_m3pd) #BH Pump Rate End
+  MassProp(dbl_kg) #Proppant Mass
+  MassPropCumCalc(dbl_kg_calc) #Cum Proppant Mass
+  MassPropWH(dbl_kg) #Proppant Mass @ Wellhead
+  ConcSurfStart(dbl_kgpm3) #Surf Proppant Conc Start
+  ConcSurfEnd(dbl_kgpm3) #Surf Proppant Conc End
+  ConcSurfAvg(dbl_kgpm3) #Surf Proppant Conc Avg
+  ConcSurfMin(dbl_kgpm3) #Surf Proppant Conc Min
+  ConcSurfMax(dbl_kgpm3) #Surf Proppant Conc Max
+  ConcBHStart(dbl_kgpm3) #BH Proppant Conc Start
+  ConcBHEnd(dbl_kgpm3) #BH Proppant Conc End
+  ConcBHAvg(dbl_kgpm3) #BH Proppant Conc Avg
+  ConcBHMin(dbl_kgpm3) #BH Proppant Conc Min
+  ConcBHMax(dbl_kgpm3) #BH Proppant Conc Max
+  DurPumpTotal(dbl_days) #Total Stage Pumping Time
+  PresPumpingMax(dbl_kPa) #Pumping Pressure Max
+  PumpPowerAvg(dbl_W) #Pump Power Avg
+  TempTreatAvg(dbl_degC) #Treatment Temp Avg
+  FrictionFactor(dbl) #Friction Factor
+  SpaceFactor(dbl) #Space Factor
+  BallsNoUsed(int) #Number of Balls Used
+  BallsNoRecov(int) #Number of Balls Recovered
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserTxt1(s50) #User Text 1
+
+wvStimIntStgFluidAdd: Link to fluid additives defined in 'Stim/Frac Fluid Additive'. +parent
+  IDRecFluidAdd(s32) #Link to Fluid Additive
+  Mass(dbl_kg) #Mass of Additive
+  Volume(dbl_m3) #Volume of Additive
+
+wvStimIntPresDtl: Pressure vs. time for tests related to the 'Stim/Frac Stage'. +parent
+  Tm(dbl_days) #Time
+  Pres(dbl_kPa) #Pressure
+  PresBH(dbl_kPa) #Bottom Hole Pressure
+  Conc(dbl_kgpm3) #Avg Surf Concentration
+  RateSlurry(dbl_m3pd) #Avg Slurry Rate
+  PresRef(s50) #Pressure Reference
+  DepthGauge(dbl_m) #Gauge Depth
+  DepthTVDGaugeCalc(dbl_m_calc) #Gauge Depth (TVD)
+  Note(s255) #Note
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
+wvStimPropTypSumCalc: Proppant mass 'Stim/Frac Sub Stage Treatment Details.Proppant Mass' summarized and grouped by 'Stim/Frac Proppant.Type'. +parent
+  Typ1(s100_calc) #Type
+  Typ2(s100_calc) #Subtype
+  Sz(s20_calc) #Sand Size
+  MassPropTotal(dbl_kg_calc) #Proppant Total
+
+wvSwab: Swab description. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  Contractor(s50) #Swab Company
+  Com(txt2k) #Comment
+  VolTotalCalc(dbl_m3_calc) #Total Volume Recovered
+  VolTotalGasCalc(dbl_m3_calc) #Total Gas Volume
+  VolTotalOilCalc(dbl_m3_calc) #Total Oil Recovered
+  VolTotalBSWCalc(dbl_m3_calc) #Total BSW Recovered
+
+wvSwabDetails: Swab details. +parent
+  SwabNo(int) #Swab Number
+  DtTm(dt) #Start Date
+  TmSwab(dbl_days) #Swabbing Time
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  TempWH(dbl_degC) #Temp WH
+  DepthFluidLevel(dbl_m) #Tagged Fluid Level
+  DepthPull(dbl_m) #Pull Depth
+  TankGauge(dbl_m) #Tank Gauge
+  VolFluidRec(dbl_m3) #Recovered Fluid Volume
+  VolGas(dbl_m3) #Volume Gas
+  RateGas(dbl_m3pd) #Rate Gas
+  Density(dbl_kgpm3) #Density
+  Salinity(dbl_pct) #Salinity
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  H2S(dbl_pct) #H2S
+  pH(dbl) #pH
+  Com(txt2k) #Comment
+  VolOilCalc(dbl_m3_calc) #Oil Amount
+  VolCumOilCalc(dbl_m3_calc) #Cum Oil
+  OilRateCalc(dbl_m3pd_calc) #Oil Rate
+  VolBSWCalc(dbl_m3_calc) #BSW Amount
+  VolCumBSWCalc(dbl_m3_calc) #Cum BSW
+  VolCumCalc(dbl_m3_calc) #Cum Volume Recovered
+  VolCumGasCalc(dbl_m3_calc) #Cum Gas Volume
+  DepthTVDFluidLevelCalc(dbl_m_calc) #Fluid Level (TVD)
+  DepthTVDPullCalc(dbl_m_calc) #Pull Depth (TVD)

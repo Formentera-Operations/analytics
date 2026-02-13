@@ -1,0 +1,516 @@
+# Peloton WellView: Production Operations & Failures
+# Well reviews, production failures, production settings (by lift type), annulus, chemical injection, fluid analysis, dynamometer tests
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__production_failures
+
+wvWellReview: Details of well review. +parent
+  DtTm(dt) #Review Date
+  ReviewedBy(s50) #Reviewed By
+  Typ(s100) #Review Type
+  CompliancePriority(s20) #Compliance Priority
+  IDRecZoneCompletion(s32) #Completion/Zone
+  ProductDestination(s50) #Product Destination
+  Com(txt2k) #Comment
+  RateOil(dbl_m3pd) #Avg Oil Rate
+  RateGas(dbl_m3pd) #Avg Gas Rate
+  RateCond(dbl_m3pd) #Avg Cond Rate
+  RateWater(dbl_m3pd) #Avg Water Rate
+  PresCas(dbl_kPa) #Casing Pressure
+  PresLine(dbl_kPa) #Line Pressure
+  PresNote(s255) #Pressure Note
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresBH(dbl_kPa) #Bottom Hole Pressure
+  PresSurfSI(dbl_kPa) #Surface Shut In Pressure
+  TempBH(dbl_degC) #Temp BH
+  ProposedProjTyp(s100) #Proposed Project Type
+  ProposedProjDes(s100) #Proposed Project Des
+  ProposedProjPriority(s20) #Proposed Project Priority
+  ProposedProjStatus(s50) #Proposed Project Status
+  ProposedProjDur(dbl_days) #Proposed Project Duration
+  IDRecJob(s32) #Job
+  RateTargetOil(dbl_m3pd) #Target Oil Rate
+  RateTargetGas(dbl_m3pd) #Target Gas Rate
+  RateTargetCond(dbl_m3pd) #Target Cond Rate
+  RateTargetWater(dbl_m3pd) #Target Water Rate
+  PresTargetLine(dbl_kPa) #Target Line Pressure
+  RateMaxDelivOil(dbl_m3pd) #Max Rate Oil
+  RateMaxDelivGas(dbl_m3pd) #Max Rate Gas
+  RateMaxDelivCond(dbl_m3pd) #Max Rate Cond
+  RateMaxDelivWater(dbl_m3pd) #Max Rate Water
+  RateOptimumOil(dbl_m3pd) #Optimum Rate Oil
+  RateOptimumGas(dbl_m3pd) #Optimum Rate Gas
+  RateOptimumCond(dbl_m3pd) #Optimum Rate Cond
+  RateOptimumWater(dbl_m3pd) #Optimum Rate Water
+  RateIncrOilCalc(dbl_m3pd_calc) #Incremental Oil
+  RateIncrGasCalc(dbl_m3pd_calc) #Incremental Gas
+  RateIncrCondCalc(dbl_m3pd_calc) #Incremental Cond
+  RateIncrWaterCalc(dbl_m3pd_calc) #Incremental Water
+  PresIncrLineCalc(dbl_kPa_calc) #Incremental Line Pressure
+  RateIncrOilBOECalc(dbl_calc) #Incremental Oil BOE
+  RateIncrGasBOECalc(dbl_calc) #Incremental Gas BOE
+  RateIncrCondBOECalc(dbl_calc) #Incremental Cond BOE
+  RateIncrTotalBOEOR(dbl) #Incremental BOE Total OR
+  RateIncrTotalBOECalc(dbl_calc) #Incremental BOE Total
+  DtTmProjEcon(dt) #Project Economics Date
+  ProjRef(s100) #Project Economics Ref
+  ProposedProjCost(dbl_cost) #Estimated Cost of Project
+  ProjWorkingInt(dbl_pct) #Working Interest
+  ProjCostNetCalc(dbl_cost_calc) #Estimated Cost of Project (Net)
+  ProjCostPerBOE(dbl_cpu) #Project Cost per BOE
+  ProjPayoutCalc(dbl_days_calc) #Proposed Project Payout
+  ProjPayoutOR(dbl_days) #Proposed Project Payout OR
+  ProjEffCalc(dbl_calc) #Proposed Project Efficiency
+  ProjCostNPV(dbl_cost) #Net Present Value of Project
+  ProjRateOfReturn(dbl_pct) #Rate of Return
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1
+
+wvWellReviewContact: Contact names of participants in the well review. +parent
+  ContactName(s50) #Contact Name
+  Title(s20) #Title
+  Typ(s100) #Type
+  Note(s255) #Note
+
+wvProblem: Production equipment failure information including dates, type, cause, failure cost & actions taken to resolve. +parent
+  DtTmStart(dt) #Failure Date
+  Typ(s100) #Failure Type
+  TypDetail(s100) #Failure Detail
+  Des(s100) #Failure Description
+  FailureSystem(s50) #Failure System
+  FailureSymptom(s50) #Failure Symptom
+  Priority(s50) #Priority
+  RegulatoryIssue(bool) #Regulatory Issue?
+  PerformanceAffect(bool) #Performance Affected?
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecProdSettingCalc(s32_calc) #Most Recent Prod Setting
+  IDRecWellStatusCalc(s32_calc) #Pre Failure Well Status
+  Status1(s50) #Status
+  Status2(s50) #Status Detail
+  Com(txt2k) #Comment
+  RateOptimumOil(dbl_m3pd) #Optimum Rate Oil
+  RateOptimumGas(dbl_m3pd) #Optimum Rate Gas
+  RateOptimumCond(dbl_m3pd) #Optimum Rate Cond
+  RateOptimumWater(dbl_m3pd) #Optimum Rate Water
+  RateFailOil(dbl_m3pd) #Failure Rate Oil
+  RateFailGas(dbl_m3pd) #Failure Rate Gas
+  RateFailCond(dbl_m3pd) #Failure Rate Cond
+  RateFailWater(dbl_m3pd) #Failure Rate Water
+  EstCost(dbl_cost) #Estimated Cost of Failure
+  RateChangeOilCalc(dbl_m3pd_calc) #Optimum - Failure Oil Rate
+  RateChangeGasCalc(dbl_m3pd_calc) #Optimum - Failure Gas Rate
+  RateChangeCondCalc(dbl_m3pd_calc) #Optimum - Failure Cond Rate
+  RateChangeWaterCalc(dbl_m3pd_calc) #Optimum - Failure Water Rate
+  EstReserveLossOil(dbl_m3) #Estimated Lost Oil Reserves
+  EstReserveLossGas(dbl_m3) #Estimated Lost Gas Reserves
+  EstReserveLossCond(dbl_m3) #Estimated Loss Condensate Reserves
+  EstReserveLossWater(dbl_m3) #Estimated Lost Water Reserves
+  Cause(s50) #Cause of Failure
+  CauseDetail(s50) #Cause of Failure Detail
+  DtTmAction(dt) #Action Date
+  ActionTaken(s255) #Action Taken
+  IDRecJob(s32) #Failure Repair Job
+  DtTmEnd(dt) #Resolved Date
+  ReportTo(s50) #Report Problem To
+  CauseCom(txt2k) #Cause Comment
+  DurEndToStartCalc(dbl_days_calc) #Failure to Resolution Duration
+  DurActionToStartCalc(dbl_days_calc) #Failure to Action Duration
+  DurJobStartToStartCalc(dbl_days_calc) #Failure to Job Start Duration
+  DurEndToActionCalc(dbl_days_calc) #Action to Resolution Duration
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+
+wvProblemDetail: Production equipment failure links to specific equipment. +parent
+  Category(s50) #Equipment Category
+  IDRecFailedItem(s32) #Failed Item Link
+  Des(s100) #Description
+  AreaFailed(s50) #Area Failed
+  SubItem(s20) #Failed Part of Item
+  Depth(dbl_m) #Failure Depth
+  DurEquipInService(dbl_days) #Equipment Life OR
+  DurEquipCalc(dbl_days_calc) #String Pull Date - Run Date
+  DurStartToRunCalc(dbl_days_calc) #Duration Failure to Run Date
+  DurRun(dbl_days) #Run Hours
+  Com(txt2k) #Comment
+  DesStringCalc(s100_calc) #String Description
+  DtTmRunCalc(dt_calc) #String Run Date
+  DtTmPullCalc(dt_calc) #String Pull Date
+  PullReasonCalc(s100_calc) #Pull Reason
+  PullReasonDetailCalc(s100_calc) #Pull Reason Detail
+  DesCompCalc(s100_calc) #Component Description
+  CompSubTypCalc(s100_calc) #Component Subtype
+  SzODNomCalc(dbl_m_calc) #OD Nominal
+  SzIDNomCalc(dbl_m_calc) #ID
+  SzODMaxCalc(dbl_m_calc) #Max OD
+  WtPerLengthCalc(dbl_kgpm_calc) #Weight/Length
+  GradeCalc(s20_calc) #Grade
+  LengthCalc(dbl_m_calc) #Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  MakeCalc(s100_calc) #Make
+  ModelCalc(s100_calc) #Model
+  SNCalc(s50_calc) #Serial Number
+  ConnectCalc(s50_calc) #Connections
+  MaterialCalc(s50_calc) #Material
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  ConditionRunCalc(s50_calc) #Condition Run
+  ConditionPullCalc(s50_calc) #Condition Pull
+  HoursStartCalc(dbl_days_calc) #Starting Hours
+  CompComCalc(txt2k_calc) #Comment
+  DesAccCalc(s100_calc) #Accessory Description
+
+wvProblemDetailAnalysis: Production equipment failure analysis. +parent
+  PartTyp1(s100) #Part Type
+  PartTyp2(s100) #Part Subtype
+  PartDes(s100) #Part Description
+  PartRefNo(s20) #Part Reference #
+  DurEquip(dbl_days) #Part Life
+  Material(s50) #Material
+  Com(txt2k) #Comment
+  DtTmInspect(dt) #Inspection Date
+  AnalysisTyp(s100) #Analysis Type
+  Analyst(s50) #Analyst
+  Condition(s50) #Condition
+  Metallurgy(s100) #Metallurgy of Failed Part
+  PartCost(dbl_cost) #Part Cost
+  RootCause1(s255) #Root Cause
+  RootCause2(s255) #Root Cause Detail
+  ActionRqd(bool) #Action Required?
+
+wvProdSetting: Producing method - Flowing, Plunger lift, Gas lift, Rod pump, ESP, PCP, other. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  ProdMethTyp(s100) #Method Type
+  ProdMethDetail(s20) #Production Method Details
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  SettingObjective(s50) #Setting Objective
+  SettingResult(s50) #Setting Result
+  Com(txt2k) #Comment
+
+wvProdSettingESP: ESP operating parameters for the time interval defined in 'Production Setting'. +extension
+  ElectricFreq(dbl_Hz) #Electric Freq
+  RPM(dbl_rpm) #RPM
+  ElectricVoltage(dbl_V) #Electric Voltage
+  ElectricCurrent(dbl_A) #Electric Current
+
+wvProdSettingFlow: Choke size for the time interval defined in 'Production Setting'. +extension
+  ChokeSz(dbl_m) #Choke Size
+
+wvProdSettingGasLift: Gas injection rate and choke size for the time interval defined in 'Production Setting'. +extension
+  GasInjRate(dbl_m3pd) #Gas Injection Rate
+  ChokeSz(dbl_m) #Choke Size
+
+wvProdSettingPCP: RPM, Rod torque and electric current for the time interval defined in 'Production Setting'. +extension
+  RPM(int) #RPM
+  RodTorque(dbl_Nm) #Rod Torque
+  ElectricCurrent(dbl_A) #Electric Current
+
+wvProdSettingPlunger: Arrival, open, delay, shut in times and pressure for the time interval defined in 'Production Setting'. +extension
+  TmArrival(dbl_days) #Tm Arrival
+  TmOpen(dbl_days) #Tm Open
+  TmDelay(dbl_days) #Tm Delay
+  TmShutIn(dbl_days) #Tm Shut In
+  PresOpen(dbl_kPa) #Pressure Open
+
+wvProdSettingRodPump: Max rod load, pitman position, stoke length, etc for the time interval defined in 'Production Setting'. +extension
+  LoadPolishRodMax(dbl_N) #Max Rod Load
+  PitmanPos(int) #Pitman Rod Position
+  StrokeLength(dbl_m) #Current Stroke Length
+  SPM(dbl_spm) #Strokes Per Minute
+  RotationDir(s20) #Rotation Direction
+  ChokeSz(dbl_m) #Choke Size
+  CrankPinSetting(int) #Crank Pin Setting
+  DurOp(dbl_days) #Operation Duration
+  DurShutIn(dbl_days) #Shut In Duration
+  NoCyclePerDayCalc(dbl_calc) ## Cycles/Day
+  PctOnCalc(dbl_pct_calc) #% On Production
+
+wvAnnulus: This table allows you to model the annulus, which is the space between two strings where fluid can flow. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Typ1(s100) #Annulus Type
+  Typ2(s100) #Annulus Sub Type
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IDRecStringInner(s32) #Inner Boundary
+  IDRecStringOuter(s32) #Outer Boundary
+  Gradient(dbl_kPapm) #Frac Gradient
+  Volume(dbl_m3) #Volume
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version #
+  PresRatingOpMax(dbl_kPa) #Max Well Operating Pressure
+  PresRatingOpMin(dbl_kPa) #Min Well Operating Pressure
+  PresRatingSurfMax(dbl_kPa) #Max Annulus Surface Pressure
+  PresRatingSurfMin(dbl_kPa) #Min Annulus Surface Pressure
+
+wvAnnulusFluid: Annulus fluid. +parent
+  Typ1(s100) #Fluid Type
+  Typ2(s100) #Fluid Sub Type
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IconName(s255) #Icon
+  Density(dbl_kgpm3) #Fluid Density
+  Additives(s255) #Additives
+  Com(txt2k) #Comment
+
+wvChemicalInjection: Details of chemical treatments for the well. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ(s100) #Type
+  InjectionLoc(s100) #Injection  Location
+  ProductName(s50) #Product Name
+  Purpose(s50) #Purpose
+  Vendor(s100) #Vendor
+  AmountDesign(dbl) #Design Amount
+  Amount(dbl) #Amount
+  UnitLabel(s10) #Units
+  RateDesign(dbl_m3pd) #Design Rate
+  RateAvg(dbl_m3pd) #Avg Rate
+  Cost(dbl_cpu) #Item Cost
+  IDRecString(s32) #String
+  IDRecWellbore(s32) #Wellbore
+  Com(txt2k) #Comment
+  RecurFrequency(dbl_days) #Recurrence Period
+  RecurNote(s255) #Recurring Note
+
+wvFluidAnalysis: General fluid analysis details. +parent
+  AnalysisTyp(s100) #Analysis Type
+  SampleTyp1(s100) #Analysis Subtype
+  Des(s100) #Sample Description
+  LocSample(s50) #Sample Location Point
+  TestedBy(s50) #Sampler Company
+  DtTmSample(dt) #Sample Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  RefNoLaboratory(s50) #Lab Ref #
+  Analyst(s50) #Analyst
+  RefNoTest(s50) #Test Ref #
+  RefNoSample(s50) #Sample Container Ref #
+  Com(txt2k) #Comment
+  PresSeparator(dbl_kPa) #Separator Pressure
+  TempSeparator(dbl_degC) #Separator Temperature
+  PresReservoir(dbl_kPa) #Reservoir Pressure
+  TempReservoir(dbl_degC) #Reservoir Temperature
+  PresGaugeSource(dbl_kPa) #Source Gauge Pressure
+  TempGaugeSource(dbl_degC) #Source Gauge Temperature
+  PresSample(dbl_kPa) #Sample Pressure
+  TempSample(dbl_degC) #Sample Temperature
+  PresSampleRec(dbl_kPa) #Received Sample Pressure
+  TempSampleRec(dbl_degC) #Received Sample Temperature
+
+wvFluidAnalysisGas: Detailed gas properties. +extension
+  ValMoistFreeGrossHeat(dbl_Jpm3) #Gross Heating Value Moisture Free
+  ValMoistAcidFreeGrossHeat(dbl_Jpm3) #Gross Heating Value Moisture+Acid Free
+  PresGrossHeatRef(dbl_kPa) #Gross Heating Value Ref Pres
+  TempRefGrossHeat(dbl_degC) #Gross Heating Value Ref Temp
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  DensitySampleRel(dbl) #Total Sample Relative Density
+  MolecularMassTotalSample(dbl) #Total Sample Molecular Mass
+  PresRefTotalSample(dbl_kPa) #Total Sample Ref Pres
+  TempRefTotalSample(dbl_degC) #Total Sample Ref Temp
+  DensityC7(dbl_kgpm3) #C7+ Density
+  DensityC7Rel(dbl) #C7+ Relative Density
+  MolecularMassC7(dbl) #C7+ Molecular Mass
+  PresRefC7(dbl_kPa) #C7+ Ref Pressure
+  TempRefC7(dbl_degC) #C7+ Ref Temp
+  PresPCSample(dbl_kPa) #Sample Pseudo Critical Pressure
+  TempPCSample(dbl_degC) #Sample Pseudo Critical Temp
+  PresPCAcidGasFree(dbl_kPa) #Acid Gas Free Pseudo Critical Pressure
+  TempPCAcidGasFree(dbl_degC) #Acid Gas Free Pseudo Critical Temp
+  H2S(dbl_pct) #H2S
+  H2SMethod(s50) #H2S Method
+  PresVapourPentane(dbl_kPa) #Pentanes Plus Vapour Pressure
+  Com(txt2k) #Comment
+
+wvFluidAnalysisGasComp: Mole fraction composition of gas. +parent
+  Component(s20) #Component
+  MoleFracAirFree(dbl) #Mole Fraction - Air Free as Received
+  MoleFracAcidGasFree(dbl) #Mole Fraction - Acid Gas Free
+  PetroleumLiquid(dbl) #Petroleum Liquid
+  Note(s255) #Note
+
+wvFluidAnalysisOil: Oil sample properties and distillation parameters. +extension
+  Color(s50) #Color
+  BSW(dbl_pct) #Basic Sediments &  Water
+  VolFracWater(dbl_m3pm3) #Water Fraction
+  VolFracSediment(dbl_m3pm3) #Sediment Fraction
+  DensityRelAsReceived(dbl) #Relative Density as Received
+  DensityRelAfterClean(dbl) #Relative Density after Cleaning
+  DensityAsReceived(dbl_kgpm3) #Density as Received
+  DensityAfterClean(dbl_kgpm3) #Density after Cleaning
+  DensityRefTemp(dbl_degC) #Density Ref Temp
+  APIGravityAsReceived(dbl_kgpm3) #API Gravity as Received
+  APIGravityAfterClean(dbl_kgpm3) #API Gravity after Cleaning
+  TempRefAPIGravity(dbl_degC) #API Ref Temp
+  Sulphur(dbl_kgpm3) #Sulphur
+  Salt(dbl_kgpm3) #Salt
+  PresVapour(dbl_kPa) #Reid Vapour Pressure
+  TempPourPoint(dbl_degC) #Temp Pour Point
+  WaxPercent(dbl_pct) #Percent Wax
+  Asphaltene(dbl_pct) #Percent Asphaltene
+  TempFlashPointCC(dbl_degC) #Temp Flash Point Closed Cup
+  TempFlashPointOC(dbl_degC) #Temp Flash Point Open Cup
+  Com(txt2k) #Comment
+  DistillMethod(s50) #Distillation Method
+  PresBarometric(dbl_kPa) #Barometric Pressure
+  TempRoom(dbl_degC) #Room Temperature
+  TempBoilInit(dbl_degC) #Temp Initial Boil Pt
+  VolFracNaptha(dbl_m3pm3) #Naptha Volume Fraction
+  TempRefNaptha(dbl_degC) #Naptha Temp Ref
+  VolFracKerosene(dbl_m3pm3) #Kerosene Volume Fraction
+  TempRefKerosene(dbl_degC) #Kerosene Temp Ref
+  VolFracLtGasOil(dbl_m3pm3) #Light Gas Oil Volume Fraction
+  TempRefLtGasOil(dbl_degC) #Light Gas Oil Temp Ref
+  VolFracRecovered(dbl_m3pm3) #Recovered Volume Fraction
+  VolFracResidue(dbl_m3pm3) #Residue Volume Fraction
+  VolFracDistillLoss(dbl_m3pm3) #Distillation Loss Volume Fraction
+
+wvFluidAnalysisOilDistill: Oil sample distilled volume vs. +parent
+  VolumeFrac(dbl_m3pm3) #Volume Fraction Distilled
+  Temperature(dbl_degC) #Temp
+  Note(s255) #Note
+
+wvFluidAnalysisOilVis: Oil viscosity vs. +parent
+  Temperature(dbl_degC) #Temp
+  ViscDynamic(dbl_Pas) #Dynamic Viscosity
+  ViscKinematic(dbl_m2pd) #Kinematic Viscosity
+  Note(s255) #Note
+
+wvFluidAnalysisWater: Water property details. +extension
+  SolidsTotalEvap(dbl_kgpm3) #Total Dissolved Solids by Evap
+  TempRefSolidsTotalEvap(dbl_degC) #Evaporation Ref Temp
+  SolidsTotallIgnition(dbl_kgpm3) #Total Dissolved Solids at Ignition
+  pH(dbl) #pH
+  TempRefpH(dbl_degC) #pH Ref Temp
+  H2S(dbl_pct) #H2S
+  TempRefH2S(dbl_degC) #H2S Ref Temp
+  DensityRel(dbl_kgpm3) #Relative Density
+  TempRefDensityRel(dbl_degC) #Relative Density Ref Temp
+  Resistivity(dbl_ohm) #Resistivity
+  TempRefResistivity(dbl_degC) #Resistivity Ref Temp
+  Salinity(dbl_pct) #Salinity
+  RefractiveIndex(dbl) #Refractive Index
+  TempRefRefractiveIndex(dbl_degC) #Refractive Index Ref Temp
+  Com(txt2k) #Comment
+
+wvFluidAnalysisWaterComp: Mass fraction by component. +parent
+  Ion(s20) #Component
+  CationAnion(s20) #Cation or Anion
+  Density(dbl_kgpm3) #Density
+  DensityEquiv(dbl) #Equivalent Density
+  MassFrac(dbl_kgpkg) #Mass Fraction
+  Note(s255) #Note
+
+wvFluidAnalysisLiquid: Observed and calculated hydrocarbon liquid properties. +extension
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  DensityRelSample(dbl) #Total Sample Relative Density
+  MolecularMassSample(dbl) #Total Sample Relative Molecular Mass
+  TempRefSample(dbl_degC) #Total Sample Ref Temp
+  APISample(dbl_kgpm3) #Total Sample API
+  TempRefAPISample(dbl_degC) #Total Sample API Ref Temp
+  DensityC7(dbl_kgpm3) #C7+ Density
+  DensityRelC7(dbl) #C7+ Relative Density
+  MolecularMassRel(dbl) #C7+ Relative Molecular Mass
+  TempRefC7(dbl_degC) #C7+ Ref Temp
+  APIC7(dbl_kgpm3) #C7+ API
+  TempRefAPIC7(dbl_degC) #C7+  API Ref Temp
+  FactorGasEquiv(dbl) #Gas Equivalent Factor
+  Com(txt2k) #Comment
+
+wvFluidAnalysisLiquidComp: Hydrocarbon liquid molecular, mass and volume fractions by component. +parent
+  Component(s20) #Component
+  MoleFrac(dbl) #Mole Fraction
+  MassFrac(dbl_kgpkg) #Mass Fraction
+  VolumeFrac(dbl_m3pm3) #Volume Fraction
+  Note(s255) #Note
+
+wvTestDyno: Dynamometer tests. +parent
+  DtTm(dt) #Test Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  TestedBy(s50) #Tested By
+  IDRecJob(s32) #Job
+  IDRecPumpingUnit(s32) #Pumping Unit Tested
+  Com(txt2k) #Comment
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  EPT(dbl_m) #Effective Plunger Travel
+  MPT(dbl_m) #Max Plunger Travel
+  FluidLoad(dbl_N) #Fluid Load
+
+wvTestDynoData: Dynamometer test data. +parent
+  Typ(s100) #Type
+  Dur(dbl_days) #Duration
+  Position(dbl_m) #Position
+  Load(dbl_kg) #Load
+  AngleCrankHole(dbl_deg) #Crank Hole Degrees
+  Torque(dbl_Nm) #Torque
+  Note(s255) #Note
+
+wvProduction: Production volumes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  DataSource(s50) #Data Source
+  ActivityTyp(s50) #Activity Type
+  Com(txt2k) #Comment
+
+wvProductionDownTime: Start date, duration and reason for down time. +parent
+  DtTmStart(dt) #Start Date
+  Duration(dbl_days) #Duration
+  DtTmEndCalc(dt_calc) #End Date
+  IDRecProblem(s32) #Associated AFE Summary
+  Reason(s50) #Reason
+  Preventable(bool) #Preventable?
+  Com(txt2k) #Comment
+
+wvProductionGas: Gas product type and volumes for time period defined in 'Production Volume'. +parent
+  ProductTyp(s50) #Product Type
+  Volume(dbl_m3) #Volume
+  VolumeMethod(s50) #Volume Method
+  ThermalQuality(dbl_J) #Thermal Quality
+  Note(s100) #Note
+
+wvProductionLiquid: Liquid product type and volumes for time period defined in 'Production Volume'. +parent
+  ProductTyp(s50) #Production Type
+  Volume(dbl_m3) #Volume
+  VolumeMethod(s50) #Volume Method
+  ThermalQuality(dbl_J) #Thermal Quality
+  Note(s100) #Note

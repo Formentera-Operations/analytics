@@ -1,0 +1,54 @@
+# Peloton WellView: Operations — Inspections
+# Inspections, inspection details, checklists
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#   dbl_cost=cost dbl_cpm=cost/meter dbl_cpd=cost/day dbl_cpu=cost/unit dbl_cpkg=cost/kg
+#   dbl_mpd=meters/day dbl_mph=meters/hour dbl_pm=per_meter dbl_pu=per_unit
+#   dbl_kN=kilonewton dbl_cP=centipoise dbl_L=liter dbl_cm3=cm3
+#   dbl_m3pstk=m3/stroke dbl_dpm3=days/m3 dbl_Wpm2=watts/m2
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+wvInspect: General inspection details. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  RequiredBy(s50) #Required By
+  IDRecItem(s32) #Link
+  Com(txt2k) #Comment
+  DtTmStartRecur(dt) #Recurring Start Date
+  DtTmEndRecur(dt) #Recurring End Date
+  RecurFrequency(dbl_days) #Recurrence Period
+  RecurNote(s255) #Recurring Note
+  DtTmLastInspectionCalc(dt_calc) #Last Inspection Date
+  DtTmNextInspectionCalc(dt_calc) #Next Inspection Date
+
+wvInspectDetail: Date, inspector, status of inspection. +parent
+  DtTm(dt) #Date
+  InspectedByName(s50) #Inspected By Name
+  InspectedByCompany(s100) #Inspected By Company
+  Status(s50) #Status
+  ActionReqdCom(txt2k) #Corrective Action Required
+  ActionTakenCom(txt2k) #Corrective Action Taken
+
+wvInspectDetailCheckList: Inspection check list +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s255) #Description
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  RefNo(s20) #Reference #
+  ActionRqd(bool) #Action Required?
+  Com(txt2k) #Comment
