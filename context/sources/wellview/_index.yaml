@@ -11,7 +11,7 @@
 # Calc tables are included in their respective domain files, marked with # CALC TABLE tag.
 # Extension tables are marked with +extension (share IDRec with parent).
 
-# Total: ~496 tables, 16 domains, ~112,000 tokens estimated
+# Total: ~498 tables, 16 domains, ~116,000 tokens estimated
 
 general: general.yaml  # 5 tables ~1,200tok | Well header, elevation history, aliases, status history, reference wells
 wellbore_surveys: wellbore_surveys.yaml  # 24 tables (12 calc) ~6,000tok | Wellbores, sections, key depths, directional surveys, formations, reservoirs, rig activity calcs
@@ -26,6 +26,6 @@ production_operations: production_operations.yaml  # 31 tables (10 ext) ~7,800to
 asset_management: asset_management.yaml  # 15 tables ~3,800tok | Notes, sources/destinations, operator history, responsible teams, legal status, agreements (interests, partners, dates), external reporting
 integrity_barriers: integrity_barriers.yaml  # 10 tables ~2,500tok | Integrity programs/items/criteria/values, well barriers/types/links/annotations
 other: other.yaml  # 10 tables (2 calc) ~2,500tok | Polymorphic tables (attributes, attachments, comments, sign-off, locations), time curves, curve interpretations, AFE summary calcs
-operations_jobs: operations_jobs.yaml  # 244 tables (125 calc) ~42,000tok | THE MONSTER: Jobs, daily reports, AFEs, phases, rigs, drill strings, mud, supplies, safety, NPT, kicks, lost circulation, fluids, emissions + all J*/JR*/JPP*/JDS* calc rollups
-operations_tasks: operations_tasks.yaml  # 2 tables ~500tok | Task management (tasks + task details)
-operations_inspections: operations_inspections.yaml  # 3 tables ~750tok | Inspections, inspection details, checklists
+operations_jobs: operations_jobs.yaml  # 246 tables (127 calc, 7 ext) ~58,500tok | THE MONSTER: Jobs, daily reports, AFEs, phases, rigs, drill strings, mud, supplies, safety, NPT, kicks, lost circulation, fluids, emissions + all J*/JR*/JPP*/JDS* calc rollups
+operations_tasks: operations_tasks.yaml  # 2 tables ~600tok | Task management (tasks + task details)
+operations_inspections: operations_inspections.yaml  # 3 tables ~550tok | Inspections, inspection details, checklists
