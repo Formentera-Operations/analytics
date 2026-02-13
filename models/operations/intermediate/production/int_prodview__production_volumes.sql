@@ -4,6 +4,12 @@
     )
 }}
 
+{#
+    Compatibility bridge: reads snake_case from staging, outputs quoted aliases
+    for fct_eng_volumes and int_fct_well_header. Convert output to snake_case
+    when those downstream models are migrated in a future sprint.
+#}
+
 with unitalloc as (
     select * from {{ ref('stg_prodview__daily_allocations') }}
 ),

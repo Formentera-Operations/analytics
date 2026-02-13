@@ -52,8 +52,8 @@ first_any_record as (
 )
 
 select
-    fhc.first_hc_production_date,
-    far.first_allocation_date,  -- First date with actual HC production
-    coalesce(fhc.unit_id, far.unit_id) as unit_id       -- First date with any allocation record
+    fhc.first_hc_production_date,  -- First date with actual HC production
+    far.first_allocation_date,     -- First date with any allocation record
+    coalesce(fhc.unit_id, far.unit_id) as unit_id
 from first_hc_production fhc
 full outer join first_any_record far on fhc.unit_id = far.unit_id
