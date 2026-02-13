@@ -1,0 +1,816 @@
+version: 2
+
+models:
+  # ============================================================================
+  # stg_prodview__tanks
+  # ============================================================================
+  - name: stg_prodview__tanks
+    description: >
+      ProdView tanks — storage vessels on location used for holding produced fluids
+      (oil, condensate, water, sand). One row per tank.
+      Source: PVT_PVUNITTANK.
+    columns:
+      # -- surrogate key
+      - name: tank_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: id_rec_parent
+        description: "Parent record ID (unit). ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- descriptive fields
+      - name: tank_name
+        description: "Tank name. ProdView: NAME, UI: 'Tank Name'"
+      - name: product
+        description: "Product stored in the tank (e.g., oil, water). ProdView: PRODUCTNAME, UI: 'Product'"
+      - name: facility_product
+        description: "Facility-level product classification. ProdView: FACPRODUCTNAME, UI: 'Facility Product'"
+      - name: measurement_method
+        description: "Method used to measure tank levels. ProdView: METHODMEASURE, UI: 'Measurement Method'"
+      - name: level_reading_unit
+        description: "Unit of measure for level readings (e.g., ft, in). ProdView: UOMLEVEL, UI: 'Level Reading Unit'"
+      - name: vapor_recovery_method
+        description: "Vapor recovery method used on this tank. ProdView: VRMETHOD, UI: 'Vapor Recovery Method'"
+      - name: recording_type
+        description: "How tank readings are recorded. ProdView: TYPRECORDING, UI: 'Recording Type'"
+      - name: serial_number
+        description: "Tank serial number. ProdView: SERIALNUM, UI: 'Serial Number'"
+      - name: engineering_id
+        description: "Engineering identifier for the tank. ProdView: ENGINEERINGID, UI: 'Engineering ID'"
+      - name: regulatory_id
+        description: "Historical / regulatory identifier. ProdView: REGULATORYID, UI: 'Historical Name'"
+      - name: other_id
+        description: "Equipment SK number or other identifier. ProdView: OTHERID, UI: 'Equip SK #'"
+      - name: entry_requirement_period
+        description: "Required data entry frequency period. ProdView: ENTRYREQPERIOD, UI: 'Entry Requirement Period'"
+
+      # -- tank capacity and status
+      - name: tank_capacity_bbl
+        description: "Total tank capacity. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCAPACITY, UI: 'Tank Capacity Volume'"
+      - name: remaining_capacity_bbl
+        description: "Remaining available capacity (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLREMAINCALC, UI: 'Remaining Capacity'"
+      - name: capacity_percent_full
+        description: "Percentage of tank capacity in use (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: PCTFULLCALC, UI: 'Capacity Pct'"
+      - name: initial_bsw_pct
+        description: "Initial basic sediment and water percentage. Converted from decimal via pv_decimal_to_pct. ProdView: INITIALBSW, UI: 'Initial BSW'"
+
+      # -- operational flags
+      - name: exclude_from_production
+        description: "Whether to exclude this tank from production calculations. ProdView: EXCLUDEFMPROD, UI: 'Exclude from Production'"
+      - name: underground_tank
+        description: "Whether this is an underground tank. ProdView: UNDERGROUND, UI: 'Underground'"
+      - name: is_active
+        description: "Whether the tank is currently active (derived: true when stop_using_tank is null)."
+
+      # -- dates
+      - name: start_using_tank
+        description: "Date the tank was first put into service. ProdView: DTTMSTART, UI: 'Start Using Tank'"
+      - name: stop_using_tank
+        description: "Date the tank was taken out of service. ProdView: DTTMEND, UI: 'Stop Using Tank'"
+      - name: hide_record_as_of
+        description: "Date after which this record is hidden in the UI. ProdView: DTTMHIDE, UI: 'Hide Record As Of'"
+
+      # -- data entry references
+      - name: data_entry_unit_id
+        description: "Record ID of the unit used for data entry origin. ProdView: IDRECUNITDATAENTRYOR, UI: 'Data Entry Unit'"
+      - name: data_entry_unit_table
+        description: "Table key for the data entry unit reference. ProdView: IDRECUNITDATAENTRYORTK, UI: 'Data Entry Unit Table'"
+
+      # -- import/export configuration
+      - name: import_id_1
+        description: "Primary import identifier. ProdView: IMPORTID1, UI: 'Import ID 1'"
+      - name: import_type_1
+        description: "Primary import type. ProdView: IMPORTTYP1, UI: 'Import Type 1'"
+      - name: import_id_2
+        description: "Secondary import identifier. ProdView: IMPORTID2, UI: 'Import ID 2'"
+      - name: import_type_2
+        description: "Secondary import type. ProdView: IMPORTTYP2, UI: 'Import Type 2'"
+      - name: export_id_1
+        description: "Primary export identifier. ProdView: EXPORTID1, UI: 'Export ID 1'"
+      - name: export_type_1
+        description: "Primary export type. ProdView: EXPORTTYP1, UI: 'Export Type 1'"
+      - name: export_id_2
+        description: "Secondary export identifier. ProdView: EXPORTID2, UI: 'Export ID 2'"
+      - name: export_type_2
+        description: "Secondary export type. ProdView: EXPORTTYP2, UI: 'Export Type 2'"
+
+      # -- migration tracking
+      - name: migration_source_key
+        description: "Key identifying the record in the source system prior to migration. ProdView: KEYMIGRATIONSOURCE, UI: 'Migration Source Key'"
+      - name: migration_source_type
+        description: "Type of the source system for migration. ProdView: TYPMIGRATIONSOURCE, UI: 'Migration Source Type'"
+      - name: system_sequence
+        description: "System-assigned display sequence. ProdView: SYSSEQ, UI: 'Sequence'"
+
+      # -- user-defined fields
+      - name: user_text_1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_text_2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_text_3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_number_1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_number_2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_number_3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ============================================================================
+  # stg_prodview__tank_readings
+  # ============================================================================
+  - name: stg_prodview__tank_readings
+    description: >
+      ProdView tank readings — daily level entries for each tank. Entries are only
+      required when the level changes or for audit requirements; levels carry forward
+      by default. One row per reading.
+      Source: PVT_PVUNITTANKENTRY.
+    columns:
+      # -- surrogate key
+      - name: tank_reading_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: tank_id
+        description: "Parent tank record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- dates
+      - name: reading_date
+        description: "Date/time of the tank reading. ProdView: DTTM, UI: 'Date'"
+
+      # -- reading data
+      - name: level_top
+        description: "Tank level measured from the top. ProdView: TANKLEVELTOP, UI: 'Level Top'"
+      - name: bsw_pct
+        description: "Basic sediment and water percentage entered by operator. Converted from decimal via pv_decimal_to_pct. ProdView: BSW, UI: 'BS&W'"
+      - name: sand_cut_pct
+        description: "Sand cut percentage entered by operator. Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUT, UI: 'Sand Cut'"
+      - name: water_bottom
+        description: "Free water level at the bottom of the tank. ProdView: TANKLEVELFREEWATER, UI: 'Water Bottom'"
+      - name: level_sand
+        description: "Sand level in the tank. ProdView: TANKLEVELSAND, UI: 'Level Sand'"
+
+      # -- descriptive fields
+      - name: comments
+        description: "Operator comments for the reading. ProdView: COM, UI: 'Comments'"
+
+      # -- uncorrected volumes
+      - name: total_volume_uncorrected_bbl
+        description: "Total uncorrected tank volume (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLUNCORRTOTALCALC, UI: 'Total Volume'"
+      - name: oil_condensate_volume_uncorrected_bbl
+        description: "Uncorrected oil/condensate volume (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLUNCORRHCLIQCALC, UI: 'Oil/Condensate Volume'"
+      - name: free_water_volume_bbl
+        description: "Free water volume (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLFREEWATERCALC, UI: 'Free Water Volume'"
+      - name: settled_sand_volume_bbl
+        description: "Settled sand volume (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSETTLEDSANDCALC, UI: 'Settled Sand Volume'"
+      - name: bsw_uncorrected_pct
+        description: "Uncorrected BS&W percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: BSWUNCORRCALC, UI: 'BS&W'"
+      - name: sand_cut_uncorrected_pct
+        description: "Uncorrected sand cut percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUTUNCORRCALC, UI: 'Sand Cut'"
+
+      # -- temperature and pressure corrections
+      - name: temperature_of_volume_f
+        description: "Temperature of the volume measurement, converted from Celsius to Fahrenheit. ProdView: TEMPOFVOL, UI: 'Temperature of Volume'"
+      - name: pressure_of_volume_psi
+        description: "Pressure of the volume measurement. Converted from kPa via pv_kpa_to_psi. ProdView: PRESOFVOL, UI: 'Pressure of Volume'"
+      - name: temperature_of_sample_f
+        description: "Temperature of the sample, converted from Celsius to Fahrenheit. ProdView: TEMPSAMPLE, UI: 'Temperature of Sample'"
+      - name: pressure_of_sample_psi
+        description: "Pressure of the sample. Converted from kPa via pv_kpa_to_psi. ProdView: PRESSAMPLE, UI: 'Pressure of Sample'"
+
+      # -- density measurements
+      - name: density_of_sample_api
+        description: "Density of the sample converted to API gravity from kg/m3. ProdView: DENSITYSAMPLE, UI: 'Density of Sample'"
+      - name: density_of_sample_60f_api
+        description: "Density of the sample at 60F converted to API gravity from kg/m3 (calculated). ProdView: DENSITYSAMPLE60F, UI: 'Density of Sample at 60F'"
+
+      # -- volume changes from previous reading
+      - name: change_in_total_volume_bbl
+        description: "Change in total volume from previous reading (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGTOTALCALC, UI: 'Change in Total Volume'"
+      - name: change_in_oil_condensate_volume_bbl
+        description: "Change in oil/condensate volume from previous reading (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGHCLIQCALC, UI: 'Change in Oil/Condensate Volume'"
+      - name: change_in_gas_equivalent_oil_cond_volume_mcf
+        description: >-
+          Change in gas equiv. oil/cond volume from prior reading.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLCHGHCLIQGASEQCALC,
+          UI: 'Change in Gas Equivalent of Oil/Cond Volume'
+      - name: change_in_water_volume_bbl
+        description: "Change in water volume from previous reading (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGWATERCALC, UI: 'Change in Water Volume'"
+      - name: change_in_sand_volume_bbl
+        description: "Change in sand volume from previous reading (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGSANDCALC, UI: 'Change in Sand Volume'"
+
+      # -- final volumes
+      - name: final_total_fluid_volume_bbl
+        description: "Final total fluid volume after corrections (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLTOTALCALC, UI: 'Final Total Fluid Volume'"
+      - name: final_hydrocarbon_liquid_volume_bbl
+        description: "Final hydrocarbon liquid volume after corrections (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLHCLIQCALC, UI: 'Final Hydrocarbon Liquid Volume'"
+      - name: final_gas_equivalent_oil_condensate_volume_mcf
+        description: "Final gas equivalent of oil/condensate volume (calculated). Converted from m3 via pv_cbm_to_mcf. ProdView: VOLHCLIQGASEQCALC, UI: 'Final Gas Equivalent of Oil/Condensate Volume'"
+      - name: final_water_volume_bbl
+        description: "Final water volume after corrections (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLWATERCALC, UI: 'Final Water Volume'"
+      - name: final_sand_volume_bbl
+        description: "Final sand volume after corrections (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSANDCALC, UI: 'Final Sand Volume'"
+
+      # -- final quality measurements
+      - name: final_bsw_pct
+        description: "Final BS&W percentage after corrections (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: BSWCALC, UI: 'Final BS&W'"
+      - name: final_sand_cut_pct
+        description: "Final sand cut percentage after corrections (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUTCALC, UI: 'Final Sand Cut'"
+
+      # -- capacity
+      - name: capacity_remaining_bbl
+        description: "Remaining tank capacity at time of reading (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCAPACITYREMAINCALC, UI: 'Capacity Remaining'"
+
+      # -- analysis references
+      - name: hc_liquid_analysis_id
+        description: "Reference ID to associated HC liquid analysis record (calculated). ProdView: IDRECHCLIQANALYSISCALC, UI: 'HC Liquid  Analysis'"
+      - name: hc_liquid_analysis_table
+        description: "Table key for the HC liquid analysis reference (calculated). ProdView: IDRECHCLIQANALYSISCALCTK, UI: 'HC Liquid  Analysis Table'"
+
+      # -- user-defined fields
+      - name: user_text_1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_text_2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_text_3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_number_1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_number_2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_number_3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+      - name: user_date_1
+        description: "User-defined date field 1. ProdView: USERDTTM1, UI: 'User Date 1'"
+      - name: user_date_2
+        description: "User-defined date field 2. ProdView: USERDTTM2, UI: 'User Date 2'"
+      - name: load_transfer_request_date
+        description: "Load transfer request date (Formentera-specific use of UserDtTm3). ProdView: USERDTTM3, UI: 'Load Transfer Request Date'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ============================================================================
+  # stg_prodview__tank_straps
+  # ============================================================================
+  - name: stg_prodview__tank_straps
+    description: >
+      ProdView tank straps — effective-dated strapping tables that map tank levels
+      to volumes. A strap defines the calibration chart for a tank as of a given date.
+      One row per strap version.
+      Source: PVT_PVUNITTANKSTRAP.
+    columns:
+      # -- surrogate key
+      - name: tank_strap_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: tank_id
+        description: "Parent tank record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- strap details
+      - name: effective_date
+        description: "Effective date of the strapping table. ProdView: DTTM, UI: 'Date'"
+      - name: strap_name
+        description: "Name of the strapping table. ProdView: NAME, UI: 'Name'"
+      - name: increment_height_uom
+        description: "Unit of measure for strap height increments. ProdView: UOMINCREMENT, UI: 'Increment Height'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ============================================================================
+  # stg_prodview__tank_strap_details
+  # ============================================================================
+  - name: stg_prodview__tank_strap_details
+    description: >
+      ProdView tank strap details — individual level-to-volume pairs within a strapping
+      table. Each row maps a tank level reading to its corresponding volume.
+      Source: PVT_PVUNITTANKSTRAPDATA.
+    columns:
+      # -- surrogate key
+      - name: tank_strap_detail_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: tank_strap_id
+        description: "Parent tank strap record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- strap data
+      - name: tank_level
+        description: "Tank level reading at this strap point. ProdView: LEVEL, UI: 'Level'"
+      - name: volume_factor_bbl
+        description: "Volume factor (bbl per increment) at this level. Converted from m3 via pv_cbm_to_bbl. ProdView: FACTOR, UI: 'Factor'"
+      - name: volume_override_bbl
+        description: "Manual volume override at this level. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLOR, UI: 'Volume Override'"
+      - name: increments_calculated
+        description: "Number of increments calculated at this level. ProdView: INCREMENTCALC, UI: 'Increments'"
+      - name: volume_calculated_bbl
+        description: "Calculated volume at this level (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCALC, UI: 'Volume'"
+      - name: sequence
+        description: "System-assigned display sequence. ProdView: SYSSEQ, UI: 'Sequence'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ============================================================================
+  # stg_prodview__tank_starting_inventories
+  # ============================================================================
+  - name: stg_prodview__tank_starting_inventories
+    description: >
+      ProdView initial inventories — the starting inventory of a tank when it first
+      became part of a gathering system on the tank's 'Start Using Tank' date. Used
+      for FIFO tracking of origins and inventory dates.
+      Source: PVT_PVUNITTANKSTARTINV.
+    columns:
+      # -- surrogate key
+      - name: tank_starting_inventory_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: tank_id
+        description: "Parent tank record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- origin references
+      - name: originating_unit_id
+        description: "Record ID of the originating unit (source of initial inventory). ProdView: IDRECUNITORIGIN, UI: 'Originating Unit'"
+      - name: originating_unit_table
+        description: "Table key for the originating unit reference. ProdView: IDRECUNITORIGINTK, UI: 'Originating Unit Table'"
+      - name: originating_completion_id
+        description: "Record ID of the originating completion. ProdView: IDRECCOMPORIGIN, UI: 'Originating Completion'"
+      - name: originating_completion_table
+        description: "Table key for the originating completion reference. ProdView: IDRECCOMPORIGINTK, UI: 'Originating Completion Table'"
+
+      # -- dates
+      - name: inventory_date
+        description: "Date the product was inventoried. ProdView: DTTMINV, UI: 'Date Product Inventoried'"
+
+      # -- volumes
+      - name: hcliq_volume_bbl
+        description: "Oil/condensate volume in initial inventory. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLHCLIQ, UI: 'Oil/Condensate Volume'"
+      - name: gas_volume_mcf
+        description: "Gas volume in initial inventory. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLGAS, UI: 'Gas Volume'"
+      - name: water_volume_bbl
+        description: "Water volume in initial inventory. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLWATER, UI: 'Water Volume'"
+      - name: sand_volume_bbl
+        description: "Sand volume in initial inventory. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSAND, UI: 'Sand Volume'"
+
+      # -- flags
+      - name: is_keep_whole
+        description: "Whether this inventory should be kept whole (not split across origins). ProdView: KEEPWHOLE, UI: 'Keep Whole?'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ============================================================================
+  # stg_prodview__tank_monthly_volumes
+  # ============================================================================
+  - name: stg_prodview__tank_monthly_volumes
+    description: >
+      ProdView tank monthly volumes — detailed monthly calculations for a tank showing
+      opening inventory, closing inventory, and change in inventory for the period.
+      One row per tank per month.
+      Source: PVT_PVUNITTANKMONTHCALC.
+    columns:
+      # -- surrogate key
+      - name: tank_monthly_volume_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: parent_tank_id
+        description: "Parent tank record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- dates
+      - name: period_start_date
+        description: "Start date of the monthly calculation period (calculated). ProdView: DTTMSTART, UI: 'Start of Period'"
+      - name: period_end_date
+        description: "End date of the monthly calculation period (calculated). ProdView: DTTMEND, UI: 'End of Period'"
+      - name: calculation_year
+        description: "Year of the calculation period (calculated). ProdView: YEAR, UI: 'Year'"
+      - name: calculation_month
+        description: "Month of the calculation period (calculated). ProdView: MONTH, UI: 'Month'"
+
+      # -- opening inventory volumes
+      - name: opening_total_volume_bbl
+        description: "Opening total volume at start of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTTOTAL, UI: 'Opening Total Volume'"
+      - name: opening_hcliq_volume_bbl
+        description: "Opening oil/condensate volume at start of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTHCLIQ, UI: 'Opening Oil/Condensate Volume'"
+      - name: opening_gas_equivalent_hcliq_volume_mcf
+        description: >-
+          Opening gas equiv. oil/cond volume at start of month.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLSTARTHCLIQGASEQ,
+          UI: 'Opening Gas Equivalent of Oil/Condensate Volume'
+      - name: opening_water_volume_bbl
+        description: "Opening water volume at start of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTWATER, UI: 'Opening Water Volume'"
+      - name: opening_sand_volume_bbl
+        description: "Opening sand volume at start of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTSAND, UI: 'Opening Sand Volume'"
+
+      # -- opening quality measurements
+      - name: opening_bsw_total_pct
+        description: "Opening BS&W total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: BSWSTART, UI: 'Opening BS&W Total'"
+      - name: opening_sand_cut_total_pct
+        description: "Opening sand cut total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUTSTART, UI: 'Opening Sand Cut Total'"
+
+      # -- closing inventory volumes
+      - name: closing_total_volume_bbl
+        description: "Closing total volume at end of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDTOTAL, UI: 'Closing Total Volume'"
+      - name: closing_hcliq_volume_bbl
+        description: "Closing oil/condensate volume at end of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDHCLIQ, UI: 'Closing Oil/Condensate Volume'"
+      - name: closing_gas_equiv_hcliq_volume_mcf
+        description: >-
+          Closing gas equiv. oil/cond volume at end of month.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLENDHCLIQGASEQ,
+          UI: 'Closing Gas Equivalent of Oil/Condensate Volume'
+      - name: closing_water_volume_bbl
+        description: "Closing water volume at end of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDWATER, UI: 'Closing Water Volume'"
+      - name: closing_sand_volume_bbl
+        description: "Closing sand volume at end of month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDSAND, UI: 'Closing Sand Volume'"
+
+      # -- closing quality measurements
+      - name: closing_bsw_total_pct
+        description: "Closing BS&W total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: BSWEND, UI: 'Closing BS&W Total'"
+      - name: closing_sand_cut_total_pct
+        description: "Closing sand cut total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUTEND, UI: 'Closing Sand Cut Total'"
+
+      # -- change in inventory
+      - name: change_in_total_volume_bbl
+        description: "Change in total volume during the month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGTOTAL, UI: 'Change in Total Volume'"
+      - name: change_in_hcliq_volume_bbl
+        description: "Change in oil/condensate volume during the month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGHCLIQ, UI: 'Change in Oil/Condensate Volume'"
+      - name: change_in_gas_equivalent_hcliq_volume_mcf
+        description: >-
+          Change in gas equiv. oil/cond volume during the month.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLCHGHCLIQGASEQ,
+          UI: 'Change in Gas Equivalent of Oil/Cond Volume'
+      - name: change_in_water_volume_bbl
+        description: "Change in water volume during the month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGWATER, UI: 'Change in Water Volume'"
+      - name: change_in_sand_volume_bbl
+        description: "Change in sand volume during the month (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGSAND, UI: 'Change in Sand Volume'"
+
+      # -- facility and analysis references
+      - name: current_facility_id
+        description: "Record ID of the current facility (calculated). ProdView: IDRECFACILITY, UI: 'Current Facility'"
+      - name: current_facility_table
+        description: "Table key for the current facility reference (calculated). ProdView: IDRECFACILITYTK, UI: 'Current Facility Table'"
+      - name: hc_liquid_analysis_id
+        description: "Reference ID to associated HC liquid analysis record (calculated). ProdView: IDRECHCLIQANALYSIS, UI: 'HC Liquid  Analysis'"
+      - name: hc_liquid_analysis_table
+        description: "Table key for the HC liquid analysis reference (calculated). ProdView: IDRECHCLIQANALYSISTK, UI: 'HC Liquid  Analysis Table'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  # ============================================================================
+  # stg_prodview__tank_daily_volumes
+  # ============================================================================
+  - name: stg_prodview__tank_daily_volumes
+    description: >
+      ProdView tank daily volumes — detailed daily calculations for a tank which
+      roll up to the monthly record. Shows opening, closing, and change in inventory
+      for each day. One row per tank per day.
+      Source: PVT_PVUNITTANKMONTHDAYCALC.
+    columns:
+      # -- surrogate key
+      - name: tank_daily_volume_sk
+        description: "Surrogate key (MD5 hash of id_rec)."
+
+      # -- identifiers
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC, UI: 'idrec (unique record id)'"
+        data_tests:
+          - not_null
+          - unique
+      - name: id_rec_parent
+        description: "Parent monthly calculation record ID. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+        data_tests:
+          - not_null
+
+      # -- tank reference
+      - name: tank_id
+        description: "Reference to the tank record (calculated). ProdView: IDRECTANK, UI: 'Tank'"
+      - name: tank_table_key
+        description: "Table key for the tank reference (calculated). ProdView: IDRECTANKTK, UI: 'Tank Table'"
+
+      # -- dates
+      - name: tank_date
+        description: "Date of the daily calculation (calculated). ProdView: DTTM, UI: 'Date'"
+      - name: tank_year
+        description: "Year of the daily calculation (calculated). ProdView: YEAR, UI: 'Year'"
+      - name: tank_month
+        description: "Month of the daily calculation (calculated). ProdView: MONTH, UI: 'Month'"
+      - name: day_of_month
+        description: "Day of the month (calculated). ProdView: DAYOFMONTH, UI: 'Day'"
+
+      # -- opening inventory volumes
+      - name: opening_total_volume_bbl
+        description: "Opening total volume at start of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTTOTAL, UI: 'Opening Total Volume'"
+      - name: opening_oil_condensate_volume_bbl
+        description: "Opening oil/condensate volume at start of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTHCLIQ, UI: 'Opening Oil/Condensate Volume'"
+      - name: opening_gas_equivalent_oil_cond_volume_mcf
+        description: >-
+          Opening gas equiv. oil/cond volume at start of month.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLSTARTHCLIQGASEQ,
+          UI: 'Opening Gas Equivalent of Oil/Condensate Volume'
+      - name: opening_water_volume_bbl
+        description: "Opening water volume at start of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTWATER, UI: 'Opening Water Volume'"
+      - name: opening_sand_volume_bbl
+        description: "Opening sand volume at start of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSTARTSAND, UI: 'Opening Sand Volume'"
+      - name: opening_bsw_total_pct
+        description: "Opening BS&W total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: BSWSTART, UI: 'Opening BS&W Total'"
+      - name: opening_sand_cut_total_pct
+        description: "Opening sand cut total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUTSTART, UI: 'Opening Sand Cut Total'"
+
+      # -- closing inventory volumes
+      - name: closing_total_volume_bbl
+        description: "Closing total volume at end of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDTOTAL, UI: 'Closing Total Volume'"
+      - name: closing_oil_condensate_volume_bbl
+        description: "Closing oil/condensate volume at end of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDHCLIQ, UI: 'Closing Oil/Condensate Volume'"
+      - name: closing_gas_equivalent_oil_cond_volume_mcf
+        description: >-
+          Closing gas equiv. oil/cond volume at end of month.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLENDHCLIQGASEQ,
+          UI: 'Closing Gas Equivalent of Oil/Condensate Volume'
+      - name: closing_water_volume_bbl
+        description: "Closing water volume at end of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDWATER, UI: 'Closing Water Volume'"
+      - name: closing_sand_volume_bbl
+        description: "Closing sand volume at end of day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLENDSAND, UI: 'Closing Sand Volume'"
+      - name: closing_bsw_total_pct
+        description: "Closing BS&W total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: BSWEND, UI: 'Closing BS&W Total'"
+      - name: closing_sand_cut_total_pct
+        description: "Closing sand cut total percentage (calculated). Converted from decimal via pv_decimal_to_pct. ProdView: SANDCUTEND, UI: 'Closing Sand Cut Total'"
+
+      # -- change in inventory volumes
+      - name: change_total_volume_bbl
+        description: "Change in total volume during the day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGTOTAL, UI: 'Change in Total Volume'"
+      - name: change_oil_condensate_volume_bbl
+        description: "Change in oil/condensate volume during the day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGHCLIQ, UI: 'Change in Oil/Condensate Volume'"
+      - name: change_gas_equivalent_oil_cond_volume_mcf
+        description: >-
+          Change in gas equiv. oil/cond volume during the day.
+          m3→MCF via pv_cbm_to_mcf. ProdView: VOLCHGHCLIQGASEQ,
+          UI: 'Change in Gas Equivalent of Oil/Cond Volume'
+      - name: change_water_volume_bbl
+        description: "Change in water volume during the day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGWATER, UI: 'Change in Water Volume'"
+      - name: change_sand_volume_bbl
+        description: "Change in sand volume during the day (calculated). Converted from m3 via pv_cbm_to_bbl. ProdView: VOLCHGSAND, UI: 'Change in Sand Volume'"
+
+      # -- facility references
+      - name: current_facility_id
+        description: "Record ID of the current facility (calculated). ProdView: IDRECFACILITY, UI: 'Current Facility'"
+      - name: current_facility_table
+        description: "Table key for the current facility reference (calculated). ProdView: IDRECFACILITYTK, UI: 'Current Facility Table'"
+      - name: hc_liquid_analysis_id
+        description: "Reference ID to associated HC liquid analysis record (calculated). ProdView: IDRECHCLIQANALYSIS, UI: 'HC Liquid  Analysis'"
+      - name: hc_liquid_analysis_table
+        description: "Table key for the HC liquid analysis reference (calculated). ProdView: IDRECHCLIQANALYSISTK, UI: 'HC Liquid  Analysis Table'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."

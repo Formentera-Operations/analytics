@@ -1,0 +1,1484 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_prodview__units
+  # ==========================================================================
+  - name: stg_prodview__units
+    description: >
+      Staging model for ProdView units (wells/pads/producing entities).
+      One row per unit record (IDREC). Source: PVT_PVUNIT (pvUnit).
+    columns:
+      # -- identifiers
+      - name: unit_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this unit. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_flownet
+        description: "Flow network identifier this unit belongs to. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+      - name: unit_name
+        description: "Full name of the unit. ProdView: NAME"
+      - name: unit_display_name
+        description: "Short display name of the unit. ProdView: NAMESHORT"
+
+      # -- unit classification
+      - name: unit_type
+        description: "Primary classification of the unit. ProdView: TYP1"
+      - name: unit_sub_type
+        description: "Secondary classification of the unit. ProdView: TYP2"
+      - name: regulatory_unit_type
+        description: "Regulatory classification of the unit. ProdView: TYPREGULATORY"
+      - name: hcliq_inventory_type
+        description: "Hydrocarbon liquid inventory disposition type. ProdView: TYPDISPHCLIQ"
+      - name: ngl_inventory_type
+        description: "NGL inventory disposition type. ProdView: TYPDISPNGL"
+      - name: hcliq_disposition_method
+        description: "Hydrocarbon liquid disposition product name. ProdView: DISPPRODUCTNAME"
+      - name: commingle_permit_number
+        description: "Commingle permit number. ProdView: TYPPA"
+
+      # -- status and operational info
+      - name: is_cycled
+        description: "Whether the unit is cycled. ProdView: PRIORITY"
+      - name: is_operated
+        description: "Whether Formentera operates this unit. ProdView: OPERATED"
+      - name: operator_name
+        description: "Name of the operator. ProdView: OPERATOR"
+      - name: operated_descriptor
+        description: "Operated descriptor text. ProdView: OPERATORIDA"
+      - name: is_purchaser
+        description: "Whether the entity is a purchaser. ProdView: PURCHASER"
+      - name: display_size_factor
+        description: "Display size scaling factor for the unit. ProdView: DISPLAYSIZEFACTOR"
+
+      # -- temporal information
+      - name: start_display_date
+        description: "Date the unit starts displaying. ProdView: DTTMSTART"
+      - name: stop_display_date
+        description: "Date the unit stops displaying. ProdView: DTTMEND"
+      - name: hide_record_as_of
+        description: "Date to hide this record from display. ProdView: DTTMHIDE"
+
+      # -- location - geographic coordinates
+      - name: surface_latitude
+        description: "Surface hole latitude. ProdView: LATITUDE"
+      - name: surface_longitude
+        description: "Surface hole longitude. ProdView: LONGITUDE"
+      - name: latlong_data_source
+        description: "Source of the lat/long data. ProdView: LATLONGSOURCE"
+      - name: latlong_datum
+        description: "Geodetic datum of the lat/long data. ProdView: LATLONGDATUM"
+
+      # -- location - utm coordinates
+      - name: utm_grid_zone
+        description: "UTM grid zone designator. ProdView: UTMGRIDZONE"
+      - name: utm_easting
+        description: "UTM easting coordinate. ProdView: UTMX"
+      - name: utm_northing
+        description: "UTM northing coordinate. ProdView: UTMY"
+      - name: utm_source
+        description: "Source of the UTM data. ProdView: UTMSOURCE"
+
+      # -- location - physical/administrative
+      - name: ground_elevation_ft
+        description: "Ground elevation in feet (converted from meters). ProdView: ELEVATION"
+      - name: surface_legal_location
+        description: "Surface legal location description. ProdView: LEGALSURFLOC"
+      - name: division
+        description: "Division grouping. ProdView: DIVISION"
+      - name: company_code
+        description: "Company code. ProdView: DIVISIONCODE"
+      - name: district
+        description: "District grouping. ProdView: DISTRICT"
+      - name: asset_company
+        description: "Asset company grouping (Formentera: AssetCo). ProdView: AREA, UI: 'Area'"
+      - name: foreman_area
+        description: "Foreman area grouping. ProdView: FIELD, UI: 'Field'"
+      - name: regulatory_field_name
+        description: "Regulatory field name. ProdView: FIELDCODE"
+      - name: field_office
+        description: "Field office. ProdView: FIELDOFFICE"
+      - name: district_office
+        description: "District office code. ProdView: FIELDOFFICECODE"
+      - name: country
+        description: "Country. ProdView: COUNTRY"
+      - name: state_province
+        description: "State or province. ProdView: STATEPROV"
+      - name: county
+        description: "County. ProdView: COUNTY"
+
+      # -- facility and infrastructure
+      - name: route
+        description: "Route name (Formentera: field route). ProdView: PLATFORM"
+      - name: facility_name
+        description: "Facility name. ProdView: PADCODE"
+      - name: pad_name
+        description: "Pad name. ProdView: PADNAME"
+      - name: dsu
+        description: "Drilling spacing unit. ProdView: SLOT"
+      - name: swd_system
+        description: "Salt water disposal system. ProdView: LOCATIONTYP"
+
+      # -- business identifiers
+      - name: regulatory_id
+        description: "Regulatory unit identifier. ProdView: UNITIDREGULATORY"
+      - name: property_eid
+        description: "Property EID, the primary cross-system identifier. ProdView: UNITIDPA"
+      - name: api_10
+        description: "API 10-digit well number. ProdView: UNITIDA"
+      - name: property_number
+        description: "Property number (ODA cost center link). ProdView: UNITIDB"
+      - name: combo_curve_id
+        description: "Combo Curve identifier for economics. ProdView: UNITIDC"
+      - name: stop_name
+        description: "Stop name. ProdView: STOPNAME"
+      - name: lease_name
+        description: "Lease name. ProdView: LEASE"
+      - name: lease_number
+        description: "Lease number. ProdView: LEASEIDA"
+
+      # -- financial and organizational
+      - name: cost_center
+        description: "Cost center identifier. ProdView: COSTCENTERIDA"
+      - name: gas_gathering_system_name
+        description: "Gas gathering system name. ProdView: COSTCENTERIDB"
+      - name: government_authority
+        description: "Government authority. ProdView: GOVAUTHORITY"
+
+      # -- current status references
+      - name: current_route_id
+        description: "Current route set route record ID (calculated). ProdView: IDRECROUTESETROUTECALC"
+      - name: current_route_table
+        description: "Table key for the current route record. ProdView: IDRECROUTESETROUTECALCTK"
+      - name: current_facility_id
+        description: "Current facility record ID (calculated). ProdView: IDRECFACILITYCALC"
+      - name: current_facility_table
+        description: "Table key for the current facility record. ProdView: IDRECFACILITYCALCTK"
+      - name: current_completion_status_id
+        description: "Current completion status record ID (calculated). ProdView: IDRECCOMPSTATUSCALC"
+      - name: current_completion_status_table
+        description: "Table key for the current completion status. ProdView: IDRECCOMPSTATUSCALCTK"
+
+      # -- responsible parties
+      - name: oil_purchaser_id
+        description: "Primary responsible party (oil purchaser) record ID. ProdView: IDRECRESP1"
+      - name: oil_purchaser_table
+        description: "Table key for the primary responsible party. ProdView: IDRECRESP1TK"
+      - name: gas_purchaser_id
+        description: "Secondary responsible party (gas purchaser) record ID. ProdView: IDRECRESP2"
+      - name: gas_purchaser_table
+        description: "Table key for the secondary responsible party. ProdView: IDRECRESP2TK"
+
+      # -- migration tracking
+      - name: migration_source_key
+        description: "Source key from data migration. ProdView: KEYMIGRATIONSOURCE"
+      - name: migration_source_type
+        description: "Source type from data migration. ProdView: TYPMIGRATIONSOURCE"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1 (unmapped). ProdView: USERTXT1"
+      - name: completion_status
+        description: "Formentera completion status. ProdView: USERTXT2"
+      - name: producing_method
+        description: "Formentera producing method. ProdView: USERTXT3"
+      - name: stripper_type
+        description: "Formentera stripper type classification. ProdView: USERTXT4"
+      - name: chemical_provider
+        description: "Formentera chemical provider. ProdView: USERTXT5"
+      - name: electric_alloc_meter_number
+        description: "Formentera electric allocation meter number. ProdView: USERNUM1"
+      - name: electric_meter_id
+        description: "Formentera electric meter ID. ProdView: USERNUM2"
+      - name: electric_acct_number
+        description: "Formentera electric account number. ProdView: USERNUM3"
+      - name: electric_vendor_number
+        description: "Formentera electric vendor number. ProdView: USERNUM4"
+      - name: user_num_5
+        description: "User-defined numeric field 5 (unmapped). ProdView: USERNUM5"
+      - name: stripper_date
+        description: "Formentera stripper date. ProdView: USERDTTM1"
+      - name: bha_change_1
+        description: "Formentera BHA change date 1. ProdView: USERDTTM2"
+      - name: bha_change_2
+        description: "Formentera BHA change date 2. ProdView: USERDTTM3"
+      - name: user_date_4
+        description: "User-defined datetime field 4 (unmapped). ProdView: USERDTTM4"
+      - name: user_date_5
+        description: "User-defined datetime field 5 (unmapped). ProdView: USERDTTM5"
+
+      # -- administrative
+      - name: unit_sort
+        description: "User-defined sort order. ProdView: SORTBYUSER"
+      - name: timezone
+        description: "Timezone setting for the unit. ProdView: TIMEZONE"
+      - name: comments
+        description: "General comments. ProdView: COM"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__completions
+  # ==========================================================================
+  - name: stg_prodview__completions
+    description: >
+      Staging model for ProdView completions (producing intervals within units).
+      One row per completion record (IDREC). Source: PVT_PVUNITCOMP (pvUnitComp).
+    columns:
+      # -- identifiers
+      - name: completion_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this completion. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent unit record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__units')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- completion lifecycle dates
+      - name: start_allocating_date
+        description: "Date the completion starts allocating production. ProdView: DTTMSTARTALLOC"
+      - name: expiry_date
+        description: "Expiry date of the completion. ProdView: DTTMEND"
+      - name: pop_date
+        description: "Put on production date. ProdView: DTTMONPROD"
+      - name: first_sale_date
+        description: "First sale date. ProdView: DTTMFIRSTSALE"
+      - name: flowback_start_date
+        description: "Flowback start date. ProdView: DTTMFLOWBACKSTART"
+      - name: flowback_end_date
+        description: "Flowback end date. ProdView: DTTMFLOWBACKEND"
+      - name: abandon_date
+        description: "Abandonment date. ProdView: DTTMABANDON"
+      - name: last_produced_date
+        description: "Last date with any production (calculated). ProdView: DTTMLASTPRODUCEDCALC"
+      - name: last_produced_oil_date
+        description: "Last date with oil production (calculated). ProdView: DTTMLASTPRODUCEDHCLIQCALC"
+      - name: last_produced_gas_date
+        description: "Last date with gas production (calculated). ProdView: DTTMLASTPRODUCEDGASCALC"
+
+      # -- production threshold
+      - name: held_by_production_threshold
+        description: "Held-by-production threshold value. ProdView: HELDBYPRODUCTIONTHRESHOLD"
+
+      # -- completion identifiers
+      - name: completion_name
+        description: "Completion name (typically the well name). ProdView: COMPLETIONNAME"
+      - name: permanent_completion_id
+        description: "Permanent completion identifier. ProdView: PERMANENTID"
+      - name: ghg_report_basin
+        description: "GHG reporting basin. ProdView: COMPIDREGULATORY"
+      - name: completion_prod_acct_id
+        description: "Completion production accounting identifier. ProdView: COMPIDPA"
+      - name: completion_licensee
+        description: "Completion licensee. ProdView: COMPLETIONLICENSEE"
+      - name: federal_lease_number
+        description: "Federal lease number. ProdView: COMPLETIONLICENSENO"
+      - name: completion_license_date
+        description: "Completion license date. ProdView: DTTMLICENSE"
+      - name: well_number
+        description: "Well number. ProdView: COMPIDA"
+      - name: gas_pop_id
+        description: "Gas POP ID. ProdView: COMPIDB"
+      - name: gas_meter_number
+        description: "Gas meter number. ProdView: COMPIDC"
+      - name: gas_alloc_meter_number
+        description: "Gas allocation meter number. ProdView: COMPIDD"
+      - name: gas_alloc_group_number
+        description: "Gas allocation group number. ProdView: COMPLETIONIDE"
+      - name: surface_commingle_number
+        description: "Surface commingle number. ProdView: COMPLETIONCODE"
+
+      # -- well identifiers
+      - name: well_name
+        description: "Well name. ProdView: WELLNAME"
+      - name: well_regulatory_id
+        description: "Well regulatory identifier. ProdView: WELLIDREGULATORY"
+      - name: well_prod_acct_id
+        description: "Well production accounting identifier. ProdView: WELLIDPA"
+      - name: well_license_number
+        description: "Well license number (API 14). ProdView: WELLLICENSENO"
+      - name: api_10
+        description: "API 10-digit well number. ProdView: WELLIDA"
+      - name: cost_center
+        description: "Cost center identifier. ProdView: WELLIDB"
+      - name: eid
+        description: "Well entity ID (cross-system identifier). ProdView: WELLIDC"
+      - name: producing_formation
+        description: "Producing formation name. ProdView: WELLIDD"
+      - name: legal_well_name
+        description: "Legal well name. ProdView: WELLIDE"
+
+      # -- import/export tracking
+      - name: import_id_1
+        description: "Import identifier 1. ProdView: IMPORTID1"
+      - name: import_type_1
+        description: "Import type 1. ProdView: IMPORTTYP1"
+      - name: import_id_2
+        description: "Import identifier 2. ProdView: IMPORTID2"
+      - name: import_type_2
+        description: "Import type 2. ProdView: IMPORTTYP2"
+      - name: export_id_1
+        description: "Export identifier 1. ProdView: EXPORTID1"
+      - name: export_type_1
+        description: "Export type 1. ProdView: EXPORTTYP1"
+      - name: export_id_2
+        description: "Export identifier 2. ProdView: EXPORTID2"
+      - name: export_type_2
+        description: "Export type 2. ProdView: EXPORTTYP2"
+
+      # -- location
+      - name: bottomhole_latitude
+        description: "Bottomhole latitude. ProdView: LATITUDE"
+      - name: bottomhole_longitude
+        description: "Bottomhole longitude. ProdView: LONGITUDE"
+      - name: latlong_data_source
+        description: "Source of the lat/long data. ProdView: LATLONGSOURCE"
+      - name: latlong_datum
+        description: "Geodetic datum of the lat/long data. ProdView: LATLONGDATUM"
+
+      # -- entry requirements
+      - name: entry_req_period_fluid_level
+        description: "Entry requirement period for fluid level. ProdView: ENTRYREQPERIODFLUIDLEVEL"
+      - name: entry_req_period_param
+        description: "Entry requirement period for parameters. ProdView: ENTRYREQPERIODPARAM"
+
+      # -- user-defined fields
+      - name: bha_type
+        description: "Formentera BHA type (PAGA/SAGA/RPGA). ProdView: USERTXT1"
+      - name: reserve_category
+        description: "Formentera reserve category (RESCAT). ProdView: USERTXT2"
+      - name: electric_vendor_name
+        description: "Formentera electric vendor name. ProdView: USERTXT3"
+      - name: electric_meter_name
+        description: "Formentera electric meter name. ProdView: USERTXT4"
+      - name: working_interest_partner
+        description: "Formentera working interest partner. ProdView: USERTXT5"
+      - name: surface_casing
+        description: "Formentera surface casing size. ProdView: USERNUM1"
+      - name: prod_casing
+        description: "Formentera production casing size. ProdView: USERNUM2"
+      - name: prod_liner
+        description: "Formentera production liner size. ProdView: USERNUM3"
+      - name: purchaser_ctb_lease_id
+        description: "Formentera purchaser CTB lease ID. ProdView: USERNUM4"
+      - name: purchaser_well_lease_id
+        description: "Formentera purchaser well lease ID. ProdView: USERNUM5"
+      - name: spud_date
+        description: "Formentera spud date. ProdView: USERDTTM1"
+      - name: user_date_2
+        description: "User-defined datetime field 2 (unmapped). ProdView: USERDTTM2"
+      - name: rig_release_date
+        description: "Formentera rig release date. ProdView: USERDTTM3"
+      - name: user_date_4
+        description: "User-defined datetime field 4 (unmapped). ProdView: USERDTTM4"
+      - name: user_date_5
+        description: "User-defined datetime field 5 (unmapped). ProdView: USERDTTM5"
+
+      # -- migration tracking
+      - name: migration_source_key
+        description: "Source key from data migration. ProdView: KEYMIGRATIONSOURCE"
+      - name: migration_source_type
+        description: "Source type from data migration. ProdView: TYPMIGRATIONSOURCE"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__system_integrations
+  # ==========================================================================
+  - name: stg_prodview__system_integrations
+    description: >
+      Staging model for ProdView system integrations (external ID mappings to WellView, SiteView, etc.).
+      One row per integration record (IDREC). Source: PVT_PVSYSINTEGRATION (pvSysIntegration).
+    columns:
+      # -- identifiers
+      - name: system_integration_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this integration. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent unit record ID. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+      - name: table_key_parent
+        description: "Table key of the parent record. ProdView: TBLKEYPARENT"
+
+      # -- integration system information
+      - name: integrator_description
+        description: "Description of the integrating system. ProdView: INTEGRATORDES"
+      - name: integrator_version
+        description: "Version of the integrating system. ProdView: INTEGRATORVER"
+      - name: product_description
+        description: "Product name of the integration (e.g. WellView, SiteView). ProdView: AFPRODUCT"
+
+      # -- external system references
+      - name: af_id_entity
+        description: "External system entity identifier. ProdView: AFIDENTITY"
+      - name: af_id_rec
+        description: "External system record identifier. ProdView: AFIDREC"
+
+      # -- notes
+      - name: note
+        description: "Integration notes. ProdView: NOTE"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__status
+  # ==========================================================================
+  - name: stg_prodview__status
+    description: >
+      Staging model for ProdView completion status records (effective-dated status changes).
+      One row per status record (IDREC). Source: PVT_PVUNITCOMPSTATUS (pvUnitCompStatus).
+    columns:
+      # -- identifiers
+      - name: status_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this status entry. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent completion record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__completions')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- status details
+      - name: status_date
+        description: "Effective date of the status change. ProdView: DTTM, UI: 'Status Date'"
+      - name: status
+        description: "Status value (e.g. Active, Shut-in, Abandoned). ProdView: STATUS, UI: 'Status'"
+      - name: primary_fluid_type
+        description: "Primary fluid type (Oil, Gas, etc.). ProdView: PRIMARYFLUIDTYP, UI: 'Primary Fluid Type'"
+      - name: flow_direction
+        description: "Flow direction. ProdView: FLOWDIRECTION, UI: 'Flow Direction'"
+      - name: commingled
+        description: "Commingled status. ProdView: COMMINGLED, UI: 'Commingled'"
+      - name: oil_or_condensate
+        description: "Whether the fluid produced is oil or condensate. ProdView: TYPFLUIDPROD, UI: 'Oil or Condensate'"
+
+      # -- completion characteristics
+      - name: completion_type
+        description: "Completion type. ProdView: TYPCOMPLETION, UI: 'Completion Type'"
+      - name: production_method
+        description: "Production method. ProdView: METHODPROD, UI: 'Production Method'"
+
+      # -- calculation and reporting flags
+      - name: calc_lost_production
+        description: "Whether to calculate lost production. ProdView: CALCLOSTPROD, UI: 'Calculate Lost Production'"
+      - name: include_in_well_count
+        description: "Whether to include in well count. ProdView: WELLCOUNTINCL, UI: 'Include in Well Count'"
+
+      # -- comments
+      - name: comments
+        description: "Comments on the status change. ProdView: COM, UI: 'Comment'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'UserTxt1'"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'UserTxt2'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'UserTxt3'"
+      - name: user_num1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_num2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_num3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__completion_downtimes
+  # ==========================================================================
+  - name: stg_prodview__completion_downtimes
+    description: >
+      Staging model for ProdView completion downtime events.
+      One row per downtime record (IDREC). Source: PVT_PVUNITCOMPDOWNTM (pvUnitCompDownTm).
+    columns:
+      # -- identifiers
+      - name: completion_downtime_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this downtime event. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent completion record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__completions')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- downtime classification
+      - name: downtime_type
+        description: "Type of downtime entry. ProdView: TYPDOWNTM, UI: 'Type of Downtime Entry'"
+      - name: product
+        description: "Product affected by the downtime. ProdView: PRODUCT, UI: 'Product'"
+      - name: location
+        description: "Location of the failure or downtime event. ProdView: LOCATION, UI: 'Location'"
+      - name: is_failure
+        description: "Whether this downtime is a failure event. ProdView: FAILFLAG, UI: 'Failure'"
+
+      # -- downtime period - start
+      - name: first_day
+        description: "First day of the downtime event. ProdView: DTTMSTART, UI: 'First Day'"
+      - name: hours_down
+        description: "Hours down on the first day (converted from days to hours). ProdView: DURDOWNSTARTDAY, UI: 'Hours Down'"
+
+      # -- downtime period - end
+      - name: last_day
+        description: "Last day of the downtime event. ProdView: DTTMEND, UI: 'Last Day'"
+      - name: downtime_last_day_hours
+        description: "Hours of downtime on the last day (converted from days to hours). ProdView: DURDOWNENDDAY, UI: 'Downtime on Last Day'"
+
+      # -- total downtime
+      - name: total_downtime_hours
+        description: "Total downtime hours (calculated, converted from days to hours). ProdView: DURDOWNCALC, UI: 'Total Downtime'"
+
+      # -- planned downtime
+      - name: planned_end_date
+        description: "Planned end date of the downtime. ProdView: DTTMPLANEND, UI: 'Planned End Date'"
+      - name: planned_downtime_hours
+        description: "Planned downtime duration in hours (converted from days to hours). ProdView: DURDOWNPLANEND, UI: 'Planned Downtime Duration'"
+
+      # -- downtime codes
+      - name: downtime_code_1
+        description: "Primary downtime reason code. ProdView: CODEDOWNTM1, UI: 'Downtime Code'"
+      - name: downtime_code_2
+        description: "Secondary downtime reason code. ProdView: CODEDOWNTM2, UI: 'Downtime Code 2'"
+      - name: downtime_code_3
+        description: "Tertiary downtime reason code. ProdView: CODEDOWNTM3, UI: 'Downtime Code 3'"
+
+      # -- comments
+      - name: comments
+        description: "Downtime event comments. ProdView: COM, UI: 'Comments'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_txt4
+        description: "User-defined text field 4. ProdView: USERTXT4, UI: 'User Text 4'"
+      - name: user_txt5
+        description: "User-defined text field 5. ProdView: USERTXT5, UI: 'User Text 5'"
+      - name: user_num1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_num2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_num3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+      - name: user_num4
+        description: "User-defined numeric field 4. ProdView: USERNUM4, UI: 'User Num 4'"
+      - name: user_num5
+        description: "User-defined numeric field 5. ProdView: USERNUM5, UI: 'User Num 5'"
+      - name: user_date_1
+        description: "User-defined datetime field 1. ProdView: USERDTTM1, UI: 'User Date 1'"
+      - name: user_date_2
+        description: "User-defined datetime field 2. ProdView: USERDTTM2, UI: 'User Date 2'"
+      - name: user_date_3
+        description: "User-defined datetime field 3. ProdView: USERDTTM3, UI: 'User Date 3'"
+      - name: user_date_4
+        description: "User-defined datetime field 4. ProdView: USERDTTM4, UI: 'User Date 4'"
+      - name: user_date_5
+        description: "User-defined datetime field 5. ProdView: USERDTTM5, UI: 'User Date 5'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__completion_parameters
+  # ==========================================================================
+  - name: stg_prodview__completion_parameters
+    description: >
+      Staging model for ProdView completion parameters (operational measurements).
+      One row per parameter record (IDREC). Source: PVT_PVUNITCOMPPARAM (pvUnitCompParam).
+    columns:
+      # -- identifiers
+      - name: completion_parameter_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this parameter entry. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent completion record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__completions')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- measurement date
+      - name: measurement_date
+        description: "Date of the parameter measurement. ProdView: DTTM, UI: 'Date'"
+
+      # -- pressure measurements
+      - name: tubing_pressure_psi
+        description: "Tubing pressure in PSI (converted from kPa). ProdView: PRESTUB, UI: 'Tubing Pressure'"
+      - name: casing_pressure_psi
+        description: "Casing pressure in PSI (converted from kPa). ProdView: PRESCAS, UI: 'Casing Pressure'"
+      - name: annulus_pressure_psi
+        description: "Annulus pressure in PSI (converted from kPa). ProdView: PRESANNULUS, UI: 'Annulus Pressure'"
+      - name: line_pressure_psi
+        description: "Line pressure in PSI (converted from kPa). ProdView: PRESLINE, UI: 'Line Pressure'"
+      - name: injection_pressure_psi
+        description: "Injection pressure in PSI (converted from kPa). ProdView: PRESINJ, UI: 'Injection Pressure'"
+      - name: wellhead_pressure_psi
+        description: "Wellhead pressure in PSI (converted from kPa). ProdView: PRESWH, UI: 'Wellhead Pressure'"
+      - name: bottomhole_pressure_psi
+        description: "Bottomhole pressure in PSI (converted from kPa). ProdView: PRESBH, UI: 'Bottomhole Pressure'"
+      - name: shut_in_tubing_pressure_psi
+        description: "Shut-in tubing pressure in PSI (converted from kPa). ProdView: PRESTUBSI, UI: 'Shut-In Tubing Pressure'"
+      - name: shut_in_casing_pressure_psi
+        description: "Shut-in casing pressure in PSI (converted from kPa). ProdView: PRESCASSI, UI: 'Shut-In Casing Pressure'"
+
+      # -- temperature measurements
+      - name: wellhead_temp_f
+        description: "Wellhead temperature in Fahrenheit (converted from Celsius). ProdView: TEMPWH, UI: 'Wellhead Temperature'"
+      - name: bottomhole_temp_f
+        description: "Bottomhole temperature in Fahrenheit (converted from Celsius). ProdView: TEMPBH, UI: 'Bottomhole Temperature'"
+
+      # -- equipment specifications
+      - name: choke_size_64ths
+        description: "Choke size in 64ths of an inch (converted from meters). ProdView: SZCHOKE, UI: 'Choke Size'"
+
+      # -- fluid properties
+      - name: dynamic_viscosity_pa_s
+        description: "Dynamic viscosity in pascal-seconds. ProdView: VISCDYNAMIC, UI: 'Dynamic Viscosity'"
+      - name: kinematic_viscosity_in2_per_s
+        description: "Kinematic viscosity in in2/s (converted from m2/s). ProdView: VISCKINEMATIC, UI: 'Kinematic Viscosity'"
+      - name: ph_level
+        description: "Hertz (frequency) reading. ProdView: PH, UI: 'Hertz'"
+      - name: h2s_daily_reading_ppm
+        description: "H2S daily reading in PPM (converted from proportion). ProdView: SALINITY, UI: 'H2S Daily Reading'"
+
+      # -- user-defined pressure measurements
+      - name: surface_casing_pressure_psi
+        description: "Surface casing pressure in PSI (converted from kPa). ProdView: PRESUSER1, UI: 'Surface Casing Pressure'"
+      - name: intermediate_casing_pressure_psi
+        description: "Intermediate casing pressure in PSI (converted from kPa). ProdView: PRESUSER2, UI: 'Intermediate Casing Pressure'"
+      - name: plunger_on_pressure_psi
+        description: "Plunger on-pressure in PSI (converted from kPa). ProdView: PRESUSER3, UI: 'Plunger OnPressure'"
+      - name: user_pressure_4_psi
+        description: "User pressure 4 in PSI (converted from kPa). ProdView: PRESUSER4, UI: 'User Pressure 4'"
+      - name: annulus_pressure_2_psi
+        description: "Annulus pressure 2 in PSI (converted from kPa). ProdView: PRESUSER5, UI: 'Annulus Pressure'"
+
+      # -- user-defined temperature measurements
+      - name: treater_temp_f
+        description: "Treater temperature in Fahrenheit (converted from Celsius). ProdView: TEMPUSER1, UI: 'Treater Temperature'"
+      - name: user_temp_2_f
+        description: "Surface casing temperature in Fahrenheit (converted from Celsius). ProdView: TEMPUSER2, UI: 'Surface Casing Temp'"
+      - name: user_temp_3_f
+        description: "User temperature 3 in Fahrenheit (converted from Celsius). ProdView: TEMPUSER3, UI: 'User Temperature 3'"
+      - name: fluid_level_csg_pressure_f
+        description: "Fluid level casing pressure in Fahrenheit (converted from Celsius). ProdView: TEMPUSER4, UI: 'Fluid Level Csg P (psi)'"
+      - name: fluid_level_tbg_pressure_f
+        description: "Fluid level tubing pressure in Fahrenheit (converted from Celsius). ProdView: TEMPUSER5, UI: 'Fluid Level Tbg P (psi)'"
+
+      # -- user-defined fields - text
+      - name: spcc_inspection_complete
+        description: "SPCC inspection complete status. ProdView: USERTXT1, UI: 'SPCC Inspection Complete?'"
+      - name: plunger_model
+        description: "Plunger model. ProdView: USERTXT2, UI: 'Plunger Model'"
+      - name: plunger_make
+        description: "Plunger make. ProdView: USERTXT3, UI: 'Plunger Make'"
+      - name: plunger_size
+        description: "Plunger size. ProdView: USERTXT4, UI: 'Plunger Size'"
+      - name: operational_work
+        description: "Operational work performed. ProdView: USERTXT5, UI: 'Operational Work'"
+
+      # -- user-defined fields - numeric
+      - name: cycles
+        description: "Plunger cycles count. ProdView: USERNUM1, UI: 'Cycles'"
+      - name: arrivals
+        description: "Plunger arrivals count. ProdView: USERNUM2, UI: 'Arrivals'"
+      - name: travel_time_min
+        description: "Plunger travel time in minutes (converted from seconds). ProdView: USERNUM3, UI: 'Travel Time'"
+      - name: after_flow_min
+        description: "After-flow time in minutes (converted from seconds). ProdView: USERNUM4, UI: 'After Flow'"
+      - name: shut_in_time_min
+        description: "Shut-in time in minutes (converted from seconds). ProdView: USERNUM5, UI: 'Shut In Time'"
+
+      # -- user-defined fields - datetime
+      - name: plunger_inspection_date
+        description: "Plunger inspection date. ProdView: USERDTTM1, UI: 'Plunger Inspection Date'"
+      - name: plunger_replace_date
+        description: "Plunger replacement date. ProdView: USERDTTM2, UI: 'Plunger Replace Date'"
+      - name: user_date_3
+        description: "User-defined datetime field 3. ProdView: USERDTTM3, UI: 'User Date 3'"
+      - name: user_date_4
+        description: "User-defined datetime field 4. ProdView: USERDTTM4, UI: 'User Date 4'"
+      - name: user_date_5
+        description: "User-defined datetime field 5. ProdView: USERDTTM5, UI: 'User Date 5'"
+
+      # -- notes
+      - name: notes
+        description: "Parameter notes. ProdView: COM, UI: 'Note'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__production_tests
+  # ==========================================================================
+  - name: stg_prodview__production_tests
+    description: >
+      Staging model for ProdView production tests (well test results and measurements).
+      One row per test record (IDREC). Source: PVT_PVUNITCOMPTEST (pvUnitCompTest).
+    columns:
+      # -- identifiers
+      - name: production_test_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this production test. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent completion record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__completions')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- test information
+      - name: test_type
+        description: "Type of production test. ProdView: TYP, UI: 'Type'"
+      - name: effective_date
+        description: "Effective date of the test. ProdView: DTTM, UI: 'Effective Date'"
+      - name: test_hours
+        description: "Test duration in hours (converted from days). ProdView: DURTEST, UI: 'Test Hours'"
+      - name: invalid_test
+        description: "Whether the test is flagged as invalid. ProdView: DONTUSE, UI: 'Invalid Test?'"
+      - name: tested_by
+        description: "Person who performed the test. ProdView: TESTEDBY, UI: 'Tested By'"
+      - name: note
+        description: "Test notes. ProdView: COM, UI: 'Note'"
+      - name: trailer_duration_days
+        description: "Trailer duration in days. ProdView: TRAILERDURATION, UI: 'Trailer Duration'"
+
+      # -- separator reference
+      - name: separator_vessel_id
+        description: "Separator vessel record ID. ProdView: IDRECSEP, UI: 'Separator Vessel'"
+      - name: separator_vessel_table
+        description: "Separator vessel table key. ProdView: IDRECSEPTK, UI: 'Separator Vessel Table'"
+      - name: separator_vessel_unit_calc_id
+        description: "Separator vessel unit calculation record ID. ProdView: IDRECSEPUNITCALC"
+      - name: separator_vessel_unit_calc_table
+        description: "Separator vessel unit calculation table key. ProdView: IDRECSEPUNITCALCTK"
+
+      # -- equipment conditions
+      - name: choke_size_64ths
+        description: "Choke size in 64ths of an inch (converted from meters). ProdView: SZCHOKE, UI: 'Choke Size'"
+
+      # -- gas measurements
+      - name: c_prime
+        description: "C-prime orifice meter constant. ProdView: CPRIME, UI: 'C'''"
+      - name: hours_on_override
+        description: "Hours on override (converted from days). ProdView: DURONOR, UI: 'Hours On Override'"
+      - name: orifice_static_pressure_gauge
+        description: "Orifice static pressure gauge reading. ProdView: PRESGASSTATIC, UI: 'Orifice Static Pressure (gauge)'"
+      - name: orifice_differential_pressure
+        description: "Orifice differential pressure. ProdView: PRESGASDIFF, UI: 'Orifice Differential Pressure'"
+      - name: orifice_temperature
+        description: "Orifice temperature. ProdView: TEMPGAS, UI: 'Orifice Temperature'"
+      - name: orifice_size
+        description: "Orifice size. ProdView: SZORIFICE, UI: 'Orifice Size'"
+      - name: gas_volume_entry_mcf
+        description: "Gas volume entry in MCF (converted from cubic meters). ProdView: VOLENTERGAS, UI: 'Gas Volume Entry'"
+      - name: gas_volume_override_mcf
+        description: "Gas volume override in MCF (converted from cubic meters). ProdView: VOLGAS, UI: 'Gas Volume Override'"
+      - name: test_gas_volume_mcf
+        description: "Test gas volume in MCF (calculated, converted from cubic meters). ProdView: VOLGASCALC, UI: 'Test Gas Volume'"
+
+      # -- gas lift
+      - name: recovered_lift_gas_mcf
+        description: "Recovered lift gas in MCF (converted from cubic meters). ProdView: VOLLIFTGASRECOV, UI: 'Recovered Lift Gas'"
+      - name: total_gas_rate_mcf_per_day
+        description: "Total gas rate in MCF/day (calculated, converted from m3/day). ProdView: RATETOTALGASCALC, UI: 'Total Gas Rate'"
+      - name: lift_gas_rate_mcf_per_day
+        description: "Lift gas rate in MCF/day (calculated, converted from m3/day). ProdView: RATELIFTGASCALC, UI: 'Lift Gas Rate'"
+
+      # -- oil emulsion measurements
+      - name: start_reading_oil_emulsion
+        description: "Start reading for oil/emulsion. ProdView: READINGHCLIQSTART, UI: 'Start Reading Oil/Emulsion'"
+      - name: end_reading_oil_emulsion
+        description: "End reading for oil/emulsion. ProdView: READINGHCLIQEND, UI: 'End Reading Oil/Emulsion'"
+      - name: tank_start_level
+        description: "Tank start level. ProdView: LEVELTANKSTART, UI: 'Tank Start Level'"
+      - name: tank_end_level
+        description: "Tank end level. ProdView: LEVELTANKEND, UI: 'Tank End Level'"
+      - name: tank_free_water_start_level
+        description: "Tank free water start level. ProdView: LEVELTANKFREEWATERSTART, UI: 'Tank Free Water Start Level'"
+      - name: tank_free_water_end_level
+        description: "Tank free water end level. ProdView: LEVELTANKFREEWATEREND, UI: 'Tank Free Water End Level'"
+      - name: tank_start_volume_bbl
+        description: "Tank start volume in BBL (calculated, converted from cubic meters). ProdView: VOLTANKSTARTCALC, UI: 'Tank Start Volume'"
+      - name: tank_end_volume_bbl
+        description: "Tank end volume in BBL (calculated, converted from cubic meters). ProdView: VOLTANKENDCALC, UI: 'Tank End Volume'"
+      - name: oil_emul_bsw_pct
+        description: "Oil/emulsion BS&W in percent (converted from proportion). ProdView: BSW, UI: 'Oil/Emul BS&W'"
+      - name: oil_emul_sand_cut_pct
+        description: "Oil/emulsion sand cut in percent (converted from proportion). ProdView: SANDCUT, UI: 'Oil/Emul Sand Cut'"
+      - name: gas_in_solution_factor_mcf_per_bbl
+        description: "Gas in solution factor in MCF/BBL (converted from m3/m3). ProdView: FACTGASINSOLN, UI: 'Gas In Solution Factor'"
+      - name: oil_emulsion_volume_entry_bbl
+        description: "Oil/emulsion volume entry in BBL (converted from cubic meters). ProdView: VOLENTERHCLIQ, UI: 'Oil/Emulsion Volume Entry'"
+      - name: oil_emulsion_volume_override_bbl
+        description: "Oil/emulsion volume override in BBL (converted from cubic meters). ProdView: VOLHCLIQ, UI: 'Oil/Emulsion Volume Override'"
+      - name: gas_equivalent_of_liquids_volume_mcf
+        description: "Gas equivalent of liquids volume in MCF (calculated, converted from cubic meters). ProdView: VOLHCLIQGASEQCALC, UI: 'Gas Equivalent of Liquids Volume'"
+      - name: test_total_fluid_volume_bbl
+        description: "Test total fluid volume in BBL (calculated, converted from cubic meters). ProdView: VOLFLUIDTOTALCALC, UI: 'Test Total Fluid Volume'"
+      - name: test_oil_condensate_volume_bbl
+        description: "Test oil/condensate volume in BBL (calculated, converted from cubic meters). ProdView: VOLHCLIQCALC, UI: 'Test Oil/Condensate Volume'"
+      - name: oil_cond_vol_before_tp_correction_bbl
+        description: "Oil/condensate volume before TP correction in BBL (calculated, converted from cubic meters). ProdView: VOLBEFORETPCORRHCLIQCALC, UI: 'Oil/Cond Vol before TP Correction'"
+
+      # -- water measurements
+      - name: water_start_reading
+        description: "Water start reading. ProdView: READINGWATERSTART, UI: 'Water Start Reading'"
+      - name: water_end_reading
+        description: "Water end reading. ProdView: READINGWATEREND, UI: 'Water End Reading'"
+      - name: water_volume_entry_bbl
+        description: "Water volume entry in BBL (converted from cubic meters). ProdView: VOLENTERWATER, UI: 'Water Volume Entry'"
+      - name: water_volume_override_bbl
+        description: "Water volume override in BBL (converted from cubic meters). ProdView: VOLWATER, UI: 'Water Volume Override'"
+      - name: test_water_volume_bbl
+        description: "Test water volume in BBL (calculated, converted from cubic meters). ProdView: VOLWATERCALC, UI: 'Test Water Volume'"
+
+      # -- sand measurements
+      - name: sand_volume_entry_bbl
+        description: "Sand volume entry in BBL (converted from cubic meters). ProdView: VOLENTERSAND, UI: 'Sand Volume Entry'"
+      - name: sand_volume_override_bbl
+        description: "Sand volume override in BBL (converted from cubic meters). ProdView: VOLSAND, UI: 'Sand Volume Override'"
+      - name: test_sand_volume_bbl
+        description: "Test sand volume in BBL (calculated, converted from cubic meters). ProdView: VOLSANDCALC, UI: 'Test Sand Volume'"
+
+      # -- test results - rates
+      - name: produced_gas_rate_mcf_per_day
+        description: "Produced gas rate in MCF/day (calculated, converted from m3/day). ProdView: RATEPRODGASCALC, UI: 'Produced Gas Rate'"
+      - name: total_fluid_rate_bbl_per_day
+        description: "Total fluid rate in BBL/day (calculated, converted from m3/day). ProdView: RATEFLUIDTOTALCALC, UI: 'Total Fluid Rate'"
+      - name: oil_cond_rate_bbl_per_day
+        description: "Oil/condensate rate in BBL/day (calculated, converted from m3/day). ProdView: RATEHCLIQCALC, UI: 'Oil/Cond Rate'"
+      - name: gas_equiv_of_oil_cond_rate_mcf_per_day
+        description: "Gas equivalent of oil/condensate rate in MCF/day (calculated, converted from m3/day). ProdView: RATEHCLIQGASEQCALC, UI: 'Gas Equiv of Oil/Cond Rate'"
+      - name: water_rate_bbl_per_day
+        description: "Water rate in BBL/day (calculated, converted from m3/day). ProdView: RATEWATERCALC, UI: 'Water Rate'"
+      - name: sand_rate_bbl_per_day
+        description: "Sand rate in BBL/day (calculated, converted from m3/day). ProdView: RATESANDCALC, UI: 'Sand Rate'"
+
+      # -- test results - quality metrics
+      - name: total_bsw_pct
+        description: "Total BS&W in percent (calculated, converted from proportion). ProdView: BSWTOTALCALC, UI: 'Total BS&W'"
+      - name: total_sand_cut_pct
+        description: "Total sand cut in percent (calculated, converted from proportion). ProdView: SANDCUTTOTALCALC, UI: 'Total Sand Cut'"
+      - name: gas_oil_ratio_mcf_per_bbl
+        description: "Gas-oil ratio in MCF/BBL (calculated, converted from m3/m3). ProdView: GORCALC, UI: 'Gas Oil Ratio'"
+      - name: condensate_gas_ratio_bbl_per_mcf
+        description: "Condensate-gas ratio in BBL/MCF (calculated, converted from m3/m3). ProdView: CGRCALC, UI: 'Condensate Gas Ratio'"
+      - name: water_gas_ratio_bbl_per_mcf
+        description: "Water-gas ratio in BBL/MCF (calculated, converted from m3/m3). ProdView: WGRCALC, UI: 'Water Gas Ratio'"
+
+      # -- test conditions - pressures
+      - name: pressure_bh_psi
+        description: "Bottomhole pressure in PSI (converted from kPa). ProdView: PRESBH, UI: 'Pressure BH'"
+      - name: casing_pressure_psi
+        description: "Casing pressure in PSI (converted from kPa). ProdView: PRESCAS, UI: 'Casing Pressure'"
+      - name: pressure_inject_gas_lift_gas_psi
+        description: "Injection gas lift gas pressure in PSI (converted from kPa). ProdView: PRESINJECTGASLIFTGAS, UI: 'Pressure Inject Gas Lift Gas'"
+      - name: pressure_prod_sep_psi
+        description: "Production separator pressure in PSI (converted from kPa). ProdView: PRESPRODSEP, UI: 'Pressure Prod Sep'"
+      - name: pressure_test_separator_psi
+        description: "Test separator pressure in PSI (converted from kPa). ProdView: PRESTESTSEP, UI: 'Pressure Test Separator'"
+      - name: pressure_wellhead_psi
+        description: "Wellhead pressure in PSI (converted from kPa). ProdView: PRESWH, UI: 'Pressure WellHead'"
+
+      # -- test conditions - temperatures
+      - name: temperature_bottom_hole_f
+        description: "Bottomhole temperature in Fahrenheit (converted from Celsius). ProdView: TEMPBH, UI: 'Temperature Bottom Hole'"
+      - name: temperature_production_separator_f
+        description: "Production separator temperature in Fahrenheit (converted from Celsius). ProdView: TEMPPRODSEP, UI: 'Temperature Production Separator'"
+      - name: temperature_test_separator_f
+        description: "Test separator temperature in Fahrenheit (converted from Celsius). ProdView: TEMPTESTSEP, UI: 'Temperature Test Separator'"
+      - name: temperature_well_head_f
+        description: "Wellhead temperature in Fahrenheit (converted from Celsius). ProdView: TEMPWH, UI: 'Temperature Well Head'"
+
+      # -- previous test comparisons - rate changes
+      - name: change_in_oil_emulsion_rate_bbl_per_day
+        description: "Change in oil/emulsion rate in BBL/day vs previous test. ProdView: RATECHGHCLIQCALC, UI: 'Change in Oil/Emulsion Rate'"
+      - name: pct_change_in_oil_emulsion_rate_pct
+        description: "Percent change in oil/emulsion rate vs previous test. ProdView: PCTCHGHCLIQCALC, UI: '% Change in Oil/Emulsion Rate'"
+      - name: change_in_gas_rate_mcf_per_day
+        description: "Change in gas rate in MCF/day vs previous test. ProdView: RATECHGGASCALC, UI: 'Change in Gas Rate'"
+      - name: pct_change_in_gas_rate_pct
+        description: "Percent change in gas rate vs previous test. ProdView: PCTCHGGASCALC, UI: '% Change in Gas Rate'"
+      - name: change_in_water_rate_bbl_per_day
+        description: "Change in water rate in BBL/day vs previous test. ProdView: RATECHGWATERCALC, UI: 'Change in Water Rate'"
+      - name: pct_change_in_water_rate_pct
+        description: "Percent change in water rate vs previous test. ProdView: PCTCHGWATERCALC, UI: '% Change in Water Rate'"
+      - name: change_in_sand_rate_bbl_per_day
+        description: "Change in sand rate in BBL/day vs previous test. ProdView: RATECHGSANDCALC, UI: 'Change in Sand Rate'"
+      - name: pct_change_in_sand_rate_pct
+        description: "Percent change in sand rate vs previous test. ProdView: PCTCHGSANDCALC, UI: '% Change in Sand Rate'"
+
+      # -- previous test comparisons - ratio changes
+      - name: change_in_gor_mcf_per_bbl
+        description: "Change in GOR in MCF/BBL vs previous test. ProdView: CHGGORCALC, UI: 'Change in GOR'"
+      - name: pct_change_in_gor_pct
+        description: "Percent change in GOR vs previous test. ProdView: PCTCHGGORCALC, UI: '% Change in GOR'"
+      - name: change_in_cgr_bbl_per_mcf
+        description: "Change in CGR in BBL/MCF vs previous test. ProdView: CHGCGRCALC, UI: 'Change in CGR'"
+      - name: pct_change_in_cgr_pct
+        description: "Percent change in CGR vs previous test. ProdView: PCTCHGCGRCALC, UI: '% Change in CGR'"
+      - name: change_in_wgr_bbl_per_mcf
+        description: "Change in WGR in BBL/MCF vs previous test. ProdView: CHGWGRCALC, UI: 'Change in WGR'"
+      - name: pct_change_in_wgr_pct
+        description: "Percent change in WGR vs previous test. ProdView: PCTCHGWGRCALC, UI: '% Change in WGR'"
+      - name: change_in_bsw_pct
+        description: "Change in BS&W in percent vs previous test. ProdView: CHGBSWCALC, UI: 'Change in BS&W'"
+      - name: pct_change_in_bsw_pct
+        description: "Percent change in BS&W vs previous test. ProdView: PCTCHGBSWCALC, UI: '% Change in BS&W'"
+      - name: change_in_sand_cut_pct
+        description: "Change in sand cut in percent vs previous test. ProdView: CHGSANDCUTCALC, UI: 'Change in Sand Cut'"
+      - name: pct_change_in_sand_cut_pct
+        description: "Percent change in sand cut vs previous test. ProdView: PCTCHGSANDCUTCALC, UI: '% Change in Sand Cut'"
+      - name: reason_for_variance
+        description: "Reason for variance from previous test. ProdView: REASONVARIANCE, UI: 'Reason For Variance'"
+
+      # -- reference information
+      - name: data_source
+        description: "Data source of the test. ProdView: DATASOURCE, UI: 'Data Source'"
+      - name: allocation_flag
+        description: "Whether the test is used for allocation. ProdView: PURPOSEALLOC, UI: 'Allocation?'"
+      - name: deliverability_flag
+        description: "Whether the test is used for deliverability. ProdView: PURPOSEDELIV, UI: 'Deliverability?'"
+      - name: regulatory_flag
+        description: "Whether the test is used for regulatory reporting. ProdView: PURPOSEREG, UI: 'Regulatory?'"
+
+      # -- temperature and pressure correction
+      - name: temperature_of_opening_level_f
+        description: "Temperature of opening level in Fahrenheit (converted from Celsius). ProdView: TEMPSTART, UI: 'Temperature of Opening Level'"
+      - name: pressure_of_opening_level_psi
+        description: "Pressure of opening level in PSI (converted from kPa). ProdView: PRESSTART, UI: 'Pressure of Opening Level'"
+      - name: temperature_of_closing_level_f
+        description: "Temperature of closing level in Fahrenheit (converted from Celsius). ProdView: TEMPEND, UI: 'Temperature of Closing Level'"
+      - name: pressure_of_closing_level_psi
+        description: "Pressure of closing level in PSI (converted from kPa). ProdView: PRESEND, UI: 'Pressure of Closing Level'"
+      - name: temperature_of_sample_f
+        description: "Temperature of sample in Fahrenheit (converted from Celsius). ProdView: TEMPSAMPLE, UI: 'Temperature of Sample'"
+      - name: pressure_of_sample_psi
+        description: "Pressure of sample in PSI (converted from kPa). ProdView: PRESSAMPLE, UI: 'Pressure of Sample'"
+      - name: density_of_sample_api
+        description: "Density of sample in API gravity (converted from kg/m3). ProdView: DENSITYSAMPLE, UI: 'Density of Sample'"
+      - name: density_of_sample_at_60f_api
+        description: "Density of sample at 60F in API gravity (calculated, converted from kg/m3). ProdView: DENSITYSAMPLE60F, UI: 'Density of Sample at 60F'"
+
+      # -- regulatory properties
+      - name: shut_in_wellhead_pressure_psi
+        description: "Shut-in wellhead pressure in PSI (converted from kPa). ProdView: PRESWHSI, UI: 'Shut-In Wellhead Pressure'"
+      - name: flowing_wellhead_pressure_psi
+        description: "Flowing wellhead pressure in PSI (converted from kPa). ProdView: PRESWHFLOW, UI: 'Flowing Wellhead Pressure'"
+      - name: bradenhead_pressure_psi
+        description: "Bradenhead pressure in PSI (converted from kPa). ProdView: PRESBRADENHEAD, UI: 'Bradenhead Pressure'"
+      - name: bradenhead_reason
+        description: "Reason for bradenhead pressure reading. ProdView: REASONBRADENHEAD, UI: 'Bradenhead Reason'"
+      - name: gas_specific_gravity
+        description: "Gas specific gravity (dimensionless). ProdView: DENSITYRELGAS, UI: 'Gas Specific Gravity'"
+      - name: condensate_gravity_api
+        description: "Condensate gravity in API (converted from kg/m3). ProdView: DENSITYCOND, UI: 'Condensate Gravity'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_txt4
+        description: "User-defined text field 4. ProdView: USERTXT4, UI: 'User Text 4'"
+      - name: user_txt5
+        description: "User-defined text field 5. ProdView: USERTXT5, UI: 'User Text 5'"
+      - name: user_num1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_num2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_num3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+      - name: user_num4
+        description: "User-defined numeric field 4. ProdView: USERNUM4, UI: 'User Num 4'"
+      - name: user_num5
+        description: "User-defined numeric field 5. ProdView: USERNUM5, UI: 'User Num 5'"
+      - name: user_date_1
+        description: "User-defined datetime field 1. ProdView: USERDTTM1, UI: 'User Date 1'"
+      - name: user_date_2
+        description: "User-defined datetime field 2. ProdView: USERDTTM2, UI: 'User Date 2'"
+      - name: user_date_3
+        description: "User-defined datetime field 3. ProdView: USERDTTM3, UI: 'User Date 3'"
+      - name: user_date_4
+        description: "User-defined datetime field 4. ProdView: USERDTTM4, UI: 'User Date 4'"
+      - name: user_date_5
+        description: "User-defined datetime field 5. ProdView: USERDTTM5, UI: 'User Date 5'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__production_tests_remaining
+  # ==========================================================================
+  - name: stg_prodview__production_tests_remaining
+    description: >
+      Staging model for ProdView required tests remaining (calculated test compliance tracking).
+      One row per record (IDREC). Source: PVT_PVUNITCOMPTESTREQEXCALC (pvUnitCompTestReqExCalc).
+    columns:
+      # -- identifiers
+      - name: production_test_remaining_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent completion record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__completions')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- period information
+      - name: period_start_date
+        description: "Start of the compliance period (calculated). ProdView: DTTMSTART, UI: 'Start of Period'"
+      - name: period_end_date
+        description: "End of the compliance period (calculated). ProdView: DTTMEND, UI: 'End of Period'"
+
+      # -- test information
+      - name: last_test_date
+        description: "Date of the last completed test (calculated). ProdView: DTTMLASTTEST, UI: 'Last Test'"
+      - name: required_tests_remaining
+        description: "Number of required tests remaining in the period (calculated). ProdView: NOTESTREMAIN, UI: 'Required Tests Remaining'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__production_targets
+  # ==========================================================================
+  - name: stg_prodview__production_targets
+    description: >
+      Staging model for ProdView production targets (monthly production forecasts per completion).
+      One row per target record (IDREC). Source: PVT_PVUNITCOMPTARGET (pvUnitCompTarget).
+    columns:
+      # -- identifiers
+      - name: production_target_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this target. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent completion record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__completions')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- dates
+      - name: target_start_date
+        description: "Start date of the target period. ProdView: DTTMSTART"
+
+      # -- target fields
+      - name: target_type
+        description: "Type of production target. ProdView: TYP"
+      - name: is_use_in_diff_from_target_calculations
+        description: "Whether this target is used in difference-from-target calculations. ProdView: USECALCDIFF"
+
+      # -- user-defined fields
+      - name: cc_forecast_name
+        description: "Combo Curve forecast name. ProdView: USERTXT1"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_prodview__production_targets_daily
+  # ==========================================================================
+  - name: stg_prodview__production_targets_daily
+    description: >
+      Staging model for ProdView daily production target rates per completion.
+      One row per daily target record (IDREC). Source: PVT_PVUNITCOMPTARGETDAY (pvUnitCompTargetDay).
+    columns:
+      # -- identifiers
+      - name: production_target_daily_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this daily target. ProdView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: id_rec_parent
+        description: "Parent production target record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__production_targets')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- dates
+      - name: target_daily_date
+        description: "Date of the daily target. ProdView: DTTM, UI: 'Date'"
+
+      # -- target rates - liquids
+      - name: target_daily_rate_hcliq_bbl_per_day
+        description: "Target daily hydrocarbon liquid rate in BBL/day (converted from m3/day). ProdView: RATEHCLIQ, UI: 'Rate HCliq'"
+      - name: target_daily_rate_oil_bbl_per_day
+        description: "Target daily oil rate in BBL/day (converted from m3/day). ProdView: RATEOIL, UI: 'Rate Oil'"
+      - name: target_daily_rate_condensate_bbl_per_day
+        description: "Target daily condensate rate in BBL/day (converted from m3/day). ProdView: RATECOND, UI: 'Rate Condensate'"
+      - name: target_daily_rate_ngl_bbl_per_day
+        description: "Target daily NGL rate in BBL/day (converted from m3/day). ProdView: RATENGL, UI: 'Rate NGL'"
+      - name: target_daily_rate_water_bbl_per_day
+        description: "Target daily water rate in BBL/day (converted from m3/day). ProdView: RATEWATER, UI: 'Rate Water'"
+      - name: target_daily_rate_sand_bbl_per_day
+        description: "Target daily sand rate in BBL/day (converted from m3/day). ProdView: RATESAND, UI: 'Rate Sand'"
+
+      # -- target rates - gas
+      - name: target_daily_rate_gas_mcf_per_day
+        description: "Target daily gas rate in MCF/day (converted from m3/day). ProdView: RATEGAS, UI: 'Rate Gas'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: record_tag
+        description: "Record tag for ProdView UI grouping. ProdView: SYSTAG"
+      - name: lock_date_utc
+        description: "Lock date (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in the UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

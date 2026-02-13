@@ -1,0 +1,128 @@
+version: 2
+
+models:
+  - name: stg_prodview__routes
+    description: >
+      ProdView routes — field data collection routes that define the series of stops
+      where an operator takes measurements (tank gauges, meter readings, etc.).
+      One row per route. Source: PVT_PVROUTESETROUTE.
+    columns:
+      # -- identifiers
+      - name: route_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+        data_tests:
+          - not_null
+          - unique
+      - name: id_rec_parent
+        description: "Parent record ID (route set). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- descriptive fields
+      - name: route_name
+        description: "Route name. ProdView: NAME, UI: 'Route Name'"
+      - name: notes
+        description: "Route notes/comments. ProdView: COM, UI: 'Note'"
+
+      # -- user-defined fields (Formentera customizations)
+      - name: foreman
+        description: "Foreman assigned to route (Formentera-specific). ProdView: USERTXT1, UI: 'Foreman'"
+      - name: primary_lease_operator
+        description: "Primary lease operator assigned to route (Formentera-specific). ProdView: USERTXT2, UI: 'Primary Lease Operator'"
+      - name: backup_lease_operator
+        description: "Backup lease operator assigned to route (Formentera-specific). ProdView: USERTXT3, UI: 'Backup Lease Operator'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  - name: stg_prodview__route_users
+    description: >
+      ProdView route user assignments — users with security rights to access a specific route.
+      One row per user-route assignment. Source: PVT_PVROUTESETROUTEUSERID.
+    columns:
+      # -- identifiers
+      - name: route_user_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+        data_tests:
+          - not_null
+          - unique
+      - name: id_rec_parent
+        description: "Parent route record ID. ProdView: IDRECPARENT"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prodview__routes')
+                field: id_rec
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+        data_tests:
+          - not_null
+
+      # -- descriptive fields
+      - name: user_id
+        description: "Assigned user ID. ProdView: USERID, UI: 'User ID'"
+      - name: assignment_type
+        description: "Type of route assignment. ProdView: TYP, UI: 'Type'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
