@@ -1,12 +1,11 @@
 {{
-  config(
-    materialized='view'
-  )
+    config(
+        materialized='view'
+    )
 }}
 
 with pvunit as (
     select * from {{ ref('stg_prodview__units') }}
-    --where "Unit Type" = 'pvunitcomp'
 ),
 
 pvunitcomp as (
@@ -14,202 +13,187 @@ pvunitcomp as (
 ),
 
 svintegration as (
-    select * 
+    select *
     from {{ ref('stg_prodview__system_integrations') }}
-    where "Product Description" = 'SiteView' 
-    and "System Integration Table Key" = 'pvunit'
+    where
+        product_description = 'SiteView'
+        and table_key_parent = 'pvunit'
 ),
 
 wvcompintegration as (
-    select * 
+    select *
     from {{ ref('stg_prodview__system_integrations') }}
-    where "Product Description" = 'WellView' 
-    and "System Integration Table Key" = 'pvunitcomp'
+    where
+        product_description = 'WellView'
+        and table_key_parent = 'pvunitcomp'
 ),
 
 wvintegration as (
-    select * 
+    select *
     from {{ ref('stg_prodview__system_integrations') }}
-    where "Product Description" = 'WellView' 
-    and "System Integration Table Key" = 'pvunit'
+    where
+        product_description = 'WellView'
+        and table_key_parent = 'pvunit'
 )
 
 select
-    -- Route information --moving to int_fct_header to remove cycle error
-    -- Unit information
-    u."API 10",
-    u."AssetCo",
-    u."BHA Change 1",
-    u."BHA Change 2",
-    u."Chemical Provider",
-    u."Combo Curve ID",
-    u."Comimingle Permit No.",
-    u."Comment",
-    u."Company Code",
-    u."Completion Status",
-    u."Cost Center",
-    u."Country",
-    u."Current Route",
-    CAST(u."Create Date (UTC)" as datetime) as "Unit Create Date (UTC)",
-    u."Current Facility",
-    u."DSU",
-    u."District",
-    u."District Office",
-    u."Electric Acct. No.",
-    u."Electric Allocation Meter Number",
-    u."Electric Meter ID",
-    u."Electric Vendor No.",
-    u."Facility Name",
-    u."Field Office",
-    u."Flow Net ID",
-    u."Foreman Area",
-    u."Gas Gathering System Name",
-    u."Gas Purchaser",
-    u."Government Authority",
-    u."Ground Elevation",
-    u."HCLiq Disposition Method",
-    u."HCLiq Inventory Type",
-    u."Hide Record As Of",
-    u."Is Cycled",
-    u."Is Operated",
-    u."Is Purchaser",
-    u."Last Mod By" as "Unit Last Mod By",
-    u."Last Mod Date (UTC)" as "Unit Last Date (UTC)",
-    u."Lat/Long Data Source",
-    u."Lat/Long Datum",
-    u."Lease Name",
-    --u."Migration Source Key",
-    --u."Migration Source Type",
-    u."Operated Descriptor",
-    u."Operator",
-    u."Pad Name",
-    u."Producing Method",
-    u."Property EID",
-    u."Property Number",
-    u."Regulatory Field Name",
-    u."Regulatory ID",
-    u."Regulatory Unit Type",
-    u."Start Displaying Unit On",
-    u."State/Province",
-    u."Stop Displaying Unit After",
-    u."Stripper Date",
-    u."Stripper Type",
-    u."Surface Latitude",
-    u."Surface Legal Location",
-    u."Surface Longitude",
-    u."SWD System",
-    u."TX - Lease Number, LA - LUW, ND-MS-OK - N/A",
-    u."UTM Easting",
-    u."UTM Grid Zone",
-    u."UTM Northing",
-    u."Unit Display Name",
-    u."Unit Name",
-    u."Unit Record ID",
-    u."Unit Sub Type",
-    u."Unit Type",
-    --u."User Date 4",
-    --u."User Date 5",
-    --u."User Num 5",
-    --u."UserTxt1",
+    -- unit information
+    u.api_10,
+    u.asset_company,
+    u.bha_change_1,
+    u.bha_change_2,
+    u.chemical_provider,
+    u.combo_curve_id,
+    u.commingle_permit_number,
+    u.comments,
+    u.company_code,
+    u.completion_status,
+    u.cost_center,
+    u.country,
+    u.current_route_id,
+    u.created_at_utc as unit_created_at_utc,
+    u.current_facility_id,
+    u.dsu,
+    u.district,
+    u.district_office,
+    u.electric_acct_number,
+    u.electric_alloc_meter_number,
+    u.electric_meter_id,
+    u.electric_vendor_number,
+    u.facility_name,
+    u.field_office,
+    u.id_flownet,
+    u.foreman_area,
+    u.gas_gathering_system_name,
+    u.gas_purchaser_id,
+    u.government_authority,
+    u.ground_elevation_ft,
+    u.hcliq_disposition_method,
+    u.hcliq_inventory_type,
+    u.hide_record_as_of,
+    u.is_cycled,
+    u.is_operated,
+    u.is_purchaser,
+    u.modified_by as unit_modified_by,
+    u.modified_at_utc as unit_modified_at_utc,
+    u.latlong_data_source,
+    u.latlong_datum,
+    u.lease_name,
+    u.operated_descriptor,
+    u.operator_name,
+    u.pad_name,
+    u.producing_method,
+    u.property_eid,
+    u.property_number,
+    u.regulatory_field_name,
+    u.regulatory_id,
+    u.regulatory_unit_type,
+    u.start_display_date,
+    u.state_province,
+    u.stop_display_date,
+    u.stripper_date,
+    u.stripper_type,
+    u.surface_latitude,
+    u.surface_legal_location,
+    u.surface_longitude,
+    u.swd_system,
+    u.lease_number,
+    u.utm_easting,
+    u.utm_grid_zone,
+    u.utm_northing,
+    u.unit_display_name,
+    u.unit_name,
+    u.id_rec as unit_record_id,
+    u.unit_sub_type,
+    u.unit_type,
 
+    -- completion information
+    c.abandon_date,
+    c.bha_type,
+    c.bottomhole_latitude,
+    c.bottomhole_longitude,
+    c.completion_license_date,
+    c.completion_licensee,
+    c.completion_name,
+    c.id_rec as completion_record_id,
+    c.created_at_utc as completion_created_at_utc,
+    c.created_by as completion_created_by,
+    c.electric_meter_name,
+    c.electric_vendor_name,
+    c.entry_req_period_fluid_level,
+    c.entry_req_period_param,
+    c.expiry_date,
+    c.export_id_1,
+    c.export_id_2,
+    c.export_type_1,
+    c.export_type_2,
+    c.federal_lease_number,
+    c.first_sale_date,
+    c.flowback_end_date,
+    c.flowback_start_date,
+    c.ghg_report_basin,
+    c.gas_alloc_group_number,
+    c.gas_alloc_meter_number,
+    c.gas_meter_number,
+    c.gas_pop_id,
+    c.held_by_production_threshold,
+    c.import_id_1,
+    c.import_id_2,
+    c.import_type_1,
+    c.import_type_2,
+    c.well_license_number,
+    c.modified_by as completion_modified_by,
+    c.modified_at_utc as completion_modified_at_utc,
+    c.last_produced_date,
+    c.last_produced_gas_date,
+    c.last_produced_oil_date,
+    c.legal_well_name,
+    c.pop_date,
+    c.prod_casing,
+    c.prod_liner,
+    c.producing_formation,
+    c.completion_prod_acct_id,
+    c.well_prod_acct_id,
+    c.purchaser_ctb_lease_id,
+    c.purchaser_well_lease_id,
+    c.reserve_category,
+    c.well_regulatory_id,
+    c.rig_release_date,
+    c.spud_date,
+    c.start_allocating_date,
+    c.surface_casing,
+    c.surface_commingle_number,
+    c.well_name,
+    c.well_number,
+    c.working_interest_partner,
+    c.user_date_2,
 
-    -- Completion information
-    --c."API 10",
-    c."Abandon Date",
-    c."BHA Type PAGA/SAGA/RPGA",
-    c."Bottomhole Latitude",
-    c."Bottomhole Longitude",
-    c."Completion License Date",
-    c."Completion Licensee",
-    c."Completion Name",
-    c."Completion Record ID",
-    --c."Cost Center",
-    c."Create Date (UTC)" AS "Completion Create Date (UTC)",
-    c."Created By" AS "Completion Created by",
-    --c."EID",
-    c."Electric Meter Name",
-    c."Electric Vendor Name",
-    c."Entry Requirement Period Fluid Level",
-    c."Entry Requirement Period Parameters",
-    c."Expiry Date",
-    c."Export ID 1",
-    c."Export ID 2",
-    c."Export Type 1",
-    c."Export Type 2",
-    c."Federal Lease #",
-    c."First Sale Date",
-    c."Flowback End Date",
-    c."Flowback Start Date",
-    c."GHG Report Basin",
-    c."Gas Alloc Group No.",
-    c."Gas Alloc Meter No.",
-    c."Gas Meter No.",
-    c."Gas POP ID",
-    c."Held by Production Threshold",
-    c."Import ID 1",
-    c."Import ID 2",
-    c."Import Type 1",
-    c."Import Type 2",
-    c."LA - Serial #, ND - Well File #, TX-MS-OK- API 14",
-    c."Last Mod By" as "Completion Last Mod By",
-    c."Last Mod Date (UTC)" as "Completion Last Mod Date (UTC)",
-    c."Last Produced Date",
-    c."Last Produced Gas Date",
-    c."Last Produced Oil Date",
-    --c."Lat Long Data Source",
-    --c."Lat/Long Datum",
-    c."Legal Well Name",
-    --c."Migration Source Key",
-    --c."Migration Source Type",
-    c."POP Date",
-    c."Prod Casing",
-    c."Prod Liner",
-    c."Producing Formation",
-    c."Production Accounting Identifier for Completion",
-    c."Production Accounting Identifier of Well",
-    c."Purchaser CTB Lease ID",
-    c."Purchaser Well Lease ID",
-    c."RESCAT",
-    c."Regulatory ID of Well",
-    c."Rig Release Date",
-    c."Spud Date",
-    c."Start Allocating Date in ProdView",
-    c."Surface Casing",
-    c."Surface Commingle Number",
-    --c."User Date 4",
-    --c."User Date 5",
-    c."Well Name",
-    c."Well Number",
-    c."Working Interest Partner",
-    c."userdttm2",
+    -- integration ids
+    si.af_id_rec as siteview_site_id,
+    wci.af_id_rec as wellview_completion_id,
+    wi.af_id_rec as wellview_well_id,
 
-
-    -- Integration IDs
-    si."AF ID Rec" as "SiteView Site ID",
-    wci."AF ID Rec" as "WellView Completion ID",
-    wi."AF ID Rec" as "WellView Well ID",
-
-    -- Update tracking
+    -- update tracking
     greatest(
-        --coalesce(r."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
-        coalesce(u."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
-        coalesce(c."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
-        coalesce(si."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
-        coalesce(wci."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z'),
-        coalesce(wi."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z')
-    ) as "Last Mod Date (UTC)"
+        coalesce(u.modified_at_utc, '0000-01-01T00:00:00.000Z'),
+        coalesce(c.modified_at_utc, '0000-01-01T00:00:00.000Z'),
+        coalesce(si.modified_at_utc, '0000-01-01T00:00:00.000Z'),
+        coalesce(wci.modified_at_utc, '0000-01-01T00:00:00.000Z'),
+        coalesce(wi.modified_at_utc, '0000-01-01T00:00:00.000Z')
+    ) as last_modified_at_utc
 
-from pvunit u
---left join pvroutesetroute r 
---    on u."Current Route" = r."Route Record ID"
-left join pvunitcomp c 
-    on u."Unit Record ID" = c."Unit Record ID"
-left join svintegration si 
-    on u."Unit Record ID"= si."System Integration Parent Record ID" 
-    and si."Flow Net ID" = u."Flow Net ID"
-left join wvcompintegration wci 
-    on u."Unit Record ID"= wci."System Integration Parent Record ID" 
-    and wci."Flow Net ID" = u."Flow Net ID"
-left join wvintegration wi 
-    on u."Unit Record ID"= wi."System Integration Parent Record ID" 
-    and wi."Flow Net ID" = u."Flow Net ID"
+from pvunit as u
+left join pvunitcomp as c
+    on u.id_rec = c.id_rec_parent
+left join svintegration as si
+    on
+        u.id_rec = si.id_rec_parent
+        and u.id_flownet = si.id_flownet
+left join wvcompintegration as wci
+    on
+        u.id_rec = wci.id_rec_parent
+        and u.id_flownet = wci.id_flownet
+left join wvintegration as wi
+    on
+        u.id_rec = wi.id_rec_parent
+        and u.id_flownet = wi.id_flownet
