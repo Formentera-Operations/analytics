@@ -112,7 +112,7 @@ The staging layer has complete coverage of the core ProdView tables. Key models:
 | `stg_prodview__completion_parameters` | PVT_PVUNITCOMPPARAM | Surveillance | Daily well parameters (pressures, temperatures, choke) |
 | `stg_prodview__status` | PVT_PVUNITCOMPSTATUS | Well status | Effective-dated status changes (Active, Shut-in, Abandoned, etc.) |
 | `stg_prodview__production_tests` | PVT_PVUNITCOMPTEST | Surveillance | Flow tests (oil/gas/water rates) |
-| `stg_prodview__artifical_lift` | PVT_PVUNITCOMPPUMP | Equipment | Pump installations (rod, ESP, PCP, jet, plunger) |
+| `stg_prodview__artificial_lift` | PVT_PVUNITCOMPPUMP | Equipment | Pump installations (rod, ESP, PCP, jet, plunger) |
 | `stg_prodview__rod_pump_configs` | PVT_PVUNITCOMPPUMPROD | Equipment | Rod pump static specs (1:1 extension of artificial_lift) |
 | `stg_prodview__rod_pump_entries` | PVT_PVUNITCOMPPUMPRODENTRY | Equipment | Daily rod pump readings (SPM, stroke length, run time) |
 | `stg_prodview__tanks` | PVT_PVUNITTANK | Tanks | Tank master data |

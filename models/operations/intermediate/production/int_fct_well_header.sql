@@ -50,7 +50,7 @@ tbl as (
         cast(w."On Production Date" as date) as "First Prod Date",
         p.current_facility_id as "Current Facility",
         p.facility_name as "Facility Name",
-        r."Foreman",
+        r.foreman as "Foreman",
         p.foreman_area as "Foreman Area",
         w."Last Approved MIT Date",
         w."Last Write To Database",
@@ -71,8 +71,8 @@ tbl as (
         p.property_number as "Property Number",
         w."Regulatory Effective Date",
         p.regulatory_field_name as "Regulatory Field Name",
-        r."Route Record ID",
-        r."Route Name",
+        r.id_rec as "Route Record ID",
+        r.route_name as "Route Name",
         cast(w."Spud Date" as date) as "Spud Date",
         w."System Lock Date",
         p.unit_record_id as "Unit Record ID",
@@ -177,7 +177,7 @@ tbl as (
     left join prodstatus as s
         on p.unit_record_id = s."Unit Record ID" and s.rn = 1
     left join route as r
-        on p.current_route_id = r."Route Record ID"
+        on p.current_route_id = r.id_rec
     full outer join oda as o
         on p.cost_center = o."Code"
 ),
