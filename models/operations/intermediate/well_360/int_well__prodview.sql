@@ -20,39 +20,39 @@
 
 with units as (
     select
-        "Property EID" as eid,
-        "Unit Record ID" as unit_id,
-        "Regulatory ID" as regulatory_id,
-        "API 10" as api_10,
-        "Property Number" as property_number,
-        "Combo Curve ID" as combo_curve_id,
-        "Cost Center" as cost_center,
-        "Lease Name" as lease_name,
-        "Unit Name" as unit_name,
-        "Operator" as operator_name,
-        "Division" as division,
-        "AssetCo" as asset_co,
-        "Regulatory Field Name" as regulatory_field_name,
-        "Field Office" as field_office,
-        "Country" as country,
-        "State/Province" as state_province,
-        "County" as county,
-        "Foreman Area" as foreman_area,
-        "Route" as route,
-        "Facility Name" as facility_name,
-        "Pad Name" as pad_name,
-        "Completion Status" as completion_status,
-        "Current Completion Status" as current_completion_status,  -- FK to status table
-        "Producing Method" as producing_method,
-        "Surface Latitude" as surface_latitude,
-        "Surface Longitude" as surface_longitude,
-        "Is Operated" as is_operated,
-        "Unit Sub Type" as unit_sub_type
+        property_eid as eid,
+        id_rec as unit_id,
+        regulatory_id,
+        api_10,
+        property_number,
+        combo_curve_id,
+        cost_center,
+        lease_name,
+        unit_name,
+        operator_name,
+        division,
+        asset_company as asset_co,
+        regulatory_field_name,
+        field_office,
+        country,
+        state_province,
+        county,
+        foreman_area,
+        route,
+        facility_name,
+        pad_name,
+        completion_status,
+        current_completion_status_id as current_completion_status,  -- FK to status table
+        producing_method,
+        surface_latitude,
+        surface_longitude,
+        is_operated,
+        unit_sub_type
     from {{ ref('stg_prodview__units') }}
     where
-        "Unit Sub Type" ilike '%well%'
-        and "Property EID" is not null
-        and "Completion Status" != 'INACTIVE'
+        unit_sub_type ilike '%well%'
+        and property_eid is not null
+        and completion_status != 'INACTIVE'
 ),
 
 -- Get current status from status table with engineer-approved mapping

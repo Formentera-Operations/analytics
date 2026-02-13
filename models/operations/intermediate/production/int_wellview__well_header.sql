@@ -1,8 +1,8 @@
 {{
-  config(
-    enabled=true,
-    materialized='view'
-  )
+    config(
+        enabled=true,
+        materialized='view'
+    )
 }}
 
 with header as (
@@ -10,30 +10,31 @@ with header as (
 ),
 
 wvintegration as (
-    select 
-        wi.*
-        ,u.* 
-    from {{ ref('stg_prodview__system_integrations') }} wi
-    left join  {{ ref('stg_prodview__units') }} u
-        on u."Unit Record ID"= wi."System Integration Parent Record ID" 
-        and wi."Flow Net ID" = u."Flow Net ID"
-    where "Product Description" = 'WellView' 
-    and "System Integration Table Key" = 'pvunit'
+    select
+        wi.af_id_rec,
+        u.id_rec as unit_record_id
+    from {{ ref('stg_prodview__system_integrations') }} as wi
+    left join {{ ref('stg_prodview__units') }} as u
+        on
+            wi.id_rec_parent = u.id_rec
+            and wi.id_flownet = u.id_flownet
+    where
+        wi.product_description = 'WellView'
+        and wi.table_key_parent = 'pvunit'
 ),
 
 source as (
     select
-        h.*
-        ,wi."Unit Record ID"
-        -- Update tracking
-        ,greatest(
-            coalesce(h."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z'))
-         as "Updated Date" 
-    from header h
-        left join wvintegration wi
-        on h."Well ID" =  wi."AF ID Rec"
+        h.*,
+        wi.unit_record_id,
+        greatest(
+            coalesce(h."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z')
+        ) as "Updated Date"
+    from header as h
+    left join wvintegration as wi
+        on h."Well ID" = wi.af_id_rec
 )
 
-Select *
+select *
 from source
-order by "Well ID" Desc
+order by "Well ID" desc
