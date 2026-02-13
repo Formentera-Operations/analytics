@@ -38,13 +38,13 @@ with ar_adjustments as (
         aria.voucher_id                 as Voucher_ID,
         Case 
             When aria.adjustment_type_id = 0 Then 'Application of Advance'
-            When aria.adjustment_type_id = 1 Then REPLACE(ariad.Description, 'XClear with Inv#', 'Cross Clear Inv#')
+            When aria.adjustment_type_id = 1 Then REPLACE(ariad.Description, 'XClear with Inv#', 'Cross Clear Inv #')
             Else 'Adjustment'
             End As Invoice_Description,
         Case 
             When aria.adjustment_type_id = 0 Then 'AAdv'
             When aria.adjustment_type_id = 1 Then 'Xclear'
-            Else 'Adj'
+            Else 'Adj.'
             End As Invoice_Type,
         aria.adjustment_date                  as Invoice_Date,
         ariad.adjustment_detail_amount        as Total_Invoice_Amount,
