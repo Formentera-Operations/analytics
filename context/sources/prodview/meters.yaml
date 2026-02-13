@@ -1,0 +1,436 @@
+# Peloton Prodview: Meters
+# 5 meter types (Liquid, Gas PD, Orifice, Rate, Virtual), each with factors and readings; plus other measurement points
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dbl_day=day dbl_sec=seconds
+#   dbl_calc=double(calc) dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitMeterLiquid: Oil/Water Meters +parent | In the Liquid Meters table, you can record any meters that are used in the unit to measure liquid vo
+  Name(s50) #Meter Name
+  EntrySource(s50) #Entry Source
+  Typ(s50) #Meter Type
+  TypRecording(s50) #Recording Type
+  UOMVol(s20) #Reading Units
+  RezeroStart(bool) #Zero Start
+  ReadingRollover(dbl) #Reading Rollover Value
+  EstMissingDay(bool) #Estimate Missing Days?
+  ProductName(s50) #Product
+  InitialBSW(dbl_pct) #Initial BSW
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #MPHID
+  RegulatoryID(s50) #Liquid Meter Disposition
+  OtherID(s50) #Meter Serial Number
+  LocProvTap(s50) #Proving Tap Location
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  EntryReqPeriod(s50) #Entry Requirement Period
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #Historical Name
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #CTB Number
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence
+
+pvUnitMeterLiquidFact: Meter Factors +parent | Enter a date, a volume per volume measure, and the number of days until the next calibration. ProdVi
+  DtTm(dt) #Effective Date
+  Factor(dbl_m3pm3) #Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due
+
+pvUnitMeterLiquidEntry: Oil/Water Meters Readings +parent | In the Liquid Meter Readings table, you record the readings from liquid meters in the network. The m
+  DtTm(dt) #Date
+  ReadingStart(dbl) #Start Reading Override
+  ReadingEnd(dbl) #Meter Volume
+  BSW(dbl_pct) #BS&W
+  SandCut(dbl_pct) #Sand Cut
+  ReasonOR(s100) #Override Reason
+  Com(txt255) #Comments
+  TicketNo(s50) #Ticket Number
+  TicketSubNo(s50) #Ticket Sub Number
+  VolUncorrTotalCalc(dbl_m3_calc) #Total Fluid Volume
+  VolUncorrHCLiqCalc(dbl_m3_calc) #Oil/Condensate Volume
+  TempOfVol(dbl_degC) #Temperature of Volume
+  PresOfVol(dbl_kPa) #Pressure of Volume
+  TempSample(dbl_degC) #Temperature of Sample
+  PresSample(dbl_kPa) #Pressure of Sample
+  DensitySample(dbl_kgpm3) #Density of Sample
+  DensitySample60F(double, kilograms per cubic meter, calculated) #Density of Sample at 60F
+  VolCorrTotalCalc(dbl_m3_calc) #Corrected Total Fluid Volume
+  VolCorrHCLiqCalc(dbl_m3_calc) #Corrected Hydrocarbon Liquid Volume
+  BSWCorrCalc(dbl_pct_calc) #Corrected BS&W
+  SandCutCorrCalc(dbl_pct_calc) #Corrected Sand Cut
+  TempOR(dbl_degC) #Override Temperature
+  PresOR(dbl_kPa) #Override Pressure
+  DensityOR(dbl_kgpm3) #Override Density
+  RefID(s50) #Reference Number
+  OrigStatementID(s50) #Statement Id
+  Source(s50) #Source
+  VolORHCLiq(dbl_m3) #Override Hydrocarbon Liquid Volume
+  VolORWater(dbl_m3) #Override Water Volume
+  VolORSand(dbl_m3) #Override Sand Volume
+  Verified(bool) #Verified
+  VolTotalCalc(dbl_m3_calc) #Final Total Fluid Volume
+  VolHCLiqCalc(dbl_m3_calc) #Final Hydrocarbon Liquid Volume
+  VolWaterCalc(dbl_m3_calc) #Final Water Volume
+  VolSandCalc(dbl_m3_calc) #Final Sand Volume
+  BSWCalc(dbl_pct_calc) #Final BS&W
+  SandCutCalc(dbl_pct_calc) #Final Sand Cut
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Final Gas Equivalent of Oil/Cond Volume
+  IDRecHCLiqAnalysisCalc(s32_calc) #HC Liquid  Analysis
+  IdRecSealEntry(s32) #Seal
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+
+pvUnitMeterPDGas: Gas PD Meters +parent | You can record any gas PD (positive displacement) meters that are used in the unit to measure gas vo
+  Name(s50) #Meter Name
+  UOMVol(s20) #Reading Units
+  TypRecording(s50) #Recording Type
+  LocProvTap(s50) #Proving Tap Location
+  TempBase(dbl_degC) #Meter Base Temperature
+  PresBase(dbl_kPa) #Meter Base Pressure
+  CorrPresTemp(bool) #Correct to Network Pres and Temp
+  RezeroStart(bool) #Zero Start
+  ReadingRollover(dbl) #Reading Rollover Value
+  EstMissingDay(bool) #Estimate Missing Days?
+  IdealGas(bool) #Assume Ideal Gas
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence
+
+pvUnitMeterPDGasHeatFact: Meter Heat Factors +parent | Heating factor that is carried forward.
+  DtTm(dt) #Effective Date
+  Factor(double, joule per cubic meter) #Factor
+  DurValid(dbl) #Duration Between Data Points
+  DtTmNextCalc(dt_calc) #Next Factor Due
+  Com(txt255) #Note
+
+pvUnitMeterPDGasFact: Meter Factors +parent | Enter the date the meter factor comes into effect, a volume per volume factor, and the number of day
+  DtTm(dt) #Effective Date
+  Factor(dbl_m3pm3) #Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due
+
+pvUnitMeterPDGasECF: Effluent Correction Factors +parent | Enter a date range to apply a correction factor to the meter.
+  DtTm(dt) #Effective Date
+  EffluentFactor(dbl_m3pm3) #Effluent Correction Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due
+
+pvUnitMeterPDGasEntry: Gas PD Meter Readings +parent | In the Gas PD Meter Readings table, you record the readings from every gas PD meter anywhere in the 
+  DtTm(dt) #Date
+  ReadingEnd(dbl) #Reading
+  Temp(dbl_degC) #Temperature
+  Pres(dbl_kPa) #Pressure
+  Com(txt255) #Note
+  ComFFV(txt255) #FFV Note
+  ReadingEndOR(dbl) #Reading Override
+  ReadingEndORReason(s255) #Reading Override Reason
+  ReadingStartOR(dbl) #Start Reading Override
+  ReasonOR(s100) #Start Override Reason
+  VolGasCalc(dbl_m3_calc) #Calculated Gas Volume
+  Heat(double, joule) #Heat
+  FactHeat(double, joule per cubic meter) #Heat Factor
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  IDRecGasAnalysisCalc(s32_calc) #Gas Analysis
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+
+pvUnitMeterRate: Rate Meters +parent | Rate or engineering estimates would be created as rate meters.
+  Name(s50) #Meter Name
+  UOMVol(s20) #Rate Volume Units
+  UOMPeriod(s10) #Rate Duration
+  RefIDA(s50) #Reference ID
+  TypFluid(s20) #Fluid Type
+  IDRecDurOpSource(s32) #Source of Operating Hours
+  EstMissingDay(bool) #Estimate Missing Days?
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Pressure Base
+  RegulatoryID(s50) #Gas Meter Disposition
+  OtherID(s50) #DSCode
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Rate Due
+  IDRecUnitNodeCalc(s32_calc) #Node
+  EntryReqPeriod(s50) #Entry Requirement Period
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence
+
+pvUnitMeterOrifice: Gas Meters +parent | Orifice meters can track gas volume or derive a volume through pressure and temperature properties c
+  Name(s50) #Meter Name
+  EntrySource(s50) #Entry Source
+  TypReading(s50) #Chart Reading Type
+  TypRecording(s50) #Recording Type
+  UOMGasStat(s20) #Static Pressure Units
+  UOMGasDiff(s20) #Differential Pressure Units
+  UOMTemp(s20) #Temperature Units
+  UOMSzOrifice(s20) #Orifice Size Units
+  SzRun(double, meter) #Run Size
+  MetalTypePipe(s50) #Pipe Material
+  MetalTypePlate(s50) #Plate Material
+  ChartPeriod(s50) #Chart Period
+  TypTap(s50) #Tap Type
+  LocStaticTap(s50) #Static Tap Location
+  LocProvTap(s50) #Proving Tap Location
+  EstMissingDay(bool) #Estimate Missing Days?
+  IDRecDurOpSource(s32) #Source of Operating Hours
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #Historical Name
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #MPHID
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence
+
+pvUnitMeterOrificeHeatFact: Meter Heat Factors +parent | Heating factor that is carried forward.
+  DtTm(dt) #Effective Date
+  Factor(double, joule per cubic meter) #Factor
+  DurValid(dbl) #Duration Between Data Points
+  DtTmNextCalc(dt_calc) #Next Factor Due
+  Com(txt255) #Note
+
+pvUnitMeterOrificeECF: Effluent Correction Factors +parent | Effluent correction factors stored for each meter, that may result in liquid dropout or gas shrinkag
+  DtTm(dt) #Effective Date
+  EffluentFactor(dbl_m3pm3) #Effluent Correction Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due
+
+pvUnitMeterOrificeRange: Spring Ranges +ext,parent
+  DtTmStart(dt) #Install Date
+  PresStatMin(dbl) #Static Range Minimum
+  PresStatMax(dbl) #Static Range Maximum
+  PresDiffMin(dbl) #Differential Range Minimum
+  PresDiffMax(dbl) #Differential Range Maximum
+  TempMin(dbl) #Temperature Range Minimum
+  TempMax(dbl) #Temperature Range Maximum
+
+pvUnitMeterOrificeEntry: Gas Meters Readings +ext,parent | Entries for orifice meters can track gas volume or derive a volume through pressure and temperature 
+  DtTm(dt) #Date
+  VolEnterGas(dbl_m3) #Gas Flowed
+  PresDiff(dbl) #Differential Pressure (psi)
+  PresStatic(dbl) #Static Pressure (psi)
+  Temp(dbl) #Flow Temperature (°F)
+  DurOnOR(dbl_days) #Hours On
+  Com(txt255) #Comments
+  ComFFV(txt255) #FFV Note
+  DurOnCalc(double, days, calculated) #Meter Hours On
+  PresStaticCalc(double, kilopascals, calculated) #Calculated Static Pressure (gauge)
+  PresDiffCalc(double, kilopascals, calculated) #Calculated Differential Pressure
+  TempCalc(double, degrees celcius, calculated) #Calculated Temperature
+  SzOrifice(dbl) #Orifice Size
+  Cprime(dbl) #C'
+  VolUncorrGasCalc(dbl_m3) #Calculated Gas Volume
+  VolEnterORGas(dbl_m3) #Entered Gas Volume Override
+  ReasonOR(s100) #Override Reason
+  VolGasCalc(dbl_m3_calc) #Final Gas Volume
+  VolSourceCalc(string 20, calculated) #Volume Source
+  HeatEnter(double, joule) #SCADA Heat
+  FactHeatEnter(double, joule per cubic meter) #SCADA Heat Factor
+  HeatEnterOR(double, joule) #Entered Heat Override
+  FactHeatEnterOR(double, joule per cubic meter) #Entered Heat Factor Override
+  HeatCalc(double, joule, calculated) #Final Heat
+  FactHeatCalc(double, joule per cubic meter, calculated) #Final Heat Factor
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  IDRecGasAnalysisCalc(s32_calc) #Gas Analysis
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+
+pvUnitMeasPt: Other Measurement Points +parent | Other readings required for reference only, not used in volume calculations.
+  Name(s50) #Measurement Name
+  IDRecLoc(s32) #Measurement Location
+  RefIDA(s50) #Reference ID
+  UOMReading(s10) #Reading Unit of Measure
+  EntryReqPeriod(s50) #Entry Requirement Period
+  Com(txt2k) #Comment
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  GroupKey(s50) #Group Key
+  GroupName(s50) #Group Name
+  KeyMigrationSource(s100) #Carry Forward Type
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence
+
+pvUnitMeasPtEntry: Other MP Entries +parent | Miscalleneous entries recorded per type of measurement.
+  DtTm(dt) #Date
+  Value(dbl) #Reading for Variable
+  Com(stringlong 100) #Note
+
+pvUnitMeterVirtual: Virtual Meters +parent | A virtual meter that allows entry of all products. May be real or not a real meter. Can be used as a
+  Name(s50) #Name
+  TypRecording(s50) #Recording Type
+  LocMeas(s50) #Location
+  UOMVolHCLiq(s20) #Volume Units Oil/Cond
+  UOMVolGas(s20) #Volume Units Gas
+  UOMVolWater(s20) #Volume Units Water
+  UOMVolSand(s20) #Volume Units Sand
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+
+pvUnitMeterVirtualEntry: Virtual Meter Readings +parent | Entry tables for virtual meter.
+  DtTm(dt) #Date
+  VolHCLiq(dbl) #Oil/Cond
+  VolGas(dbl) #Gas
+  VolWater(dbl) #Water
+  VolSand(dbl) #Sand
+  IDRecItem(s255) #Link
+  TempStart(dbl_degC) #Initial Temperature
+  TempEnd(dbl_degC) #End Temperature
+  PresStart(dbl_kPa) #Initial Pressure
+  PresEnd(dbl_kPa) #End Pressure
+  Com(txt255) #Note
+  ComFFV(txt255) #FFV Note
+  DtTmStart(dt) #Start of Event
+  DtTmEnd(dt) #End of Event
+  DurOnOR(dbl_days) #Event Hours Override
+  DurOnCalc(double, days, calculated) #Event Hours
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  PresUser1(dbl_kPa) #User Pressure 1
+  PresUser2(dbl_kPa) #User Pressure 2
+  PresUser3(dbl_kPa) #User Pressure 3
+  TempUser1(dbl_degC) #User Temperature 1
+  TempUser2(dbl_degC) #User Temperature 2
+  TempUser3(dbl_degC) #User Temperature 3

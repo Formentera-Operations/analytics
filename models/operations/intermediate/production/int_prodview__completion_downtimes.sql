@@ -5,105 +5,98 @@
     )
 }}
 
-
-
 with downtime as (
     select
-        "Completion Downtime Record ID"
-        ,"Completion Record ID"
-        ,"Type of Downtime Entry"
-        ,Product
-        ,"Location"
-        ,"Is failure"
-        ,TO_DATE("First Day") AS "First Day"
-        ,COALESCE("Hours Down", 0) AS "Hours Down"
-        ,TO_DATE("Last Day") AS "Last Day"
-        ,CASE
-            WHEN "Total Downtime Hours" IS NULL THEN "Hours Down"
-            ELSE COALESCE("Total Downtime Hours", 0) 
-        END AS "Total Downtime Hours"
-        ,"Downtime Code"
-        ,"Downtime Code 2"
-        ,"Downtime Code 3"
-        ,Comments
+        id_rec,
+        id_rec_parent,
+        downtime_type,
+        product,
+        location,
+        is_failure,
+        first_day::date as first_day,
+        last_day::date as last_day,
+        downtime_code_1,
+        downtime_code_2,
+        downtime_code_3,
+        comments,
+        coalesce(hours_down, 0) as hours_down,
+        case
+            when total_downtime_hours is null then hours_down
+            else coalesce(total_downtime_hours, 0)
+        end as total_downtime_hours
     from {{ ref('stg_prodview__completion_downtimes') }}
-    where "First Day" > '2021-12-31'
-        ORDER BY "Completion Record ID", "First Day"
+    where first_day > '2021-12-31'
+    order by id_rec_parent, first_day
+),
+
+consecutives as (
+    select
+        *,
+        case
+            when
+                lower(downtime_type) = 'single day'
+                and lag(first_day) over (
+                    partition by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3
+                    order by first_day
+                ) = dateadd(day, -1, first_day)
+                then 0
+            else 1
+        end as break_flag
+    from downtime
+),
+
+islands as (
+    select
+        *,
+        sum(break_flag) over (
+            partition by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3
+            order by first_day
+            rows between unbounded preceding and current row
+        ) as island_id
+    from consecutives
+),
+
+start_end_dates as (
+    select
+        *,
+        min(id_rec) over (
+            partition by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3, island_id
+        ) as downtime_event_id,
+        min(first_day) over (
+            partition by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3, island_id
+        ) as downtime_first_day,
+        max(last_day) over (
+            partition by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3, island_id
+        ) as downtime_last_day,
+        sum(total_downtime_hours) over (
+            partition by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3, island_id
+        ) as total_consecutive_downtime_hours
+    from islands
+    order by id_rec_parent, downtime_code_1, downtime_code_2, downtime_code_3, first_day
 )
 
-,consecutives as (
-  SELECT
-      *
-    , CASE
-        WHEN LOWER("Type of Downtime Entry") = 'single day'
-         AND LAG("First Day") OVER (
-               PARTITION BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3"
-               ORDER BY "First Day"
-             ) = DATEADD(day, -1, "First Day")
-          THEN 0              -- still consecutive, same island
-          ELSE 1              -- break → new island
-      END AS break_flag
-  FROM downtime
-)
-
-,islands AS (
-  SELECT
-      *
-    , SUM(break_flag) OVER (
-        PARTITION BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3"
-        ORDER BY "First Day"
-        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-      ) AS island_id
-  FROM consecutives
-)
-
-, start_end_dates as (
-    SELECT
-        *
-        ,MIN("Completion Downtime Record ID") OVER (
-            PARTITION BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3", island_id
-            ) AS "Completion Downtime Event ID"
-        ,MIN("First Day") OVER (
-            PARTITION BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3", island_id
-            ) AS "Downtime First Day"
-        ,MAX("Last Day")   OVER (
-            PARTITION BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3", island_id
-            ) AS "Downtime Last Day"
-        ,SUM("Total Downtime Hours") OVER (
-            PARTITION BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3", island_id
-            ) AS "Total Consecutive Downtime Hours"
-    FROM islands
-    ORDER BY "Completion Record ID", "Downtime Code", "Downtime Code 2", "Downtime Code 3", "First Day"
-)
-
-Select
-    c."Completion Downtime Event ID"
-    ,c."Completion Downtime Record ID"
-    ,c."Completion Record ID"
-    ,c."Type of Downtime Entry"
-    ,c.Product
-    ,c."Location"
-    ,c."Is failure"
-    ,c."First Day"
-    ,c."Hours Down"
-    ,c."Last Day"
-    ,c."Total Downtime Hours"
-    ,c."Total Consecutive Downtime Hours"
-    ,c."Downtime First Day"
-    ,c."Downtime Last Day"
-    ,DATEDIFF(DAY, c."Downtime First Day", COALESCE(c."Downtime Last Day", CURRENT_DATE()-1)) AS "Days Down"
-    ,c."Downtime Code"
-    ,c."Downtime Code 2"
-    ,c."Downtime Code 3"
-    ,c.Comments
-    --,h."Asset Company"
-    --,h."Route Name"
-    --,h."Foreman"
-    --,h."Foreman Area"
-    --,h."Prodview Well Name"
-    ,h."Unit Record ID"
-FROM start_end_dates c
-LEFT JOIN {{ ref('int_fct_well_header') }} h
-ON c."Completion Record ID" = h."Completion Record ID"
---WHERE "Type of Downtime Entry" = 'single day' AND "Consecutive First Day" = true
-ORDER BY "Completion Record ID", "First Day" desc
+select
+    c.downtime_event_id,
+    c.id_rec,
+    c.id_rec_parent,
+    c.downtime_type,
+    c.product,
+    c.location,
+    c.is_failure,
+    c.first_day,
+    c.hours_down,
+    c.last_day,
+    c.total_downtime_hours,
+    c.total_consecutive_downtime_hours,
+    c.downtime_first_day,
+    c.downtime_last_day,
+    c.downtime_code_1,
+    c.downtime_code_2,
+    c.downtime_code_3,
+    c.comments,
+    h."Unit Record ID" as unit_record_id,
+    datediff(day, c.downtime_first_day, coalesce(c.downtime_last_day, current_date() - 1)) as days_down
+from start_end_dates c
+left join {{ ref('int_fct_well_header') }} h
+    on c.id_rec_parent = h."Completion Record ID"
+order by c.id_rec_parent asc, c.first_day desc

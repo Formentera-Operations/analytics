@@ -4,3 +4,12 @@ target/
 dbt_packages/
 logs/
 prod-artifacts/
+
+# Python virtual environment
+.venv/
+
+# dbt MCP server (personal paths - see .env.dbt-mcp.example)
+.env.dbt-mcp
+
+# Local Claude Code scripts
+scripts/

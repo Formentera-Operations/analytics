@@ -1,0 +1,47 @@
+# Peloton Prodview: Routes
+# Field route management for data collection and operator assignments
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dbl_day=day dbl_sec=seconds
+#   dbl_calc=double(calc) dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+pvUnitUserIDCalc: Unit Route Security User IDs +parent | List of User ID's that have edit rights to this 'Unit' today.  Based on definition in <pvRouteNameUs
+  UserID(string 50, calculated) #User ID
+  Typ(string 50, calculated) #Type
+
+pvUnitDateListCalc: List of Visible Entry Dates +parent | List of dates that are visible with current date filters. Used to provide list of dates to anchor re
+  DtTm(dt_calc) #Date
+
+pvRouteSet: Route Set | In the Route Set table, enter the date in which a series of routes becomes effective. If you have ch
+  DtTmStart(dt) #Start Date
+  Com(txt255) #Note
+  ActiveTodayCalc(boolean, calculated) #Current?
+
+pvRouteSetRoute: Routes +parent | Routes are the series of stops on which measurements are made in the flow network, for example, on g
+  Name(s100) #Route Name
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  UserTxt1(s50) #Foreman
+  UserTxt2(s50) #Primary Lease Operator
+  UserTxt3(s50) #Backup Lease Operator
+  Com(txt255) #Note
+
+pvRouteSetRouteUnit: Route Units +parent | Route units are the locations that an operator travels to for entering readings in ProdView. Select 
+  IDRecUnit(s32) #Unit
+  SortRoute(int) #Route Units Sort Order
+
+pvRouteSetRouteVwFlowDiag: Other Units Displayed on Diagram +parent | Components of the network to display with this routes items on the flow network diagram.
+  IDRecUnit(s32) #Units Displayed
+
+pvRouteSetRouteDtListCalc: List of Visible Entry Dates +parent | List of dates that are visible with current date filters. Used to provide list of dates to anchor re
+  DtTm(dt_calc) #Date
+
+pvRouteSetRouteUserID: Route Name User IDs +parent | List of User ID's that have security rights to the associated <pvRoute>.
+  UserID(s50) #User ID
+  Typ(s50) #Type

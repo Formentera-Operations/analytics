@@ -1,0 +1,432 @@
+version: 2
+
+models:
+  - name: stg_prodview__artificial_lift
+    description: >
+      Artificial lift equipment records from ProdView. One row per pump installation on a completion.
+      Tracks pump type, specifications, install/removal dates, and user-defined fields.
+      Source: PVT_PVUNITCOMPPUMP (pvUnitCompPump).
+    columns:
+      # -- identifiers
+      - name: artificial_lift_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this artificial lift record. ProdView: IDREC, UI: 'idrec (unique record id)'"
+      - name: id_rec_parent
+        description: "Parent record identifier linking to the completion. ProdView: IDRECPARENT, UI: 'idrecparent (unique parent record id)'"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+
+      # -- equipment details
+      - name: pump_name
+        description: "Name or label assigned to the artificial lift equipment. ProdView: NAME, UI: 'Pump Name'"
+      - name: pump_make
+        description: "Manufacturer of the pump. ProdView: MAKE, UI: 'Make'"
+      - name: pump_model
+        description: "Model designation of the pump. ProdView: MODEL, UI: 'Model'"
+      - name: pump_size
+        description: "Size specification of the pump. ProdView: SIZE, UI: 'Size'"
+      - name: pump_material
+        description: "Construction material of the pump. ProdView: MATERIAL, UI: 'Material'"
+      - name: pump_type
+        description: "Type of artificial lift (e.g., Rod Pump, ESP, PCP, Jet, Plunger). ProdView: TYP, UI: 'Type'"
+      - name: power_rating_hp
+        description: "Power rating in horsepower (converted from watts). ProdView: POWERRATING, UI: 'Power Rating'"
+      - name: controller
+        description: "Controller type or identifier for the lift equipment. ProdView: CONTROLLER, UI: 'Controller'"
+      - name: serial_number
+        description: "Serial number of the equipment. ProdView: SERIALNUM, UI: 'Serial Number'"
+      - name: engineering_id
+        description: "Engineering identifier for the equipment. ProdView: ENGINEERINGID, UI: 'Engineering ID'"
+      - name: regulatory_id
+        description: "Regulatory identifier for the equipment. ProdView: REGULATORYID, UI: 'Regulatory ID'"
+      - name: other_id
+        description: "Additional identifier for the equipment. ProdView: OTHERID, UI: 'Other ID'"
+      - name: entry_req_period
+        description: "Required data entry period for this equipment. ProdView: ENTRYREQPERIOD, UI: 'Entry Requirement Period'"
+      - name: comments
+        description: "Free-text comments about the equipment. ProdView: COM, UI: 'Comment'"
+
+      # -- dates
+      - name: install_date
+        description: "Date the equipment was installed. ProdView: DTTMSTART, UI: 'Install Date'"
+      - name: removal_date
+        description: "Date the equipment was removed. NULL if still installed. ProdView: DTTMEND, UI: 'Removal Date'"
+      - name: hide_record_as_of
+        description: "Date after which the record is hidden in the UI. ProdView: DTTMHIDE, UI: 'Hide Record As Of'"
+
+      # -- calculated fields
+      - name: days_in_hole_calc
+        description: "Calculated number of days the equipment has been in the hole. ProdView: DAYSINHOLECALC, UI: 'Days In Hole'"
+
+      # -- flags
+      - name: is_active
+        description: "Whether the pump is currently installed (removal_date is null). Derived in staging."
+
+      # -- import/export identifiers
+      - name: import_id_1
+        description: "First import identifier for data migration. ProdView: IMPORTID1, UI: 'Import ID 1'"
+      - name: import_type_1
+        description: "Type classification for the first import identifier. ProdView: IMPORTTYP1, UI: 'Import Type 1'"
+      - name: import_id_2
+        description: "Second import identifier for data migration. ProdView: IMPORTID2, UI: 'Import ID 2'"
+      - name: import_type_2
+        description: "Type classification for the second import identifier. ProdView: IMPORTTYP2, UI: 'Import Type 2'"
+      - name: export_id_1
+        description: "First export identifier for data migration. ProdView: EXPORTID1, UI: 'Export ID 1'"
+      - name: export_type_1
+        description: "Type classification for the first export identifier. ProdView: EXPORTTYP1, UI: 'Export Type 1'"
+      - name: export_id_2
+        description: "Second export identifier for data migration. ProdView: EXPORTID2, UI: 'Export ID 2'"
+      - name: export_type_2
+        description: "Type classification for the second export identifier. ProdView: EXPORTTYP2, UI: 'Export Type 2'"
+
+      # -- migration tracking
+      - name: migration_source_key
+        description: "Key identifying the source system during data migration. ProdView: KEYMIGRATIONSOURCE, UI: 'Migration Source Key'"
+      - name: migration_source_type
+        description: "Type of source system during data migration. ProdView: TYPMIGRATIONSOURCE, UI: 'Migration Source Type'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_txt4
+        description: "User-defined text field 4. ProdView: USERTXT4, UI: 'User Text 4'"
+      - name: user_txt5
+        description: "User-defined text field 5. ProdView: USERTXT5, UI: 'User Text 5'"
+      - name: user_num1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_num2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_num3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+      - name: user_num4
+        description: "User-defined numeric field 4. ProdView: USERNUM4, UI: 'User Num 4'"
+      - name: user_num5
+        description: "User-defined numeric field 5. ProdView: USERNUM5, UI: 'User Num 5'"
+      - name: user_date_1
+        description: "User-defined date field 1. ProdView: USERDTTM1, UI: 'User Date 1'"
+      - name: user_date_2
+        description: "User-defined date field 2. ProdView: USERDTTM2, UI: 'User Date 2'"
+      - name: user_date_3
+        description: "User-defined date field 3. ProdView: USERDTTM3, UI: 'User Date 3'"
+      - name: user_date_4
+        description: "User-defined date field 4. ProdView: USERDTTM4, UI: 'User Date 4'"
+      - name: user_date_5
+        description: "User-defined date field 5. ProdView: USERDTTM5, UI: 'User Date 5'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether this record is locked in the UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "Record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  - name: stg_prodview__rod_pump_configs
+    description: >
+      Rod pump configuration details from ProdView. One row per rod pump, extending the artificial
+      lift parent record (1:1 relationship). Contains static pump specifications.
+      Source: PVT_PVUNITCOMPPUMPROD (pvUnitCompPumpRod).
+    columns:
+      # -- identifiers
+      - name: rod_pump_config_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this rod pump config. ProdView: IDREC, UI: 'idrec (unique record id)'"
+      - name: id_rec_parent
+        description: "Parent record identifier linking to the artificial lift record (1:1 extension). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+
+      # -- pump specifications
+      - name: pump_diameter_in
+        description: "Pump diameter in inches (converted from meters). ProdView: PUMPDIAMETER, UI: 'Pump Diameter'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether this record is locked in the UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "Record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  - name: stg_prodview__rod_pump_entries
+    description: >
+      Daily rod pump operational readings from ProdView. One row per rod pump per observation date.
+      Contains strokes per minute, stroke length, run time percentage, and calculated volume throughput.
+      Source: PVT_PVUNITCOMPPUMPRODENTRY (pvUnitCompPumpRodEntry).
+    columns:
+      # -- identifiers
+      - name: rod_pump_entry_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this rod pump entry. ProdView: IDREC, UI: 'idrec (unique record id)'"
+      - name: id_rec_parent
+        description: "Parent record identifier linking to the rod pump config. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+
+      # -- dates
+      - name: observation_date
+        description: "Date of the rod pump reading. ProdView: DTTM, UI: 'Date'"
+
+      # -- operational measurements
+      - name: spm
+        description: "Strokes per minute. ProdView: SPM, UI: 'Strokes Per Minute'"
+      - name: stroke_length_in
+        description: "Current stroke length in inches (converted from meters). ProdView: STROKELENGTH, UI: 'Current Stroke Length'"
+      - name: run_time_pct
+        description: "Formentera-specific: Run time as percentage (converted from decimal 0-1). ProdView: USERNUM1, UI: 'Run Time'"
+      - name: vol_per_day_calc_bbl
+        description: "Calculated volume throughput in barrels per day (converted from cubic meters per day). ProdView: VOLPERDAYCALC, UI: 'Volume Throughput'"
+
+      # -- comments and user fields
+      - name: comments
+        description: "Free-text comments about the reading. ProdView: COM, UI: 'Comments'"
+      - name: crank_position
+        description: "Formentera-specific: Crank hole position (e.g., '2 of 4'). ProdView: USERTXT1, UI: 'Crank Hole'"
+      - name: crank_rotation
+        description: "Formentera-specific: Crank rotation direction (CW/CCW). ProdView: USERTXT2, UI: 'Rotation'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_num2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_num3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+
+      # -- flags
+      - name: is_seed_record
+        description: "Whether this is a system placeholder 'Seed Record' with no operational data. Derived from comments field."
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether this record is locked in the UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "Record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  - name: stg_prodview__plunger_lifts
+    description: >
+      Plunger lift configuration records from ProdView. One row per plunger lift installation,
+      extending the artificial lift parent record. Contains displacement rate specification.
+      Source: PVT_PVUNITCOMPPUMPPLUNGER (pvUnitCompPumpPlunger).
+    columns:
+      # -- identifiers
+      - name: plunger_lift_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this plunger lift record. ProdView: IDREC"
+      - name: completion_id
+        description: "Parent completion record identifier. ProdView: IDRECPARENT"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- equipment details
+      - name: displacement_rate_bbl_per_day_per_100rpm
+        description: "Displacement rate in barrels per day per 100 RPM (converted from ProdView internal units). ProdView: DISPLACEMENT"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "Record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether this record is locked in the UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."
+
+  - name: stg_prodview__plunger_lift_readings
+    description: >
+      Daily plunger lift operational readings from ProdView. One row per plunger lift per entry date.
+      Contains pressure readings, trip counts, duration metrics, and travel time measurements.
+      Source: PVT_PVUNITCOMPPUMPPLUNGERENTRY (pvUnitCompPumpPlungerEntry).
+    columns:
+      # -- identifiers
+      - name: plunger_reading_sk
+        description: "Surrogate key derived from id_rec."
+      - name: id_rec
+        description: "Unique record identifier for this plunger lift reading. ProdView: IDREC"
+      - name: plunger_lift_id
+        description: "Parent plunger lift record identifier. ProdView: IDRECPARENT"
+      - name: flow_network_id
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- dates
+      - name: entry_date
+        description: "Date of the plunger lift reading. ProdView: DTTM"
+
+      # -- operating parameters
+      - name: plunger_on_pressure_psi
+        description: "Plunger on-pressure in PSI (converted from kilopascals). ProdView: PLUNGERONPRESSURE, UI: 'Plunger OnPressure'"
+
+      # -- trip counts
+      - name: total_trips
+        description: "Total number of plunger trips for the day. ProdView: TRIPCOUNTTOTAL"
+      - name: successful_trips
+        description: "Number of successful plunger trips. ProdView: TRIPCOUNTSUCCESS"
+      - name: failed_trips
+        description: "Number of failed plunger trips. ProdView: TRIPCOUNTFAIL"
+
+      # -- duration metrics
+      - name: duration_on_minutes
+        description: "Duration the plunger was on, in minutes (converted from seconds). ProdView: DURON"
+      - name: duration_off_minutes
+        description: "Duration the plunger was off, in minutes (converted from seconds). ProdView: DUROFF"
+      - name: after_flow_time_hours
+        description: "After-flow time in hours (converted from days). ProdView: AFTERFLOWTIME, UI: 'After Flow'"
+
+      # -- travel time metrics
+      - name: travel_time_avg_minutes
+        description: "Average travel time in minutes (converted from seconds). ProdView: TRAVELTIMEAVG"
+      - name: travel_time_max_minutes
+        description: "Maximum travel time in minutes (converted from seconds). ProdView: TRAVELTIMEMAX"
+      - name: travel_time_min_minutes
+        description: "Minimum travel time in minutes (converted from seconds). ProdView: TRAVELTIMEMIN"
+      - name: travel_time_target_minutes
+        description: "Target travel time in minutes (converted from seconds). ProdView: TRAVELTIMETARGET"
+
+      # -- descriptive fields
+      - name: comments
+        description: "Free-text comments about the reading. ProdView: COM, UI: 'Note'"
+
+      # -- user-defined fields
+      - name: plunger_make
+        description: "Plunger manufacturer. ProdView: USERTXT1, UI: 'Plunger Make'"
+      - name: plunger_model
+        description: "Plunger model designation. ProdView: USERTXT2, UI: 'Plunger Model'"
+      - name: user_text_3
+        description: "User-defined text field 3. ProdView: USERTXT3"
+      - name: user_number_1
+        description: "User-defined numeric field 1. ProdView: USERNUM1"
+      - name: user_number_2
+        description: "User-defined numeric field 2. ProdView: USERNUM2"
+      - name: user_number_3
+        description: "User-defined numeric field 3. ProdView: USERNUM3"
+      - name: plunger_inspection_date
+        description: "Date of last plunger inspection. ProdView: USERDTTM1, UI: 'Plunger Inspection Date'"
+      - name: plunger_replace_date
+        description: "Date of plunger replacement. ProdView: USERDTTM2, UI: 'Plunger Replace Date'"
+      - name: user_date_3
+        description: "User-defined date field 3. ProdView: USERDTTM3"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: record_tag
+        description: "Record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether this record is locked in the UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in the UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp."
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)."

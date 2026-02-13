@@ -1,0 +1,27 @@
+---
+extends: default
+
+rules:
+  # dbt YAML files use long lines for Jinja expressions and descriptions
+  line-length:
+    max: 200
+    allow-non-breakable-inline-mappings: true
+
+  # Allow truthy values used in dbt config (e.g., enabled: true)
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+
+  # dbt schema files don't always start with ---
+  document-start: disable
+
+  # Allow inline mappings used in dbt_project.yml (e.g., combo_curve: {+schema: "..."})
+  braces:
+    max-spaces-inside: 1
+    min-spaces-inside: 0
+
+  comments:
+    min-spaces-from-content: 1
+
+  indentation:
+    spaces: 2
+    indent-sequences: true

@@ -1,0 +1,20 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVUNITCOMPPUMP
+        description: "Artificial lift / pump installations — equipment details, install/removal dates"
+      - name: PVT_PVUNITCOMPPUMPROD
+        description: "Rod pump configurations — static pump specs (diameter, settings)"
+      - name: PVT_PVUNITCOMPPUMPRODENTRY
+        description: "Rod pump daily entries — SPM, stroke length, run time, calculated volumes"
+      - name: PVT_PVUNITCOMPPUMPPLUNGER
+        description: "Plunger lift installations — plunger equipment and configuration"
+      - name: PVT_PVUNITCOMPPUMPPLUNGERENTRY
+        description: "Plunger lift readings — daily plunger cycle counts and measurements"

@@ -1,10 +1,11 @@
 name: Validate dbt changes
 
-on:
+"on":
   workflow_dispatch:
   pull_request:
     paths:
       - .github/workflows/validate-dbt-changes.yaml
+      - functions/**
       - macros/**
       - models/**
       - seeds/**
@@ -101,7 +102,7 @@ jobs:
         run: >
           dbt list
           --resource-type model
-          --select state:modified+
+          --select "state:modified.body+ state:modified.macros+ state:new+"
           --state prod-artifacts/
           --profile integration_tests
           --target ci
@@ -116,16 +117,22 @@ jobs:
 #      - name: dbt build (full refresh)
 #        run: >
 #          dbt build
-#          --select state:modified+
+#          --select "state:modified.body+ state:modified.macros+ state:new+"
 #          --defer --state prod-artifacts/ --favor-state
 #          --indirect-selection cautious
 #          --profile integration_tests
 #          --target ci
 #          --full-refresh
+      - name: Deploy UDFs
+        run: >
+          dbt run
+          --select "resource_type:function"
+          --profile integration_tests
+          --target ci
       - name: dbt build (incremental)
         run: >
           dbt build
-          --select state:modified+
+          --select "state:modified.body+ state:modified.macros+ state:new+"
           --defer --state prod-artifacts/ --favor-state
           --indirect-selection cautious
           --profile integration_tests

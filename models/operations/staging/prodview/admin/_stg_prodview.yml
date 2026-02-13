@@ -1,0 +1,591 @@
+version: 2
+
+models:
+  - name: stg_prodview__partnership_agreements
+    description: >
+      ProdView partnership agreements — ownership and working interest agreements
+      on units. Tracks agreement types, effective dates, and which entities they apply to.
+      One row per agreement. Source: PVT_PVUNITAGREEMT.
+    columns:
+      # -- identifiers
+      - name: partnership_agreement_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent unit record ID. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- descriptive fields
+      - name: agreement_description
+        description: "Agreement description. ProdView: DES, UI: 'Agreement Description'"
+      - name: agreement_type
+        description: "Agreement type classification. ProdView: TYP1, UI: 'Agreement Type'"
+      - name: agreement_subtype_1
+        description: "Agreement sub-type 1. ProdView: SUBTYP1, UI: 'Agreement Sub Type 1'"
+      - name: agreement_subtype_2
+        description: "Agreement sub-type 2. ProdView: SUBTYP2, UI: 'Agreement Sub Type 2'"
+
+      # -- dates
+      - name: agreement_start_date
+        description: "Agreement effective start date. ProdView: DTTMSTART, UI: 'Agreement Start Date'"
+      - name: agreement_end_date
+        description: "Agreement effective end date. ProdView: DTTMEND, UI: 'Agreement End Date'"
+
+      # -- agreement application
+      - name: applies_to_id
+        description: "Record ID of the entity this agreement applies to. ProdView: IDRECAPPLIESTO, UI: 'Applies To'"
+      - name: applies_to_table
+        description: "Table key of the entity this agreement applies to. ProdView: IDRECAPPLIESTOTK, UI: 'Applies To Table'"
+
+      # -- reference IDs
+      - name: wi_partner
+        description: "Working interest partner reference. ProdView: REFIDA, UI: 'WI Partner'"
+      - name: reference_id_b
+        description: "Reference ID B. ProdView: REFIDB, UI: 'Reference ID B'"
+      - name: reference_id_c
+        description: "Reference ID C. ProdView: REFIDC, UI: 'Reference ID C'"
+
+      # -- descriptive fields
+      - name: comments
+        description: "Free-text comments on the agreement. ProdView: COM, UI: 'Comment'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  - name: stg_prodview__agreement_partners
+    description: >
+      ProdView agreement partners — partner ownership stakes within a partnership agreement.
+      Tracks the partner, product type, and interest percentage.
+      One row per partner-product assignment. Source: PVT_PVUNITAGREEMTPARTNER.
+    columns:
+      # -- identifiers
+      - name: agreement_partner_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent partnership agreement record ID. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- partner information
+      - name: partner_id
+        description: "Partner record ID reference. ProdView: IDRECPARTNER, UI: 'Partner'"
+      - name: partner_table
+        description: "Partner table key. ProdView: IDRECPARTNERTK, UI: 'Partner Table'"
+
+      # -- product and interest
+      - name: product_type
+        description: "Product type for this interest. ProdView: TYPFLUIDPROD, UI: 'Product Type'"
+      - name: sub_product_type
+        description: "Sub-product type. ProdView: SUBTYPFLUIDPROD, UI: 'Sub Product Type'"
+      - name: interest_pct
+        description: "Interest percentage (converted from decimal 0-1 to percent 0-100). ProdView: INTEREST, UI: 'Interest'"
+
+      # -- descriptive fields
+      - name: comments
+        description: "Free-text comments. ProdView: COM, UI: 'Comment'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  - name: stg_prodview__regulatory_reporting_keys
+    description: >
+      ProdView regulatory reporting keys — keys used for regulatory body reporting.
+      Tracks key names, values, effective date ranges, and entity associations.
+      One row per reporting key. Source: PVT_PVUNITREGBODYKEY.
+    columns:
+      # -- identifiers
+      - name: regulatory_reporting_key_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent regulatory body record ID. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- key information
+      - name: key_name
+        description: "Regulatory reporting key name. ProdView: KEYNAME, UI: 'Key'"
+
+      # -- item references
+      - name: applies_to_item_id
+        description: "Record ID of entity this key applies to. ProdView: IDRECITEM, UI: 'Applies To'"
+      - name: applies_to_item_table
+        description: "Table key of entity this key applies to. ProdView: IDRECITEMTK, UI: 'Applies To Table'"
+
+      # -- dates
+      - name: start_date
+        description: "Effective start date for this key. ProdView: DTTMSTART, UI: 'Start'"
+      - name: end_date
+        description: "Effective end date for this key. ProdView: DTTMEND, UI: 'End'"
+
+      # -- type classifications
+      - name: key_type
+        description: "Key type classification. ProdView: TYP1, UI: 'Type'"
+      - name: key_sub_type
+        description: "Key sub-type classification. ProdView: TYP2, UI: 'Sub Type'"
+
+      # -- key values
+      - name: key_value_1
+        description: "Key value 1 (text). ProdView: KEYVALUE1, UI: 'Value 1'"
+      - name: key_value_2
+        description: "Key value 2 (text). ProdView: KEYVALUE2, UI: 'Value 2'"
+      - name: key_value_3
+        description: "Key value 3 (text). ProdView: KEYVALUE3, UI: 'Value 3'"
+
+      # -- key numbers
+      - name: key_number_1
+        description: "Key numeric value 1. ProdView: KEYNUM1, UI: 'Value Number 1'"
+      - name: key_number_2
+        description: "Key numeric value 2. ProdView: KEYNUM2, UI: 'Value Number 2'"
+      - name: key_number_3
+        description: "Key numeric value 3. ProdView: KEYNUM3, UI: 'Value Number 3'"
+
+      # -- descriptive fields
+      - name: comments
+        description: "Free-text comments/notes. ProdView: COM, UI: 'Note'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  - name: stg_prodview__remarks
+    description: >
+      ProdView remarks — general-purpose comments, notes, and annotations attached to units.
+      Can flag action-required items and explain allocation imbalances.
+      One row per remark. Source: PVT_PVUNITREMARK.
+    columns:
+      # -- identifiers
+      - name: remark_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent unit record ID. ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- remark information
+      - name: entry_date
+        description: "Date of the remark entry. ProdView: DTTM, UI: 'Entry Date'"
+      - name: remark_type
+        description: "Type/category of remark. ProdView: TYP, UI: 'Type'"
+      - name: comments
+        description: "Remark text content. ProdView: COM, UI: 'Comments'"
+
+      # -- linked item reference
+      - name: link_id
+        description: "Record ID of linked entity (e.g., meter, tank). ProdView: IDRECITEM, UI: 'Link'"
+      - name: link_table
+        description: "Table key of linked entity. ProdView: IDRECITEMTK, UI: 'Link Table'"
+
+      # -- flags
+      - name: action_required
+        description: "Whether this remark requires follow-up action. ProdView: ACTIONRQD, UI: 'Action Required?'"
+      - name: explains_imbalance
+        description: "Whether this remark explains an allocation imbalance. ProdView: EXPLAINEDIMBALANCE, UI: 'Explains Imbalance?'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  - name: stg_prodview__tickets
+    description: >
+      ProdView tickets — truck/haul tickets tracking fluid movements between locations.
+      Captures sending/receiving locations, volumes, quality measurements (BSW, gravity, temperature),
+      and weight data. Volumes are converted from metric to US oilfield units.
+      One row per ticket. Source: PVT_PVTICKET.
+    columns:
+      # -- identifiers
+      - name: ticket_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- ticket information
+      - name: effective_date
+        description: "Ticket effective date. ProdView: DTTM"
+      - name: ticket_type
+        description: "Type of ticket. ProdView: TYPTICKET"
+      - name: truck_ticket_number
+        description: "Truck ticket number. ProdView: TICKETNO, UI: 'Ticket Number'"
+      - name: truck_ticket_sub_number
+        description: "Truck ticket sub-number. ProdView: TICKETSUBNO, UI: 'Ticket Sub Number'"
+      - name: trucking_company
+        description: "Trucking company name. ProdView: TRUCKCO"
+      - name: trucking_company_code
+        description: "Trucking company code. ProdView: TRUCKCOCODE"
+      - name: truck_number
+        description: "Truck reference ID/number. ProdView: TRUCKREFID"
+      - name: is_lact_ticket
+        description: "Whether this is a LACT (Lease Automatic Custody Transfer) ticket. ProdView: EXCLUDE"
+
+      # -- sending location
+      - name: sending_location_id
+        description: "Sending location record ID. ProdView: IDRECLOCSEND"
+      - name: sending_location_table
+        description: "Sending location table key. ProdView: IDRECLOCSENDTK"
+      - name: sending_location_detail
+        description: "Sending location detail text. ProdView: LOCSENDDETAIL"
+      - name: sending_route_id
+        description: "Sending route record ID (calculated). ProdView: IDRECROUTESETROUTESENDCALC"
+      - name: sending_route_table
+        description: "Sending route table key (calculated). ProdView: IDRECROUTESETROUTESENDCALCTK"
+      - name: sending_flow_network_id
+        description: "Sending flow network ID. ProdView: IDFLOWNETSEND"
+      - name: sending_unit_id
+        description: "Sending unit record ID. ProdView: IDRECUNITSEND"
+      - name: sending_outlet_id
+        description: "Sending outlet/node record ID. ProdView: IDRECOUTLETSEND"
+      - name: sending_facility_id
+        description: "Sending facility record ID. ProdView: IDRECFACILITYSEND"
+      - name: from_external_network
+        description: "Whether origin is an external network. ProdView: EXTERNALNETWORKSEND"
+
+      # -- receiving location
+      - name: receiving_location_id
+        description: "Receiving location record ID. ProdView: IDRECLOCREC"
+      - name: receiving_location_table
+        description: "Receiving location table key. ProdView: IDRECLOCRECTK"
+      - name: destination
+        description: "Receiving location detail/destination text. ProdView: LOCRECDETAIL"
+      - name: receiving_route_id
+        description: "Receiving route record ID (calculated). ProdView: IDRECROUTESETROUTERECCALC"
+      - name: receiving_route_table
+        description: "Receiving route table key (calculated). ProdView: IDRECROUTESETROUTERECCALCTK"
+      - name: receiving_flow_network_id
+        description: "Receiving flow network ID. ProdView: IDFLOWNETREC"
+      - name: receiving_unit_id
+        description: "Receiving unit record ID. ProdView: IDRECUNITREC"
+      - name: receiving_inlet_id
+        description: "Receiving inlet/node record ID. ProdView: IDRECINLETREC"
+      - name: receiving_facility_id
+        description: "Receiving facility record ID. ProdView: IDRECFACILITYREC"
+      - name: to_external_network
+        description: "Whether destination is an external network. ProdView: EXTERNALNETWORKREC"
+      - name: is_recirculation
+        description: "Whether this is a recirculation flow. ProdView: RECIRCFLOW"
+
+      # -- basic entry volumes (converted from cubic meters)
+      - name: ticket_volume_bbl
+        description: "Entered ticket volume in barrels (converted from cubic meters). ProdView: VOL"
+      - name: ticket_bsw_pct
+        description: "Entered BS&W percentage (converted from decimal 0-1 to 0-100). ProdView: BSW, UI: 'BS&W'"
+      - name: sand_cut_pct
+        description: "Sand cut percentage (converted from decimal). ProdView: SANDCUT, UI: 'Sand Cut'"
+      - name: free_water_volume_bbl
+        description: "Free water volume in barrels (converted from cubic meters). ProdView: VOLFREEWATER"
+
+      # -- uncorrected volumes (converted from cubic meters)
+      - name: uncorrected_total_volume_bbl
+        description: "Uncorrected total fluid volume in barrels (calculated, converted). ProdView: VOLUNCORRTOTALCALC"
+      - name: uncorrected_hcliq_volume_bbl
+        description: "Uncorrected HC liquid volume in barrels (calculated, converted). ProdView: VOLUNCORRHCLIQCALC"
+      - name: uncorrected_water_volume_bbl
+        description: "Uncorrected water volume in barrels (calculated, converted). ProdView: VOLUNCORRWATERCALC"
+
+      # -- temperature measurements (converted from Celsius to Fahrenheit)
+      - name: opening_level_temperature_f
+        description: "Opening level temperature in Fahrenheit (converted from Celsius). ProdView: TEMPSTART"
+      - name: closing_level_temperature_f
+        description: "Closing level temperature in Fahrenheit (converted from Celsius). ProdView: TEMPEND"
+      - name: observed_temperature_f
+        description: "Sample/observed temperature in Fahrenheit (converted from Celsius). ProdView: TEMPSAMPLE"
+
+      # -- pressure measurements (converted from kPa to PSI)
+      - name: opening_level_pressure_psi
+        description: "Opening level pressure in PSI (converted from kPa). ProdView: PRESSTART"
+      - name: closing_level_pressure_psi
+        description: "Closing level pressure in PSI (converted from kPa). ProdView: PRESEND"
+      - name: sample_pressure_psi
+        description: "Sample pressure in PSI (converted from kPa). ProdView: PRESSAMPLE"
+
+      # -- density measurements (converted from kg/m3 to API gravity)
+      - name: observed_gravity_api
+        description: "Observed sample gravity in API degrees (converted from kg/m3). ProdView: DENSITYSAMPLE"
+      - name: observed_gravity_60f_api
+        description: "Observed sample gravity at 60F in API degrees (calculated, converted). ProdView: DENSITYSAMPLE60F"
+
+      # -- corrected volumes (converted from cubic meters)
+      - name: corrected_total_volume_bbl
+        description: "Corrected total fluid volume in barrels (calculated, converted). ProdView: VOLCORRTOTALCALC"
+      - name: corrected_hcliq_volume_bbl
+        description: "Corrected HC liquid volume in barrels (calculated, converted). ProdView: VOLCORRHCLIQCALC"
+      - name: corrected_bsw_pct
+        description: "Corrected BS&W percentage (calculated, converted from decimal). ProdView: BSWCORRCALC"
+      - name: corrected_sand_cut_pct
+        description: "Corrected sand cut percentage (calculated, converted from decimal). ProdView: SANDCUTCORRCALC"
+
+      # -- receivers override section
+      - name: reference_number
+        description: "Override reference number. ProdView: REFID, UI: 'Reference Number'"
+      - name: statement_id
+        description: "Original statement ID. ProdView: ORIGSTATEMENTID, UI: 'Statement Id'"
+      - name: data_source
+        description: "Data source identifier. ProdView: SOURCE, UI: 'Source'"
+      - name: is_verified
+        description: "Whether the override has been verified. ProdView: VERIFIED, UI: 'Verified'"
+
+      # -- override conditions (converted)
+      - name: override_temperature_f
+        description: "Override temperature in Fahrenheit (converted from Celsius). ProdView: TEMPOR"
+      - name: override_pressure_psi
+        description: "Override pressure in PSI (converted from kPa). ProdView: PRESOR"
+      - name: override_density_api
+        description: "Override density in API gravity (converted from kg/m3). ProdView: DENSITYOR"
+
+      # -- override volumes (converted from cubic meters)
+      - name: override_hcliq_volume_bbl
+        description: "Override HC liquid volume in barrels (converted from cubic meters). ProdView: VOLORHCLIQ"
+      - name: override_water_volume_bbl
+        description: "Override water volume in barrels (converted from cubic meters). ProdView: VOLORWATER"
+      - name: override_sand_volume_bbl
+        description: "Override sand volume in barrels (converted from cubic meters). ProdView: VOLORSAND"
+
+      # -- final calculated volumes (converted from cubic meters)
+      - name: final_total_volume_bbl
+        description: "Final total fluid volume in barrels (calculated, converted). ProdView: VOLTOTALCALC"
+      - name: final_oil_volume_bbl
+        description: "Final HC liquid/oil volume in barrels (calculated, converted). ProdView: VOLHCLIQCALC"
+      - name: final_gas_equivalent_liquids_mcf
+        description: "Final gas equivalent of liquids in MCF (calculated, converted). ProdView: VOLHCLIQGASEQCALC"
+      - name: final_water_volume_bbl
+        description: "Final water volume in barrels (calculated, converted). ProdView: VOLWATERCALC"
+      - name: final_sand_volume_bbl
+        description: "Final sand volume in barrels (calculated, converted). ProdView: VOLSANDCALC"
+      - name: final_bsw_pct
+        description: "Final BS&W percentage (calculated, converted from decimal). ProdView: BSWCALC"
+      - name: final_sand_cut_pct
+        description: "Final sand cut percentage (calculated, converted from decimal). ProdView: SANDCUTCALC"
+
+      # -- tank levels
+      - name: tank_id
+        description: "Associated tank record ID. ProdView: IDRECTANK"
+      - name: tank_table
+        description: "Associated tank table key. ProdView: IDRECTANKTK"
+      - name: opening_tank_level
+        description: "Opening tank level reading. ProdView: TANKLEVELSTART"
+      - name: closing_tank_level
+        description: "Closing tank level reading. ProdView: TANKLEVELEND"
+      - name: opening_tank_volume_bbl
+        description: "Opening tank volume in barrels (calculated, converted from cubic meters). ProdView: TANKSTARTVOLCALC"
+      - name: closing_tank_volume_bbl
+        description: "Closing tank volume in barrels (calculated, converted from cubic meters). ProdView: TANKENDVOLCALC"
+
+      # -- weight measurements (converted from kg to lb)
+      - name: scale_ticket_number
+        description: "Scale ticket number for weight measurement. ProdView: SCALETICKETNO"
+      - name: full_weight_lb
+        description: "Full truck weight in pounds (converted from kg). ProdView: WEIGHTTRUCKFULL"
+      - name: empty_weight_lb
+        description: "Empty truck weight in pounds (converted from kg). ProdView: WEIGHTTRUCKEMPTY"
+      - name: weight_of_fluid_lb
+        description: "Calculated weight of fluid in pounds (converted from kg). ProdView: WEIGHTFLUIDCALC"
+
+      # -- component densities (converted)
+      - name: oil_density_api
+        description: "Oil component density in API gravity (converted from kg/m3). ProdView: COMPDENSITYHCLIQ"
+      - name: water_density_lb_per_gal
+        description: "Water component density in lb/gal (converted from kg/m3). ProdView: COMPDENSITYWATER"
+      - name: sand_density_lb_per_gal
+        description: "Sand component density in lb/gal (converted from kg/m3). ProdView: COMPDENSITYSAND"
+
+      # -- analysis and seal references
+      - name: hc_liquid_analysis_id
+        description: "HC liquid analysis record ID (calculated). ProdView: IDRECHCLIQANALYSISCALC"
+      - name: hc_liquid_analysis_table
+        description: "HC liquid analysis table key (calculated). ProdView: IDRECHCLIQANALYSISCALCTK"
+      - name: override_hc_liquid_analysis_id
+        description: "Override HC liquid analysis record ID. ProdView: IDRECHCLIQANALYSISOR"
+      - name: override_hc_liquid_analysis_table
+        description: "Override HC liquid analysis table key. ProdView: IDRECHCLIQANALYSISORTK"
+      - name: seal_entry_id
+        description: "Seal entry record ID. ProdView: IDRECSEALENTRY"
+      - name: seal_entry_table
+        description: "Seal entry table key. ProdView: IDRECSEALENTRYTK"
+
+      # -- system links
+      - name: linked_ticket_id
+        description: "Linked ticket record ID for related tickets. ProdView: IDRECTICKETLINK"
+      - name: last_ticket_integrator_run_utc
+        description: "Timestamp of last ticket integrator run (UTC). ProdView: DTTMUTCLASTTICKETINTRUN"
+      - name: ticket_integrator_notes
+        description: "Notes from ticket integrator processing. ProdView: NOTEINTEGRATOR"
+
+      # -- descriptive fields
+      - name: comments
+        description: "Free-text comments on the ticket. ProdView: COM"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1 (no Formentera-specific mapping). ProdView: USERTXT1"
+      - name: user_txt2
+        description: "User-defined text field 2 (no Formentera-specific mapping). ProdView: USERTXT2"
+      - name: user_txt3
+        description: "User-defined text field 3 (no Formentera-specific mapping). ProdView: USERTXT3"
+      - name: user_txt4
+        description: "User-defined text field 4 (no Formentera-specific mapping). ProdView: USERTXT4"
+      - name: user_txt5
+        description: "User-defined text field 5 (no Formentera-specific mapping). ProdView: USERTXT5"
+      - name: user_num1
+        description: "User-defined numeric field 1 (no Formentera-specific mapping). ProdView: USERNUM1"
+      - name: user_num2
+        description: "User-defined numeric field 2 (no Formentera-specific mapping). ProdView: USERNUM2"
+      - name: user_num3
+        description: "User-defined numeric field 3 (no Formentera-specific mapping). ProdView: USERNUM3"
+      - name: user_num4
+        description: "User-defined numeric field 4 (no Formentera-specific mapping). ProdView: USERNUM4"
+      - name: user_num5
+        description: "User-defined numeric field 5 (no Formentera-specific mapping). ProdView: USERNUM5"
+      - name: user_date_1
+        description: "User-defined date field 1 (no Formentera-specific mapping). ProdView: USERDTTM1"
+      - name: user_date_2
+        description: "User-defined date field 2 (no Formentera-specific mapping). ProdView: USERDTTM2"
+      - name: user_date_3
+        description: "User-defined date field 3 (no Formentera-specific mapping). ProdView: USERDTTM3"
+      - name: user_date_4
+        description: "User-defined date field 4 (no Formentera-specific mapping). ProdView: USERDTTM4"
+      - name: user_date_5
+        description: "User-defined date field 5 (no Formentera-specific mapping). ProdView: USERDTTM5"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Create User'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Modify User'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Modify Date'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date'"
+      - name: is_locked
+        description: "Whether this record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "ProdView record tag for UI grouping/filtering. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

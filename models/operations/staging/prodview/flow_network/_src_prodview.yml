@@ -1,0 +1,24 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVFLOWNETHEADER
+        description: "Flow networks — top-level network definitions"
+      - name: PVT_PVUNITNODE
+        description: "Unit nodes — nodes within the flow network graph"
+      - name: PVT_PVUNITNODEFLOWTO
+        description: "Unit node connections — edges between flow network nodes"
+      - name: PVT_PVUNITNODEMONTHDAYCALC
+        description: "Node daily volumes — calculated daily volumes at network nodes"
+      - name: PVT_PVUNITNODEMONTHCALC
+        description: "Node monthly volumes — calculated monthly volumes at network nodes"
+      - name: PVT_PVUNITNODECORR
+        description: "Node monthly corrections — monthly volume corrections at network nodes"
+      - name: PVT_PVUNITNODECORRDAY
+        description: "Node daily corrections — daily volume corrections at network nodes"

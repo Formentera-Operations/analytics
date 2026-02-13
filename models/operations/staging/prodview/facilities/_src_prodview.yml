@@ -1,0 +1,16 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVFACILITYMONTHDAYCALC
+        description: "Facility daily volumes — calculated daily volumes at facility level"
+      - name: PVT_PVFACILITYMONTHCALC
+        description: "Facility monthly volumes — calculated monthly volumes at facility level"
+      - name: PVT_PVFACRECDISPCALC
+        description: "Facility daily receipts — daily receipt and disposition calculations"

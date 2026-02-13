@@ -5,10 +5,10 @@ sources:
     database: ESTUARY_DB
     schema: ESTUARY_SCHEMA
     tables:
-      - name: AFEBUDGET
-      - name: AFEBUDGETDETAIL_V2
-      - name: APINVOICE
-      - name: APINVOICEDETAIL
+      - name: ODA_AFEBUDGET
+      - name: ODA_AFEBUDGETDETAIL_V2
+      - name: ODA_APINVOICE
+      - name: ODA_APINVOICEDETAIL
       - name: GL
         description: |
           Raw general ledger entries from Quorum OnDemand Accounting system containing all financial transactions.
@@ -46,10 +46,10 @@ sources:
             description: Final transaction amount after allocations
           - name: POSTED
             description: Flag indicating if the transaction is posted (1=yes, 0=no)
-      - name: JIB
-      - name: JIBDETAIL
-      - name: VOUCHER_V2
-      - name: ODA_BATCH_MDM_CALENDAR
+      - name: ODA_JIB
+      - name: ODA_JIBDETAIL
+      - name: ODA_VOUCHER_V2
+      - name: MDM_CALENDAR
       - name: ODA_BATCH_ODA_ENTITY
       - name: ODA_BATCH_ODA_ENTITY_V2
       - name: ODA_BATCH_ODA_COMPANY
@@ -70,7 +70,7 @@ sources:
             description: Foreign key to account type
           - name: ACCOUNTSUBTYPEID
             description: Foreign key to account subtype
-      - name: ODA_BATCH_ODA_ACCOUNTTYPE
+      - name: ODA_ACCOUNTTYPE
       - name: ODA_BATCH_ODA_ACCOUNTSUBTYPE
       - name: ODA_BATCH_ODA_VENDOR_V2
       - name: ODA_BATCH_ODA_OWNER_V2
@@ -79,20 +79,20 @@ sources:
       - name: ODA_BATCH_ODA_REVENUEDECK_V2
       - name: ODA_REVENUEDECKSET
       - name: ODA_REVENUEDECKREVISION
-      - name: ODA_REVENUEDECKPARTICIPANT 
+      - name: ODA_REVENUEDECKPARTICIPANT
       - name: ODA_BATCH_ODA_PURCHASER_V2
       - name: ODA_BATCH_ODA_PAYMENTTYPE
-      - name: ODA_BATCH_ODA_GLRECONCILIATIONTYPE
-      - name: ODA_EXPENSEDECK_V2
+      - name: ODA_GLRECONCILIATIONTYPE
+      - name: ODA_BATCH_ODA_EXPENSEDECK_V2
       - name: ODA_EXPENSEDECKSET
       - name: ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW
       - name: ODA_BATCH_ODA_AFE_V2
       - name: ODA_BATCH_ODA_WELL
-      - name: ODA_BATCH_ODA_USERFIELD
-      - name: ODA_EXPENSEDECKREVISION
+      - name: ODA_USERFIELD
+      - name: ODA_BATCH_ODA_EXPENSEDECKREVISION
       - name: ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT
       - name: ODA_BATCH_ODA_INTERESTTYPE
-      - name: ODA_BATCH_ODA_REVISIONSTATE
+      - name: ODA_REVISIONSTATE
       - name: ODA_BATCH_ODA_PRODUCT
       - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
       - name: ODA_ARINVOICE_V2
@@ -100,8 +100,6 @@ sources:
       - name: ODA_ARINVOICEPAYMENT
       - name: ODA_ARINVOICEPAYMENTDETAIL
       - name: ODA_ARINVOICENETTEDDETAIL
-      - name: ODA_ARINVOICEADJUSTMENT
-      - name: ODA_ARINVOICEADJUSTMENTDETAIL
       - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENT
       - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL
       - name: ODA_BATCH_ODA_ARADVANCE

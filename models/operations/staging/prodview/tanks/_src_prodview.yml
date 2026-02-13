@@ -1,0 +1,24 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVUNITTANK
+        description: "Tanks — tank equipment records (capacity, type, location)"
+      - name: PVT_PVUNITTANKENTRY
+        description: "Tank readings — gauge readings and calculated volumes"
+      - name: PVT_PVUNITTANKSTRAP
+        description: "Tank straps — tank calibration charts (header)"
+      - name: PVT_PVUNITTANKSTRAPDATA
+        description: "Tank strap details — calibration chart data points (height-to-volume)"
+      - name: PVT_PVUNITTANKSTARTINV
+        description: "Tank starting inventories — beginning-of-month inventory by product"
+      - name: PVT_PVUNITTANKMONTHCALC
+        description: "Tank monthly volumes — calculated monthly tank throughput"
+      - name: PVT_PVUNITTANKMONTHDAYCALC
+        description: "Tank daily volumes — calculated daily tank throughput"

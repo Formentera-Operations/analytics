@@ -1,0 +1,74 @@
+[sqlfluff]
+dialect = snowflake
+templater = dbt
+max_line_length = 120
+large_file_skip_byte_limit = 40000
+
+# Disabled rules:
+# AL09 — Self-alias (e.g., ID as id). Standard Snowflake pattern to rename UPPERCASE
+#         source columns to lowercase in staging. Pervasive across 430+ models.
+# RF02 — Unqualified references. Too noisy for join-heavy intermediate models (13+ joins).
+# RF04 — Keywords as identifiers. Common column names (name, date, description) are SQL
+#         keywords but work fine unquoted in Snowflake and are deeply embedded.
+# RF05 — Special chars in identifiers. ProdView staging models use quoted descriptive
+#         aliases like "Completion Record ID" — deeply embedded legacy pattern.
+rules = core,capitalisation,layout,convention,structure,references,ambiguous,jinja
+exclude_rules = AL09,RF02,RF04,RF05
+
+# Comma style
+[sqlfluff:layout:type:comma]
+line_position = trailing
+
+# Indentation
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 4
+indented_joins = false
+indented_ctes = false
+indented_on_contents = true
+
+# --- Rule Configuration ---
+
+# CP01: Keyword case — lowercase
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+# CP02: Unquoted identifier case — lowercase aliases only
+# Source column names arrive UPPERCASE from Snowflake; we only enforce casing
+# on aliases (output column names), not raw source references.
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+unquoted_identifiers_policy = aliases
+
+# CP03: Function name case — lowercase
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+# CP04: Boolean/null literal case — lowercase
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+# CP05: Data type case — lowercase
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower
+
+# LT09: Select targets — single column per line when multiple
+[sqlfluff:rules:layout.select_targets]
+wildcard_policy = single
+
+# CV04: Trailing commas in SELECT — forbid (we use trailing commas between items,
+# but the last item before FROM should not have a trailing comma)
+[sqlfluff:rules:convention.select_trailing_comma]
+select_clause_trailing_comma = forbid
+
+# ST07: Prefer CTEs over nested subqueries
+[sqlfluff:rules:structure.subquery]
+forbid_subquery_in = both
+
+# --- dbt Templater ---
+
+[sqlfluff:templater:dbt]
+project_dir = ./
+profiles_dir = ~/.dbt/
+profile = default
+target = dev

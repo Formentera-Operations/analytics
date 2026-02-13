@@ -1,0 +1,741 @@
+version: 2
+
+models:
+  - name: stg_prodview__networks
+    description: >
+      ProdView flow network headers — defines the grouping entity that delineates assets
+      by flow patterns. All assets that flow together exist within the same network.
+      One row per flow network. Source: PVT_PVFLOWNETHEADER.
+    columns:
+      # -- identifiers
+      - name: network_sk
+        description: "Surrogate key (MD5 hash of id_flownet)"
+      - name: id_flownet
+        description: "Flow network identifier (PK). ProdView: IDFLOWNET, UI: 'IDFlowNet'"
+      - name: flow_network_name
+        description: "Network name. ProdView: NAME, UI: 'Network Name'"
+      - name: flow_network_type
+        description: "Network type classification. ProdView: TYP, UI: 'Type'"
+
+      # -- primary unit and facility references
+      - name: primary_unit_id
+        description: "Primary unit record ID for this network. ProdView: IDRECUNITPRIMARY, UI: 'Primary Unit'"
+      - name: primary_unit_table
+        description: "Primary unit table key. ProdView: IDRECUNITPRIMARYTK, UI: 'Primary Unit Table'"
+      - name: primary_facility_id
+        description: "Primary facility record ID for this network. ProdView: IDRECFACILITYPRIMARY, UI: 'Primary Facility'"
+      - name: primary_facility_table
+        description: "Primary facility table key. ProdView: IDRECFACILITYPRIMARYTK, UI: 'Primary Facility Table'"
+
+      # -- general information
+      - name: comments
+        description: "Network comments. ProdView: COM, UI: 'Comment'"
+
+      # -- responsibility assignments
+      - name: primary_responsible_id
+        description: "Primary responsible person record ID. ProdView: IDRECRESP1, UI: 'Primary Responsible'"
+      - name: primary_responsible_table
+        description: "Primary responsible person table key. ProdView: IDRECRESP1TK, UI: 'Primary Responsible Table'"
+      - name: secondary_responsible_id
+        description: "Secondary responsible person record ID. ProdView: IDRECRESP2, UI: 'Secondary Responsible'"
+      - name: secondary_responsible_table
+        description: "Secondary responsible person table key. ProdView: IDRECRESP2TK, UI: 'Secondary Responsible Table'"
+
+      # -- reporting configuration flags
+      - name: report_gathered_calculations
+        description: "Whether to report gathered calculations. ProdView: RPTGATHEREDCALCS, UI: 'Report Gathered Calculations'"
+      - name: report_allocations
+        description: "Whether to report allocations. ProdView: RPTALLOCATIONS, UI: 'Report Allocations'"
+      - name: report_dispositions
+        description: "Whether to report dispositions. ProdView: RPTDISPOSITIONS, UI: 'Report Dispositions'"
+      - name: report_component_dispositions
+        description: "Whether to report component dispositions. ProdView: RPTCOMPONENTDISPOSITIONS, UI: 'Report Component Dispositions'"
+      - name: report_node_calculations
+        description: "Whether to report node calculations. ProdView: RPTNODECALCULATIONS, UI: 'Report Node Calculations'"
+
+      # -- operational settings
+      - name: track_downhole_inventory
+        description: "Whether to track downhole inventory for this network. ProdView: TRACKDOWNHOLEINVENTORY, UI: 'Track Downhole Inventory'"
+
+      # -- allocation and process dates
+      - name: allocation_process_began_date
+        description: "Date/time the current allocation process began. ProdView: DTTMALLOCPROCESSBEGAN, UI: 'Date/Time the current allocation process began'"
+      - name: start_date
+        description: "Start date for using/allocating the flow network. ProdView: DTTMSTART, UI: 'Start Using/Allocating Flow Network'"
+      - name: end_date
+        description: "End date for using/allocating the flow network. ProdView: DTTMEND, UI: 'End Using/Allocating Flow Network'"
+      - name: last_allocation_process_date
+        description: "Date of last allocation process. ProdView: DTTMLASTALLOCPROCESS, UI: 'Date of last allocation process'"
+      - name: last_allocation_process_user
+        description: "User who initiated the last allocation process. ProdView: USERLASTALLOCPROCESS, UI: 'User Initiating the last allocation process'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_txt4
+        description: "User-defined text field 4. ProdView: USERTXT4, UI: 'User Text 4'"
+      - name: user_txt5
+        description: "User-defined text field 5. ProdView: USERTXT5, UI: 'User Text 5'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+      - name: database_modified_at_utc
+        description: "Last database write timestamp (UTC). ProdView: SYSMODDATEDB, UI: 'Last Write to Database (UTC)'"
+      - name: database_modified_by
+        description: "User who last wrote to database. ProdView: SYSMODUSERDB, UI: 'Last Write to Database User'"
+      - name: security_type
+        description: "Security type classification. ProdView: SYSSECURITYTYP, UI: 'Security Type'"
+      - name: master_lock_date_utc
+        description: "Master lock date (UTC). ProdView: SYSLOCKDATEMASTER, UI: 'Master Lock Date (UTC)'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__unit_nodes
+    description: >
+      ProdView unit nodes — define flow in/out points on a unit and connections between
+      units. Each node represents a physical point (outlet, inlet, meter) through which
+      fluids flow. One row per unit node. Source: PVT_PVUNITNODE.
+    columns:
+      # -- identifiers
+      - name: unit_node_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (unit). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- node configuration
+      - name: node_name
+        description: "Node name. ProdView: NAME, UI: 'Node Name'"
+      - name: node_type
+        description: "Node type classification. ProdView: TYP, UI: 'NodeType'"
+      - name: start_date
+        description: "Install date of the node. ProdView: DTTMSTART, UI: 'Install Date'"
+      - name: end_date
+        description: "Removal date of the node. ProdView: DTTMEND, UI: 'Removal Date'"
+
+      # -- fluid and component properties
+      - name: component_name
+        description: "Component name for this node. ProdView: COMPONENT, UI: 'Component'"
+      - name: component_phase
+        description: "Component phase (gas, liquid, etc.). ProdView: COMPONENTPHASE, UI: 'Component Phase'"
+      - name: designated_fluid
+        description: "Fluid description for this node. ProdView: DESFLUID, UI: 'Fluid Description'"
+      - name: keep_whole
+        description: "Whether to keep the fluid whole (not split). ProdView: KEEPWHOLE, UI: 'Keep Whole?'"
+      - name: fluid_base_restriction_type
+        description: "Restricted fluid type for base calculations. ProdView: TYPFLUIDBASERESTRICT, UI: 'Restricted Fluid'"
+
+      # -- flow diagram and sorting
+      - name: flow_diagram_sort_order
+        description: "Sort order on the flow diagram display. ProdView: SORTFLOWDIAG, UI: 'Sort Order on Diagram'"
+
+      # -- migration tracking
+      - name: migration_source_key
+        description: "Key identifying the migration source. ProdView: KEYMIGRATIONSOURCE, UI: 'Migration Source Key'"
+      - name: migration_source_type
+        description: "Type of migration source. ProdView: TYPMIGRATIONSOURCE, UI: 'Migration Source Type'"
+
+      # -- external IDs and corrections
+      - name: other_id
+        description: "Other external identifier. ProdView: OTHERID, UI: 'Other ID'"
+      - name: correction_id_1
+        description: "First correction identifier. ProdView: CORRECTIONID1, UI: 'Correction ID 1'"
+      - name: correction_type_1
+        description: "First correction type. ProdView: CORRECTIONTYP1, UI: 'Correction Type 1'"
+      - name: correction_id_2
+        description: "Second correction identifier. ProdView: CORRECTIONID2, UI: 'Correction ID 2'"
+      - name: correction_type_2
+        description: "Second correction type. ProdView: CORRECTIONTYP2, UI: 'Correction Type 2'"
+
+      # -- product and facility information
+      - name: facility_product_name
+        description: "Facility product name associated with this node. ProdView: FACPRODUCTNAME, UI: 'Facility Product'"
+      - name: use_virtual_analysis
+        description: "Whether to use virtual analysis. ProdView: USEVIRUTALANALYSIS, UI: 'Use Virtual Analysis?'"
+
+      # -- disposition configuration
+      - name: disposition_point
+        description: "Whether this node is a disposition point. ProdView: DISPOSITIONPOINT, UI: 'Disposition Point?'"
+      - name: disposition_product_name
+        description: "Product name for dispositions at this node. ProdView: DISPPRODUCTNAME, UI: 'Disposition Product'"
+      - name: disposition_type_1
+        description: "Primary disposition type. ProdView: TYPDISP1, UI: 'Disposition Type'"
+      - name: disposition_type_2
+        description: "Secondary disposition type (subtype). ProdView: TYPDISP2, UI: 'Disposition Subtype'"
+      - name: hcliq_disposition_type
+        description: "HC liquid disposition type. ProdView: TYPDISPHCLIQ, UI: 'HCLiq Disposition Type'"
+      - name: disposition_id_a
+        description: "Disposition identifier A. ProdView: DISPIDA, UI: 'Disposition IDA'"
+      - name: disposition_id_b
+        description: "Disposition identifier B. ProdView: DISPIDB, UI: 'Disposition IDB'"
+
+      # -- purchaser information
+      - name: purchaser_name
+        description: "Purchaser name for this node. ProdView: PURCHASERNAME, UI: 'Purchaser Name'"
+      - name: purchaser_code_1
+        description: "Purchaser code 1. ProdView: PURCHASERCODE1, UI: 'Purchaser Code 1'"
+      - name: purchaser_code_2
+        description: "Purchaser code 2. ProdView: PURCHASERCODE2, UI: 'Purchaser Code 2'"
+
+      # -- general configuration
+      - name: comments
+        description: "Node comments. ProdView: COM, UI: 'Note'"
+      - name: hide_record_date
+        description: "Date after which to hide the record. ProdView: DTTMHIDE, UI: 'Hide Record As Of'"
+      - name: report_group
+        description: "Report node grouping. ProdView: REPORTGROUP, UI: 'Report Node Grouping'"
+      - name: is_in_gathered
+        description: "Whether to include/exclude from gathered calculations. ProdView: INGATHERED, UI: 'Include/Exclude From Gathered'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "Gas purchaser tag for reporting (Formentera-specific). ProdView: USERTXT1, UI: 'Gas Purch Tag for Reporting'"
+      - name: user_txt2
+        description: "Gas gathering system tag for reporting (Formentera-specific). ProdView: USERTXT2, UI: 'Gas Gath Sys Tag for Reporting'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_num1
+        description: "User-defined numeric field 1. ProdView: USERNUM1, UI: 'User Num 1'"
+      - name: user_num2
+        description: "User-defined numeric field 2. ProdView: USERNUM2, UI: 'User Num 2'"
+      - name: user_num3
+        description: "User-defined numeric field 3. ProdView: USERNUM3, UI: 'User Num 3'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__unit_node_connections
+    description: >
+      ProdView unit node outlet connections — defines the destination unit and node that
+      a given node is connected to, establishing the flow path between units.
+      One row per connection. Source: PVT_PVUNITNODEFLOWTO.
+    columns:
+      # -- identifiers
+      - name: unit_node_connection_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (unit node). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- connection period
+      - name: connection_start_date
+        description: "Date the connection was established. ProdView: DTTMSTART, UI: 'Date Connected'"
+      - name: connection_end_date
+        description: "Date the connection was disconnected. ProdView: DTTMEND, UI: 'Date Disconnected'"
+
+      # -- inlet information (destination)
+      - name: inlet_id
+        description: "Destination node record ID. ProdView: IDRECINLET, UI: 'Destination Node'"
+      - name: inlet_table
+        description: "Destination node table key. ProdView: IDRECINLETTK, UI: 'Destination Node Table'"
+      - name: inlet_unit_id_calculated
+        description: "Destination unit record ID (calculated). ProdView: IDRECINLETUNITCALC, UI: 'Destination Unit'"
+      - name: inlet_unit_table_calculated
+        description: "Destination unit table key (calculated). ProdView: IDRECINLETUNITCALCTK, UI: 'Destination Unit Table'"
+
+      # -- outlet information (source, calculated)
+      - name: outlet_id_calculated
+        description: "Source node record ID (calculated). ProdView: IDRECOUTLETCALC, UI: 'Source Node'"
+      - name: outlet_table_calculated
+        description: "Source node table key (calculated). ProdView: IDRECOUTLETCALCTK, UI: 'Source Node Table'"
+      - name: outlet_unit_id_calculated
+        description: "Source unit record ID (calculated). ProdView: IDRECOUTLETUNITCALC, UI: 'Source Unit'"
+      - name: outlet_unit_table_calculated
+        description: "Source unit table key (calculated). ProdView: IDRECOUTLETUNITCALCTK, UI: 'Source Unit Table'"
+
+      # -- flow characteristics
+      - name: is_recirculation_flow
+        description: "Whether this connection represents recirculation flow. ProdView: RECIRCFLOW, UI: 'Recirculation?'"
+      - name: comments
+        description: "Connection comments. ProdView: COM, UI: 'Note'"
+
+      # -- sequence
+      - name: sequence_number
+        description: "Display sequence number. ProdView: SYSSEQ, UI: 'Sequence'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__node_daily_volumes
+    description: >
+      ProdView daily node volume calculations — detailed daily gathered volumes for each
+      unit node including oil, gas, water, sand, and heat content. Aggregates to the
+      monthly node table. One row per node per day. Source: PVT_PVUNITNODEMONTHDAYCALC.
+    columns:
+      # -- identifiers
+      - name: node_daily_volume_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (unit node). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+      - name: node_id
+        description: "Node record ID this volume belongs to. ProdView: IDRECNODE, UI: 'Node'"
+      - name: node_table
+        description: "Node table key. ProdView: IDRECNODETK, UI: 'Node Table'"
+
+      # -- dates
+      - name: calculation_date
+        description: "Date of the daily calculation. ProdView: DTTM, UI: 'Date'"
+      - name: calculation_year
+        description: "Calendar year of the calculation. ProdView: YEAR, UI: 'Year'"
+      - name: calculation_month
+        description: "Calendar month of the calculation. ProdView: MONTH, UI: 'Month'"
+      - name: day_of_month
+        description: "Day of the month. ProdView: DAYOFMONTH, UI: 'Day'"
+
+      # -- volumes
+      - name: hcliq_volume_bbl
+        description: "Gathered oil/condensate volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLHCLIQ, UI: 'Gathered Oil/Condensate'"
+      - name: hcliq_gas_equivalent_mcf
+        description: "Gathered gas equivalent of oil/condensate in MCF. Converted from m3. ProdView: VOLHCLIQGASEQ, UI: 'Gathered Gas Equivalent of Oil/Condensate Volume'"
+      - name: gas_volume_mcf
+        description: "Gathered gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLGAS, UI: 'Gathered Gas'"
+      - name: water_volume_bbl
+        description: "Gathered water volume in barrels. Converted from m3. ProdView: VOLWATER, UI: 'Gathered Water'"
+      - name: sand_volume_bbl
+        description: "Gathered sand volume in barrels. Converted from m3. ProdView: VOLSAND, UI: 'Gathered Sand'"
+
+      # -- heat content
+      - name: heat_content_mmbtu
+        description: "Gathered heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEAT, UI: 'Gathered Heat'"
+      - name: heat_factor_btu_per_ft3
+        description: "Gathered heat factor in BTU/ft3. Converted from J/m3 via pv_jm3_to_btu_per_ft3. ProdView: FACTHEAT, UI: 'Gathered Heat Factor'"
+
+      # -- facility reference
+      - name: facility_id
+        description: "Current facility record ID. ProdView: IDRECFACILITY, UI: 'Current Facility'"
+      - name: facility_table
+        description: "Current facility table key. ProdView: IDRECFACILITYTK, UI: 'Current Facility Table'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__node_monthly_volumes
+    description: >
+      ProdView monthly node volume calculations — detailed monthly gathered volumes for
+      each unit node including oil, gas, water, sand, and heat content.
+      One row per node per month. Source: PVT_PVUNITNODEMONTHCALC.
+    columns:
+      # -- identifiers
+      - name: node_monthly_volume_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (unit node). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- dates
+      - name: period_start_date
+        description: "Start of the monthly period. ProdView: DTTMSTART, UI: 'Start of Period'"
+      - name: period_end_date
+        description: "End of the monthly period. ProdView: DTTMEND, UI: 'End of Period'"
+      - name: calculation_year
+        description: "Calendar year of the calculation. ProdView: YEAR, UI: 'Year'"
+      - name: calculation_month
+        description: "Calendar month of the calculation. ProdView: MONTH, UI: 'Month'"
+
+      # -- facility reference
+      - name: facility_id
+        description: "Current facility record ID. ProdView: IDRECFACILITY, UI: 'Current Facility'"
+      - name: facility_table
+        description: "Current facility table key. ProdView: IDRECFACILITYTK, UI: 'Current Facility Table'"
+
+      # -- gathered volumes
+      - name: gathered_hcliq_bbl
+        description: "Gathered oil/condensate volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLHCLIQ, UI: 'Gathered Oil/Condensate'"
+      - name: gathered_gas_equivalent_hcliq_mcf
+        description: "Gathered gas equivalent of oil/condensate in MCF. Converted from m3. ProdView: VOLHCLIQGASEQ, UI: 'Gathered Gas Equivalent of Oil/Condensate Volume'"
+      - name: gathered_gas_mcf
+        description: "Gathered gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLGAS, UI: 'Gathered Gas'"
+      - name: gathered_water_bbl
+        description: "Gathered water volume in barrels. Converted from m3. ProdView: VOLWATER, UI: 'Gathered Water'"
+      - name: gathered_sand_bbl
+        description: "Gathered sand volume in barrels. Converted from m3. ProdView: VOLSAND, UI: 'Gathered Sand'"
+
+      # -- heat content
+      - name: gathered_heat_mmbtu
+        description: "Gathered heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEAT, UI: 'Gathered Heat'"
+      - name: gathered_heat_factor_btu_per_ft3
+        description: "Gathered heat factor in BTU/ft3. Converted from J/m3 via pv_jm3_to_btu_per_ft3. ProdView: FACTHEAT, UI: 'Gathered Heat Factor'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__node_daily_corrections
+    description: >
+      ProdView daily node correction volumes — read-only daily breakdown of meter
+      correction volumes populated by the Meter Corrections tool.
+      One row per node per correction day. Source: PVT_PVUNITNODECORRDAY.
+    columns:
+      # -- identifiers
+      - name: node_daily_correction_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (node correction). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- dates
+      - name: correction_date
+        description: "Date of the correction. ProdView: DTTM, UI: 'Date'"
+
+      # -- volume corrections
+      - name: final_hcliq_bbl
+        description: "Final corrected oil/condensate volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLHCLIQ, UI: 'Final Oil/Condensate'"
+      - name: final_gas_mcf
+        description: "Final gas volume in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLGAS, UI: 'Final Gas'"
+      - name: final_water_bbl
+        description: "Final water volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLWATER, UI: 'Final Water'"
+      - name: final_sand_bbl
+        description: "Final sand volume in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLSAND, UI: 'Final Sand'"
+
+      # -- heat content
+      - name: final_heat_mmbtu
+        description: "Final heat content in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEAT, UI: 'Final Heat'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__node_monthly_corrections
+    description: >
+      ProdView monthly node corrections — read-only correction records populated by the
+      Meter Corrections tool, containing temperature, pressure, density measurements and
+      estimated vs actual volume differences for gas, oil, water, and sand.
+      One row per node per correction period. Source: PVT_PVUNITNODECORR.
+    columns:
+      # -- identifiers
+      - name: node_monthly_correction_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique record ID (PK). ProdView: IDREC"
+      - name: id_rec_parent
+        description: "Parent record ID (unit node). ProdView: IDRECPARENT"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- correction period
+      - name: correction_start_date
+        description: "Start of the correction period. ProdView: DTTMSTART, UI: 'Start of Correction'"
+      - name: correction_end_date
+        description: "End of the correction period. ProdView: DTTMEND, UI: 'End of Correction'"
+
+      # -- reference information
+      - name: reference_number
+        description: "Reference number for the correction. ProdView: REFID, UI: 'Reference Number'"
+      - name: statement_id
+        description: "Original statement ID. ProdView: ORIGSTATEMENTID, UI: 'Statement Id'"
+      - name: data_source
+        description: "Source of the correction data. ProdView: SOURCE, UI: 'Source'"
+
+      # -- temperature measurements
+      - name: temperature_f
+        description: "Temperature in Fahrenheit. Converted from Celsius. ProdView: TEMP, UI: 'Temperature'"
+      - name: temperature_of_sample_f
+        description: "Temperature of sample in Fahrenheit. Converted from Celsius. ProdView: TEMPSAMPLE, UI: 'Temperature of Sample'"
+
+      # -- pressure measurements
+      - name: pressure_psi
+        description: "Pressure in PSI. Converted from kPa via pv_kpa_to_psi. ProdView: PRES, UI: 'Pressure'"
+      - name: pressure_of_sample_psi
+        description: "Pressure of sample in PSI. Converted from kPa. ProdView: PRESSAMPLE, UI: 'Pressure of Sample'"
+
+      # -- density measurements
+      - name: density_api
+        description: "Density in API gravity. Converted from kg/m3 via inverse density formula. ProdView: DENSITY, UI: 'Density'"
+      - name: density_at_60f_api
+        description: "Density at 60F in API gravity. Converted from kg/m3. ProdView: DENSITY60F, UI: 'Density at 60 F'"
+      - name: density_of_sample_api
+        description: "Density of sample in API gravity. Converted from kg/m3. ProdView: DENSITYSAMPLE, UI: 'Density of Sample'"
+
+      # -- final corrected volumes
+      - name: final_corrected_hcliq_bbl
+        description: "Final corrected oil/condensate in barrels. Converted from m3 via pv_cbm_to_bbl. ProdView: VOLHCLIQ, UI: 'Final Corrected Oil/Condensate'"
+      - name: final_gas_mcf
+        description: "Final gas in MCF. Converted from m3 via pv_cbm_to_mcf. ProdView: VOLGAS, UI: 'Final Gas'"
+      - name: final_water_bbl
+        description: "Final water in barrels. Converted from m3. ProdView: VOLWATER, UI: 'Final Water'"
+      - name: final_sand_bbl
+        description: "Final sand in barrels. Converted from m3. ProdView: VOLSAND, UI: 'Final Sand'"
+
+      # -- heat values
+      - name: final_corrected_heat_mmbtu
+        description: "Final corrected heat in MMBTU. Converted from joules via pv_joules_to_mmbtu. ProdView: HEAT, UI: 'Final Corrected Heat'"
+      - name: final_corrected_heat_factor_btu_per_ft3
+        description: "Final corrected heat factor in BTU/ft3. Converted from J/m3. ProdView: FACTHEAT, UI: 'Final Corrected Heat Factor'"
+
+      # -- heat estimates and differences
+      - name: estimated_heat_mmbtu
+        description: "Estimated heat in MMBTU. Converted from joules. ProdView: ESTHEAT, UI: 'Estimated Heat'"
+      - name: heat_difference_mmbtu
+        description: "Heat difference in MMBTU. Converted from joules. ProdView: DIFFHEAT, UI: 'Heat Difference'"
+      - name: heat_correction_pct
+        description: "Heat correction percentage. Converted from proportion via pv_decimal_to_pct. ProdView: PCTDIFFHEAT, UI: '% Correction Heat'"
+
+      # -- gas estimates and differences
+      - name: estimated_gas_volume_mcf
+        description: "Estimated gas volume in MCF. Converted from m3. ProdView: VOLESTGAS, UI: 'Estimated Gas Volume'"
+      - name: volume_difference_gas_mcf
+        description: "Volume difference for gas in MCF. Converted from m3. ProdView: VOLDIFFGAS, UI: 'Volume Difference Gas'"
+      - name: gas_correction_pct
+        description: "Gas correction percentage. Converted from proportion. ProdView: PCTDIFFGAS, UI: '% Correction Gas'"
+
+      # -- hcliq estimates and differences
+      - name: estimated_volume_hcliq_bbl
+        description: "Estimated oil/condensate volume in barrels. Converted from m3. ProdView: VOLESTHCLIQ, UI: 'Estimated Volume Oil/Cond'"
+      - name: volume_difference_hcliq_bbl
+        description: "Volume difference for oil/condensate in barrels. Converted from m3. ProdView: VOLDIFFHCLIQ, UI: 'Volume Difference Oil/Cond'"
+      - name: hcliq_correction_pct
+        description: "Oil/condensate correction percentage. Converted from proportion. ProdView: PCTDIFFHCLIQ, UI: '% Correction Oil/Cond'"
+
+      # -- water estimates and differences
+      - name: estimated_volume_water_bbl
+        description: "Estimated water volume in barrels. Converted from m3. ProdView: VOLESTWATER, UI: 'Estimated Volume Water'"
+      - name: volume_difference_water_bbl
+        description: "Volume difference for water in barrels. Converted from m3. ProdView: VOLDIFFWATER, UI: 'Volume Difference Water'"
+      - name: water_correction_pct
+        description: "Water correction percentage. Converted from proportion. ProdView: PCTDIFFWATER, UI: '% Correction Water'"
+
+      # -- sand estimates and differences
+      - name: estimated_volume_sand_bbl
+        description: "Estimated sand volume in barrels. Converted from m3. ProdView: VOLESTSAND, UI: 'Estimated Volume Sand'"
+      - name: volume_difference_sand_bbl
+        description: "Volume difference for sand in barrels. Converted from m3. ProdView: VOLDIFFSAND, UI: 'Volume Differrence Sand'"
+      - name: sand_correction_pct
+        description: "Sand correction percentage. Converted from proportion. ProdView: PCTDIFFSAND, UI: '% Correction Sand'"
+
+      # -- duration
+      - name: actual_meter_time_days
+        description: "Actual meter time in days. ProdView: DURACTUAL, UI: 'Actual Meter Time'"
+
+      # -- general information
+      - name: comments
+        description: "Correction comments. ProdView: COM, UI: 'Comment'"
+
+      # -- user-defined fields
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1, UI: 'User Text 1'"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2, UI: 'User Text 2'"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3, UI: 'User Text 3'"
+      - name: user_txt4
+        description: "User-defined text field 4. ProdView: USERTXT4, UI: 'User Text 4'"
+      - name: user_txt5
+        description: "User-defined text field 5. ProdView: USERTXT5, UI: 'User Text 5'"
+      - name: user_num1
+        description: "POP BTU (Formentera-specific). ProdView: USERNUM1, UI: 'POP BTU'"
+      - name: user_num2
+        description: "POP Gallons (Formentera-specific). ProdView: USERNUM2, UI: 'POP Gallons'"
+      - name: user_num3
+        description: "POP Residue Gas (Formentera-specific). ProdView: USERNUM3, UI: 'POP Residue Gas'"
+      - name: user_num4
+        description: "User-defined numeric field 4. ProdView: USERNUM4, UI: 'User Num 4'"
+      - name: user_num5_temperature_f
+        description: "Sample temperature in Fahrenheit. Converted from Celsius. ProdView: USERNUM5, UI: 'Sample Temperature'"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER, UI: 'Created By'"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE, UI: 'Create Date (UTC)'"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER, UI: 'Last Mod By'"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE, UI: 'Last Mod Date (UTC)'"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE, UI: 'Lock Date (UTC)'"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME, UI: 'Lock Me'"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN, UI: 'Lock My Children'"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI, UI: 'Lock Me (UI)'"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI, UI: 'Lock My Children (UI)'"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG, UI: 'Record Tag'"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
