@@ -71,6 +71,9 @@ models:
       - name: job_sk
         description: FK to dim_job
         tests:
+          - not_null:
+              config:
+                severity: warn
           - relationships:
               arguments:
                 to: ref('dim_job')
@@ -94,6 +97,9 @@ models:
       - name: job_sk
         description: FK to dim_job
         tests:
+          - not_null:
+              config:
+                severity: warn
           - relationships:
               arguments:
                 to: ref('dim_job')

@@ -86,10 +86,6 @@ joined as (
     from phases as p
     left join jobs as j
         on p.parent_record_id = j.job_id
-),
-
-final as (
-    select * from joined
 )
 
-select * from final
+select * from joined

@@ -64,10 +64,6 @@ joined as (
     left join jobs as j
         on a.job_id = j.job_id
 
-),
-
-final as (
-    select * from joined
 )
 
-select * from final
+select * from joined

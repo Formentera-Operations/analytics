@@ -9,18 +9,12 @@ with jobs as (
     select * from {{ ref('stg_wellview__jobs') }}
 ),
 
-well_header as (
+well_360 as (
     select
-        "Well ID" as well_id,
-        EID as eid
-    from {{ ref('stg_wellview__well_header') }}
-    where
-        EID is not null
-        and len(EID) = 6
-),
-
-wells as (
-    select eid from {{ ref('well_360') }}
+        wellview_id,
+        eid
+    from {{ ref('well_360') }}
+    where wellview_id is not null
 ),
 
 -- Latest rig per job (by end date, then start date, then ID)
@@ -41,8 +35,8 @@ joined as (
         -- Surrogate key
         {{ dbt_utils.generate_surrogate_key(['j."Job ID"']) }} as job_sk,
 
-        -- Well FK (through EID -> well_360)
-        w.eid,
+        -- Well FK (via well_360.wellview_id)
+        w360.eid,
 
         -- Natural key
         j."Job ID" as job_id,
@@ -106,16 +100,10 @@ joined as (
         current_timestamp() as _loaded_at
 
     from jobs as j
-    left join well_header as wh
-        on j."Well ID" = wh.well_id
-    left join wells as w
-        on wh.eid = w.eid
+    left join well_360 as w360
+        on j."Well ID" = w360.wellview_id
     left join rigs as r
         on j."Job ID" = r.job_id
-),
-
-final as (
-    select * from joined
 )
 
-select * from final
+select * from joined

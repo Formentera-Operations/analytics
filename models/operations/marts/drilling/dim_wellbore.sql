@@ -9,26 +9,20 @@ with wellbores as (
     select * from {{ ref('stg_wellview__wellbores') }}
 ),
 
-well_header as (
+well_360 as (
     select
-        "Well ID" as well_id,
-        EID as eid
-    from {{ ref('stg_wellview__well_header') }}
-    where
-        EID is not null
-        and len(EID) = 6
-),
-
-wells as (
-    select eid from {{ ref('well_360') }}
+        wellview_id,
+        eid
+    from {{ ref('well_360') }}
+    where wellview_id is not null
 ),
 
 joined as (
     select
         {{ dbt_utils.generate_surrogate_key(['wb.record_id']) }} as wellbore_sk,
 
-        -- Well FK
-        w.eid,
+        -- Well FK (via well_360.wellview_id)
+        w360.eid,
 
         -- Natural keys
         wb.record_id as wellbore_id,
@@ -78,14 +72,8 @@ joined as (
         current_timestamp() as _loaded_at
 
     from wellbores as wb
-    left join well_header as wh
-        on wb.well_id = wh.well_id
-    left join wells as w
-        on wh.eid = w.eid
-),
-
-final as (
-    select * from joined
+    left join well_360 as w360
+        on wb.well_id = w360.wellview_id
 )
 
-select * from final
+select * from joined
