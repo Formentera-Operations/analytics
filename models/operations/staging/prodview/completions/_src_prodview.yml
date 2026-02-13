@@ -1,0 +1,32 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVUNIT
+        description: "Units (wells/pads) — building blocks of the flow network"
+      - name: PVT_PVUNITCOMP
+        description: "Completions — producing intervals within units"
+      - name: PVT_PVSYSINTEGRATION
+        description: "System integrations — external ID mappings (e.g. WellView, ODA)"
+      - name: PVT_PVUNITCOMPSTATUS
+        description: "Completion status records — production status history"
+      - name: PVT_PVUNITCOMPDOWNTM
+        description: "Completion downtimes — scheduled and unscheduled downtime events"
+      - name: PVT_PVUNITCOMPPARAM
+        description: "Completion parameters — operational settings and measurements"
+      - name: PVT_PVUNITCOMPTEST
+        description: "Production tests — well test results and measurements"
+      - name: PVT_PVUNITCOMPTESTREQEXCALC
+        description: "Production tests remaining — calculated remaining allowable production"
+      - name: PVT_PVUNITCOMPTARGET
+        description: "Production targets — monthly production forecasts"
+      - name: PVT_PVUNITCOMPTARGETDAY
+        description: "Production targets daily — daily production forecasts"
+      - name: PVT_PVUNITCOMPFLUIDLEVEL
+        description: "Completion fluid levels — fluid level measurements (no staging model yet)"

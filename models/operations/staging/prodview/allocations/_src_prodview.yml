@@ -1,0 +1,22 @@
+# Source: prodview — database/schema MUST match all other _src_prodview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+# If you change database or schema, update ALL 9 _src_prodview.yml files.
+version: 2
+
+sources:
+  - name: prodview
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30
+    schema: FORMENTERAOPS_PV30_DBO
+    tables:
+      - name: PVT_PVUNITALLOCMONTHDAY
+        description: "Daily allocations — daily allocated production volumes by completion"
+      - name: PVT_PVUNITALLOCMONTH
+        description: "Monthly allocations — monthly allocated production volumes by completion"
+      - name: PVT_PVUNITDISPMONTH
+        description: "Monthly dispositions — monthly disposition volumes by unit"
+      - name: PVT_PVUNITDISPMONTHDAY
+        description: "Daily dispositions — daily disposition volumes by unit"
+      - name: PVT_PVUNITCOMPGATHMONTHDAYCALC
+        description: "Gathered daily volumes — calculated daily gathering system volumes"
+      - name: PVT_PVOPENSTATEUNIT
+        description: "Unit opening inventories — beginning-of-month tank inventory balances"
