@@ -1,0 +1,147 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__tubing_strings
+  # ==========================================================================
+  - name: stg_wellview__tubing_strings
+    description: >
+      Tubing string staging from WellView. One row per tubing string record.
+      Includes run/pull dates, set depth, string weight, and calculated rollups.
+      Source: WVT_WVTUB (CALC schema).
+    columns:
+      - name: tubing_string_id
+        description: "WellView tubing string GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__tubing_components
+  # ==========================================================================
+  - name: stg_wellview__tubing_components
+    description: >
+      Tubing component staging from WellView. One row per tubing joint or accessory.
+      Child of tubing strings. Source: WVT_WVTUBCOMP (CALC schema).
+    columns:
+      - name: component_id
+        description: "WellView tubing component GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: tubing_string_id
+        description: "Parent tubing string GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__tubing_component_mandrels
+  # ==========================================================================
+  - name: stg_wellview__tubing_component_mandrels
+    description: >
+      Tubing mandrel staging from WellView. One row per mandrel.
+      Mandrel equipment within tubing components.
+      Source: WVT_WVTUBCOMPMANDREL (CALC schema).
+    columns:
+      - name: mandrel_id
+        description: "WellView mandrel GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: tubing_component_id
+        description: "Parent tubing component GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__tubing_component_mandrel_inserts
+  # ==========================================================================
+  - name: stg_wellview__tubing_component_mandrel_inserts
+    description: >
+      Tubing mandrel insert staging from WellView. One row per mandrel insert.
+      Insert details within mandrels.
+      Source: WVT_WVTUBCOMPMANDRELINSERT (CALC schema).
+    columns:
+      - name: insert_id
+        description: "WellView mandrel insert GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: mandrel_id
+        description: "Parent mandrel GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__tubing_run_tallies
+  # ==========================================================================
+  - name: stg_wellview__tubing_run_tallies
+    description: >
+      Tubing run tally staging from WellView. One row per tally entry.
+      Joint-by-joint tally for tubing components.
+      Source: WVT_WVTUBCOMPTALLY (CALC schema).
+    columns:
+      - name: tally_id
+        description: "WellView tubing tally GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: tubing_component_id
+        description: "Parent tubing component GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__rod_strings
+  # ==========================================================================
+  - name: stg_wellview__rod_strings
+    description: >
+      Rod string staging from WellView. One row per rod string record.
+      Includes run/pull dates, pump details, and calculated rollups.
+      Source: WVT_WVROD (CALC schema).
+    columns:
+      - name: rod_string_id
+        description: "WellView rod string GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__rod_components
+  # ==========================================================================
+  - name: stg_wellview__rod_components
+    description: >
+      Rod component staging from WellView. One row per rod joint or accessory.
+      Child of rod strings. Source: WVT_WVRODCOMP (CALC schema).
+    columns:
+      - name: rod_component_id
+        description: "WellView rod component GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: rod_string_id
+        description: "Parent rod string GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

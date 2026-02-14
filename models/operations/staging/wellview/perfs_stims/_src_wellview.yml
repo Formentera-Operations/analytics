@@ -1,0 +1,25 @@
+# Source: wellview_calcs — database/schema MUST match all other _src_wellview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+version: 2
+
+sources:
+  - name: wellview_calcs
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_WV120
+    schema: FORMENTERAOPS_WV120_CALC
+    tables:
+      - name: WVT_WVPERFORATION
+        description: "Perforations — perforation intervals with depths, shot density, and gun details"
+      - name: WVT_WVSTIM
+        description: "Stimulations — stimulation job headers with type, dates, and calc rollups"
+      - name: WVT_WVSTIMINT
+        description: "Stimulation intervals — individual treatment intervals within a stimulation"
+      - name: WVT_WVSTIMINTFLUID
+        description: "Stimulation fluid systems — fluid system definitions per treatment interval"
+      - name: WVT_WVSTIMINTFLUIDADD
+        description: "Stimulation fluid additives — chemical additives per fluid system"
+      - name: WVT_WVSTIMINTPROP
+        description: "Stimulation proppant — proppant details per treatment interval"
+      - name: WVT_WVSWAB
+        description: "Swabs — swab operation headers with dates, depths, and results"
+      - name: WVT_WVSWABDETAILS
+        description: "Swab details — individual swab run measurements and fluid recoveries"

@@ -1,0 +1,169 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__casing_strings
+  # ==========================================================================
+  - name: stg_wellview__casing_strings
+    description: >
+      Casing string staging from WellView. One row per casing string record.
+      Includes run/pull dates, set depth, string weight, tapered flag, and
+      calculated rollups. Source: WVT_WVCAS (CALC schema).
+    columns:
+      - name: casing_string_id
+        description: "WellView casing string GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__casing_components
+  # ==========================================================================
+  - name: stg_wellview__casing_components
+    description: >
+      Casing component staging from WellView. One row per casing joint or accessory.
+      Child of casing strings. Source: WVT_WVCASCOMP (CALC schema).
+    columns:
+      - name: component_id
+        description: "WellView casing component GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: casing_string_id
+        description: "Parent casing string GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__casing_tally
+  # ==========================================================================
+  - name: stg_wellview__casing_tally
+    description: >
+      Casing tally staging from WellView. One row per tally entry.
+      Joint-by-joint tally for casing components.
+      Source: WVT_WVCASCOMPTALLY (CALC schema).
+    columns:
+      - name: tally_id
+        description: "WellView casing tally GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: component_id
+        description: "Parent casing component GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__cement_activities
+  # ==========================================================================
+  - name: stg_wellview__cement_activities
+    description: >
+      Cement activity staging from WellView. One row per cement job.
+      Includes volumes, pressures, and job results.
+      Source: WVT_WVCEMENT (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView cement activity GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__cement_stages
+  # ==========================================================================
+  - name: stg_wellview__cement_stages
+    description: >
+      Cement stage staging from WellView. One row per cement stage.
+      Individual stages within a cement job.
+      Source: WVT_WVCEMENTSTAGE (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView cement stage GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: parent_record_id
+        description: "Parent cement activity GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__cement_stage_fluids
+  # ==========================================================================
+  - name: stg_wellview__cement_stage_fluids
+    description: >
+      Cement stage fluid staging from WellView. One row per fluid record.
+      Fluid details (slurry, spacer, wash) per cement stage.
+      Source: WVT_WVCEMENTSTAGEFLUID (CALC schema).
+    columns:
+      - name: cement_stage_fluid_id
+        description: "WellView cement stage fluid GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: cement_stage_id
+        description: "Parent cement stage GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__wellheads
+  # ==========================================================================
+  - name: stg_wellview__wellheads
+    description: >
+      Wellhead staging from WellView. One row per wellhead record.
+      Wellhead equipment headers with pressure ratings and configuration.
+      Source: WVT_WVWELLHEAD (CALC schema).
+    columns:
+      - name: wellhead_id
+        description: "WellView wellhead GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__wellhead_components
+  # ==========================================================================
+  - name: stg_wellview__wellhead_components
+    description: >
+      Wellhead component staging from WellView. One row per wellhead component.
+      Individual equipment components within a wellhead.
+      Source: WVT_WVWELLHEADCOMP (CALC schema).
+    columns:
+      - name: wellhead_component_id
+        description: "WellView wellhead component GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: wellhead_id
+        description: "Parent wellhead GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

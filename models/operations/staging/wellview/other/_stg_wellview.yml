@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__system_integrations
+  # ==========================================================================
+  - name: stg_wellview__system_integrations
+    description: >
+      System integration staging from WellView. One row per integration record.
+      Maps WellView records to external system identifiers (e.g., AF/PI).
+      Source: WVT_WVSYSINTEGRATION (DBO schema — not CALC).
+    columns:
+      - name: system_integration_id
+        description: "WellView system integration GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

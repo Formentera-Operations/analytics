@@ -1,0 +1,170 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__perforations
+  # ==========================================================================
+  - name: stg_wellview__perforations
+    description: >
+      Perforation staging from WellView. One row per perforation interval.
+      Includes depths, shot density, gun details, and zone linkages.
+      Source: WVT_WVPERFORATION (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView perforation GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__stimulations
+  # ==========================================================================
+  - name: stg_wellview__stimulations
+    description: >
+      Stimulation staging from WellView. One row per stimulation job.
+      Job headers with type, dates, and calculated rollups.
+      Source: WVT_WVSTIM (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView stimulation GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__stimulation_intervals
+  # ==========================================================================
+  - name: stg_wellview__stimulation_intervals
+    description: >
+      Stimulation interval staging from WellView. One row per treatment interval.
+      Individual treatment stages within a stimulation job.
+      Source: WVT_WVSTIMINT (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView stimulation interval GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: parent_record_id
+        description: "Parent stimulation GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__stimulation_fluid_systems
+  # ==========================================================================
+  - name: stg_wellview__stimulation_fluid_systems
+    description: >
+      Stimulation fluid system staging from WellView. One row per fluid system.
+      Fluid system definitions per treatment interval.
+      Source: WVT_WVSTIMINTFLUID (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView stimulation fluid system GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: parent_record_id
+        description: "Parent stimulation interval GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__stimulation_fluid_additives
+  # ==========================================================================
+  - name: stg_wellview__stimulation_fluid_additives
+    description: >
+      Stimulation fluid additive staging from WellView. One row per additive.
+      Chemical additives per fluid system.
+      Source: WVT_WVSTIMINTFLUIDADD (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView stimulation fluid additive GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: parent_record_id
+        description: "Parent fluid system GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__stimulation_proppant
+  # ==========================================================================
+  - name: stg_wellview__stimulation_proppant
+    description: >
+      Stimulation proppant staging from WellView. One row per proppant record.
+      Proppant details per treatment interval.
+      Source: WVT_WVSTIMINTPROP (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView stimulation proppant GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: parent_record_id
+        description: "Parent stimulation interval GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__swabs
+  # ==========================================================================
+  - name: stg_wellview__swabs
+    description: >
+      Swab staging from WellView. One row per swab operation.
+      Swab operation headers with dates, depths, and results.
+      Source: WVT_WVSWAB (CALC schema).
+    columns:
+      - name: swab_id
+        description: "WellView swab GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  # ==========================================================================
+  # stg_wellview__swab_details
+  # ==========================================================================
+  - name: stg_wellview__swab_details
+    description: >
+      Swab detail staging from WellView. One row per swab run measurement.
+      Individual swab run measurements and fluid recoveries.
+      Source: WVT_WVSWABDETAILS (CALC schema).
+    columns:
+      - name: swab_detail_id
+        description: "WellView swab detail GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: swab_id
+        description: "Parent swab GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

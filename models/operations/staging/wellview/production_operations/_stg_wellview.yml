@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__production_failures
+  # ==========================================================================
+  - name: stg_wellview__production_failures
+    description: >
+      Production failure staging from WellView. One row per equipment failure.
+      Failure records with diagnosis, repair details, and cost tracking.
+      Source: WVT_WVPROBLEM (CALC schema).
+    columns:
+      - name: production_failure_id
+        description: "WellView production failure GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__zones
+  # ==========================================================================
+  - name: stg_wellview__zones
+    description: >
+      Zone staging from WellView. One row per completion zone.
+      Zone definitions with depths, formation, and production status.
+      Source: WVT_WVZONE (CALC schema).
+    columns:
+      - name: record_id
+        description: "WellView zone GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
