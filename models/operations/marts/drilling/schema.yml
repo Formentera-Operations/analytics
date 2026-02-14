@@ -110,3 +110,108 @@ models:
           - not_null:
               config:
                 severity: warn
+
+  - name: fct_daily_drilling_cost
+    description: >
+      Daily drilling cost fact table. One row per cost line item from WellView
+      daily reports. Enriched with job classification, well EID, and report date.
+      Incremental merge on cost_line_id with _loaded_at watermark. ~1.9M rows.
+    columns:
+      - name: daily_cost_sk
+        description: Surrogate key (MD5 hash of cost_line_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: cost_line_id
+        description: WellView cost line item natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+      - name: job_report_id
+        description: FK to the daily report containing this cost line
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: WellView job GUID
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: report_date
+        description: Date the cost was incurred
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_category
+        description: Job classification from WellView (e.g., Drilling, Completion, Facilities, Well Servicing, LWO, Capital WO)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_type_primary
+        description: Primary job type (e.g., New Drill, Workover, Recompletion)
+      - name: field_estimate_cost
+        description: Cost amount for this line item (field estimate, base currency)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: cumulative_field_estimate_cost
+        description: Running cumulative field estimate cost
+      - name: main_account_id
+        description: Level 1 account code
+      - name: sub_account_id
+        description: Level 2 account code
+      - name: spend_category
+        description: Level 3 account code (spend category)
+      - name: expense_type
+        description: Level 4 account code (expense type)
+      - name: tangible_intangible
+        description: Level 5 account code (tangible vs intangible)
+      - name: afe_category
+        description: Level 6 account code (AFE category)
+      - name: account_name
+        description: Human-readable account description
+      - name: vendor_name
+        description: Vendor or supplier name
+      - name: vendor_code
+        description: Vendor identifier code
+      - name: ops_category
+        description: Operational category classification
+      - name: status
+        description: Cost line item status
+      - name: purchase_order_number
+        description: Associated purchase order number
+      - name: work_order_number
+        description: Associated work order number
+      - name: ticket_number
+        description: Associated ticket number
+      - name: _loaded_at
+        description: Timestamp when the record was loaded by dbt

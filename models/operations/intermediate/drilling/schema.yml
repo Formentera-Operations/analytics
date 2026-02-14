@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: int_wellview__daily_cost_enriched
+    description: >
+      Enriches daily cost line items with report date, job context (category, type),
+      and dimensional FKs (job_sk, well EID). Ephemeral — compiles as CTE into
+      fct_daily_drilling_cost. Grain: one row per cost line item.
+    columns:
+      - name: daily_cost_sk
+        description: Surrogate key (MD5 hash of cost_line_id)
+      - name: job_sk
+        description: FK to dim_job surrogate key
+      - name: eid
+        description: Well entity identifier — FK to well_360
+      - name: cost_line_id
+        description: WellView cost line item natural key (IDRec)
+      - name: job_report_id
+        description: FK to stg_wellview__job_reports (daily report that contains this cost)
+      - name: well_id
+        description: WellView well GUID
+      - name: job_id
+        description: WellView job GUID (resolved via job_reports)
+      - name: report_date
+        description: Date the cost was incurred (cast from job report start datetime)
+      - name: job_category
+        description: "Job classification: Drilling, Completion, Facilities, or Well Servicing"
+      - name: job_type_primary
+        description: Primary job type (e.g., New Drill, Workover, Recompletion)
+      - name: field_estimate_cost
+        description: Cost amount for this line item (field estimate, base currency)
+      - name: cumulative_field_estimate_cost
+        description: Running cumulative field estimate cost
+      - name: main_account_id
+        description: Level 1 account code
+      - name: sub_account_id
+        description: Level 2 account code
+      - name: spend_category
+        description: Level 3 account code (spend category)
+      - name: expense_type
+        description: Level 4 account code (expense type)
+      - name: tangible_intangible
+        description: Level 5 account code (tangible vs intangible classification)
+      - name: afe_category
+        description: Level 6 account code (AFE category)
+      - name: account_name
+        description: Human-readable account description
+      - name: vendor_name
+        description: Vendor or supplier name
+      - name: vendor_code
+        description: Vendor identifier code
+      - name: ops_category
+        description: Operational category classification
+      - name: status
+        description: Cost line item status
+      - name: purchase_order_number
+        description: Associated purchase order number
+      - name: work_order_number
+        description: Associated work order number
+      - name: ticket_number
+        description: Associated ticket number
+      - name: _loaded_at
+        description: Timestamp when the record was loaded by dbt
