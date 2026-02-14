@@ -1,3 +1,9 @@
+# Tables not yet assigned to a domain subdirectory remain here.
+# Domain-specific tables are declared in:
+#   general/_src_wellview.yml
+#   wellbore_surveys/_src_wellview.yml
+#   operations/_src_wellview.yml
+# dbt merges tables from files sharing the same source name (split-source pattern).
 version: 2
 
 sources:
@@ -148,7 +154,7 @@ sources:
           - name: DEPTHTOPCALC
             description: "Calculated top depth in meters"
           - name: LEAKOFFDENSITYFLUIDCALC
-            description: "Calculated leak off equivalent fluid density in kg/m³"
+            description: "Calculated leak off equivalent fluid density in kg/m3"
           - name: SYSMODDATE
             description: "System modification date"
           - name: DTTMONBOTTOM
@@ -198,22 +204,6 @@ sources:
       - name: WVT_WVCEMENT
       - name: WVT_WVCEMENTSTAGE
       - name: WVT_WVCEMENTSTAGEFLUID
-      - name: WVT_WVJOB
-      - name: WVT_WVJOBAFE
-      - name: WVT_WVJOBINTERVALPROBLEM
-      - name: WVT_WVJOBPROGRAMPHASE
-      - name: WVT_WVJOBREPORT
-      - name: WVT_WVJOBREPORTPERSONNELCOUNT
-      - name: WVT_WVJOBREPORTCOSTGEN
-      - name: WVT_WVJOBREPORTCOSTRENTAL
-      - name: WVT_WVJOBRIG
-      - name: WVT_WVJOBRIGPUMP
-      - name: WVT_WVJOBRIGPUMPOP
-      - name: WVT_WVJOBRIGPUMPCHK
-      - name: WVT_WVJOBSUPPLY
-      - name: WVT_WVJOBSUPPLYAMT
-      - name: WVT_WVJOBTIMELOG
-      - name: WVT_WVOTHERINHOLE
       - name: WVT_WVPERFORATION
       - name: WVT_WVPROBLEM
       - name: WVT_WVROD
@@ -228,22 +218,9 @@ sources:
       - name: WVT_WVTUBCOMPMANDREL
       - name: WVT_WVTUBCOMPMANDRELINSERT
       - name: WVT_WVTUBCOMPTALLY
-      - name: WVT_WVWELLBORE
-      - name: WVT_WVWELLBOREDIRSURVEY
-      - name: WVT_WVWELLBOREDIRSURVEYDATA
-      - name: WVT_WVWELLBOREKEYDEPTH
       - name: WVT_WVWELLHEAD
       - name: WVT_WVWELLHEADCOMP
-      - name: WVT_WVWELLHEADER
-      - name: WVT_WVWELLSTATUSHISTORY
-      - name: WVT_WVREFWELLS
       - name: WVT_WVZONE
-      - name: WVT_WVJOBDRILLBIT
-      - name: WVT_WVJOBDRILLSTRING
-      - name: WVT_WVJOBDRILLSTRINGCOMP
-      - name: WVT_WVJOBDRILLSTRINGDRILLPARAM
-      - name: WVT_WVJOBMUDADD
-      - name: WVT_WVJOBMUDCHK
       - name: WVT_WVWELLTESTTRANS
       - name: WVT_WVWELLTESTTRANSRESULT
       - name: WVT_WVWELLTESTTRANSFLOWPER

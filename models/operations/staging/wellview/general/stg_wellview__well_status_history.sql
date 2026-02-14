@@ -22,7 +22,7 @@ renamed as (
         welltyp2 as well_subtype,
         primaryfluiddes as primary_fluid_type,
         source as status_source,
-        
+
         -- Description
         com as comment,
 

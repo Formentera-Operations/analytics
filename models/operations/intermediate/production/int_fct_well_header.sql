@@ -45,38 +45,38 @@ route as (
 
 tbl as (
     select
-        w."Abandon Date",
+        w.abandon_date as "Abandon Date",
         p.completion_record_id as "Completion Record ID",
-        cast(w."On Production Date" as date) as "First Prod Date",
+        cast(w.on_production_date as date) as "First Prod Date",
         p.current_facility_id as "Current Facility",
         p.facility_name as "Facility Name",
         r.foreman as "Foreman",
         p.foreman_area as "Foreman Area",
-        w."Last Approved MIT Date",
-        w."Last Write To Database",
-        w."Lat/Long Datum",
-        w."Latitude Degrees",
-        w."Longitude Degrees",
+        w.last_approved_mit_date as "Last Approved MIT Date",
+        w.last_write_to_database as "Last Write To Database",
+        w.lat_long_datum as "Lat/Long Datum",
+        w.latitude_degrees as "Latitude Degrees",
+        w.longitude_degrees as "Longitude Degrees",
         o.SEARCHKEY as "ODA Asset",
         o.FIELD as "ODA Field",
-        w."UTM Easting Meters",
-        w."UTM Northing Meters",
-        w."Master Lock Date",
-        cast(w."Ops Effective Date" as date) as "Ops Effective Date",
-        w."Permit Date",
+        w.utm_easting_meters as "UTM Easting Meters",
+        w.utm_northing_meters as "UTM Northing Meters",
+        w.master_lock_date as "Master Lock Date",
+        cast(w.ops_effective_date as date) as "Ops Effective Date",
+        w.permit_date as "Permit Date",
         s."Status Record ID" as "Prod Status Record ID",
         p.producing_method as "Producing Method",
         p.property_eid as "Property EID",
         p.well_name as "PV Well Name",
         p.property_number as "Property Number",
-        w."Regulatory Effective Date",
+        w.regulatory_effective_date as "Regulatory Effective Date",
         p.regulatory_field_name as "Regulatory Field Name",
         r.id_rec as "Route Record ID",
         r.route_name as "Route Name",
-        cast(w."Spud Date" as date) as "Spud Date",
-        w."System Lock Date",
+        cast(w.spud_date as date) as "Spud Date",
+        w.system_lock_date as "System Lock Date",
         p.unit_record_id as "Unit Record ID",
-        w."Well ID",
+        w.well_id as "Well ID",
         coalesce(p.api_10, o."ApiNumber") as "API 10",
         case
             when c.company_name is null and p.asset_company is null
@@ -110,7 +110,7 @@ tbl as (
                         when lower(p.asset_company) = 'fp griffin' then 'FP Griffin'
                         else p.asset_company
                     end)
-            when c.company_name is null and o."CompanyName" is null and p.asset_company is null then w."Asset Company"
+            when c.company_name is null and o."CompanyName" is null and p.asset_company is null then w.asset_company
             else c.company_name
         end as "Asset Company",
         case
@@ -139,7 +139,7 @@ tbl as (
                         when lower(p.asset_company) = 'fp griffin' then 818
                         else left(p.property_number, 3)
                     end)
-            when c.company_code is null and o."CompanyCode" is null and p.asset_company is null then w."Company Code"
+            when c.company_code is null and o."CompanyCode" is null and p.asset_company is null then w.company_code
             else c.company_code end
             as "Asset Company Code",
         coalesce(p.completion_status, o."WellStatusTypeName")
@@ -148,30 +148,30 @@ tbl as (
         coalesce(p.unit_created_at_utc, o."Created Date")
             as "Unit Create Date (UTC)",
         case
-            when p.first_sale_date is null and not w."First Sales Date" is null then cast(w."First Sales Date" as date)
-            when w."First Sales Date" is null and not p.first_sale_date is null then cast(p.first_sale_date as date)
-            else cast(w."First Sales Date" as date)
+            when p.first_sale_date is null and not w.first_sales_date is null then cast(w.first_sales_date as date)
+            when w.first_sales_date is null and not p.first_sale_date is null then cast(p.first_sale_date as date)
+            else cast(w.first_sales_date as date)
         end as "First Sales Date",
         coalesce(p.is_operated, o.OP_IS_OPERATED) as "PV Is Operated",
         greatest(
             coalesce(p.last_modified_at_utc, '0000-01-01T00:00:00.000Z'),
-            coalesce(w."Last Mod At (UTC)", '0000-01-01T00:00:00.000Z'),
+            coalesce(w.last_mod_at_utc, '0000-01-01T00:00:00.000Z'),
             coalesce(o."Last Mod Date (UTC)", '0000-01-01T00:00:00.000Z')
         ) as "Last Mod Date (UTC)",
         coalesce(p.unit_name, o."Name") as "Property Name",
         case
-            when p.rig_release_date is null and not w."Rig Release Date" is null then cast(w."Rig Release Date" as date)
-            when w."Rig Release Date" is null and not p.rig_release_date is null then cast(p.rig_release_date as date)
-            else cast(w."Rig Release Date" as date)
+            when p.rig_release_date is null and not w.rig_release_date is null then cast(w.rig_release_date as date)
+            when w.rig_release_date is null and not p.rig_release_date is null then cast(p.rig_release_date as date)
+            else cast(w.rig_release_date as date)
         end as "Rig Release Date",
         coalesce(p.unit_type, o."PropertyReferenceCode") as "Unit Type",
         coalesce(p.unit_sub_type, o."CostCenterTypeName") as "Unit Sub Type",
         coalesce(p.cost_center, o."Code") as "Well Code",
-        coalesce(w."Well Name", o."Name") as "Well Name",
+        coalesce(w.well_name, o."Name") as "Well Name",
         coalesce(p.legal_well_name, o."LegalDescription") as "Well Name Legal"
     from prodview as p
     left join wellview as w
-        on p.wellview_well_id = w."Well ID"
+        on p.wellview_well_id = w.well_id
     left join company as c
         on p.company_code = c.company_code
     left join prodstatus as s

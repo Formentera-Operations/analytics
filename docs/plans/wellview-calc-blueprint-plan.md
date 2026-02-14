@@ -109,7 +109,7 @@ AFE (2 AFE*Calc in other.yaml)
 
 2. [x] **Update `wellview.md`** — add a pointer to the blueprint in the "Calc Tables" section (one line: "See `calc_table_blueprint.md` for the full analytics abstraction")
 
-3. [ ] **Commit and push** on `docs/wellview-context` branch
+3. [x] **Commit and push** on `docs/wellview-context` branch
 
 ## What This Does NOT Do
 

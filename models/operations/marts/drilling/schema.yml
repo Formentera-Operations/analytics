@@ -8,24 +8,24 @@ models:
     columns:
       - name: job_sk
         description: Surrogate key (MD5 hash of Job ID)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: job_id
         description: WellView natural key (IDRec)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: eid
         description: Well entity identifier — FK to well_360
-        tests:
+        data_tests:
           - relationships:
               arguments:
                 to: ref('well_360')
                 field: eid
       - name: job_type_primary
         description: Primary job classification (e.g., Drilling, Completion, Workover)
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
@@ -37,17 +37,17 @@ models:
     columns:
       - name: wellbore_sk
         description: Surrogate key (MD5 hash of record_id)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: wellbore_id
         description: WellView natural key (record_id)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: eid
         description: Well entity identifier — FK to well_360
-        tests:
+        data_tests:
           - relationships:
               arguments:
                 to: ref('well_360')
@@ -60,17 +60,17 @@ models:
     columns:
       - name: phase_sk
         description: Surrogate key (MD5 hash of record_id)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: phase_id
         description: WellView natural key (record_id)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: job_sk
         description: FK to dim_job
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
@@ -86,17 +86,17 @@ models:
     columns:
       - name: job_afe_sk
         description: Surrogate key (MD5 hash of job_afe_id)
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: job_afe_id
         description: WellView natural key for the job-AFE relationship
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: job_sk
         description: FK to dim_job
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn
@@ -106,7 +106,7 @@ models:
                 field: job_sk
       - name: afe_number
         description: AFE number identifier
-        tests:
+        data_tests:
           - not_null:
               config:
                 severity: warn

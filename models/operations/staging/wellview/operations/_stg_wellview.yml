@@ -1,0 +1,533 @@
+version: 2
+
+models:
+  # ──────────────────────────────────────────────────────────────────────
+  # REFACTORED MODELS (5-CTE pattern) — full column documentation
+  # ──────────────────────────────────────────────────────────────────────
+
+  - name: stg_wellview__jobs
+    description: >
+      Job staging from WellView. One row per drilling/completions/workover job.
+      Source: WVT_WVJOB (CALC schema). Contains calc rollup columns for
+      drilling performance, costs, durations, and AFE summaries.
+    columns:
+      - name: job_sk
+        description: "Surrogate key (MD5 hash of job_id)"
+      - name: job_id
+        description: "WellView job GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_id
+        description: "Wellbore GUID (IDRECWELLBORE)"
+      - name: job_category
+        description: "High-level job category (e.g., Drilling, Completions, Workover)"
+      - name: job_type_primary
+        description: "Primary job type classification"
+      - name: job_type_secondary
+        description: "Secondary job type classification"
+      - name: job_start_at
+        description: "Actual job start datetime"
+      - name: job_end_at
+        description: "Actual job end datetime"
+      - name: spud_at
+        description: "Spud datetime — when drilling began"
+      - name: target_depth_ft
+        description: "Planned target depth in feet (converted from meters)"
+      - name: total_depth_ft
+        description: "Calculated total depth reached in feet"
+      - name: rop_ft_per_hr
+        description: "Rate of penetration in ft/hr (converted from m/s)"
+      - name: afe_number
+        description: "AFE number associated with this job (calc rollup)"
+      - name: cost_final_actual
+        description: "Actual final job cost"
+      - name: total_field_estimate
+        description: "Total field estimate cost (calc rollup from daily costs)"
+      - name: status_primary
+        description: "Primary job status"
+
+  - name: stg_wellview__job_reports
+    description: >
+      Daily report staging from WellView. One row per daily operations report.
+      Source: WVT_WVJOBREPORT (CALC schema). Contains depths, drilling rates,
+      costs, mud volumes, gas readings, safety metrics, and schedule projections.
+    columns:
+      - name: job_report_sk
+        description: "Surrogate key (MD5 hash of report_id)"
+      - name: report_id
+        description: "WellView daily report GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: report_start_datetime
+        description: "Report period start datetime"
+      - name: report_end_datetime
+        description: "Report period end datetime"
+      - name: report_number
+        description: "Sequential report number within the job"
+      - name: report_day
+        description: "Day number within the job"
+      - name: end_depth_ft
+        description: "Depth at end of report period in feet"
+      - name: rop_ft_per_hr
+        description: "Rate of penetration in ft/hr for this report period"
+      - name: total_cost
+        description: "Total daily cost for this report period"
+      - name: cost_to_date
+        description: "Cumulative cost to date through this report"
+      - name: operations_summary
+        description: "Free-text operations summary for the report period"
+      - name: wellbore_id
+        description: "Current wellbore GUID (calc)"
+      - name: job_program_phase_id
+        description: "Current program phase GUID (calc)"
+
+  - name: stg_wellview__job_time_log
+    description: >
+      Time log staging from WellView. One row per time log entry within a daily
+      report. Source: WVT_WVJOBTIMELOG (CALC schema). Contains activity codes,
+      durations, depths, ROP, and problem time flags.
+    columns:
+      - name: job_time_log_sk
+        description: "Surrogate key (MD5 hash of time_log_id)"
+      - name: time_log_id
+        description: "WellView time log GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: start_datetime
+        description: "Activity start datetime"
+      - name: end_datetime
+        description: "Activity end datetime"
+      - name: duration_hours
+        description: "Activity duration in hours (converted from days)"
+      - name: time_log_code_1
+        description: "Primary activity code"
+      - name: time_log_code_2
+        description: "Secondary activity code"
+      - name: ops_category
+        description: "Operational category classification"
+      - name: start_depth_ft
+        description: "Depth at activity start in feet"
+      - name: end_depth_ft
+        description: "Depth at activity end in feet"
+      - name: rop_ft_per_hour
+        description: "Rate of penetration in ft/hr for this activity"
+      - name: is_problem_time
+        description: "Whether this activity is classified as non-productive time"
+      - name: job_report_id
+        description: "Parent daily report GUID (calc)"
+      - name: wellbore_id
+        description: "Wellbore GUID"
+
+  - name: stg_wellview__rigs
+    description: >
+      Rig assignment staging from WellView. One row per rig assignment to a job.
+      Source: WVT_WVJOBRIG (CALC schema). Contains contractor, rig specs,
+      equipment capacity, surface lines, and duration.
+    columns:
+      - name: rig_sk
+        description: "Surrogate key (MD5 hash of job_rig_id)"
+      - name: job_rig_id
+        description: "WellView rig assignment GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: proposed_or_actual
+        description: "Whether rig assignment is proposed or actual"
+      - name: rig_contractor
+        description: "Rig contractor company name"
+      - name: rig_number
+        description: "Rig number identifier"
+      - name: rig_type
+        description: "Primary rig type classification"
+      - name: rig_start_datetime
+        description: "Rig assignment start datetime"
+      - name: rig_end_datetime
+        description: "Rig assignment end datetime"
+      - name: rig_duration_hours
+        description: "Total rig assignment duration in hours (converted from days)"
+      - name: max_rated_depth_ft
+        description: "Maximum rated depth for the rig in feet"
+      - name: max_hook_load_klbf
+        description: "Maximum hook load capacity in thousands of lbf"
+      - name: power_rating_hp
+        description: "Rig power rating in horsepower"
+
+  - name: stg_wellview__daily_costs
+    description: >
+      Daily cost line item staging from WellView. One row per cost entry on a
+      daily report. Source: WVT_WVJOBREPORTCOSTGEN (CALC schema). Contains
+      cost amounts, 6-level account coding, vendor info, and PO references.
+    columns:
+      - name: daily_cost_sk
+        description: "Surrogate key (MD5 hash of cost_line_id)"
+      - name: cost_line_id
+        description: "WellView cost line GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_report_id
+        description: "Parent daily report GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: field_estimate_cost
+        description: "Daily cost amount (field estimate)"
+      - name: cumulative_field_estimate_cost
+        description: "Cumulative field estimate cost through this report"
+      - name: main_account_id
+        description: "Primary account code (code1)"
+      - name: sub_account_id
+        description: "Sub-account code (code2)"
+      - name: spend_category
+        description: "Spend category code (code3)"
+      - name: expense_type
+        description: "Expense type code (code4)"
+      - name: tangible_intangible
+        description: "Tangible/intangible classification (code5)"
+      - name: afe_category
+        description: "AFE category code (code6)"
+      - name: account_name
+        description: "Cost account description"
+      - name: vendor_name
+        description: "Vendor/supplier name"
+      - name: ops_category
+        description: "Operational category classification"
+
+  - name: stg_wellview__job_afe_definitions
+    description: >
+      AFE definition staging from WellView. One row per AFE linked to a job.
+      Source: WVT_WVJOBAFE (CALC schema). Contains AFE amounts (gross,
+      normalized, net), field estimates, forecasts, final invoices, and variances.
+    columns:
+      - name: job_afe_sk
+        description: "Surrogate key (MD5 hash of job_afe_id)"
+      - name: job_afe_id
+        description: "WellView AFE GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: afe_number
+        description: "AFE number"
+      - name: supplemental_afe_number
+        description: "Supplemental AFE number"
+      - name: afe_status
+        description: "AFE approval/workflow status"
+      - name: afe_date
+        description: "AFE creation or approval date"
+      - name: afe_close_date
+        description: "AFE close date"
+      - name: working_interest_percent
+        description: "Working interest percentage (converted from proportion)"
+      - name: total_afe_amount
+        description: "Gross total AFE amount (calc rollup)"
+      - name: total_afe_plus_supplemental_amount
+        description: "Gross AFE + supplemental amount (calc rollup)"
+      - name: total_field_estimate
+        description: "Total field estimate rolled up from daily costs"
+      - name: forecast_amount
+        description: "Forecasted total cost"
+      - name: total_final_invoice
+        description: "Total final invoice amount"
+
+  - name: stg_wellview__job_program_phases
+    description: >
+      Program phase staging from WellView. One row per planned/actual phase within
+      a job. Source: WVT_WVJOBPROGRAMPHASE (CALC schema). Contains phase
+      classifications, planned vs actual depths/durations/costs, and drilling
+      performance metrics per phase.
+    columns:
+      - name: job_program_phase_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      - name: record_id
+        description: "WellView program phase GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_id
+        description: "Wellbore GUID (IDRECWELLBORE)"
+      - name: phase_type_1
+        description: "Primary phase type code"
+      - name: combined_phase_types
+        description: "Concatenation of all phase type codes"
+      - name: description
+        description: "Phase description text"
+      - name: planned_likely_duration_days
+        description: "Most-likely planned duration in days"
+      - name: planned_likely_phase_cost
+        description: "Most-likely planned phase cost"
+      - name: planned_start_depth_ft
+        description: "Planned start depth in feet (converted from meters)"
+      - name: planned_end_depth_ft
+        description: "Planned end depth in feet (converted from meters)"
+      - name: actual_start_date
+        description: "Actual phase start datetime"
+      - name: actual_end_date
+        description: "Actual phase end datetime"
+      - name: actual_duration_days
+        description: "Actual phase duration in days"
+      - name: actual_phase_field_est
+        description: "Actual phase field estimate cost"
+
+  - name: stg_wellview__job_interval_problems
+    description: >
+      Interval problem (NPT) staging from WellView. One row per non-productive
+      time event. Source: WVT_WVJOBINTERVALPROBLEM (CALC schema). Contains
+      problem categorization, severity, durations, depths, and cost impacts.
+    columns:
+      - name: job_interval_problem_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      - name: record_id
+        description: "WellView interval problem GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: major_category
+        description: "High-level problem category"
+      - name: problem_type
+        description: "Problem type classification"
+      - name: problem_subtype
+        description: "Problem subtype detail"
+      - name: severity
+        description: "Severity rating of the problem"
+      - name: status
+        description: "Current problem status"
+      - name: start_date
+        description: "Problem event start datetime"
+      - name: end_date
+        description: "Problem event end datetime"
+      - name: start_depth_ft
+        description: "Depth at problem start in feet (converted from meters)"
+      - name: problem_duration_gross_hours
+        description: "Gross problem duration in hours (converted from days)"
+      - name: problem_duration_net_hours
+        description: "Net problem duration in hours (after adjustments)"
+      - name: estimated_lost_time_hours
+        description: "Estimated lost time in hours"
+      - name: problem_cost
+        description: "Calculated cost of the problem event"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # NON-REFACTORED MODELS — basic docs, PK tests only
+  # Column names may change during future refactoring to 5-CTE pattern.
+  # ──────────────────────────────────────────────────────────────────────
+
+  - name: stg_wellview__daily_personnel_logs
+    description: >
+      Daily personnel log staging from WellView. One row per personnel entry
+      on a daily report. Source: WVT_WVJOBREPORTPERSONNELCOUNT (CALC schema).
+      Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: record_id
+        description: "WellView personnel log GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__daily_recurring_costs
+    description: >
+      Daily recurring cost staging from WellView. One row per recurring rental
+      or service cost entry. Source: WVT_WVJOBREPORTCOSTRENTAL (CALC schema).
+      Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: recurring_cost_id
+        description: "WellView recurring cost GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__drill_bits
+    description: >
+      Drill bit staging from WellView. One row per bit run with type, size,
+      depths, and grading. Source: WVT_WVJOBDRILLBIT (CALC schema).
+      Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: drill_bit_id
+        description: "WellView drill bit GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__drill_strings
+    description: >
+      Drill string (BHA) staging from WellView. One row per drill string
+      assembly header. Source: WVT_WVJOBDRILLSTRING (CALC schema).
+      Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: drill_string_id
+        description: "WellView drill string GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__drill_string_components
+    description: >
+      Drill string component staging from WellView. One row per individual
+      component in a drill string assembly. Source: WVT_WVJOBDRILLSTRINGCOMP
+      (CALC schema). Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: drill_string_component_id
+        description: "WellView drill string component GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__drill_string_drilling_parameters
+    description: >
+      Drill string drilling parameter staging from WellView. One row per set
+      of operating parameters for a drill string. Source:
+      WVT_WVJOBDRILLSTRINGDRILLPARAM (CALC schema). Not yet refactored to
+      5-CTE pattern.
+    columns:
+      - name: drilling_parameter_id
+        description: "WellView drilling parameter GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__mud_checks
+    description: >
+      Mud check staging from WellView. One row per mud property measurement
+      (weight, viscosity, filtrate, etc.). Source: WVT_WVJOBMUDCHK (CALC
+      schema). Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: mud_check_id
+        description: "WellView mud check GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__mud_additivies
+    description: >
+      Mud additive staging from WellView. One row per mud product addition.
+      Source: WVT_WVJOBMUDADD (CALC schema). Not yet refactored to 5-CTE
+      pattern.
+    columns:
+      - name: mud_additive_id
+        description: "WellView mud additive GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__other_in_hole_equipment
+    description: >
+      Other in-hole equipment staging from WellView. One row per non-casing/
+      tubing equipment record left in hole. Source: WVT_WVOTHERINHOLE (CALC
+      schema). Not yet refactored to 5-CTE pattern.
+    columns:
+      - name: other_in_hole_id
+        description: "WellView other in-hole equipment GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__job_supplies
+    description: >
+      Job supply staging from WellView. One row per supply item definition
+      linked to a job. Source: WVT_WVJOBSUPPLY (CALC schema). Not yet
+      refactored to 5-CTE pattern.
+    columns:
+      - name: job_supply_id
+        description: "WellView job supply GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_wellview__job_supply_amounts
+    description: >
+      Job supply amount staging from WellView. One row per supply quantity
+      transaction. Source: WVT_WVJOBSUPPLYAMT (CALC schema). Not yet
+      refactored to 5-CTE pattern.
+    columns:
+      - name: supply_amount_id
+        description: "WellView supply amount GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
