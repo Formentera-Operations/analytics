@@ -7,17 +7,159 @@ models:
   - name: stg_wellview__zones
     description: >
       Zone staging from WellView. One row per completion zone.
+      Licensed producing or injecting intervals representing physical sections of the wellbore.
       Zone definitions with depths, formation, and production status.
-      Source: WVT_WVZONE (CALC schema).
+      Source: WVT_WVZONE (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: zone_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
       - name: record_id
-        description: "WellView zone GUID (IDREC) — natural key"
+        description: "WellView zone GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: wellbore_id
+        description: "Wellbore record identifier. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key. WellView: IDRECWELLBORETK"
+
+      # -- descriptive fields
+      - name: zone_name
+        description: "Zone name. WellView: ZONENAME"
+      - name: zone_code
+        description: "Zone code. WellView: ZONECODE"
+      - name: zone_api_number
+        description: "Zone API number. WellView: ZONEIDA"
+      - name: zone_id_b
+        description: "Zone ID B. WellView: ZONEIDB"
+      - name: zone_id_c
+        description: "Zone ID C. WellView: ZONEIDC"
+      - name: zone_id_d
+        description: "Zone ID D. WellView: ZONEIDD"
+      - name: zone_id_e
+        description: "Zone ID E. WellView: ZONEIDE"
+      - name: objective
+        description: "Zone objective. WellView: OBJECTIVE"
+      - name: formation
+        description: "Formation name (calculated). WellView: FORMATIONCALC"
+      - name: formation_layer
+        description: "Formation layer (calculated). WellView: FORMATIONLAYERCALC"
+      - name: reservoir
+        description: "Reservoir name (calculated). WellView: RESERVOIRCALC"
+      - name: icon_name
+        description: "Icon name for display. WellView: ICONNAME"
+      - name: current_status
+        description: "Current zone status (calculated). WellView: CURRENTSTATUSCALC"
+      - name: field_name
+        description: "Field name. WellView: FIELDNAME"
+      - name: field_code
+        description: "Field code. WellView: FIELDCODE"
+      - name: unit_name
+        description: "Unit name. WellView: UNITNAME"
+      - name: unit_code
+        description: "Unit code. WellView: UNITCODE"
+      - name: data_source
+        description: "Data source. WellView: DATASOURCE"
+
+      # -- depths (converted from meters to feet)
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet. WellView: DEPTHTOP"
+      - name: bottom_depth_ft
+        description: "Bottom depth converted from meters to feet. WellView: DEPTHBTM"
+      - name: reference_depth_ft
+        description: "Reference depth converted from meters to feet. WellView: DEPTHREF"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+      - name: reference_depth_tvd_ft
+        description: "Reference depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDREFCALC"
+      - name: zone_thickness_ft
+        description: "Zone thickness (bottom - top) converted from meters to feet (calculated). WellView: DEPTHTOPTOBTMCALC"
+
+      # -- license
+      - name: zone_license_number
+        description: "Zone license number. WellView: ZONELICENSENO"
+      - name: zone_licensee
+        description: "Zone licensee. WellView: ZONELICENSEE"
+
+      # -- dates
+      - name: zone_license_date
+        description: "Zone license date (NTZ). WellView: DTTMZONELIC"
+      - name: estimated_on_production_date
+        description: "Estimated on-production date (NTZ). WellView: DTTMZONEONPRODEST"
+      - name: first_production_date
+        description: "First production date (NTZ). WellView: DTTMZONEONPROD"
+      - name: estimated_last_production_date
+        description: "Estimated last production date (NTZ). WellView: DTTMZONELASTPRODEST"
+      - name: last_production_date
+        description: "Last production date (NTZ). WellView: DTTMZONELASTPROD"
+      - name: estimated_abandonment_date
+        description: "Estimated abandonment date (NTZ). WellView: DTTMZONEABANDONEST"
+      - name: abandon_date
+        description: "Abandonment date (NTZ). WellView: DTTMZONEABANDON"
+      - name: current_status_date
+        description: "Current status date (calculated, NTZ). WellView: DTTMSTATUSCALC"
+
+      # -- completion reference
+      - name: last_completion_id
+        description: "Last completion record ID (calculated). WellView: IDRECLASTCOMPLETIONCALC"
+      - name: last_completion_table_key
+        description: "Last completion table key (calculated). WellView: IDRECLASTCOMPLETIONCALCTK"
+
+      # -- user fields
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: user_text_2
+        description: "User-defined text field 2. WellView: USERTXT2"
+      - name: user_text_3
+        description: "User-defined text field 3. WellView: USERTXT3"
+      - name: user_text_4
+        description: "User-defined text field 4. WellView: USERTXT4"
+      - name: user_text_5
+        description: "User-defined text field 5. WellView: USERTXT5"
+      - name: user_text_6
+        description: "User-defined text field 6. WellView: USERTXT6"
+
+      # -- comments
+      - name: comment
+        description: "Free-text comment. WellView: COM"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

@@ -8,19 +8,138 @@ models:
     description: >
       Well test staging from WellView. One row per well test.
       Test headers with type, dates, zones, and operating conditions.
-      Source: WVT_WVWELLTESTTRANS (CALC schema).
+      Source: WVT_WVWELLTESTTRANS (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: well_test_sk
+        description: "Surrogate key (MD5 hash of well_test_id)"
+
+      # -- identifiers
       - name: well_test_id
-        description: "WellView well test GUID (IDREC) — natural key"
+        description: "Unique well test record identifier — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: job_id
+        description: "Associated job record identifier. WellView: IDRECJOB"
+      - name: job_table_key
+        description: "Job table key for cross-reference. WellView: IDRECJOBTK"
+      - name: wellbore_id
+        description: "Associated wellbore record identifier. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key for cross-reference. WellView: IDRECWELLBORETK"
+      - name: completion_zone_id
+        description: "Associated completion/zone record identifier. WellView: IDRECZONECOMPLETION"
+      - name: completion_zone_table_key
+        description: "Completion/zone table key for cross-reference. WellView: IDRECZONECOMPLETIONTK"
+
+      # -- descriptive fields
+      - name: test_type
+        description: "Well test type classification. WellView: TYP"
+      - name: test_subtype
+        description: "Well test subtype classification. WellView: SUBTYP"
+      - name: test_description
+        description: "Free-text description of the well test. WellView: DES"
+      - name: tested_by
+        description: "Person or company who performed the test. WellView: TESTEDBY"
+      - name: produced_to
+        description: "Where fluids were produced to during the test. WellView: PRODUCEDTO"
+      - name: formation
+        description: "Formation name (calculated). WellView: FORMATIONCALC"
+      - name: formation_layer
+        description: "Formation layer name (calculated). WellView: FORMATIONLAYERCALC"
+      - name: reservoir
+        description: "Reservoir name (calculated). WellView: RESERVOIRCALC"
+      - name: phase_separation_method
+        description: "Method used for phase separation during test. WellView: PHASESEPMETHOD"
+      - name: surface_test_equipment
+        description: "Surface test equipment used. WellView: SURFACETESTEQUIP"
+      - name: volume_measurement_method
+        description: "Method used for volume measurement. WellView: VOLUMEMETHOD"
+      - name: porosity_source
+        description: "Source of porosity data. WellView: POROSITYSOURCE"
+      - name: load_fluid_type
+        description: "Type of load fluid used. WellView: LOADFLUIDTYP"
+      - name: comments
+        description: "General comments for the well test. WellView: COM"
+
+      # -- measurements - depths
+      - name: top_depth_ft
+        description: "Top measured depth converted from meters to feet. WellView: DEPTHTOP"
+      - name: bottom_depth_ft
+        description: "Bottom measured depth converted from meters to feet. WellView: DEPTHBTM"
+      - name: top_depth_tvd_ft
+        description: "Top true vertical depth converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom true vertical depth converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+
+      # -- measurements - porosity
+      - name: porosity_percent
+        description: "Porosity as percentage (converted from proportion). WellView: POROSITY"
+
+      # -- measurements - load fluid volumes
+      - name: load_fluid_volume_bbl
+        description: "Load fluid volume converted from cubic meters to barrels. WellView: VOLLOADFLUID"
+      - name: load_fluid_unrecovered_bbl
+        description: "Unrecovered load fluid volume converted from cubic meters to barrels. WellView: VOLLOADFLUIDUNRECOV"
+      - name: load_fluid_recovered_bbl
+        description: "Recovered load fluid volume converted from cubic meters to barrels (calculated). WellView: VOLLOADFLUIDRECOVCALC"
+      - name: load_fluid_recovery_percent
+        description: "Load fluid recovery as percentage (calculated). WellView: VOLPERCENTLOADFLUIDRECOVCALC"
+
+      # -- measurements - total production volumes
+      - name: total_oil_volume_bbl
+        description: "Total oil volume converted from cubic meters to barrels (calculated). WellView: VOLUMEOILTOTALCALC"
+      - name: total_condensate_volume_bbl
+        description: "Total condensate volume converted from cubic meters to barrels (calculated). WellView: VOLUMECONDTOTALCALC"
+      - name: total_water_volume_bbl
+        description: "Total water volume converted from cubic meters to barrels (calculated). WellView: VOLUMEWATERTOTALCALC"
+      - name: total_gas_volume_mcf
+        description: "Total gas volume converted from cubic meters to MCF (calculated). WellView: VOLUMEGASTOTALCALC"
+
+      # -- dates
+      - name: test_date
+        description: "Date of the well test (NTZ). WellView: DTTM"
+
+      # -- flags
+      - name: display_flag
+        description: "Whether this test is flagged for display. WellView: DISPLAYFLAG"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag for the record. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "Date the record was locked (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether the record itself is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__well_test_results
@@ -29,19 +148,120 @@ models:
     description: >
       Well test result staging from WellView. One row per test result.
       Measured results (rates, pressures, analysis) per test.
-      Source: WVT_WVWELLTESTTRANSRESULT (CALC schema).
+      Source: WVT_WVWELLTESTTRANSRESULT (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: well_test_result_sk
+        description: "Surrogate key (MD5 hash of well_test_result_id)"
+
+      # -- identifiers
       - name: well_test_result_id
-        description: "WellView well test result GUID (IDREC) — natural key"
+        description: "Unique well test result record identifier — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_test_id
-        description: "Parent well test GUID (IDRECPARENT)"
+        description: "Parent well test record identifier — FK to stg_wellview__well_tests. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: sequence_number
+        description: "Display sequence number within the parent test. WellView: SYSSEQ"
+
+      # -- descriptive fields
+      - name: analysis_method
+        description: "Analysis method used for the test result. WellView: ANALYSISMETHOD"
+      - name: analysis_software
+        description: "Software used for the analysis. WellView: ANALYSISSOFTWARE"
+      - name: analyst_name
+        description: "Name of the analyst who performed the analysis. WellView: ANALYST"
+      - name: analysis_comments
+        description: "Comments on the analysis. WellView: ANALYSISCOM"
+      - name: reservoir_boundary_type
+        description: "Type of reservoir boundary identified. WellView: RESBOUNDTYP"
+      - name: reservoir_boundary_notes
+        description: "Notes on the reservoir boundary. WellView: RESBOUNDNOTE"
+
+      # -- measurements - pressure
+      - name: mpp_pressure_psi
+        description: "Mid-perforation point pressure converted from kPa to PSI. WellView: PRESRESMPP"
+      - name: datum_pressure_psi
+        description: "Datum pressure converted from kPa to PSI. WellView: PRESRESDATUM"
+
+      # -- measurements - depth
+      - name: mpp_depth_ft
+        description: "Mid-perforation point measured depth converted from meters to feet. WellView: DEPTHMPP"
+      - name: mpp_depth_tvd_ft
+        description: "Mid-perforation point true vertical depth converted from meters to feet (calculated). WellView: DEPTHTVDMPPCALC"
+      - name: investigation_radius_ft
+        description: "Investigation radius converted from meters to feet. WellView: INVESTRADIUS"
+
+      # -- measurements - temperature
+      - name: reservoir_temperature_f
+        description: "Reservoir temperature converted from Celsius to Fahrenheit. WellView: TEMPRES"
+
+      # -- measurements - permeability
+      - name: horizontal_permeability_darcy
+        description: "Horizontal reservoir permeability converted from sq meters to darcy. WellView: RESPERMHOR"
+
+      # -- measurements - productivity
+      - name: permeability_ratio
+        description: "Reservoir permeability ratio (dimensionless). WellView: RESPERMRATIO"
+      - name: productivity_coefficient
+        description: "Productivity coefficient (dimensionless). WellView: PRODUCTIVITYCOEF"
+      - name: productivity_exponent
+        description: "Productivity exponent (dimensionless). WellView: PRODUCTIVITYEXP"
+      - name: productivity_index_bbl_day_psi
+        description: "Productivity index converted to bbl/day/psi. WellView: PRODUCTIVITYINDEX"
+      - name: specific_productivity_index_bbl_day_ft_psi
+        description: "Specific productivity index converted to bbl/day/ft/psi (calculated). WellView: SPICALC"
+
+      # -- measurements - reservoir characterization
+      - name: skin_factor
+        description: "Skin factor (dimensionless). WellView: SKIN"
+      - name: mobility_ratio
+        description: "Mobility ratio (dimensionless). WellView: MOBILITYRATIO"
+
+      # -- measurements - AOF
+      - name: aof_mcf_per_day
+        description: "Absolute open flow converted from cubic meters/day to MCF/day. WellView: AOF"
+
+      # -- flags
+      - name: is_definitive_test
+        description: "Whether this is the definitive test result. WellView: DEFINITIVE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag for the record. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "Date the record was locked (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether the record itself is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__well_test_flow_periods
@@ -49,17 +269,167 @@ models:
   - name: stg_wellview__well_test_flow_periods
     description: >
       Well test flow period staging from WellView. One row per flow period.
-      Individual flow and shut-in periods within a test.
-      Source: WVT_WVWELLTESTTRANSFLOWPER (CALC schema).
+      Individual flow and shut-in periods within a test with pressures,
+      temperatures, production rates, and fluid properties.
+      Source: WVT_WVWELLTESTTRANSFLOWPER (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: flow_period_sk
+        description: "Surrogate key (MD5 hash of flow_period_id)"
+
+      # -- identifiers
       - name: flow_period_id
-        description: "WellView flow period GUID (IDREC) — natural key"
+        description: "Unique flow period record identifier — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_test_id
-        description: "Parent well test GUID (IDRECPARENT)"
+        description: "Parent well test record identifier — FK to stg_wellview__well_tests. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: gauge_used_id
+        description: "Gauge record identifier used for this flow period. WellView: IDRECGAUGEUSED"
+      - name: gauge_used_table_key
+        description: "Gauge table key for cross-reference. WellView: IDRECGAUGEUSEDTK"
+
+      # -- descriptive fields
+      - name: flow_period_type
+        description: "Flow period type (e.g., flow, shut-in). WellView: TYP"
+      - name: comments
+        description: "General comments for the flow period. WellView: COM"
+
+      # -- measurements - timing
+      - name: duration_hours
+        description: "Flow period duration converted from days to hours (calculated). WellView: DURCALC"
+
+      # -- measurements - choke and operational
+      - name: choke_diameter_64ths
+        description: "Choke diameter size converted from meters to 64ths of an inch. WellView: SZDIACHOKE"
+      - name: efficiency_percent
+        description: "Flow period efficiency as percentage (converted from proportion). WellView: EFFICIENCY"
+
+      # -- measurements - fluid level depths
+      - name: fluid_level_end_depth_ft
+        description: "Fluid level end depth converted from meters to feet. WellView: DEPTHFLUIDLEVELEND"
+      - name: fluid_level_end_depth_tvd_ft
+        description: "Fluid level end depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDFLUIDLEVELENDCALC"
+
+      # -- measurements - initial pressures
+      - name: bottomhole_pressure_initial_psi
+        description: "Initial bottomhole pressure converted from kPa to PSI. WellView: PRESBHINIT"
+      - name: casing_pressure_initial_psi
+        description: "Initial casing pressure converted from kPa to PSI. WellView: PRESCASINIT"
+      - name: tubing_pressure_initial_psi
+        description: "Initial tubing pressure converted from kPa to PSI. WellView: PRESTUBINIT"
+      - name: separator_pressure_initial_psi
+        description: "Initial separator pressure converted from kPa to PSI. WellView: PRESSEPINIT"
+
+      # -- measurements - end pressures
+      - name: bottomhole_pressure_end_psi
+        description: "End bottomhole pressure converted from kPa to PSI. WellView: PRESBHEND"
+      - name: casing_pressure_end_psi
+        description: "End casing pressure converted from kPa to PSI. WellView: PRESCASEND"
+      - name: tubing_pressure_end_psi
+        description: "End tubing pressure converted from kPa to PSI. WellView: PRESTUBEND"
+      - name: separator_pressure_end_psi
+        description: "End separator pressure converted from kPa to PSI. WellView: PRESSEPEND"
+
+      # -- measurements - initial temperatures
+      - name: bottomhole_temperature_initial_f
+        description: "Initial bottomhole temperature converted from Celsius to Fahrenheit. WellView: TEMPBHINIT"
+      - name: casing_temperature_initial_f
+        description: "Initial casing temperature converted from Celsius to Fahrenheit. WellView: TEMPCASINIT"
+      - name: tubing_temperature_initial_f
+        description: "Initial tubing temperature converted from Celsius to Fahrenheit. WellView: TEMPTUBINIT"
+      - name: separator_temperature_initial_f
+        description: "Initial separator temperature converted from Celsius to Fahrenheit. WellView: TEMPSEPINIT"
+
+      # -- measurements - end temperatures
+      - name: bottomhole_temperature_end_f
+        description: "End bottomhole temperature converted from Celsius to Fahrenheit. WellView: TEMPBHEND"
+      - name: casing_temperature_end_f
+        description: "End casing temperature converted from Celsius to Fahrenheit. WellView: TEMPCASEND"
+      - name: tubing_temperature_end_f
+        description: "End tubing temperature converted from Celsius to Fahrenheit. WellView: TEMPTUBEND"
+      - name: separator_temperature_end_f
+        description: "End separator temperature converted from Celsius to Fahrenheit. WellView: TEMPSEPEND"
+
+      # -- measurements - production rates
+      - name: oil_rate_end_bbl_per_day
+        description: "End oil production rate converted from m3/day to bbl/day. WellView: RATEOILEND"
+      - name: water_rate_end_bbl_per_day
+        description: "End water production rate converted from m3/day to bbl/day. WellView: RATEWATEREND"
+      - name: condensate_rate_end_bbl_per_day
+        description: "End condensate production rate converted from m3/day to bbl/day. WellView: RATECONDEND"
+      - name: gas_rate_end_mcf_per_day
+        description: "End gas production rate converted from m3/day to MCF/day. WellView: RATEGASEND"
+      - name: gas_lift_rate_mcf_per_day
+        description: "Gas lift gas rate converted from m3/day to MCF/day. WellView: RATEGASLIFTGAS"
+
+      # -- measurements - total volumes
+      - name: total_oil_volume_bbl
+        description: "Total oil volume converted from cubic meters to barrels. WellView: VOLUMEOILTOTAL"
+      - name: total_water_volume_bbl
+        description: "Total water volume converted from cubic meters to barrels. WellView: VOLUMEWATERTOTAL"
+      - name: total_condensate_volume_bbl
+        description: "Total condensate volume converted from cubic meters to barrels. WellView: VOLUMECONDTOTAL"
+      - name: total_gas_volume_mcf
+        description: "Total gas volume converted from cubic meters to MCF. WellView: VOLUMEGASTOTAL"
+
+      # -- measurements - fluid properties
+      - name: basic_sediments_water_end_percent
+        description: "Basic sediments and water as percentage at end of period. WellView: BSWEND"
+      - name: sand_cut_end_percent
+        description: "Sand cut as percentage at end of period. WellView: SANDCUTEND"
+      - name: water_salinity_end_ppm
+        description: "Water salinity at end of period converted from proportion to PPM. WellView: SALINITYWATEREND"
+      - name: h2s_end_ppm
+        description: "H2S concentration at end of period converted from proportion to PPM. WellView: H2SEND"
+      - name: water_ph_end
+        description: "Water pH at end of period (dimensionless). WellView: PHWATEREND"
+
+      # -- measurements - density
+      - name: oil_density_end_api
+        description: "Oil density at end of period converted from kg/m3 to API gravity. WellView: DENSITYOILEND"
+      - name: gas_density_end_lb_per_1000ft3
+        description: "Gas density at end of period converted from kg/m3 to lb/1000ft3. WellView: DENSITYGASEND"
+
+      # -- dates
+      - name: flow_period_start_date
+        description: "Flow period start date (NTZ). WellView: DTTMSTART"
+      - name: flow_period_end_date
+        description: "Flow period end date (NTZ). WellView: DTTMEND"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag for the record. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "Date the record was locked (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether the record itself is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

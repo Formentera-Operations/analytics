@@ -8,19 +8,222 @@ models:
     description: >
       Tubing string staging from WellView. One row per tubing string record.
       Includes run/pull dates, set depth, string weight, and calculated rollups.
-      Source: WVT_WVTUB (CALC schema).
+      Source: WVT_WVTUB (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: tubing_string_sk
+        description: "Surrogate key (MD5 hash of tubing_string_id)"
+
+      # -- identifiers
       - name: tubing_string_id
-        description: "WellView tubing string GUID (IDREC) — natural key"
+        description: "WellView tubing string GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: run_job_id
+        description: "Run job GUID FK. WellView: IDRECJOBRUN"
+      - name: run_job_table_key
+        description: "Run job table key. WellView: IDRECJOBRUNTK"
+      - name: wellbore_id
+        description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key. WellView: IDRECWELLBORETK"
+      - name: pull_job_id
+        description: "Pull job GUID FK. WellView: IDRECJOBPULL"
+      - name: pull_job_table_key
+        description: "Pull job table key. WellView: IDRECJOBPULLTK"
+      - name: string_id
+        description: "String GUID FK. WellView: IDRECSTRING"
+      - name: string_table_key
+        description: "String table key. WellView: IDRECSTRINGTK"
+      - name: last_rig_id
+        description: "Last rig/service unit GUID (calculated). WellView: IDRECLASTRIGCALC"
+      - name: last_rig_table_key
+        description: "Last rig table key (calculated). WellView: IDRECLASTRIGCALCTK"
+      - name: last_failure_id
+        description: "Last failure record GUID (calculated). WellView: IDRECLASTFAILURECALC"
+      - name: last_failure_table_key
+        description: "Last failure table key (calculated). WellView: IDRECLASTFAILURECALCTK"
+      - name: job_program_phase_id
+        description: "Job program phase GUID (calculated). WellView: IDRECJOBPROGRAMPHASECALC"
+      - name: job_program_phase_table_key
+        description: "Job program phase table key (calculated). WellView: IDRECJOBPROGRAMPHASECALCTK"
+
+      # -- descriptive fields
+      - name: description
+        description: "Tubing string description. WellView: DES"
+      - name: proposed_or_actual
+        description: "Whether the record is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: proposed_version_number
+        description: "Proposed version number. WellView: PROPVERSIONNO"
+      - name: steel_grade
+        description: "String grade (calculated). WellView: GRADECALC"
+      - name: top_connection_thread
+        description: "Top connection thread type (calculated). WellView: CONNTHRDTOPCALC"
+      - name: components_description
+        description: "String components summary (calculated). WellView: COMPONENTSCALC"
+      - name: tapered_dimensions
+        description: "Tapered string dimensions (calculated). WellView: COMPTUBDIMCALC"
+      - name: tapered_od_description
+        description: "Tapered string OD description (calculated). WellView: COMPTUBDIMSZODNOMCALC"
+      - name: component_length_calc
+        description: "Component length summary (calculated). WellView: COMPTUBLENGTHCALC"
+      - name: makeup_contractor
+        description: "Make-up contractor name. WellView: CONTRACTOR"
+      - name: lateral_position
+        description: "Lateral position descriptor. WellView: LATPOSITION"
+      - name: pull_reason
+        description: "Reason for pulling the tubing string. WellView: PULLREASON"
+      - name: pull_reason_detail
+        description: "Detailed pull reason. WellView: PULLREASONDETAIL"
+      - name: cut_pull_reason
+        description: "Reason for cutting/pulling. WellView: REASONCUTPULL"
+      - name: cut_pull_note
+        description: "Cut/pull notes. WellView: NOTECUTPULL"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: user_text_2
+        description: "User-defined text field 2. WellView: USERTXT2"
+      - name: user_text_3
+        description: "User-defined text field 3. WellView: USERTXT3"
+      - name: complexity_index
+        description: "Complexity index value. WellView: COMPLEXITYINDEX"
+      - name: comments
+        description: "Free-text comments. WellView: COM"
+
+      # -- measurements — depths
+      - name: set_depth_ft
+        description: "Set depth converted from meters to feet. WellView: DEPTHBTM"
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet (calculated). WellView: DEPTHTOPCALC"
+      - name: set_depth_tvd_ft
+        description: "Set depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+      - name: total_length_ft
+        description: "String total length converted from meters to feet (calculated). WellView: LENGTHCALC"
+      - name: stick_up_kb_ft
+        description: "Stick up above KB converted from meters to feet (calculated). WellView: STICKUPKBCALC"
+      - name: top_link_depth_ft
+        description: "Top link depth converted from meters to feet (calculated). WellView: DEPTHTOPLINKCALC"
+      - name: bottom_link_depth_ft
+        description: "Bottom link depth converted from meters to feet (calculated). WellView: DEPTHBTMLINKCALC"
+      - name: cut_pull_depth_ft
+        description: "Cut/pull depth converted from meters to feet. WellView: DEPTHCUTPULL"
+      - name: cut_pull_depth_tvd_ft
+        description: "Cut/pull depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDCUTPULLCALC"
+      - name: total_stretch_ft
+        description: "Total stretch converted from meters to feet (calculated). WellView: TOTALSTRETCHSUMCALC"
+
+      # -- measurements — diameters
+      - name: max_od_inches
+        description: "String max nominal OD converted from meters to inches (calculated). WellView: SZODNOMMAXCALC"
+      - name: max_component_od_inches
+        description: "Max component nominal OD converted from meters to inches (calculated). WellView: SZODNOMCOMPMAXCALC"
+      - name: min_id_inches
+        description: "String min nominal ID converted from meters to inches (calculated). WellView: SZIDNOMMINCALC"
+      - name: min_component_id_inches
+        description: "Min component nominal ID converted from meters to inches (calculated). WellView: SZIDNOMCOMPMINCALC"
+      - name: min_drift_inches
+        description: "String minimum drift converted from meters to inches (calculated). WellView: SZDRIFTMINCALC"
+
+      # -- measurements — weight
+      - name: weight_per_foot_lbs
+        description: "Weight per length converted from kg/m to lb/ft (calculated). WellView: WTPERLENGTHCALC"
+
+      # -- measurements — tension
+      - name: set_tension_lbf
+        description: "Set tension converted from newtons to lbf. WellView: TENSION"
+
+      # -- measurements — pressure
+      - name: operating_pressure_limit_psi
+        description: "Operating pressure limit converted from kPa to psi. WellView: OPERATINGPRESSLIMIT"
+
+      # -- measurements — string weights
+      - name: string_weight_up_klbf
+        description: "String weight up converted from newtons to klbf. WellView: STRINGWTUP"
+      - name: string_weight_down_klbf
+        description: "String weight down converted from newtons to klbf. WellView: STRINGWTDOWN"
+      - name: string_weight_rotating_klbf
+        description: "String weight rotating converted from newtons to klbf. WellView: STRINGWTROTATING"
+
+      # -- measurements — volumes
+      - name: internal_volume_bbl
+        description: "String internal volume converted from m3 to barrels (calculated). WellView: VOLUMEINTERNALCALC"
+      - name: shoe_track_volume_bbl
+        description: "Shoe track volume converted from m3 to barrels. WellView: VOLUMESHOETRACK"
+
+      # -- measurements — centralizers
+      - name: avg_standoff_percent
+        description: "Average casing standoff percentage (proportion to %). WellView: CENTRALIZERSSTANDOFFAVG"
+      - name: min_standoff_percent
+        description: "Minimum casing standoff percentage (proportion to %). WellView: CENTRALIZERSSTANDOFFMIN"
+      - name: centralizer_count
+        description: "Number of centralizers from tally (calculated). WellView: CENTRALIZERSNOTALLYCALC"
+
+      # -- measurements — durations and rates
+      - name: run_to_pull_duration_days
+        description: "Duration from run to pull in days (calculated). WellView: DURRUNTOPULLCALC"
+      - name: on_bottom_to_pickup_duration_hours
+        description: "Duration from on-bottom to pickup converted from days to hours (calculated). WellView: DURONBOTTOMTOPICKUPCALC"
+      - name: depth_on_bottom_to_pickup_ft_per_hour
+        description: "Set depth / (on-bottom to pickup) rate converted to ft/hr (calculated). WellView: DEPTHONBTMTOPICKUPCALC"
+
+      # -- dates
+      - name: run_date
+        description: "Tubing run date (NTZ). WellView: DTTMRUN"
+      - name: pickup_date
+        description: "Pickup date (NTZ). WellView: DTTMPICKUP"
+      - name: on_bottom_date
+        description: "On-bottom date (NTZ). WellView: DTTMONBOTTOM"
+      - name: out_of_hole_date
+        description: "Out-of-hole date (NTZ). WellView: DTTMOUTOFHOLE"
+      - name: pull_date
+        description: "Pull date (NTZ). WellView: DTTMPULL"
+      - name: cut_pull_date
+        description: "Cut/pull date (NTZ). WellView: DTTMCUTPULL"
+      - name: proposed_cut_pull_date
+        description: "Proposed cut/pull date (NTZ). WellView: DTTMPROPCUTPULL"
+      - name: proposed_pull_date
+        description: "Proposed pull date (NTZ). WellView: DTTMPROPPULL"
+
+      # -- flags
+      - name: is_tapered_string
+        description: "Whether the tubing string is tapered. Derived from TAPERED."
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__tubing_components
@@ -28,19 +231,241 @@ models:
   - name: stg_wellview__tubing_components
     description: >
       Tubing component staging from WellView. One row per tubing joint or accessory.
-      Child of tubing strings. Source: WVT_WVTUBCOMP (CALC schema).
+      Child of tubing strings. Includes dimensions, weights, pressures, and connection details.
+      Source: WVT_WVTUBCOMP (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: tubing_component_sk
+        description: "Surrogate key (MD5 hash of component_id)"
+
+      # -- identifiers
       - name: component_id
-        description: "WellView tubing component GUID (IDREC) — natural key"
+        description: "WellView tubing component GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: tubing_string_id
-        description: "Parent tubing string GUID (IDRECPARENT)"
+        description: "Parent tubing string GUID FK. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: sequence_number
+        description: "Display sequence number. WellView: SYSSEQ"
+      - name: last_failure_id
+        description: "Last failure record GUID (calculated). WellView: IDRECLASTFAILURECALC"
+      - name: last_failure_table_key
+        description: "Last failure table key (calculated). WellView: IDRECLASTFAILURECALCTK"
+
+      # -- descriptive fields
+      - name: description
+        description: "Item description. WellView: DES"
+      - name: icon_name
+        description: "Icon identifier for display. WellView: ICONNAME"
+      - name: equipment_type
+        description: "Equipment type classification. WellView: COMPSUBTYP"
+      - name: item_number
+        description: "Item number in string (calculated). WellView: ITEMNOCALC"
+      - name: description_with_joints
+        description: "Description with joint count (calculated). WellView: DESJTCALC"
+      - name: joint_count
+        description: "Number of joints. WellView: JOINTS"
+      - name: tally_joint_count
+        description: "Number of joints from tally (calculated). WellView: JOINTSTALLYCALC"
+      - name: steel_grade
+        description: "Steel grade. WellView: GRADE"
+      - name: material_type
+        description: "Material type. WellView: MATERIAL"
+      - name: manufacturer
+        description: "Manufacturer name. WellView: MAKE"
+      - name: model
+        description: "Model designation. WellView: MODEL"
+      - name: serial_number
+        description: "Serial number. WellView: SN"
+      - name: used_class
+        description: "Used equipment class. WellView: USEDCLASS"
+      - name: reference_id
+        description: "Reference identifier. WellView: REFID"
+      - name: current_status
+        description: "Current status. WellView: CURRENTSTATUS"
+      - name: current_status_calc
+        description: "Current status (calculated). WellView: CURRENTSTATUSCALC"
+      - name: condition_run
+        description: "Condition when run. WellView: CONDITIONRUN"
+      - name: condition_pull
+        description: "Condition when pulled. WellView: CONDITIONPULL"
+      - name: inner_coating
+        description: "Inner coating type. WellView: COATINGINNER"
+      - name: outer_coating
+        description: "Outer coating type. WellView: COATINGOUTER"
+      - name: is_radioactive_source
+        description: "Whether the component contains a radioactive source. WellView: RADIOACTIVESOURCE"
+      - name: line_to_surface
+        description: "Whether the component has a line to surface. WellView: LINETOSURF"
+      - name: cost_unit_label
+        description: "Cost unit label. WellView: COSTUNITLABEL"
+      - name: comments
+        description: "Free-text comments. WellView: COM"
+
+      # -- connection information — top
+      - name: top_connection_type
+        description: "Top connection type. WellView: CONNTYPTOP"
+      - name: top_connection_thread
+        description: "Top connection thread. WellView: CONNTHRDTOP"
+      - name: top_upset
+        description: "Top upset type. WellView: UPSETTOP"
+
+      # -- connection information — bottom
+      - name: bottom_connection_type
+        description: "Bottom connection type. WellView: CONNTYPBTM"
+      - name: bottom_connection_thread
+        description: "Bottom connection thread. WellView: CONNTHRDBTM"
+      - name: bottom_upset
+        description: "Bottom upset type. WellView: UPSETBTM"
+
+      # -- connection calculations
+      - name: connection_description
+        description: "Connection description (calculated). WellView: CONNECTCALC"
+      - name: alternative_connection_description
+        description: "Alternative connection description (calculated). WellView: CONNECTALTCALC"
+
+      # -- measurements — dimensions
+      - name: od_nominal_inches
+        description: "Nominal OD converted from meters to inches. WellView: SZODNOM"
+      - name: id_nominal_inches
+        description: "Nominal ID converted from meters to inches. WellView: SZIDNOM"
+      - name: od_max_inches
+        description: "Maximum OD converted from meters to inches. WellView: SZODMAX"
+      - name: drift_diameter_inches
+        description: "Drift diameter converted from meters to inches. WellView: SZDRIFT"
+      - name: top_connection_size_inches
+        description: "Top connection size converted from meters to inches. WellView: CONNSZTOP"
+      - name: bottom_connection_size_inches
+        description: "Bottom connection size converted from meters to inches. WellView: CONNSZBTM"
+      - name: fishing_neck_od_inches
+        description: "Fishing neck OD converted from meters to inches. WellView: FISHNECKOD"
+
+      # -- measurements — weight per length
+      - name: weight_per_foot_lbs
+        description: "Weight per foot converted from kg/m to lb/ft. WellView: WTPERLENGTH"
+
+      # -- measurements — lengths
+      - name: length_ft
+        description: "Component length converted from meters to feet. WellView: LENGTH"
+      - name: cumulative_length_ft
+        description: "Cumulative length converted from meters to feet (calculated). WellView: LENGTHCUMCALC"
+      - name: tally_length_ft
+        description: "Tally length converted from meters to feet (calculated). WellView: LENGTHTALLYCALC"
+      - name: fishing_neck_length_ft
+        description: "Fishing neck length converted from meters to feet. WellView: FISHNECKLENGTH"
+
+      # -- measurements — depths
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet (calculated). WellView: DEPTHTOPCALC"
+      - name: bottom_depth_ft
+        description: "Bottom depth converted from meters to feet (calculated). WellView: DEPTHBTMCALC"
+      - name: corrected_top_depth_ft
+        description: "Corrected top depth converted from meters to feet. WellView: DEPTHTOPCORRECTED"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+
+      # -- measurements — weight
+      - name: component_weight_lbf
+        description: "Component weight converted from newtons to lbf (calculated). WellView: WEIGHTCALC"
+      - name: cumulative_weight_klbf
+        description: "Cumulative weight converted from newtons to klbf (calculated). WellView: WEIGHTCUMCALC"
+
+      # -- measurements — volumes
+      - name: internal_volume_bbl
+        description: "Internal volume converted from m3 to barrels (calculated). WellView: VOLUMEINTERNALCALC"
+      - name: displaced_volume_bbl
+        description: "Displaced volume (open end) converted from m3 to barrels (calculated). WellView: VOLUMEDISPCALC"
+      - name: cumulative_displaced_volume_bbl
+        description: "Cumulative displaced volume converted from m3 to barrels (calculated). WellView: VOLUMEDISPCUMCALC"
+
+      # -- measurements — torque
+      - name: makeup_torque_min_ft_lbs
+        description: "Minimum make-up torque converted from Nm to ft-lbs. WellView: TORQUEMIN"
+      - name: max_torque_ft_lbs
+        description: "Maximum torque converted from Nm to ft-lbs. WellView: TORQUEMAX"
+
+      # -- measurements — pressure
+      - name: collapse_pressure_psi
+        description: "Collapse pressure converted from kPa to psi. WellView: PRESCOLLAPSE"
+      - name: burst_pressure_psi
+        description: "Burst pressure converted from kPa to psi. WellView: PRESBURST"
+      - name: axial_inner_pressure_psi
+        description: "Axial inner pressure converted from kPa to psi. WellView: PRESAXIALINNER"
+      - name: axial_outer_pressure_psi
+        description: "Axial outer pressure converted from kPa to psi. WellView: PRESAXIALOUTER"
+
+      # -- measurements — tensile strength
+      - name: max_tensile_strength_klbf
+        description: "Max tensile strength converted from newtons to klbf. WellView: TENSILEMAX"
+
+      # -- measurements — temperature
+      - name: temperature_rating_fahrenheit
+        description: "Temperature rating converted from Celsius to Fahrenheit. WellView: TEMPRATING"
+
+      # -- measurements — operational hours
+      - name: starting_hours
+        description: "Starting hours converted from days to hours. WellView: HOURSSTART"
+
+      # -- measurements — inclination
+      - name: top_inclination_degrees
+        description: "Top inclination in degrees (calculated). WellView: INCLTOPCALC"
+      - name: bottom_inclination_degrees
+        description: "Bottom inclination in degrees (calculated). WellView: INCLBTMCALC"
+      - name: max_inclination_degrees
+        description: "Maximum inclination in degrees (calculated). WellView: INCLMAXCALC"
+
+      # -- measurements — centralizers
+      - name: centralizer_count
+        description: "Number of centralizers from tally (calculated). WellView: CENTRALIZERSNOTALLYCALC"
+
+      # -- cost
+      - name: component_cost
+        description: "Item cost. WellView: COST"
+
+      # -- dates
+      - name: manufacture_date
+        description: "Manufacture date (NTZ). WellView: DTTMMANUFACTURE"
+      - name: status_date
+        description: "Current status date (NTZ, calculated). WellView: DTTMSTATUSCALC"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__tubing_component_mandrels
@@ -48,20 +473,61 @@ models:
   - name: stg_wellview__tubing_component_mandrels
     description: >
       Tubing mandrel staging from WellView. One row per mandrel.
-      Mandrel equipment within tubing components.
-      Source: WVT_WVTUBCOMPMANDREL (CALC schema).
+      Mandrel equipment within tubing components with station number.
+      Source: WVT_WVTUBCOMPMANDREL (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: mandrel_sk
+        description: "Surrogate key (MD5 hash of mandrel_id)"
+
+      # -- identifiers
       - name: mandrel_id
-        description: "WellView mandrel GUID (IDREC) — natural key"
+        description: "WellView mandrel GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: tubing_component_id
-        description: "Parent tubing component GUID (IDRECPARENT)"
+        description: "Parent tubing component GUID FK. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+
+      # -- descriptive fields
+      - name: station_number
+        description: "Mandrel station number. WellView: STATIONNO"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__tubing_component_mandrel_inserts
@@ -69,20 +535,115 @@ models:
   - name: stg_wellview__tubing_component_mandrel_inserts
     description: >
       Tubing mandrel insert staging from WellView. One row per mandrel insert.
-      Insert details within mandrels.
-      Source: WVT_WVTUBCOMPMANDRELINSERT (CALC schema).
+      Insert details including valve type, run/pull dates, pressures, and material.
+      Source: WVT_WVTUBCOMPMANDRELINSERT (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: mandrel_insert_sk
+        description: "Surrogate key (MD5 hash of insert_id)"
+
+      # -- identifiers
       - name: insert_id
-        description: "WellView mandrel insert GUID (IDREC) — natural key"
+        description: "WellView mandrel insert GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: mandrel_id
-        description: "Parent mandrel GUID (IDRECPARENT)"
+        description: "Parent mandrel GUID FK. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+
+      # -- descriptive fields
+      - name: valve_type
+        description: "Valve type classification. WellView: VALVETYP"
+      - name: valve_description
+        description: "Valve description. WellView: VALVEDES"
+      - name: valve_material
+        description: "Valve material. WellView: VALVEMATERIAL"
+      - name: valve_packing
+        description: "Valve packing type. WellView: VALVEPACKING"
+      - name: manufacturer
+        description: "Manufacturer name. WellView: MAKE"
+      - name: model
+        description: "Model designation. WellView: MODEL"
+      - name: serial_number
+        description: "Serial number. WellView: SN"
+      - name: reference_id
+        description: "Reference identifier. WellView: REFID"
+      - name: latch_type
+        description: "Latch type. WellView: LATCHTYP"
+      - name: latch_material
+        description: "Latch material. WellView: LATCHMATERIAL"
+      - name: orifice_material
+        description: "Orifice material. WellView: ORIFICEMATERIAL"
+      - name: retrieval_method
+        description: "Retrieval method. WellView: RETRIEVEMETH"
+      - name: pull_reason
+        description: "Pull reason. WellView: PULLREASON"
+      - name: service_type
+        description: "Service type. WellView: SERVICE"
+      - name: comments
+        description: "Free-text comments. WellView: COM"
+
+      # -- measurements — dimensions
+      - name: od_inches
+        description: "Outside diameter converted from meters to inches. WellView: SZOD"
+      - name: port_size_inches
+        description: "Port size converted from meters to inches. WellView: SZPORT"
+
+      # -- measurements — pressure
+      - name: tro_run_psi
+        description: "TRO run pressure converted from kPa to psi. WellView: TRORUN"
+      - name: tro_pull_psi
+        description: "TRO pull pressure converted from kPa to psi. WellView: TROPULL"
+      - name: surface_gauge_pressure_open_psi
+        description: "Surface gauge pressure (open) converted from kPa to psi. WellView: PRESSURFGAUGEOPEN"
+      - name: surface_gauge_pressure_close_psi
+        description: "Surface gauge pressure (closed) converted from kPa to psi. WellView: PRESSURFGAUGECLOSE"
+
+      # -- measurements — temperature
+      - name: temperature_fahrenheit
+        description: "Temperature converted from Celsius to Fahrenheit. WellView: TEMP"
+
+      # -- dates
+      - name: run_date
+        description: "Insert run date (NTZ). WellView: DTTMRUN"
+      - name: pull_date
+        description: "Insert pull date (NTZ). WellView: DTTMPULL"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__tubing_run_tallies
@@ -90,20 +651,107 @@ models:
   - name: stg_wellview__tubing_run_tallies
     description: >
       Tubing run tally staging from WellView. One row per tally entry.
-      Joint-by-joint tally for tubing components.
-      Source: WVT_WVTUBCOMPTALLY (CALC schema).
+      Joint-by-joint tally for tubing components with depths, volumes, and weights.
+      Source: WVT_WVTUBCOMPTALLY (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: tally_sk
+        description: "Surrogate key (MD5 hash of tally_id)"
+
+      # -- identifiers
       - name: tally_id
-        description: "WellView tubing tally GUID (IDREC) — natural key"
+        description: "WellView tubing tally GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: tubing_component_id
-        description: "Parent tubing component GUID (IDRECPARENT)"
+        description: "Parent tubing component GUID FK. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: sequence_number
+        description: "Display sequence number. WellView: SYSSEQ"
+
+      # -- descriptive fields
+      - name: joint_run_number
+        description: "Whether the joint was run (boolean as float). WellView: JOINTRUN"
+      - name: run_number_calc
+        description: "Run number (calculated). WellView: RUNNOCALC"
+      - name: centralizer_description
+        description: "Centralizer description/note. WellView: CENTRALIZERSDES"
+      - name: centralizer_number
+        description: "Number of centralizers. WellView: CENTRALIZERSNO"
+      - name: external_jewelry
+        description: "External jewelry description. WellView: EXTJEWELRY"
+      - name: reference_id
+        description: "Reference identifier. WellView: REFID"
+      - name: reference_number
+        description: "Reference number. WellView: REFNO"
+
+      # -- measurements — lengths
+      - name: joint_length_ft
+        description: "Joint length converted from meters to feet. WellView: LENGTH"
+      - name: cumulative_length_ft
+        description: "Cumulative length converted from meters to feet (calculated). WellView: LENGTHCUMCALC"
+
+      # -- measurements — depths
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet (calculated). WellView: DEPTHTOPCALC"
+      - name: bottom_depth_ft
+        description: "Bottom depth converted from meters to feet (calculated). WellView: DEPTHBTMCALC"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+
+      # -- measurements — volumes
+      - name: internal_volume_bbl
+        description: "Internal volume converted from m3 to barrels (calculated). WellView: VOLUMEINTERNALCALC"
+      - name: cumulative_internal_volume_bbl
+        description: "Cumulative internal volume converted from m3 to barrels (calculated). WellView: VOLUMEINTERNALCUMCALC"
+      - name: cumulative_displaced_volume_bbl
+        description: "Cumulative displaced volume converted from m3 to barrels (calculated). WellView: VOLUMEDISPCUMCALC"
+
+      # -- measurements — weight
+      - name: cumulative_weight_klbf
+        description: "Cumulative weight converted from newtons to klbf (calculated). WellView: WEIGHTCUMCALC"
+
+      # -- flags
+      - name: is_centralized
+        description: "Whether the joint is centralized. WellView: CENTRALIZED"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__rod_strings
@@ -111,20 +759,159 @@ models:
   - name: stg_wellview__rod_strings
     description: >
       Rod string staging from WellView. One row per rod string record.
-      Includes run/pull dates, pump details, and calculated rollups.
-      Source: WVT_WVROD (CALC schema).
+      Includes run/pull dates, set depth, associated tubing, and calculated rollups.
+      Source: WVT_WVROD (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: rod_string_sk
+        description: "Surrogate key (MD5 hash of rod_string_id)"
+
+      # -- identifiers
       - name: rod_string_id
-        description: "WellView rod string GUID (IDREC) — natural key"
+        description: "WellView rod string GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: run_job_id
+        description: "Run job GUID FK. WellView: IDRECJOBRUN"
+      - name: run_job_table_key
+        description: "Run job table key. WellView: IDRECJOBRUNTK"
+      - name: pull_job_id
+        description: "Pull job GUID FK. WellView: IDRECJOBPULL"
+      - name: pull_job_table_key
+        description: "Pull job table key. WellView: IDRECJOBPULLTK"
+      - name: program_phase_id
+        description: "Job program phase GUID (calculated). WellView: IDRECJOBPROGRAMPHASECALC"
+      - name: program_phase_table_key
+        description: "Job program phase table key (calculated). WellView: IDRECJOBPROGRAMPHASECALCTK"
+      - name: wellbore_id
+        description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key. WellView: IDRECWELLBORETK"
+      - name: tubing_string_id
+        description: "Associated tubing string GUID FK. WellView: IDRECTUB"
+      - name: tubing_string_table_key
+        description: "Tubing string table key. WellView: IDRECTUBTK"
+      - name: last_rig_id
+        description: "Last rig/service unit GUID (calculated). WellView: IDRECLASTRIGCALC"
+      - name: last_rig_table_key
+        description: "Last rig table key (calculated). WellView: IDRECLASTRIGCALCTK"
+      - name: last_failure_id
+        description: "Last failure record GUID (calculated). WellView: IDRECLASTFAILURECALC"
+      - name: last_failure_table_key
+        description: "Last failure table key (calculated). WellView: IDRECLASTFAILURECALCTK"
+
+      # -- descriptive fields
+      - name: proposed_or_actual
+        description: "Whether the record is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: proposed_version_number
+        description: "Proposed version number. WellView: PROPVERSIONNO"
+      - name: rod_string_description
+        description: "Rod string description. WellView: DES"
+      - name: comments
+        description: "Free-text comments. WellView: COM"
+      - name: string_grade
+        description: "String grade (calculated). WellView: GRADECALC"
+      - name: top_connection_thread
+        description: "Top connection thread type (calculated). WellView: CONNTHRDTOPCALC"
+      - name: string_components_description
+        description: "String components summary (calculated). WellView: COMPONENTSCALC"
+      - name: pull_reason
+        description: "Reason for pulling the rod string. WellView: PULLREASON"
+      - name: pull_reason_detail
+        description: "Detailed pull reason. WellView: PULLREASONDETAIL"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: user_text_2
+        description: "User-defined text field 2. WellView: USERTXT2"
+      - name: user_text_3
+        description: "User-defined text field 3. WellView: USERTXT3"
+      - name: complexity_index
+        description: "Complexity index value. WellView: COMPLEXITYINDEX"
+
+      # -- measurements — depths
+      - name: set_depth_ft
+        description: "Set depth converted from meters to feet. WellView: DEPTHBTM"
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet (calculated). WellView: DEPTHTOPCALC"
+      - name: set_depth_tvd_ft
+        description: "Set depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+      - name: rod_string_length_ft
+        description: "String length converted from meters to feet (calculated). WellView: LENGTHCALC"
+      - name: stick_up_kb_ft
+        description: "Stick up above KB converted from meters to feet (calculated). WellView: STICKUPKBCALC"
+
+      # -- measurements — diameters
+      - name: string_nominal_od_in
+        description: "String nominal OD converted from meters to inches (calculated). WellView: SZODNOMMAXCALC"
+      - name: max_component_nominal_od_in
+        description: "Max component nominal OD converted from meters to inches (calculated). WellView: SZODNOMCOMPMAXCALC"
+
+      # -- measurements — weight
+      - name: weight_per_length_lb_per_ft
+        description: "Weight per length converted from kg/m to lb/ft (calculated). WellView: WTPERLENGTHCALC"
+
+      # -- measurements — durations and rates
+      - name: duration_run_to_pull_days
+        description: "Duration from run to pull in days (calculated). WellView: DURRUNTOPULLCALC"
+      - name: duration_on_bottom_to_pickup_hours
+        description: "Duration from on-bottom to pickup converted from days to hours (calculated). WellView: DURONBOTTOMTOPICKUPCALC"
+      - name: depth_on_bottom_to_pickup_ft_per_hour
+        description: "Set depth / (on-bottom to pickup) rate converted to ft/hr (calculated). WellView: DEPTHONBTMTOPICKUPCALC"
+
+      # -- dates
+      - name: run_datetime
+        description: "Rod string run date (NTZ). WellView: DTTMRUN"
+      - name: pickup_datetime
+        description: "Pickup date (NTZ). WellView: DTTMPICKUP"
+      - name: on_bottom_datetime
+        description: "On-bottom date (NTZ). WellView: DTTMONBOTTOM"
+      - name: out_of_hole_datetime
+        description: "Out-of-hole date (NTZ). WellView: DTTMOUTOFHOLE"
+      - name: pull_datetime
+        description: "Pull date (NTZ). WellView: DTTMPULL"
+      - name: proposed_pull_datetime
+        description: "Proposed pull date (NTZ). WellView: DTTMPROPPULL"
+
+      # -- flags
+      - name: is_tapered_string
+        description: "Whether the rod string is tapered. Derived from TAPERED."
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__rod_components
@@ -132,16 +919,204 @@ models:
   - name: stg_wellview__rod_components
     description: >
       Rod component staging from WellView. One row per rod joint or accessory.
-      Child of rod strings. Source: WVT_WVRODCOMP (CALC schema).
+      Child of rod strings. Includes dimensions, weights, connections, and scraper details.
+      Source: WVT_WVRODCOMP (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: rod_component_sk
+        description: "Surrogate key (MD5 hash of rod_component_id)"
+
+      # -- identifiers
       - name: rod_component_id
-        description: "WellView rod component GUID (IDREC) — natural key"
+        description: "WellView rod component GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: rod_string_id
-        description: "Parent rod string GUID (IDRECPARENT)"
+        description: "Parent rod string GUID FK. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: sequence_number
+        description: "Display sequence number. WellView: SYSSEQ"
+      - name: last_failure_id
+        description: "Last failure record GUID (calculated). WellView: IDRECLASTFAILURECALC"
+      - name: last_failure_table_key
+        description: "Last failure table key (calculated). WellView: IDRECLASTFAILURECALCTK"
+
+      # -- descriptive fields
+      - name: component_description
+        description: "Item description. WellView: DES"
+      - name: description_with_joint_count
+        description: "Description with joint count (calculated). WellView: DESJTCALC"
+      - name: item_number
+        description: "Item number in string (calculated). WellView: ITEMNOCALC"
+      - name: icon_name
+        description: "Icon identifier for display. WellView: ICONNAME"
+      - name: equipment_type
+        description: "Equipment type classification. WellView: COMPSUBTYP"
+      - name: grade
+        description: "Steel grade. WellView: GRADE"
+      - name: joint_count
+        description: "Number of joints. WellView: JOINTS"
+      - name: material
+        description: "Material type. WellView: MATERIAL"
+      - name: coating
+        description: "Coating type. WellView: COATING"
+      - name: manufacturer
+        description: "Manufacturer name. WellView: MAKE"
+      - name: model
+        description: "Model designation. WellView: MODEL"
+      - name: serial_number
+        description: "Serial number. WellView: SN"
+      - name: reference_id
+        description: "Reference identifier. WellView: REFID"
+      - name: condition_class
+        description: "Used equipment class. WellView: USEDCLASS"
+      - name: condition_when_run
+        description: "Condition when run. WellView: CONDITIONRUN"
+      - name: condition_when_pulled
+        description: "Condition when pulled. WellView: CONDITIONPULL"
+      - name: cost_unit_label
+        description: "Cost unit label. WellView: COSTUNITLABEL"
+      - name: comments
+        description: "Free-text comments. WellView: COM"
+
+      # -- connection information — top
+      - name: top_connection_type
+        description: "Top connection type. WellView: CONNTYPTOP"
+      - name: top_connection_thread
+        description: "Top coupling thread. WellView: CONNTHRDTOP"
+      - name: top_upset
+        description: "Top upset type. WellView: UPSETTOP"
+
+      # -- connection information — bottom
+      - name: bottom_connection_type
+        description: "Bottom connection type. WellView: CONNTYPBTM"
+      - name: bottom_connection_thread
+        description: "Bottom coupling thread. WellView: CONNTHRDBTM"
+      - name: bottom_upset
+        description: "Bottom upset type. WellView: UPSETBTM"
+
+      # -- connection calculations
+      - name: connections_description
+        description: "Connections description (calculated). WellView: CONNECTCALC"
+      - name: connections_alt_description
+        description: "Connections alternative description (calculated). WellView: CONNECTALTCALC"
+
+      # -- scraper / guide information
+      - name: scraper_description
+        description: "Scraper/guide description. WellView: GUIDEDES"
+      - name: scrapers_per_rod
+        description: "Number of scrapers per rod. WellView: GUIDESPERROD"
+      - name: scraper_material
+        description: "Scraper material. WellView: GUIDEMATERIAL"
+      - name: scraper_size_in
+        description: "Scraper size converted from meters to inches. WellView: GUIDESZ"
+
+      # -- measurements — dimensions
+      - name: nominal_od_in
+        description: "Nominal OD converted from meters to inches. WellView: SZODNOM"
+      - name: nominal_id_in
+        description: "Nominal ID converted from meters to inches. WellView: SZIDNOM"
+      - name: maximum_od_in
+        description: "Maximum OD converted from meters to inches. WellView: SZODMAX"
+      - name: top_connection_size_in
+        description: "Top coupling size converted from meters to inches. WellView: CONNSZTOP"
+      - name: bottom_connection_size_in
+        description: "Bottom coupling size converted from meters to inches. WellView: CONNSZBTM"
+      - name: fishing_neck_od_in
+        description: "Fishing neck OD converted from meters to inches. WellView: FISHNECKOD"
+
+      # -- measurements — weight per length
+      - name: weight_per_length_lb_per_ft
+        description: "Weight per length converted from kg/m to lb/ft. WellView: WTPERLENGTH"
+
+      # -- measurements — lengths
+      - name: length_ft
+        description: "Component length converted from meters to feet. WellView: LENGTH"
+      - name: cumulative_length_ft
+        description: "Cumulative length converted from meters to feet (calculated). WellView: LENGTHCUMCALC"
+      - name: fishing_neck_length_ft
+        description: "Fishing neck length converted from meters to feet. WellView: FISHNECKLENGTH"
+
+      # -- measurements — depths
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet (calculated). WellView: DEPTHTOPCALC"
+      - name: bottom_depth_ft
+        description: "Bottom depth converted from meters to feet (calculated). WellView: DEPTHBTMCALC"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+      - name: corrected_top_depth_ft
+        description: "Corrected top depth converted from meters to feet. WellView: DEPTHTOPCORRECTED"
+
+      # -- measurements — weight
+      - name: component_weight_lbf
+        description: "Component weight converted from newtons to lbf (calculated). WellView: WEIGHTCALC"
+      - name: cumulative_weight_klbf
+        description: "Cumulative weight converted from newtons to klbf (calculated). WellView: WEIGHTCUMCALC"
+
+      # -- measurements — volumes
+      - name: volume_displaced_bbl
+        description: "Volume displaced (open end) converted from m3 to barrels (calculated). WellView: VOLUMEDISPCALC"
+      - name: cumulative_volume_displaced_bbl
+        description: "Cumulative volume displaced converted from m3 to barrels (calculated). WellView: VOLUMEDISPCUMCALC"
+
+      # -- measurements — tensile strength
+      - name: max_tensile_strength_klbf
+        description: "Min tensile strength converted from newtons to klbf. WellView: TENSILEMAX"
+
+      # -- measurements — operational hours
+      - name: starting_hours_hr
+        description: "Starting hours converted from days to hours. WellView: HOURSSTART"
+
+      # -- measurements — inclination
+      - name: top_inclination_deg
+        description: "Top inclination in degrees (calculated). WellView: INCLTOPCALC"
+      - name: bottom_inclination_deg
+        description: "Bottom inclination in degrees (calculated). WellView: INCLBTMCALC"
+      - name: max_inclination_deg
+        description: "Maximum inclination in degrees (calculated). WellView: INCLMAXCALC"
+
+      # -- cost
+      - name: item_cost
+        description: "Item cost. WellView: COST"
+
+      # -- dates
+      - name: manufacture_date
+        description: "Manufacture date (NTZ). WellView: DTTMMANUFACTURE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether this record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether this record is locked in UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

@@ -8,16 +8,59 @@ models:
     description: >
       System integration staging from WellView. One row per integration record.
       Maps WellView records to external system identifiers (e.g., AF/PI).
-      Source: WVT_WVSYSINTEGRATION (DBO schema — not CALC).
+      Source: WVT_WVSYSINTEGRATION (DBO schema — not CALC). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: system_integration_sk
+        description: "Surrogate key (MD5 hash of system_integration_id)"
+
+      # -- identifiers
       - name: system_integration_id
-        description: "WellView system integration GUID (IDREC) — natural key"
+        description: "WellView system integration GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
+      - name: parent_record_id
+        description: "Parent record identifier. WellView: IDRECPARENT"
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: parent_table_key
+        description: "Parent table key for polymorphic reference. WellView: TBLKEYPARENT"
+
+      # -- descriptive fields
+      - name: integrator_description
+        description: "Name or description of the integrating system. WellView: INTEGRATORDES"
+      - name: integrator_version
+        description: "Version of the integrating system. WellView: INTEGRATORVER"
+      - name: product_description
+        description: "External product or application description. WellView: AFPRODUCT"
+      - name: af_entity_id
+        description: "External system entity identifier. WellView: AFIDENTITY"
+      - name: af_record_id
+        description: "External system record identifier. WellView: AFIDREC"
+      - name: integration_notes
+        description: "Free-text notes about the integration. WellView: NOTE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

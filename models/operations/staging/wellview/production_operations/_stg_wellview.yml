@@ -7,17 +7,192 @@ models:
   - name: stg_wellview__production_failures
     description: >
       Production failure staging from WellView. One row per equipment failure.
-      Failure records with diagnosis, repair details, and cost tracking.
-      Source: WVT_WVPROBLEM (CALC schema).
+      Failure records with diagnosis, cause, production impact, repair details, and cost tracking.
+      Source: WVT_WVPROBLEM (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: production_failure_sk
+        description: "Surrogate key (MD5 hash of production_failure_id)"
+
+      # -- identifiers
       - name: production_failure_id
-        description: "WellView production failure GUID (IDREC) — natural key"
+        description: "WellView production failure GUID — natural key. WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
+      - name: repair_job_id
+        description: "Failure repair job record ID. WellView: IDRECJOB"
+      - name: repair_job_table_key
+        description: "Failure repair job table key. WellView: IDRECJOBTK"
+      - name: zone_completion_id
+        description: "Associated completion/zone record ID. WellView: IDRECZONECOMPLETION"
+      - name: zone_completion_table_key
+        description: "Completion/zone table key. WellView: IDRECZONECOMPLETIONTK"
+      - name: production_setting_id
+        description: "Most recent production setting record ID (calculated). WellView: IDRECPRODSETTINGCALC"
+      - name: production_setting_table_key
+        description: "Production setting table key (calculated). WellView: IDRECPRODSETTINGCALCTK"
+      - name: pre_failure_well_status_id
+        description: "Pre-failure well status record ID (calculated). WellView: IDRECWELLSTATUSCALC"
+      - name: pre_failure_well_status_table_key
+        description: "Pre-failure well status table key (calculated). WellView: IDRECWELLSTATUSCALCTK"
+
+      # -- failure classification
+      - name: failure_type
+        description: "Failure type. WellView: TYP"
+      - name: failure_type_category
+        description: "Failure type category. WellView: TYPCATEGORY"
+      - name: failure_type_detail
+        description: "Failure detail. WellView: TYPDETAIL"
+      - name: failure_description
+        description: "Failure description. WellView: DES"
+      - name: failure_system
+        description: "Failure system. WellView: FAILURESYSTEM"
+      - name: failure_system_category
+        description: "Failure system category. WellView: FAILURESYSTEMCATEGORY"
+      - name: failure_symptom
+        description: "Failure symptom. WellView: FAILURESYMPTOM"
+
+      # -- cause
+      - name: cause_of_failure
+        description: "Cause of failure. WellView: CAUSE"
+      - name: cause_category
+        description: "Cause category. WellView: CAUSECATEGORY"
+      - name: cause_detail
+        description: "Cause of failure detail. WellView: CAUSEDETAIL"
+      - name: cause_comments
+        description: "Free-text cause comments. WellView: CAUSECOM"
+
+      # -- priority and status
+      - name: failure_priority
+        description: "Failure priority. WellView: PRIORITY"
+      - name: failure_status
+        description: "Failure status. WellView: STATUS1"
+      - name: failure_status_detail
+        description: "Failure status detail. WellView: STATUS2"
+
+      # -- dates
+      - name: failure_date
+        description: "Failure date (NTZ). WellView: DTTMSTART"
+      - name: action_date
+        description: "Action date (NTZ). WellView: DTTMACTION"
+      - name: resolution_date
+        description: "Resolved date (NTZ). WellView: DTTMEND"
+
+      # -- durations
+      - name: duration_action_to_start_days
+        description: "Failure to action duration in days (calculated). WellView: DURACTIONTOSTARTCALC"
+      - name: duration_resolution_to_action_days
+        description: "Action to resolution duration in days (calculated). WellView: DURENDTOACTIONCALC"
+      - name: duration_resolution_to_start_days
+        description: "Failure to resolution duration in days (calculated). WellView: DURENDTOSTARTCALC"
+      - name: duration_job_start_to_failure_days
+        description: "Failure to job start duration in days (calculated). WellView: DURJOBSTARTTOSTARTCALC"
+
+      # -- pre-failure production rates (converted from metric to US units)
+      - name: optimum_oil_rate_bbl_per_day
+        description: "Optimum oil rate converted from m3/day to bbl/day. WellView: RATEOPTIMUMOIL"
+      - name: optimum_gas_rate_mcf_per_day
+        description: "Optimum gas rate converted from m3/day to mcf/day. WellView: RATEOPTIMUMGAS"
+      - name: optimum_condensate_rate_bbl_per_day
+        description: "Optimum condensate rate converted from m3/day to bbl/day. WellView: RATEOPTIMUMCOND"
+      - name: optimum_water_rate_bbl_per_day
+        description: "Optimum water rate converted from m3/day to bbl/day. WellView: RATEOPTIMUMWATER"
+
+      # -- post-failure production rates (converted from metric to US units)
+      - name: failure_oil_rate_bbl_per_day
+        description: "Failure oil rate converted from m3/day to bbl/day. WellView: RATEFAILOIL"
+      - name: failure_gas_rate_mcf_per_day
+        description: "Failure gas rate converted from m3/day to mcf/day. WellView: RATEFAILGAS"
+      - name: failure_condensate_rate_bbl_per_day
+        description: "Failure condensate rate converted from m3/day to bbl/day. WellView: RATEFAILCOND"
+      - name: failure_water_rate_bbl_per_day
+        description: "Failure water rate converted from m3/day to bbl/day. WellView: RATEFAILWATER"
+
+      # -- production impact (converted from metric to US units)
+      - name: oil_rate_impact_bbl_per_day
+        description: "Optimum minus failure oil rate in bbl/day (calculated). WellView: RATECHANGEOILCALC"
+      - name: gas_rate_impact_mcf_per_day
+        description: "Optimum minus failure gas rate in mcf/day (calculated). WellView: RATECHANGEGASCALC"
+      - name: condensate_rate_impact_bbl_per_day
+        description: "Optimum minus failure condensate rate in bbl/day (calculated). WellView: RATECHANGECONDCALC"
+      - name: water_rate_impact_bbl_per_day
+        description: "Optimum minus failure water rate in bbl/day (calculated). WellView: RATECHANGEWATERCALC"
+
+      # -- estimated reserve losses (converted from metric to US units)
+      - name: estimated_oil_reserve_loss_bbl
+        description: "Estimated lost oil reserves converted from m3 to bbl. WellView: ESTRESERVELOSSOIL"
+      - name: estimated_gas_reserve_loss_bbl
+        description: "Estimated lost gas reserves converted from m3 to bbl. WellView: ESTRESERVELOSSGAS"
+      - name: estimated_condensate_reserve_loss_bbl
+        description: "Estimated lost condensate reserves converted from m3 to bbl. WellView: ESTRESERVELOSSCOND"
+      - name: estimated_water_reserve_loss_bbl
+        description: "Estimated lost water reserves converted from m3 to bbl. WellView: ESTRESERVELOSSWATER"
+
+      # -- cost
+      - name: estimated_failure_cost
+        description: "Estimated cost of failure. WellView: ESTCOST"
+
+      # -- resolution details
+      - name: action_taken
+        description: "Action taken to resolve the failure. WellView: ACTIONTAKEN"
+      - name: reported_to
+        description: "Person the problem was reported to. WellView: REPORTTO"
+
+      # -- flags
+      - name: is_regulatory_issue
+        description: "Whether the failure is a regulatory issue (derived from REGULATORYISSUE = 1)."
+      - name: is_performance_affected
+        description: "Whether performance was affected by the failure (derived from PERFORMANCEAFFECT = 1)."
+
+      # -- comments
+      - name: comments
+        description: "Free-text comments. WellView: COM"
+
+      # -- user fields
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+      - name: user_number_2
+        description: "User-defined numeric field 2. WellView: USERNUM2"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: user_text_2
+        description: "User-defined text field 2. WellView: USERTXT2"
+      - name: user_text_3
+        description: "User-defined text field 3. WellView: USERTXT3"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
