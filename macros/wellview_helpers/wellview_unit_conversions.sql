@@ -27,6 +27,11 @@
     {{ column_name }} / 0.0254
 {% endmacro %}
 
+{% macro wv_per_meter_to_per_foot(column_name) %}
+{# Peloton factor: / 3.28083989501312 | per-meter -> per-foot (for rates: $/m, hrs/m) #}
+    {{ column_name }} / 3.28083989501312
+{% endmacro %}
+
 {% macro wv_meters_to_miles(column_name) %}
 {# Peloton factor: / 1609.344 | meters -> miles (MILES) #}
     {{ column_name }} / 1609.344
@@ -124,6 +129,14 @@
 {% macro wv_watts_to_hp(column_name) %}
 {# Peloton factor: / 745.6999 | watts -> horsepower (HP) #}
     {{ column_name }} / 745.6999
+{% endmacro %}
+
+
+{# ==================== ANGULAR RATE ==================== #}
+
+{% macro wv_per_m_to_per_100ft(column_name) %}
+{# Peloton factor: / 0.0328083989501312 | deg/m -> deg/100ft (dogleg severity) #}
+    {{ column_name }} / 0.0328083989501312
 {% endmacro %}
 
 

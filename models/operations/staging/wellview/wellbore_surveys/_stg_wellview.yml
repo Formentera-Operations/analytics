@@ -1,0 +1,316 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__wellbores
+  # ==========================================================================
+  - name: stg_wellview__wellbores
+    description: >
+      Wellbore staging from WellView. One row per wellbore record (IDREC).
+      Source: WVT_WVWELLBORE (CALC schema).
+    columns:
+      # -- identifiers
+      - name: wellbore_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      - name: record_id
+        description: "WellView wellbore GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_wellbore_id
+        description: "Parent wellbore GUID for sidetracks (IDRECPARENT)"
+      - name: parent_wellbore_table_key
+        description: "Table key for the parent wellbore record (IDRECPARENTTK)"
+      - name: job_id
+        description: "Associated job GUID (IDRECJOB)"
+      - name: job_table_key
+        description: "Table key for the associated job record (IDRECJOBTK)"
+
+      # -- wellbore identification
+      - name: wellbore_name
+        description: "Wellbore descriptive name. WellView: DES"
+      - name: wellbore_api_uwi
+        description: "Wellbore API/UWI number. WellView: WELLBOREIDA"
+      - name: wellbore_id_b
+        description: "Wellbore ID B (auxiliary identifier). WellView: WELLBOREIDB"
+      - name: wellbore_id_c
+        description: "Wellbore ID C (auxiliary identifier). WellView: WELLBOREIDC"
+      - name: wellbore_id_d
+        description: "Wellbore ID D (auxiliary identifier). WellView: WELLBOREIDD"
+      - name: wellbore_id_e
+        description: "Wellbore ID E (auxiliary identifier). WellView: WELLBOREIDE"
+
+      # -- wellbore characteristics
+      - name: purpose
+        description: "Wellbore purpose (e.g. Production, Injection). WellView: PURPOSE"
+      - name: profile_type
+        description: "Wellbore profile type (e.g. Vertical, Horizontal). WellView: PROFILETYP"
+      - name: current_status
+        description: "Current calculated wellbore status. WellView: CURRENTSTATUSCALC"
+      - name: current_status_date
+        description: "Date of the current status (calculated). WellView: DTTMSTATUSCALC"
+
+      # -- depths
+      - name: start_depth_ft
+        description: "Start depth in feet (converted from meters). WellView: DEPTHSTART"
+      - name: start_depth_tvd_ft
+        description: "Start depth TVD in feet (calculated, converted). WellView: DEPTHTVDSTARTCALC"
+      - name: actual_top_depth_ft
+        description: "Actual top depth in feet (calculated, converted). WellView: DEPTHTOPACTUALCALC"
+      - name: proposed_top_depth_ft
+        description: "Proposed top depth in feet (calculated, converted). WellView: DEPTHTOPPROPCALC"
+      - name: total_depth_ft
+        description: "Total depth of wellbore in feet (calculated, converted). WellView: TOTALDEPTHCALC"
+      - name: total_depth_tvd_ft
+        description: "Total depth TVD of wellbore in feet (calculated, converted). WellView: TOTALDEPTHTVDCALC"
+      - name: draw_depth_ft
+        description: "Draw depth in feet (converted from meters). WellView: DEPTHDRAW"
+      - name: min_kickoff_depth_ft
+        description: "Minimum kickoff depth in feet (calculated, converted). WellView: DEPTHKICKOFFMINCALC"
+      - name: min_kickoff_depth_tvd_ft
+        description: "Minimum kickoff depth TVD in feet (calculated, converted). WellView: DEPTHTVDKICKOFFMINCALC"
+
+      # -- dates
+      - name: start_drill_date
+        description: "Start drill date (calculated). WellView: DTTMSTARTCALC"
+      - name: end_drill_date
+        description: "End drill date (calculated). WellView: DTTMENDCALC"
+      - name: min_kickoff_date
+        description: "Minimum kickoff date (calculated). WellView: DTTMKICKOFFMINCALC"
+
+      # -- durations
+      - name: duration_hours
+        description: "Drilling duration in hours (calculated, converted from days). WellView: DURATIONCALC"
+
+      # -- directional information
+      - name: vertical_section_direction_degrees
+        description: "Vertical section direction in degrees. WellView: VSDIR"
+      - name: vertical_section_origin_ns_ft
+        description: "Vertical section north-south origin in feet (converted). WellView: VSORIGINNS"
+      - name: vertical_section_origin_ew_ft
+        description: "Vertical section east-west origin in feet (converted). WellView: VSORIGINEW"
+      - name: closure_direction_degrees
+        description: "Closure direction in degrees (calculated). WellView: CLOSEDIRCALC"
+      - name: max_inclination_degrees
+        description: "Maximum inclination in degrees (calculated). WellView: INCLMAXCALC"
+      - name: max_dls_degrees_per_100ft
+        description: "Maximum dogleg severity in degrees per 100 feet (calculated, converted). WellView: DLSMAXCALC"
+
+      # -- directional calculated values
+      - name: min_tvd_ft
+        description: "Minimum TVD in feet (calculated, converted). WellView: TVDMINCALC"
+      - name: max_tvd_ft
+        description: "Maximum TVD in feet (calculated, converted). WellView: TVDMAXCALC"
+      - name: min_vs_for_wellbore_ft
+        description: "Minimum vertical section for wellbore in feet (calculated). WellView: VSPLOTMINCALC"
+      - name: max_vs_for_wellbore_ft
+        description: "Maximum vertical section for wellbore in feet (calculated). WellView: VSPLOTMAXCALC"
+      - name: max_departure_ft
+        description: "Maximum departure in feet (calculated, converted). WellView: DEPARTMAXCALC"
+      - name: min_ns_for_wellbore_ft
+        description: "Minimum north-south for wellbore in feet (calculated). WellView: NSMINCALC"
+      - name: max_ns_for_wellbore_ft
+        description: "Maximum north-south for wellbore in feet (calculated). WellView: NSMAXCALC"
+      - name: min_ew_for_wellbore_ft
+        description: "Minimum east-west for wellbore in feet (calculated). WellView: EWMINCALC"
+      - name: max_ew_for_wellbore_ft
+        description: "Maximum east-west for wellbore in feet (calculated). WellView: EWMAXCALC"
+      - name: unwrapped_displacement_ft
+        description: "Unwrapped displacement in feet (calculated, converted). WellView: DISPLACEUNWRAPCALC"
+
+      # -- sensor durations
+      - name: duration_on_bottom_minutes
+        description: "Duration on bottom in minutes (calculated, converted from days). WellView: DURONBTMCALC"
+      - name: duration_off_bottom_minutes
+        description: "Duration off bottom in minutes (calculated, converted from days). WellView: DUROFFBTMCALC"
+      - name: duration_pipe_moving_minutes
+        description: "Duration pipe moving in minutes (calculated, converted from days). WellView: DURPIPEMOVINGCALC"
+
+      # -- bottom hole location
+      - name: legal_survey_type
+        description: "Legal survey type for bottom hole location. WellView: LEGALSURVEYTYP"
+      - name: legal_survey_subtype
+        description: "Legal survey subtype. WellView: LEGALSURVEYSUBTYP"
+      - name: location_note
+        description: "Location note. WellView: LOCATIONNOTE"
+      - name: bottom_hole_legal_location
+        description: "Bottom hole legal location description. WellView: LEGALSURVEYLOC"
+      - name: north_south_distance_ft
+        description: "North-south distance in feet (converted from meters). WellView: NSDIST"
+      - name: north_south_flag
+        description: "From N or S line. WellView: NSFLAG"
+      - name: east_west_distance_ft
+        description: "East-west distance in feet (converted from meters). WellView: EWDIST"
+      - name: east_west_flag
+        description: "From E or W line. WellView: EWFLAG"
+      - name: location_reference
+        description: "Location reference. WellView: LOCATIONREF"
+      - name: county
+        description: "County. WellView: COUNTY"
+      - name: state_province
+        description: "State or province. WellView: STATEPROV"
+      - name: field_name
+        description: "Field name. WellView: FIELDNAME"
+      - name: field_code
+        description: "Field code. WellView: FIELDCODE"
+
+      # -- nearest town information
+      - name: nearest_town
+        description: "Nearest town name. WellView: TOWNNAME"
+      - name: distance_to_nearest_town_miles
+        description: "Distance to nearest town in miles (converted from meters). WellView: TOWNDIST"
+      - name: nearest_town_ref_direction
+        description: "Direction from nearest town. WellView: TOWNFLAG"
+      - name: nearest_town_state_prov
+        description: "Nearest town state/province. WellView: TOWNSTATEPROV"
+
+      # -- geographic coordinates
+      - name: lat_long_data_source
+        description: "Source of the lat/long data. WellView: LATLONGSOURCE"
+      - name: lat_long_datum
+        description: "Geodetic datum for lat/long. WellView: LATLONGDATUM"
+      - name: latitude_degrees
+        description: "Latitude in degrees. WellView: LATITUDE"
+      - name: longitude_degrees
+        description: "Longitude in degrees. WellView: LONGITUDE"
+      - name: utm_source
+        description: "Source of the UTM data. WellView: UTMSOURCE"
+      - name: utm_grid_zone
+        description: "UTM grid zone designator. WellView: UTMGRIDZONE"
+      - name: utm_easting_meters
+        description: "UTM easting in meters. WellView: UTMX"
+      - name: utm_northing_meters
+        description: "UTM northing in meters. WellView: UTMY"
+
+      # -- configuration
+      - name: exclude_from_calculations
+        description: "Whether to exclude this wellbore from calculations. WellView: EXCLUDE"
+
+      # -- user fields
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: user_text_2
+        description: "User-defined text field 2. WellView: USERTXT2"
+      - name: user_text_3
+        description: "User-defined text field 3. WellView: USERTXT3"
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+      - name: user_number_2
+        description: "User-defined numeric field 2. WellView: USERNUM2"
+      - name: user_number_3
+        description: "User-defined numeric field 3. WellView: USERNUM3"
+
+      # -- comments
+      - name: comment
+        description: "General comments. WellView: COM"
+
+      # -- sequence
+      - name: sequence_number
+        description: "Sequence number for ordering. WellView: SYSSEQ"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "Lock date. WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). WellView: SYSMODDATE"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__wellbore_depths
+  # ==========================================================================
+  - name: stg_wellview__wellbore_depths
+    description: >
+      Wellbore key depth staging from WellView. One row per key depth record.
+      Kickoff points and other significant depth markers.
+      Source: WVT_WVWELLBOREKEYDEPTH (CALC schema).
+    columns:
+      - name: key_depth_id
+        description: "WellView key depth GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_id
+        description: "Parent wellbore GUID (IDRECPARENT)"
+
+  # ==========================================================================
+  # stg_wellview__wellbore_directional_surveys
+  # ==========================================================================
+  - name: stg_wellview__wellbore_directional_surveys
+    description: >
+      Directional survey header staging from WellView. One row per survey run.
+      Proposed and actual directional surveys with tie-in coordinates and validation info.
+      Source: WVT_WVWELLBOREDIRSURVEY (CALC schema).
+    columns:
+      - name: survey_id
+        description: "WellView directional survey GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: wellbore_id
+        description: "Parent wellbore GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+
+  # ==========================================================================
+  # stg_wellview__wellbore_directional_survey_data
+  # ==========================================================================
+  - name: stg_wellview__wellbore_directional_survey_data
+    description: >
+      Directional survey station data staging from WellView. One row per survey station.
+      Measured depth, inclination, azimuth, and calculated position coordinates.
+      Source: WVT_WVWELLBOREDIRSURVEYDATA (CALC schema).
+    columns:
+      - name: survey_data_id
+        description: "WellView survey data point GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: directional_survey_id
+        description: "Parent directional survey GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"

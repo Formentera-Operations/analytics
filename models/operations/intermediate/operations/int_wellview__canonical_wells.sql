@@ -6,8 +6,7 @@
 }}
 
 with well_header as (
-    select
-        *
+    select *
     from {{ ref('stg_wellview__well_header') }}
 ),
 
@@ -17,7 +16,7 @@ wellbores as (
         row_number() over (
             partition by wb.well_id
             order by
-                coalesce(wb.current_status_date, wb.modified_at, wb.created_at) desc,
+                coalesce(wb.current_status_date, wb.modified_at_utc, wb.created_at_utc) desc,
                 wb.record_id desc
         ) as bore_rank
     from {{ ref('stg_wellview__wellbores') }} wb
@@ -61,48 +60,47 @@ prior_status as (
 
 final as (
     select
-        {{ dbt_utils.generate_surrogate_key(['h."Well ID"']) }} as well_sk,
-        {{ dbt_utils.generate_surrogate_key(['h."Well ID"', 'lw.record_id']) }} as well_bore_sk,
-        h."Well ID" as well_id,
-        h."Well Name" as well_name,
-        h."API 10 Number" as api_10_number,
-        h."Unique Well Identifier" as unique_well_identifier,
-        h."Cost Center" as cost_center,
-        h."Pad Name" as pad_name,
-        --h."Pad Code" as facility_name,
-        h."Lease Name" as lease_name,
-        h."Asset Company" as asset_company,
-        h."Company Code" as company_code,
-        h."Field Name" as field_name,
-        h."Regulatory Field Name" as regulatory_field_name,
-        h."Basin Name" as basin_name,
-        h."Well Type" as well_type,
-        h."Well Subtype" as well_subtype,
-        h."Current Well Type" as current_well_type,
-        h."Current Well Subtype" as current_well_subtype,
-        h."Current Well Status" as current_well_status,
-        h."Current Well Sub Status" as current_well_sub_status,
-        h."Current Status Date" as current_status_date,
-        h."Fluid Type" as fluid_type,
-        h."Current Fluid Type" as current_fluid_type,
-        h."Well Configuration Type" as well_configuration_type,
-        h."Number Of Wellbores" as number_of_wellbores,
-        h."Onshore Offshore Designation" as onshore_offshore_designation,
-        h."State Province" as state_province,
-        h."County Parish" as county_parish,
-        h."Latitude Degrees" as surface_latitude_degrees,
-        h."Longitude Degrees" as surface_longitude_degrees,
-        h."UTM Easting Meters" as surface_utm_easting_meters,
-        h."UTM Northing Meters" as surface_utm_northing_meters,
-        h."Spud Date" as spud_date,
-        h."Rig Release Date" as rig_release_date,
-        h."On Production Date" as on_production_date,
-        h."Last Production Date" as last_production_date,
-        h."Abandon Date" as abandon_date,
-        h."Last Approved MIT Date" as last_approved_mit_date,
-        h."Number Of Casing Strings" as number_of_casing_strings,
-        h."Production Setting ID" as production_setting_id,
-        h."Production Setting Table Key" as production_setting_table_key,
+        {{ dbt_utils.generate_surrogate_key(['h.well_id']) }} as well_sk,
+        {{ dbt_utils.generate_surrogate_key(['h.well_id', 'lw.record_id']) }} as well_bore_sk,
+        h.well_id,
+        h.well_name,
+        h.api_10_number,
+        h.unique_well_identifier,
+        h.cost_center,
+        h.pad_name,
+        h.lease_name,
+        h.asset_company,
+        h.company_code,
+        h.field_name,
+        h.regulatory_field_name,
+        h.basin_name,
+        h.well_type,
+        h.well_subtype,
+        h.current_well_type,
+        h.current_well_subtype,
+        h.current_well_status,
+        h.current_well_sub_status,
+        h.current_status_date,
+        h.fluid_type,
+        h.current_fluid_type,
+        h.well_configuration_type,
+        h.number_of_wellbores,
+        h.onshore_offshore_designation,
+        h.state_province,
+        h.county_parish,
+        h.latitude_degrees as surface_latitude_degrees,
+        h.longitude_degrees as surface_longitude_degrees,
+        h.utm_easting_meters as surface_utm_easting_meters,
+        h.utm_northing_meters as surface_utm_northing_meters,
+        h.spud_date,
+        h.rig_release_date,
+        h.on_production_date,
+        h.last_production_date,
+        h.abandon_date,
+        h.last_approved_mit_date,
+        h.number_of_casing_strings,
+        h.production_setting_id,
+        h.production_setting_table_key,
         lw.record_id as wellbore_record_id,
         lw.wellbore_name,
         lw.wellbore_api_uwi,
@@ -143,11 +141,11 @@ final as (
         current_timestamp as dim_updated_at
     from well_header h
     left join latest_wellbore lw
-        on lw.well_id = h."Well ID"
+        on h.well_id = lw.well_id
     left join latest_status ls
-        on ls.well_id = h."Well ID"
+        on h.well_id = ls.well_id
     left join prior_status ps
-        on ps.well_id = h."Well ID"
+        on h.well_id = ps.well_id
 )
 
 select *
