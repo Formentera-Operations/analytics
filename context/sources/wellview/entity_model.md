@@ -213,11 +213,31 @@ These are separate entities in WellView but share a common pattern: a **string**
 - Pull reasons tracked: "Pulled due to failure." — enables MTBF (mean time between failures) analysis
 - 3 failures in first 3 runs (~28, 204, 200 days), then improved to 463 days on 4th run
 
+**Production Settings (`WVT_WVPRODSETTING`) — Canonical Lift Type Source (sparse):**
+
+WellView DOES have a dedicated artificial lift type field (`PRODMETHTYP` on `WVT_WVPRODSETTING`), but it's very sparsely populated:
+
+| Lift Type (PRODMETHTYP) | Wells | Detail Values (PRODMETHDETAIL) |
+|-------------------------|-------|-------------------------------|
+| Rod Pump (`wvprodsettingrodpump`) | 67 | PU-ELC-AUTO, PU-WH CMP, PU-GAS-AUTO, PU-GAS-MAN |
+| ESP (`wvProdSettingESP`) | 27 | VSD |
+| Gas Lift (`wvprodsettinggaslift`) | 200+ | GL, Continuous, Annulus & Tubing |
+| Plunger (`wvprodsettingplunger`) | 206 | PL, PW, CONV PL-Diff, AUTO PL |
+| Flowing (`wvprodsettingflow`) | 106 | FL, FW, FC |
+| **NULL** | **2,114** | 19,115 records with no type assigned |
+
+Ground-truth validation:
+- **KING 59 1** (ESP): 8 production setting records with `setting_objective = 'ESP pump'`, but `PRODMETHTYP` is NULL
+- **JB Tubb AC 1 #504** (Rod Pump): Zero production setting records at all
+
+This means `PRODMETHTYP` covers only ~670 wells vs ~3,984 with equipment data. The `dim_well_equipment` mart should use a **COALESCE priority pattern**: (1) `PRODMETHTYP` when populated, (2) equipment inference from rods/tubing, (3) `setting_objective` as tertiary signal.
+
 **Key equipment modeling insights:**
-1. Artificial lift type is inferred, not declared — a `dim_well_equipment` mart should derive and expose lift type
+1. Artificial lift type has TWO sources: `PRODMETHTYP` (authoritative but sparse) and equipment inference (broad coverage) — COALESCE priority pattern needed
 2. Rod pump wells have paired rod + tubing string lifecycles; ESP wells have tubing-only lifecycles
 3. Component-level data enables failure analysis (MTBF), BOM tracking, and vendor performance
 4. Tubing `description` field is the primary lift type discriminator ("Tubing - ESP" vs "Tubing" / "Tubing - Production")
+5. Extension tables (`WVT_WVPRODSETTINGESP`, `WVT_WVPRODSETTINGRODPUMP`, etc.) are essentially empty — do not stage
 
 | Entity | Parent | Key Attributes | Staging Coverage |
 |--------|--------|----------------|------------------|
@@ -589,7 +609,7 @@ Based on the entity models above, these are the marts that should eventually exi
 | `dim_well_survey` | Dimension | Directional Survey, Stations | Not started | Staged |
 | `dim_zone` | Dimension | Zone, Status, Formation | Not started | `stg_wellview__zones` (staged). **Note:** primarily useful for vertical/legacy wells (~472 zones, ~161 wells). Horizontal wells use zones as a simple target formation tag (~1 zone/well, sparse metadata). |
 | `dim_completion` | Dimension | Completion, Zones, Links | **Low priority** | Only 23 records total in WellView. Horizontal well completions better sourced from Stimulation + Perforation entities or ProdView. Staging not warranted until vertical well management becomes a priority. |
-| `dim_well_equipment` | Dimension | Casing + Tubing + Rods + Perfs | Not started | Staged (8+5+2+1 models). Should derive artificial lift type (Rod Pump / ESP / Flowing) from equipment presence. 194K component records enable BOM, failure analysis, and vendor tracking. |
+| `dim_well_equipment` | Dimension | Casing + Tubing + Rods + Perfs + Prod Settings | Not started | Staged (8+5+2+1 models + `stg_wellview__production_settings` needed). Derive artificial lift type via COALESCE: (1) `PRODMETHTYP` from prod settings when non-null (~670 wells), (2) equipment inference from rods/tubing (~3,984 wells), (3) `setting_objective` as tertiary. 194K component records enable BOM, failure analysis, and vendor tracking. |
 | `fct_well_configuration` | Fact | Point-in-time well configuration snapshot | Not started | Multiple Physical Well entities |
 
 ### Well Work Marts
