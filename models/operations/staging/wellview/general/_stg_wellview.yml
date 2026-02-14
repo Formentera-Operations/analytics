@@ -30,7 +30,8 @@ models:
         description: "Entity ID — primary cross-system identifier. WellView: WELLIDC"
         data_tests:
           - not_null:
-              severity: warn
+              config:
+                severity: warn
       - name: producing_formation
         description: "Producing formation name. WellView: WELLIDD"
       - name: producing_method
@@ -165,7 +166,8 @@ models:
         description: "Spud date (NTZ). WellView: DTTMSPUD"
         data_tests:
           - not_null:
-              severity: warn
+              config:
+                severity: warn
       - name: rig_release_date
         description: "Rig release date (NTZ). WellView: DTTMRR"
       - name: estimated_on_production_date
