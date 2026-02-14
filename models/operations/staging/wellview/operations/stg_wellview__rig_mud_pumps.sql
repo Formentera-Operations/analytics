@@ -1,61 +1,139 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'rig', 'pump', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'operations']
+    )
+}}
 
-with source_data as (
+with
+
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVJOBRIGPUMP') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
     select
-        -- Primary identifiers
-        idrec as rig_pump_id,
-        idwell as well_id,
-        idrecparent as job_rig_id,
+        -- identifiers
+        trim(idrec)::varchar as rig_pump_id,
+        trim(idrecparent)::varchar as job_rig_id,
+        trim(idwell)::varchar as well_id,
 
-        -- Pump identification
-        des as pump_number,
-        refid as reference_id,
+        -- pump identification
+        trim(des)::varchar as pump_number,
+        trim(refid)::varchar as reference_id,
 
-        -- Manufacturer information
-        make as pump_manufacturer,
-        model as pump_model,
-        sn as serial_number,
+        -- manufacturer information
+        trim(make)::varchar as pump_manufacturer,
+        trim(model)::varchar as pump_model,
+        trim(sn)::varchar as serial_number,
 
-        -- Pump classification
-        actioncategory as action_category,
-        actiontyp as action_type,
+        -- pump classification
+        trim(actioncategory)::varchar as action_category,
+        trim(actiontyp)::varchar as action_type,
 
-        -- Physical specifications (converted to US units)
-        dttmstart as pump_start_datetime,
-        dttmend as pump_end_datetime,
+        -- physical specifications (converted from meters to inches)
+        {{ wv_meters_to_inches('strokelength') }} as stroke_length_in,
+        {{ wv_meters_to_inches('szodrod') }} as rod_diameter_in,
 
-        -- Power rating (converted to US units)
-        dttmmanufacture as manufacture_datetime,
+        -- power rating (converted from watts to horsepower)
+        {{ wv_watts_to_hp('powerrating') }} as power_rating_hp,
 
-        -- Date information
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
+        -- date information
+        dttmstart::timestamp_ntz as pump_start_datetime,
+        dttmend::timestamp_ntz as pump_end_datetime,
+        dttmmanufacture::timestamp_ntz as manufacture_datetime,
 
-        -- System fields
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        _fivetran_synced as fivetran_synced_at,
-        strokelength / 0.0254 as stroke_length_in,
-        szodrod / 0.0254 as rod_diameter_in,
+        -- system / audit
+        trim(syscreateuser)::varchar as created_by,
+        syscreatedate::timestamp_ntz as created_at,
+        trim(sysmoduser)::varchar as modified_by,
+        sysmoddate::timestamp_ntz as modified_at,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- Fivetran fields
-        powerrating / 745.6999 as power_rating_hp
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-    from source_data
+    from source
+),
+
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and rig_pump_id is not null
+),
+
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['rig_pump_id']) }} as rig_mud_pump_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+final as (
+    select
+        rig_mud_pump_sk,
+
+        -- identifiers
+        rig_pump_id,
+        job_rig_id,
+        well_id,
+
+        -- pump identification
+        pump_number,
+        reference_id,
+
+        -- manufacturer information
+        pump_manufacturer,
+        pump_model,
+        serial_number,
+
+        -- pump classification
+        action_category,
+        action_type,
+
+        -- physical specifications
+        stroke_length_in,
+        rod_diameter_in,
+
+        -- power rating
+        power_rating_hp,
+
+        -- date information
+        pump_start_datetime,
+        pump_end_datetime,
+        manufacture_datetime,
+
+        -- system / audit
+        created_by,
+        created_at,
+        modified_by,
+        modified_at,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

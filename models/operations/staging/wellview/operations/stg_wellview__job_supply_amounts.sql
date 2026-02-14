@@ -1,67 +1,151 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'job', 'supplies', 'transactions', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'operations']
+    )
+}}
 
-with source_data as (
+with
+
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVJOBSUPPLYAMT') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
     select
-        -- Primary identifiers
-        idrec as supply_amount_id,
-        idwell as well_id,
-        idrecparent as job_supply_id,
+        -- identifiers
+        trim(idrec)::varchar as supply_amount_id,
+        trim(idrecparent)::varchar as job_supply_id,
+        trim(idwell)::varchar as well_id,
 
-        -- Transaction timing
-        dttm as transaction_datetime,
-        reportnocalc as report_number,
+        -- transaction timing
+        dttm::timestamp_ntz as transaction_datetime,
+        reportnocalc::int as report_number,
 
-        -- Daily transaction amounts
-        received as daily_received_quantity,
-        consumed as daily_consumed_quantity,
-        returned as daily_returned_quantity,
+        -- daily transaction amounts
+        received::float as daily_received_quantity,
+        consumed::float as daily_consumed_quantity,
+        returned::float as daily_returned_quantity,
 
-        -- Cumulative calculations
-        receivedcumcalc as cumulative_received_quantity,
-        consumedcumcalc as cumulative_consumed_quantity,
-        returnedcumcalc as cumulative_returned_quantity,
-        inventorycumcalc as cumulative_inventory_on_location,
+        -- cumulative calculations
+        receivedcumcalc::float as cumulative_received_quantity,
+        consumedcumcalc::float as cumulative_consumed_quantity,
+        returnedcumcalc::float as cumulative_returned_quantity,
+        inventorycumcalc::float as cumulative_inventory_on_location,
 
-        -- Cost information
-        costor as cost_override,
-        costcalc as daily_field_estimate_cost,
-        costcumcalc as cumulative_field_estimate_cost,
+        -- cost information
+        costor::float as cost_override,
+        costcalc::float as daily_field_estimate_cost,
+        costcumcalc::float as cumulative_field_estimate_cost,
 
-        -- Related entities
-        idrecjobsupportvessel as support_vessel_id,
-        idrecjobsupportvesseltk as support_vessel_table_key,
-        idrecitem as linked_item_id,
-        idrecitemtk as linked_item_table_key,
-        idreclastrigcalc as last_rig_id,
-        idreclastrigcalctk as last_rig_table_key,
+        -- related entities
+        trim(idrecjobsupportvessel)::varchar as support_vessel_id,
+        trim(idrecjobsupportvesseltk)::varchar as support_vessel_table_key,
+        trim(idrecitem)::varchar as linked_item_id,
+        trim(idrecitemtk)::varchar as linked_item_table_key,
+        trim(idreclastrigcalc)::varchar as last_rig_id,
+        trim(idreclastrigcalctk)::varchar as last_rig_table_key,
 
-        -- Additional information
-        note as transaction_notes,
+        -- additional information
+        trim(note)::varchar as transaction_notes,
 
-        -- System fields
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
+        -- system / audit
+        trim(syscreateuser)::varchar as created_by,
+        syscreatedate::timestamp_ntz as created_at,
+        trim(sysmoduser)::varchar as modified_by,
+        sysmoddate::timestamp_ntz as modified_at,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- Fivetran fields
-        _fivetran_synced as fivetran_synced_at
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-    from source_data
+    from source
+),
+
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and supply_amount_id is not null
+),
+
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['supply_amount_id']) }} as supply_amount_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+final as (
+    select
+        supply_amount_sk,
+
+        -- identifiers
+        supply_amount_id,
+        job_supply_id,
+        well_id,
+
+        -- transaction timing
+        transaction_datetime,
+        report_number,
+
+        -- daily transaction amounts
+        daily_received_quantity,
+        daily_consumed_quantity,
+        daily_returned_quantity,
+
+        -- cumulative calculations
+        cumulative_received_quantity,
+        cumulative_consumed_quantity,
+        cumulative_returned_quantity,
+        cumulative_inventory_on_location,
+
+        -- cost information
+        cost_override,
+        daily_field_estimate_cost,
+        cumulative_field_estimate_cost,
+
+        -- related entities
+        support_vessel_id,
+        support_vessel_table_key,
+        linked_item_id,
+        linked_item_table_key,
+        last_rig_id,
+        last_rig_table_key,
+
+        -- additional information
+        transaction_notes,
+
+        -- system / audit
+        created_by,
+        created_at,
+        modified_by,
+        modified_at,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final
