@@ -1,71 +1,165 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'wellbore', 'key_depths', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'wellbore_surveys']
+    )
+}}
 
-with source_data as (
+with
+
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVWELLBOREKEYDEPTH') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
     select
-        -- Primary identifiers
-        idrec as key_depth_id,
-        idwell as well_id,
-        idrecparent as wellbore_id,
+        -- identifiers
+        trim(idrec)::varchar as key_depth_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecparent)::varchar as wellbore_id,
 
-        -- Key depth classification
-        proposedoractual as proposed_or_actual,
-        keydepthtyp as key_depth_type,
-        typ1 as key_depth_category,
-        typ2 as key_depth_subcategory,
-        des as key_depth_description,
-        method as measurement_method,
+        -- key depth classification
+        trim(proposedoractual)::varchar as proposed_or_actual,
+        trim(keydepthtyp)::varchar as key_depth_type,
+        trim(typ1)::varchar as key_depth_category,
+        trim(typ2)::varchar as key_depth_subcategory,
+        trim(des)::varchar as key_depth_description,
+        trim(method)::varchar as measurement_method,
 
-        -- Timing
-        dttm as key_depth_datetime,
+        -- dates
+        dttm::timestamp_ntz as key_depth_date,
 
-        -- Depths (converted to US units)
-        latitude as latitude_degrees,
-        longitude as longitude_degrees,
-        latlongsource as lat_long_data_source,
-        utmx as utm_easting_m,
-        utmy as utm_northing_m,
+        -- depths (converted from meters to feet)
+        {{ wv_meters_to_feet('depthtop') }} as top_depth_ft,
+        {{ wv_meters_to_feet('depthtvdtopcalc') }} as top_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthbtm') }} as bottom_depth_ft,
+        {{ wv_meters_to_feet('depthtvdbtmcalc') }} as bottom_depth_tvd_ft,
+        {{ wv_meters_to_feet('lengthcalc') }} as interval_length_ft,
 
-        -- Location coordinates
-        utmgridzone as utm_grid_zone,
-        utmsource as utm_data_source,
-        com as comments,
+        -- geographic coordinates
+        latitude::float as latitude_degrees,
+        longitude::float as longitude_degrees,
+        trim(latlongsource)::varchar as lat_long_data_source,
+        utmx::float as utm_easting_meters,
+        utmy::float as utm_northing_meters,
+        utmgridzone::int as utm_grid_zone,
+        trim(utmsource)::varchar as utm_data_source,
 
-        -- UTM coordinates (kept in meters per view definition)
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
+        -- flags
+        coalesce(exclude = 1, false)::boolean as exclude_from_cost_calculations,
 
-        -- Control flags
-        systag as system_tag,
+        -- comments
+        trim(com)::varchar as comment,
 
-        -- Comments
-        syslockdate as system_lock_date,
+        -- sequence
+        sysseq::int as sequence_number,
 
-        -- System fields
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        _fivetran_synced as fivetran_synced_at,
-        depthtop / 0.3048 as top_depth_ft,
-        depthbtm / 0.3048 as bottom_depth_ft,
-        depthtvdtopcalc / 0.3048 as top_depth_tvd_ft,
-        depthtvdbtmcalc / 0.3048 as bottom_depth_tvd_ft,
-        lengthcalc / 0.3048 as interval_length_ft,
+        -- system locking
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockdate::timestamp_ntz as system_lock_date,
 
-        -- Fivetran fields
-        coalesce(exclude = 1, false) as exclude_from_cost_calculations
+        -- system / audit
+        trim(syscreateuser)::varchar as created_by,
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(sysmoduser)::varchar as modified_by,
+        sysmoddate::timestamp_ntz as modified_at_utc,
+        trim(systag)::varchar as system_tag,
 
-    from source_data
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
+
+    from source
+),
+
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and key_depth_id is not null
+),
+
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['key_depth_id']) }} as key_depth_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+final as (
+    select
+        key_depth_sk,
+
+        -- identifiers
+        key_depth_id,
+        well_id,
+        wellbore_id,
+
+        -- key depth classification
+        proposed_or_actual,
+        key_depth_type,
+        key_depth_category,
+        key_depth_subcategory,
+        key_depth_description,
+        measurement_method,
+
+        -- dates
+        key_depth_date,
+
+        -- depths
+        top_depth_ft,
+        top_depth_tvd_ft,
+        bottom_depth_ft,
+        bottom_depth_tvd_ft,
+        interval_length_ft,
+
+        -- geographic coordinates
+        latitude_degrees,
+        longitude_degrees,
+        lat_long_data_source,
+        utm_easting_meters,
+        utm_northing_meters,
+        utm_grid_zone,
+        utm_data_source,
+
+        -- flags
+        exclude_from_cost_calculations,
+
+        -- comments
+        comment,
+
+        -- sequence
+        sequence_number,
+
+        -- system locking
+        system_lock_me_ui,
+        system_lock_children_ui,
+        system_lock_me,
+        system_lock_children,
+        system_lock_date,
+
+        -- system / audit
+        created_by,
+        created_at_utc,
+        modified_by,
+        modified_at_utc,
+        system_tag,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

@@ -251,66 +251,421 @@ models:
   # ==========================================================================
   - name: stg_wellview__wellbore_depths
     description: >
-      Wellbore key depth staging from WellView. One row per key depth record.
-      Kickoff points and other significant depth markers.
-      Source: WVT_WVWELLBOREKEYDEPTH (CALC schema).
+      Wellbore key depth staging from WellView. One row per key depth record (IDREC).
+      Kickoff points, formation tops, casing points, and other significant depth markers.
+      Source: WVT_WVWELLBOREKEYDEPTH (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: key_depth_sk
+        description: "Surrogate key (MD5 hash of key_depth_id)"
+
+      # -- identifiers
       - name: key_depth_id
-        description: "WellView key depth GUID (IDREC) — natural key"
+        description: "Unique key depth record identifier (GUID). WellView: IDREC"
         data_tests:
           - unique
           - not_null
       - name: well_id
-        description: "Parent well GUID (IDWELL)"
+        description: "Parent well GUID. WellView: IDWELL"
         data_tests:
           - not_null:
               config:
                 severity: warn
       - name: wellbore_id
-        description: "Parent wellbore GUID (IDRECPARENT)"
+        description: "Parent wellbore GUID. WellView: IDRECPARENT"
+
+      # -- key depth classification
+      - name: proposed_or_actual
+        description: "Whether the depth is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: key_depth_type
+        description: "Point or interval indicator. WellView: KEYDEPTHTYP"
+      - name: key_depth_category
+        description: "Primary depth type category (e.g. Formation Top, Casing Point). WellView: TYP1"
+      - name: key_depth_subcategory
+        description: "Secondary depth type subcategory. WellView: TYP2"
+      - name: key_depth_description
+        description: "Free-text description of the key depth. WellView: DES"
+      - name: measurement_method
+        description: "Method used to determine the depth measurement. WellView: METHOD"
+
+      # -- dates
+      - name: key_depth_date
+        description: "Date associated with the key depth record. WellView: DTTM"
+
+      # -- depths
+      - name: top_depth_ft
+        description: "Top depth in feet (converted from meters). WellView: DEPTHTOP"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD in feet (calculated, converted from meters). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_ft
+        description: "Bottom depth in feet (converted from meters). WellView: DEPTHBTM"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD in feet (calculated, converted from meters). WellView: DEPTHTVDBTMCALC"
+      - name: interval_length_ft
+        description: "Interval length in feet (calculated, converted from meters). WellView: LENGTHCALC"
+
+      # -- geographic coordinates
+      - name: latitude_degrees
+        description: "Latitude in decimal degrees. WellView: LATITUDE"
+      - name: longitude_degrees
+        description: "Longitude in decimal degrees. WellView: LONGITUDE"
+      - name: lat_long_data_source
+        description: "Source of the lat/long data. WellView: LATLONGSOURCE"
+      - name: utm_easting_meters
+        description: "UTM easting coordinate in meters. WellView: UTMX"
+      - name: utm_northing_meters
+        description: "UTM northing coordinate in meters. WellView: UTMY"
+      - name: utm_grid_zone
+        description: "UTM grid zone designator. WellView: UTMGRIDZONE"
+      - name: utm_data_source
+        description: "Source of the UTM data. WellView: UTMSOURCE"
+
+      # -- flags
+      - name: exclude_from_cost_calculations
+        description: "Whether to exclude this depth from cost calculations. WellView: EXCLUDE"
+
+      # -- comments
+      - name: comment
+        description: "General comments. WellView: COM"
+
+      # -- sequence
+      - name: sequence_number
+        description: "Sequence number for ordering. WellView: SYSSEQ"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "Lock date. WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). WellView: SYSMODDATE"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__wellbore_directional_surveys
   # ==========================================================================
   - name: stg_wellview__wellbore_directional_surveys
     description: >
-      Directional survey header staging from WellView. One row per survey run.
+      Directional survey header staging from WellView. One row per survey run (IDREC).
       Proposed and actual directional surveys with tie-in coordinates and validation info.
-      Source: WVT_WVWELLBOREDIRSURVEY (CALC schema).
+      Source: WVT_WVWELLBOREDIRSURVEY (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: survey_sk
+        description: "Surrogate key (MD5 hash of survey_id)"
+
+      # -- identifiers
       - name: survey_id
-        description: "WellView directional survey GUID (IDREC) — natural key"
+        description: "Unique directional survey record identifier (GUID). WellView: IDREC"
         data_tests:
           - unique
           - not_null
+      - name: well_id
+        description: "Parent well GUID. WellView: IDWELL"
       - name: wellbore_id
-        description: "Parent wellbore GUID (IDRECPARENT)"
+        description: "Parent wellbore GUID. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
-      - name: well_id
-        description: "Parent well GUID (IDWELL)"
+      - name: job_id
+        description: "Associated job GUID. WellView: IDRECJOB"
+      - name: job_table_key
+        description: "Table key for the associated job record. WellView: IDRECJOBTK"
+
+      # -- survey metadata
+      - name: proposed_or_actual
+        description: "Whether the survey is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: proposed_version_number
+        description: "Version number for proposed surveys. WellView: PROPVERSIONNO"
+      - name: survey_date
+        description: "Date of the survey. WellView: DTTM"
+      - name: description
+        description: "Survey description. WellView: DES"
+
+      # -- survey control flags
+      - name: use_for_calculations
+        description: "Whether to use this survey for wellpath calculations. WellView: CALCFLAG"
+      - name: is_definitive
+        description: "Whether this is the definitive survey for the wellbore. WellView: DEFINITIVE"
+
+      # -- azimuth information
+      - name: azimuth_north_type
+        description: "Azimuth north reference type (e.g. True North, Grid North). WellView: AZIMUTHNORTHTYP"
+      - name: declination_degrees
+        description: "Magnetic declination in degrees. WellView: DECLINATION"
+      - name: convergence_degrees
+        description: "Grid convergence in degrees. WellView: CONVERGENCE"
+
+      # -- tie-in coordinates
+      - name: md_tie_in_ft
+        description: "Measured depth tie-in point in feet (converted from meters). WellView: MDTIEIN"
+      - name: inclination_tie_in_degrees
+        description: "Inclination at tie-in point in degrees. WellView: INCLINATIONTIEIN"
+      - name: azimuth_tie_in_degrees
+        description: "Azimuth at tie-in point in degrees. WellView: AZIMUTHTIEIN"
+      - name: tvd_tie_in_ft
+        description: "True vertical depth at tie-in point in feet (converted from meters). WellView: TVDTIEIN"
+      - name: ns_tie_in_ft
+        description: "North-south offset at tie-in point in feet (converted from meters). WellView: NSTIEIN"
+      - name: ew_tie_in_ft
+        description: "East-west offset at tie-in point in feet (converted from meters). WellView: EWTIEIN"
+      - name: vs_tie_in_ft
+        description: "Vertical section at tie-in point in feet (calculated, converted from meters). WellView: VSCALC"
+
+      # -- correction methods
+      - name: correction_notes
+        description: "Notes on survey corrections applied. WellView: NOTECORRECTION"
+      - name: depth_correction_method
+        description: "Method used for depth corrections. WellView: DEPTHCORRECTION"
+      - name: azimuth_correction_method
+        description: "Method used for azimuth corrections. WellView: AZIMUTHCORRECTION"
+
+      # -- validation information
+      - name: validated_date
+        description: "Date the survey was validated. WellView: VALIDATEDDTTM"
+      - name: validated_by_name
+        description: "Name of the person who validated the survey. WellView: VALIDATEDBYNAME"
+      - name: validated_by_company
+        description: "Company that validated the survey. WellView: VALIDATEDBYCOMPANY"
+
+      # -- comments
+      - name: comment
+        description: "General comments. WellView: COM"
+
+      # -- sequence
+      - name: sequence_number
+        description: "Sequence number for ordering. WellView: SYSSEQ"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "Lock date. WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). WellView: SYSMODDATE"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__wellbore_directional_survey_data
   # ==========================================================================
   - name: stg_wellview__wellbore_directional_survey_data
     description: >
-      Directional survey station data staging from WellView. One row per survey station.
-      Measured depth, inclination, azimuth, and calculated position coordinates.
-      Source: WVT_WVWELLBOREDIRSURVEYDATA (CALC schema).
+      Directional survey station data staging from WellView. One row per survey station (IDREC).
+      Measured depth, inclination, azimuth, and calculated position coordinates at each station.
+      Source: WVT_WVWELLBOREDIRSURVEYDATA (CALC schema). Refactored to 5-CTE pattern.
     columns:
+      # -- surrogate key
+      - name: survey_data_sk
+        description: "Surrogate key (MD5 hash of survey_data_id)"
+
+      # -- identifiers
       - name: survey_data_id
-        description: "WellView survey data point GUID (IDREC) — natural key"
+        description: "Unique survey data point identifier (GUID). WellView: IDREC"
         data_tests:
           - unique
           - not_null
+      - name: well_id
+        description: "Parent well GUID. WellView: IDWELL"
       - name: directional_survey_id
-        description: "Parent directional survey GUID (IDRECPARENT)"
+        description: "Parent directional survey GUID. WellView: IDRECPARENT"
         data_tests:
           - not_null:
               config:
                 severity: warn
-      - name: well_id
-        description: "Parent well GUID (IDWELL)"
+
+      # -- survey point measurements
+      - name: measured_depth_ft
+        description: "Measured depth in feet (converted from meters). WellView: MD"
+      - name: inclination_degrees
+        description: "Wellbore inclination from vertical in degrees. WellView: INCLINATION"
+      - name: azimuth_degrees
+        description: "Wellbore azimuth (compass direction) in degrees. WellView: AZIMUTH"
+      - name: survey_date
+        description: "Date of the survey station measurement. WellView: DTTM"
+
+      # -- survey metadata
+      - name: survey_method
+        description: "Method used for the survey measurement (e.g. MWD, Gyro). WellView: SURVEYMETHOD"
+      - name: surveyed_by_company
+        description: "Company that performed the survey. WellView: SURVEYEDBY"
+
+      # -- calculated position coordinates
+      - name: tvd_ft
+        description: "True vertical depth in feet (calculated, converted from meters). WellView: TVDCALC"
+      - name: vs_ft
+        description: "Vertical section in feet (calculated, converted from meters). WellView: VSCALC"
+      - name: departure_ft
+        description: "Departure from vertical in feet (calculated, converted from meters). WellView: DEPARTCALC"
+      - name: north_south_ft
+        description: "North-south offset in feet (calculated, converted from meters). WellView: NSCALC"
+      - name: east_west_ft
+        description: "East-west offset in feet (calculated, converted from meters). WellView: EWCALC"
+      - name: tvd_subsea_ft
+        description: "True vertical depth subsea in feet (calculated, converted from meters). WellView: TVDSSCALC"
+      - name: unwrapped_displacement_ft
+        description: "Unwrapped displacement in feet (calculated, converted from meters). WellView: DISPLACEUNWRAPCALC"
+
+      # -- trajectory calculations
+      - name: dogleg_severity_deg_per_100ft
+        description: "Dogleg severity in degrees per 100 feet (calculated, converted from deg/m). WellView: DLSCALC"
+      - name: build_rate_deg_per_100ft
+        description: "Build rate in degrees per 100 feet (calculated, converted from deg/m). WellView: BUILDRATECALC"
+      - name: turn_rate_deg_per_100ft
+        description: "Turn rate in degrees per 100 feet (calculated, converted from deg/m). WellView: TURNRATECALC"
+
+      # -- override values
+      - name: calculation_override_flag
+        description: "Whether calculated values are overridden with manual entries. WellView: CALCOVERRIDE"
+      - name: tvd_override_ft
+        description: "Manual TVD override in feet (converted from meters). WellView: TVDOVERRIDE"
+      - name: north_south_override_ft
+        description: "Manual north-south override in feet (converted from meters). WellView: NSOVERRIDE"
+      - name: east_west_override_ft
+        description: "Manual east-west override in feet (converted from meters). WellView: EWOVERRIDE"
+      - name: dogleg_severity_override_deg_per_100ft
+        description: "Manual DLS override in degrees per 100 feet (converted from deg/m). WellView: DLSOVERRIDE"
+      - name: vs_override_ft
+        description: "Manual vertical section override in feet (converted from meters). WellView: VSOVERRIDE"
+
+      # -- data quality flags
+      - name: is_bad_survey_data
+        description: "Whether this station is flagged as bad survey data. WellView: DONTUSE"
+      - name: bad_survey_data_reason
+        description: "Reason the survey data is flagged as bad. WellView: DONTUSEREASON"
+      - name: annotation
+        description: "Survey station annotation code. WellView: ANNOTATION"
+      - name: note
+        description: "Free-text note for the survey station. WellView: NOTE"
+
+      # -- tool face orientations
+      - name: tool_face_orientation_gravity_degrees
+        description: "Tool face orientation from gravity in degrees. WellView: TFOGRAV"
+      - name: tool_face_orientation_magnetic_degrees
+        description: "Tool face orientation from true north (magnetic) in degrees. WellView: TFOMAG"
+
+      # -- survey tool information
+      - name: tool_type
+        description: "Primary tool type classification. WellView: TOOLTYP1"
+      - name: tool_sub_type
+        description: "Tool sub-type classification. WellView: TOOLTYP2"
+      - name: data_source
+        description: "Source of the survey data. WellView: SOURCE"
+      - name: correction_method
+        description: "Correction method applied to the survey. WellView: CORRECTION"
+      - name: tool_model
+        description: "Survey tool model identifier. WellView: MODEL"
+
+      # -- raw instrument readings - gravity
+      - name: gravity_axial_raw_ft_per_s2
+        description: "Raw axial gravity reading in ft/s2 (converted from m/s2). WellView: GRAVAXIALRAW"
+      - name: gravity_transverse_1_raw_ft_per_s2
+        description: "Raw 1st transverse gravity reading in ft/s2 (converted from m/s2). WellView: GRAVTRAN1RAW"
+      - name: gravity_transverse_2_raw_ft_per_s2
+        description: "Raw 2nd transverse gravity reading in ft/s2 (converted from m/s2). WellView: GRAVTRAN2RAW"
+
+      # -- raw instrument readings - magnetic
+      - name: magnetic_axial_raw_nanotesla
+        description: "Raw magnetic axial reading in nanotesla (converted from tesla). WellView: MAGAXIALRAW"
+      - name: magnetic_transverse_1_raw_nanotesla
+        description: "Raw 1st transverse magnetic reading in nanotesla (converted from tesla). WellView: MAGTRAN1RAW"
+      - name: magnetic_transverse_2_raw_nanotesla
+        description: "Raw 2nd transverse magnetic reading in nanotesla (converted from tesla). WellView: MAGTRAN2RAW"
+
+      # -- geographic coordinates
+      - name: latitude_degrees
+        description: "Latitude in decimal degrees. WellView: LATITUDE"
+      - name: longitude_degrees
+        description: "Longitude in decimal degrees. WellView: LONGITUDE"
+      - name: lat_long_data_source
+        description: "Source of the lat/long data. WellView: LATLONGSOURCE"
+      - name: utm_easting_meters
+        description: "UTM easting coordinate in meters. WellView: UTMX"
+      - name: utm_northing_meters
+        description: "UTM northing coordinate in meters. WellView: UTMY"
+      - name: utm_grid_zone
+        description: "UTM grid zone designator. WellView: UTMGRIDZONE"
+      - name: utm_data_source
+        description: "Source of the UTM data. WellView: UTMSOURCE"
+
+      # -- sequence
+      - name: sequence_number
+        description: "Sequence number for ordering. WellView: SYSSEQ"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "Lock date. WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). WellView: SYSMODDATE"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

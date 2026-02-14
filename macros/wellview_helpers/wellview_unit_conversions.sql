@@ -151,3 +151,67 @@
 {# Peloton factor: / 0.000694444444444444 | days -> minutes (MIN) #}
     {{ column_name }} / 0.000694444444444444
 {% endmacro %}
+
+
+{# ==================== LINEAR DENSITY ==================== #}
+
+{% macro wv_kgm_to_lb_per_ft(column_name) %}
+{# Peloton factor: / 1.48816394356955 | kg/m -> lb/ft (casing, tubing, rod weight) #}
+    {{ column_name }} / 1.48816394356955
+{% endmacro %}
+
+
+{# ==================== FORCE (LARGE) ==================== #}
+
+{% macro wv_newtons_to_klbf(column_name) %}
+{# Peloton factor: / 4448.2216152605 | newtons -> kilo-lbf (casing/tubing tensile) #}
+    {{ column_name }} / 4448.2216152605
+{% endmacro %}
+
+
+{# ==================== TORQUE ==================== #}
+
+{% macro wv_nm_to_ft_lb(column_name) %}
+{# Peloton factor: / 1.3558179483314 | newton-meters -> ft-lb (makeup torque) #}
+    {{ column_name }} / 1.3558179483314
+{% endmacro %}
+
+
+{# ==================== TEMPERATURE ==================== #}
+
+{% macro wv_celsius_to_fahrenheit(column_name) %}
+{# Peloton conversion: (C / 0.555555555555556) + 32 | Celsius -> Fahrenheit #}
+    ({{ column_name }} / 0.555555555555556) + 32
+{% endmacro %}
+
+
+{# ==================== VISCOSITY ==================== #}
+
+{% macro wv_pas_to_cp(column_name) %}
+{# Peloton factor: / 0.001 | pascal-seconds -> centipoise (mud viscosity) #}
+    {{ column_name }} / 0.001
+{% endmacro %}
+
+
+{# ==================== PERMEABILITY ==================== #}
+
+{% macro wv_sqm_to_darcy(column_name) %}
+{# Peloton factor: / 9.869233e-13 | square meters -> darcy (reservoir perm) #}
+    {{ column_name }} / 9.869233e-13
+{% endmacro %}
+
+
+{# ==================== BULK DENSITY ==================== #}
+
+{% macro wv_kgm3_to_lb_per_ft3(column_name) %}
+{# Peloton factor: / 16.0184633739601 | kg/m3 -> lb/ft3 (cement, proppant bulk density) #}
+    {{ column_name }} / 16.0184633739601
+{% endmacro %}
+
+
+{# ==================== TALLY RATE ==================== #}
+
+{% macro wv_per_m_to_per_30m(column_name) %}
+{# Peloton factor: / 0.0333333333333333 | per-meter -> per-30m (joints per stand) #}
+    {{ column_name }} / 0.0333333333333333
+{% endmacro %}

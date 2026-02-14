@@ -393,17 +393,89 @@ models:
   - name: stg_wellview__reference_wells
     description: >
       Reference well relationships staging from WellView. One row per well-to-well link.
-      Source: WVT_WVREFWELLS (CALC schema). Not yet refactored to 5-CTE pattern.
+      Allows linking related wells (e.g., parent/child, offset, replacement).
+      Source: WVT_WVREFWELLS (CALC schema). Refactored to 5-CTE pattern.
     columns:
-      - name: well_id
-        description: "WellView well GUID (IDWELL) — parent well FK"
-        data_tests:
-          - not_null
+      # -- surrogate key
+      - name: reference_well_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
       - name: record_id
-        description: "Unique record identifier (IDREC) — natural key"
+        description: "Unique record identifier. WellView: IDREC"
         data_tests:
           - unique
           - not_null
+      - name: well_id
+        description: "Parent well FK (WellView well GUID). WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- reference well relationship
+      - name: reference_well_id
+        description: "Reference well record link — GUID of the linked well. WellView: IDRECREFWELL"
+      - name: reference_well_table_key
+        description: "Reference well table key. WellView: IDRECREFWELLTK"
+      - name: relationship_type
+        description: "Relationship type (e.g., Offset, Parent, Child). WellView: TYP1"
+      - name: relationship_subtype
+        description: "Relationship subtype. WellView: TYP2"
+      - name: relationship_description
+        description: "Free-text description of the relationship. WellView: DES"
+
+      # -- dates
+      - name: start_date
+        description: "Relationship start date (NTZ). WellView: DTTMSTART"
+      - name: end_date
+        description: "Relationship end date (NTZ). WellView: DTTMEND"
+
+      # -- wellview data link
+      - name: wellview_data_link_id
+        description: "WellView data link record ID — links to an item in another WellView table. WellView: IDRECITEM"
+      - name: wellview_data_link_table_key
+        description: "WellView data link table key. WellView: IDRECITEMTK"
+
+      # -- distance
+      - name: distance_to_well_miles
+        description: "Distance to the reference well in miles (converted from meters via wv_meters_to_miles). WellView: DIST"
+
+      # -- comments
+      - name: comment
+        description: "Free-text comment on the relationship. WellView: COM"
+
+      # -- system / audit
+      - name: sequence_number
+        description: "System sequence number for record ordering. WellView: SYSSEQ"
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
 
   # ==========================================================================
   # stg_wellview__well_status_history
@@ -411,14 +483,72 @@ models:
   - name: stg_wellview__well_status_history
     description: >
       Well status history staging from WellView. One row per status change event.
-      Source: WVT_WVWELLSTATUSHISTORY (CALC schema). Not yet refactored to 5-CTE pattern.
+      Tracks the chronological history of well status, type, and fluid changes.
+      Source: WVT_WVWELLSTATUSHISTORY (CALC schema). Refactored to 5-CTE pattern.
     columns:
-      - name: well_id
-        description: "WellView well GUID (IDWELL) — parent well FK"
-        data_tests:
-          - not_null
+      # -- surrogate key
+      - name: well_status_history_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
       - name: record_id
-        description: "Unique record identifier (IDREC) — natural key"
+        description: "Unique record identifier. WellView: IDREC"
         data_tests:
           - unique
           - not_null
+      - name: well_id
+        description: "Parent well FK (WellView well GUID). WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- status details
+      - name: status_date
+        description: "Date of the status change (NTZ). WellView: DTTM"
+      - name: well_status
+        description: "Well status at this point in history. WellView: WELLSTATUS1"
+      - name: well_sub_status
+        description: "Well sub-status at this point in history. WellView: WELLSTATUS2"
+      - name: well_type
+        description: "Well type at this point in history. WellView: WELLTYP1"
+      - name: well_subtype
+        description: "Well subtype at this point in history. WellView: WELLTYP2"
+      - name: primary_fluid_type
+        description: "Primary fluid type at this point in history. WellView: PRIMARYFLUIDDES"
+      - name: status_source
+        description: "Source of the status change record. WellView: SOURCE"
+
+      # -- comments
+      - name: comment
+        description: "Free-text comment on the status change. WellView: COM"
+
+      # -- system / audit
+      - name: created_at
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: modified_at
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

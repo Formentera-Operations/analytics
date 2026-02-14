@@ -1,0 +1,1516 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__perforations
+  # ==========================================================================
+  - name: stg_wellview__perforations
+    description: >
+      Perforation staging from WellView. One row per perforation interval.
+      Includes depths, shot density, gun details, pressures, and zone linkages.
+      Source: WVT_WVPERFORATION (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: perforation_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "WellView perforation GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent record GUID. WellView: IDRECPARENT"
+      - name: wellbore_id
+        description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key. WellView: IDRECWELLBORETK"
+      - name: zone_id
+        description: "Zone GUID FK. WellView: IDRECZONEOR"
+      - name: zone_table_key
+        description: "Zone table key. WellView: IDRECZONEORTK"
+      - name: linked_zone_id
+        description: "Linked zone GUID (calculated). WellView: IDRECZONECALC"
+      - name: linked_zone_table_key
+        description: "Linked zone table key. WellView: IDRECZONECALCTK"
+      - name: string_perforated_id
+        description: "String perforated GUID FK. WellView: IDRECSTRING"
+      - name: string_perforated_table_key
+        description: "String perforated table key. WellView: IDRECSTRINGTK"
+      - name: job_id
+        description: "Job GUID FK. WellView: IDRECJOB"
+      - name: job_table_key
+        description: "Job table key. WellView: IDRECJOBTK"
+      - name: reference_log_id
+        description: "Reference log GUID FK. WellView: IDRECLOG"
+      - name: reference_log_table_key
+        description: "Reference log table key. WellView: IDRECLOGTK"
+      - name: phase_id
+        description: "Phase GUID (calculated). WellView: IDRECJOBPROGRAMPHASECALC"
+      - name: phase_table_key
+        description: "Phase table key. WellView: IDRECJOBPROGRAMPHASECALCTK"
+      - name: last_completion_id
+        description: "Last completion GUID (calculated). WellView: IDRECLASTCOMPLETIONCALC"
+      - name: last_completion_table_key
+        description: "Last completion table key. WellView: IDRECLASTCOMPLETIONCALCTK"
+      - name: last_rig_id
+        description: "Rig/Service Unit GUID (calculated). WellView: IDRECLASTRIGCALC"
+      - name: last_rig_table_key
+        description: "Rig/Service Unit table key. WellView: IDRECLASTRIGCALCTK"
+      - name: other_in_hole_id
+        description: "Other in hole GUID (calculated). WellView: IDRECOTHERINHOLECALC"
+      - name: other_in_hole_table_key
+        description: "Other in hole table key. WellView: IDRECOTHERINHOLECALCTK"
+
+      # -- descriptive fields
+      - name: proposed_or_actual
+        description: "Whether perforation is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: perforation_type
+        description: "Perforation type. WellView: TYP"
+      - name: conveyance_method
+        description: "Conveyance method. WellView: CONVEYMETH"
+      - name: charge_type
+        description: "Charge type. WellView: CHARGETYP"
+      - name: charge_make
+        description: "Charge make. WellView: CHARGEMAKE"
+      - name: explosive_type
+        description: "Explosive type. WellView: EXPLOSIVETYP"
+      - name: orientation
+        description: "Perforation orientation. WellView: ORIENTATION"
+      - name: orientation_method
+        description: "Orientation method. WellView: ORIENTMETHOD"
+      - name: over_under_balanced
+        description: "Over/Under balanced status. WellView: BALANCE"
+      - name: fluid_type
+        description: "Fluid type. WellView: FLUIDTYP"
+      - name: bh_pressure_type
+        description: "Bottom hole pressure type. WellView: PRESBHTYP"
+      - name: current_status
+        description: "Current perforation status (calculated). WellView: CURRENTSTATUSCALC"
+      - name: open_or_closed
+        description: "Whether perforation is open or closed (calculated). WellView: STATUSPRIMARYCALC"
+      - name: technical_result
+        description: "Technical result. WellView: RESULTTECHNICAL"
+      - name: tech_result_details
+        description: "Technical result details. WellView: RESULTTECHNICALDETAIL"
+      - name: tech_result_note
+        description: "Technical result note. WellView: RESULTTECHNICALNOTE"
+      - name: formation
+        description: "Formation name (calculated). WellView: FORMATIONCALC"
+      - name: reservoir
+        description: "Reservoir name (calculated). WellView: RESERVOIRCALC"
+      - name: perforation_company
+        description: "Perforation company. WellView: CONTRACTOR"
+      - name: draw_short
+        description: "Draw short flag. WellView: ICONDRAWSHORT"
+      - name: comment
+        description: "Comment text. WellView: COM"
+      - name: stage_number
+        description: "Stage number. WellView: INTNO"
+      - name: cluster_reference_number
+        description: "Cluster reference number. WellView: CLUSERREFNO"
+
+      # -- gun specifications
+      - name: gun_description
+        description: "Gun description. WellView: GUNDES"
+      - name: gun_metallurgy
+        description: "Gun metallurgy. WellView: GUNMETALLURGY"
+      - name: gun_centralize
+        description: "Gun centralize. WellView: GUNCENTRALIZE"
+      - name: gun_left_in_hole
+        description: "Whether gun was left in hole. WellView: GUNLEFTINHOLE"
+      - name: carrier_description
+        description: "Carrier description. WellView: CARRIERDES"
+      - name: carrier_make
+        description: "Carrier make. WellView: CARRIERMAKE"
+      - name: phasing_degrees
+        description: "Phasing angle in degrees. WellView: PHASING"
+
+      # -- shot information
+      - name: shots_planned
+        description: "Number of shots planned. WellView: SHOTPLAN"
+      - name: entered_shot_total
+        description: "Entered shot total. WellView: SHOTTOTAL"
+      - name: calculated_shot_total
+        description: "Calculated shot total. WellView: SHOTSTOTALCALC"
+      - name: calculated_shot_total_alt
+        description: "Calculated shot total (alternate). WellView: SHOTSTOTALALTCALC"
+      - name: shots_misfired
+        description: "Number of shots misfired (calculated). WellView: SHOTSMISFIRECALC"
+
+      # -- depths
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet. WellView: DEPTHTOP"
+      - name: bottom_depth_ft
+        description: "Bottom depth converted from meters to feet. WellView: DEPTHBTM"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+      - name: perforation_interval_thickness_ft
+        description: "Perforation interval thickness (bottom - top) converted from meters to feet (calculated). WellView: DEPTHTOPTOBTMCALC"
+      - name: depth_mpp_ft
+        description: "Depth MPP converted from meters to feet (calculated). WellView: DEPTHMPPCALC"
+      - name: collar_ref_depth_ft
+        description: "Collar reference depth converted from meters to feet. WellView: DEPTHCSNGCOLLARREF"
+      - name: collar_ref_depth_tvd_ft
+        description: "Collar reference depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDCSNGCOLLARREFCALC"
+      - name: distance_ref_to_top_ft
+        description: "Distance from collar reference to top depth converted from meters to feet (calculated). WellView: DISTANCEREFTOTOPCALC"
+      - name: gauge_depth_ft
+        description: "Gauge depth converted from meters to feet. WellView: DEPTHGAUGE"
+      - name: gauge_depth_tvd_ft
+        description: "Gauge depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDGAUGECALC"
+      - name: fluid_depth_before_shot_ft
+        description: "Fluid depth before shot converted from meters to feet. WellView: DEPTHFLUIDBEFORE"
+      - name: fluid_depth_after_shot_ft
+        description: "Fluid depth after shot converted from meters to feet. WellView: DEPTHFLUIDAFTER"
+      - name: fluid_depth_before_shot_tvd_ft
+        description: "Fluid depth before shot TVD converted from meters to feet (calculated). WellView: DEPTHTVDFLUIDBEFORECALC"
+      - name: fluid_depth_after_shot_tvd_ft
+        description: "Fluid depth after shot TVD converted from meters to feet (calculated). WellView: DEPTHTVDFLUIDAFTERCALC"
+
+      # -- shot density
+      - name: shot_density_shots_per_ft
+        description: "Shot density converted from shots/meter to shots/foot. WellView: SHOTDENSITY"
+      - name: shots_total_per_density_per_ft
+        description: "Total shots per shot density converted to per-foot rate (calculated). WellView: SHOTSTOTALALTPERDENSITYCALC"
+
+      # -- gun and charge sizes
+      - name: gun_size_inches
+        description: "Gun size converted from meters to inches. WellView: SZGUN"
+      - name: estimated_actual_hole_diameter_inches
+        description: "Estimated actual hole diameter converted from meters to inches. WellView: SZHOLEACT"
+      - name: nominal_hole_diameter_inches
+        description: "Nominal hole diameter converted from meters to inches. WellView: SZHOLENOM"
+      - name: nominal_penetration_inches
+        description: "Nominal penetration converted from meters to inches. WellView: PENETRATIONNOM"
+      - name: charge_size_grams
+        description: "Charge size converted from kilograms to grams. WellView: CHARGESZ"
+
+      # -- pressures
+      - name: over_under_pressure_psi
+        description: "Over/under balance pressure converted from kPa to PSI. WellView: BALANCEPRES"
+      - name: design_bh_pressure_psi
+        description: "Design bottom hole pressure converted from kPa to PSI. WellView: PRESDESIGNBH"
+      - name: initial_surface_pressure_psi
+        description: "Initial surface pressure converted from kPa to PSI. WellView: PRESINITSURF"
+      - name: final_surface_pressure_psi
+        description: "Final surface pressure converted from kPa to PSI. WellView: PRESFINALSURF"
+      - name: bottom_hole_pressure_psi
+        description: "Bottom hole pressure converted from kPa to PSI. WellView: PRESBH"
+      - name: datum_pressure_psi
+        description: "Datum pressure converted from kPa to PSI. WellView: PRESDATUM"
+      - name: mpp_pressure_psi
+        description: "MPP pressure converted from kPa to PSI. WellView: PRESMPP"
+      - name: pressure_during_perforation_psi
+        description: "Pressure during perforation converted from kPa to PSI. WellView: PRESDURINGPERF"
+      - name: pressure_bh_to_datum_psi
+        description: "Pressure BH to datum converted from kPa to PSI (calculated). WellView: PRESBHTODATUMCALC"
+      - name: pressure_bh_to_mpp_psi
+        description: "Pressure BH to MPP converted from kPa to PSI (calculated). WellView: PRESBHTOMPPCALC"
+      - name: estimated_hh_surf_to_mpp_psi
+        description: "Estimated HH from surface to MPP converted from kPa to PSI. WellView: PRESHHSURFTOMPP"
+      - name: bh_pressure_for_sitp_hh_psi
+        description: "BH pressure for SITP and HH converted from kPa to PSI (calculated). WellView: PRESBHSITPHHCALC"
+      - name: pressure_gradient_gauge_to_mpp_psi_per_ft
+        description: "Pressure gradient gauge to MPP converted from kPa/m to PSI/ft. WellView: PRESGRADIENTGAUGETOMPP"
+
+      # -- fluid measurements
+      - name: fluid_density_lb_per_gal
+        description: "Fluid density converted from kg/m3 to lb/gal. WellView: FLUIDDENSITY"
+      - name: fluid_rate_before_shot_ft_per_hr
+        description: "Fluid rate before shot converted from m/s to ft/hr. WellView: RATEFLUIDBEFORE"
+      - name: fluid_rate_after_shot_ft_per_hr
+        description: "Fluid rate after shot converted from m/s to ft/hr. WellView: RATEFLUIDAFTER"
+
+      # -- volumes
+      - name: vol_fluid_bbl
+        description: "Volume of fluid converted from m3 to barrels. WellView: USERNUM1"
+
+      # -- dates
+      - name: perforation_date
+        description: "Perforation date (NTZ). WellView: DTTM"
+      - name: current_status_date
+        description: "Current status date (calculated, NTZ). WellView: DTTMSTATUSCALC"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__stimulations
+  # ==========================================================================
+  - name: stg_wellview__stimulations
+    description: >
+      Stimulation staging from WellView. One row per stimulation job.
+      Job headers with type, dates, treatment rates, pressures, volumes, proppant, and calculated rollups.
+      Source: WVT_WVSTIM (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: stimulation_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "WellView stimulation GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: "Job GUID FK. WellView: IDRECJOB"
+      - name: job_table_key
+        description: "Job table key. WellView: IDRECJOBTK"
+
+      # -- descriptive fields
+      - name: proposed_or_actual
+        description: "Whether stimulation is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: stimulation_type
+        description: "Stimulation type. WellView: TYP1"
+      - name: stimulation_subtype
+        description: "Stimulation subtype. WellView: TYP2"
+      - name: icon_name
+        description: "Icon name. WellView: ICONNAME"
+      - name: category
+        description: "Stimulation category. WellView: CATEGORY"
+      - name: number_of_wells
+        description: "Number of wells in category. WellView: CATEGORYWELLSNO"
+      - name: stim_treat_company
+        description: "Stimulation/treatment company. WellView: CONTRACTOR"
+      - name: stim_treat_supervisor
+        description: "Stimulation/treatment supervisor. WellView: CONTRACTSUPT"
+      - name: diversion_company
+        description: "Diversion company. WellView: DIVERSIONCONTRACTOR"
+      - name: diversion_method
+        description: "Diversion method. WellView: DIVERSIONMETHOD"
+      - name: technical_result
+        description: "Technical result. WellView: RESULTTECHNICAL"
+      - name: tech_result_details
+        description: "Technical result details. WellView: RESULTTECHNICALDETAIL"
+      - name: tech_result_note
+        description: "Technical result note. WellView: RESULTTECHNICALNOTE"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: comment
+        description: "Comment text. WellView: COM"
+
+      # -- stage and interval information
+      - name: design_number_of_treatment_intervals
+        description: "Design number of treatment intervals. WellView: INTERVALNODESIGN"
+      - name: actual_total_stages
+        description: "Actual total stages. WellView: INTERVALNO"
+      - name: calculated_stages
+        description: "Calculated stages. WellView: INTERVALNOCALC"
+      - name: total_number_of_clusters
+        description: "Total number of clusters (calculated). WellView: CLUSTERSUMCALC"
+      - name: clusters_per_stage
+        description: "Clusters per stage (calculated). WellView: CLUSTERSPERINTNOCALC"
+      - name: total_number_of_plugs
+        description: "Total number of plugs (calculated). WellView: OTHERINHOLESUMCALC"
+      - name: stages_per_day
+        description: "Stages per day (calculated). WellView: INTERVALNOPERDURNETCALC"
+      - name: plugs_per_day
+        description: "Plugs per day (calculated). WellView: OTHERINHOLEPERDURNETCALC"
+
+      # -- cost calculations
+      - name: total_cost
+        description: "Total cost (calculated). WellView: COSTTOTALCALC"
+      - name: cost_per_cluster
+        description: "Cost per cluster (calculated). WellView: COSTPERCLUSTERCALC"
+      - name: cost_per_stage
+        description: "Cost per stage (calculated). WellView: COSTPERINTNOCALC"
+
+      # -- user numeric fields
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+      - name: user_number_2
+        description: "User-defined numeric field 2. WellView: USERNUM2"
+      - name: user_number_3
+        description: "User-defined numeric field 3. WellView: USERNUM3"
+
+      # -- durations
+      - name: total_duration_gross_hours
+        description: "Total gross duration converted from days to hours (calculated). WellView: DURATIONGROSSCALC"
+      - name: total_duration_net_hours
+        description: "Total net duration converted from days to hours (calculated). WellView: DURATIONNETCALC"
+      - name: total_pump_duration_calc_hours
+        description: "Total pump duration converted from days to hours (calculated). WellView: DURPUMPCALC"
+      - name: total_pumping_hours_per_day
+        description: "Total pumping hours per day converted from days to hours (calculated). WellView: DURPUMPPERDURNETCALC"
+      - name: total_pump_duration_minutes
+        description: "Total pump duration converted from days to minutes. WellView: DURPUMP"
+
+      # -- depths
+      - name: min_top_depth_ft
+        description: "Minimum top depth converted from meters to feet (calculated). WellView: DEPTHTOPMINCALC"
+      - name: max_bottom_depth_ft
+        description: "Maximum bottom depth converted from meters to feet (calculated). WellView: DEPTHBTMMAXCALC"
+      - name: length_gross_ft
+        description: "Gross length converted from meters to feet (calculated). WellView: LENGTHCALC"
+      - name: length_net_ft
+        description: "Net length converted from meters to feet (calculated). WellView: LENGTHSUMCALC"
+
+      # -- treatment rates
+      - name: treat_rate_avg_bbl_per_min
+        description: "Average treatment rate converted from m3/day to BBL/min. WellView: RATETREATAVG"
+      - name: treat_rate_max_bbl_per_min
+        description: "Maximum treatment rate converted from m3/day to BBL/min. WellView: RATETREATMAX"
+      - name: clean_rate_avg_bbl_per_min
+        description: "Average clean rate converted from m3/day to BBL/min (calculated). WellView: RATECLEANAVGCALC"
+      - name: clean_rate_max_bbl_per_min
+        description: "Maximum clean rate converted from m3/day to BBL/min (calculated). WellView: RATECLEANMAXCALC"
+      - name: slurry_rate_avg_bbl_per_min
+        description: "Average slurry rate converted from m3/day to BBL/min (calculated). WellView: RATESLURRYAVGCALC"
+      - name: slurry_rate_max_bbl_per_min
+        description: "Maximum slurry rate converted from m3/day to BBL/min (calculated). WellView: RATESLURRYMAXCALC"
+
+      # -- pressures
+      - name: treat_pressure_avg_psi
+        description: "Average treatment pressure converted from kPa to PSI. WellView: PRESTREATAVG"
+      - name: treat_pressure_max_psi
+        description: "Maximum treatment pressure converted from kPa to PSI. WellView: PRESTREATMAX"
+      - name: treat_pressure_avg_all_stages_psi
+        description: "Average treatment pressure across all stages converted from kPa to PSI (calculated). WellView: PRESTREATAVGCALC"
+      - name: treat_pressure_max_all_stages_psi
+        description: "Maximum treatment pressure across all stages converted from kPa to PSI (calculated). WellView: PRESTREATMAXCALC"
+      - name: breakdown_pressure_avg_psi
+        description: "Average breakdown pressure converted from kPa to PSI (calculated). WellView: PRESBREAKDOWNAVGCALC"
+      - name: closure_pressure_avg_psi
+        description: "Average closure pressure converted from kPa to PSI (calculated). WellView: PRESCLOSUREAVGCALC"
+      - name: screen_out_pressure_avg_psi
+        description: "Average screen out pressure converted from kPa to PSI (calculated). WellView: PRESSCREENOUTAVGCALC"
+
+      # -- pressure gradients
+      - name: closure_gradient_avg_psi_per_ft
+        description: "Average closure gradient converted from kPa/m to PSI/ft (calculated). WellView: CLOSUREGRADIENTAVGCALC"
+      - name: frac_gradient_avg_psi_per_ft
+        description: "Average frac gradient converted from kPa/m to PSI/ft (calculated). WellView: FRACGRADIENTAVGCALC"
+
+      # -- volumes
+      - name: volume_clean_total_bbl
+        description: "Total clean volume converted from m3 to barrels (entered). WellView: VOLCLEANTOTAL"
+      - name: volume_clean_total_calc_bbl
+        description: "Total clean volume converted from m3 to barrels (calculated). WellView: VOLCLEANTOTALCALC"
+      - name: volume_slurry_total_bbl
+        description: "Total slurry volume converted from m3 to barrels (entered). WellView: VOLSLURRYTOTAL"
+      - name: volume_slurry_total_calc_bbl
+        description: "Total slurry volume converted from m3 to barrels (calculated). WellView: VOLSLURRYTOTALCALC"
+      - name: volume_recovered_total_bbl
+        description: "Total recovered volume converted from m3 to barrels (entered). WellView: VOLRECOVEREDTOTAL"
+      - name: volume_recovered_total_calc_bbl
+        description: "Total recovered volume converted from m3 to barrels (calculated). WellView: VOLRECOVEREDTOTALCALC"
+      - name: total_clean_minus_recovered_volume_bbl
+        description: "Total clean minus recovered volume converted from m3 to barrels (calculated). WellView: VOLNETCLEANCALC"
+      - name: total_slurry_minus_recovered_volume_bbl
+        description: "Total slurry minus recovered volume converted from m3 to barrels (calculated). WellView: VOLNETSLURRYCALC"
+      - name: volume_co2_total_bbl
+        description: "Total CO2 volume converted from m3 to barrels (entered). WellView: VOLCO2TOTAL"
+      - name: volume_co2_total_calc_bbl
+        description: "Total CO2 volume converted from m3 to barrels (calculated). WellView: VOLCO2TOTALCALC"
+      - name: volume_n2_total_bbl
+        description: "Total N2 volume converted from m3 to barrels (entered). WellView: VOLN2TOTAL"
+      - name: volume_n2_total_calc_bbl
+        description: "Total N2 volume converted from m3 to barrels (calculated). WellView: VOLN2TOTALCALC"
+      - name: volume_per_length_gross_bbl_per_ft
+        description: "Volume per gross length converted from m3/m to BBL/ft (calculated). WellView: VOLCLEANTOTALPERLENGTHCALC"
+
+      # -- proppant mass
+      - name: proppant_total_lb
+        description: "Total proppant mass converted from kg to pounds (entered). WellView: MASSPROPTOTAL"
+      - name: proppant_total_calc_lb
+        description: "Total proppant mass converted from kg to pounds (calculated). WellView: MASSPROPTOTALCALC"
+      - name: mass_proppant_per_day_lb
+        description: "Proppant mass per day converted from kg/day to lb/day (calculated). WellView: MASSPROPTOTALPERDURNETCALC"
+      - name: mass_proppant_per_stage_lb
+        description: "Proppant mass per stage converted from kg to pounds (calculated). WellView: MASSPROPTOTALPERINTNOCALC"
+      - name: mass_proppant_per_stage_per_day_lb
+        description: "Proppant mass per stage per day converted from kg to pounds (calculated). WellView: MASSPROPTOTALPERINTPERDURCALC"
+
+      # -- proppant linear density
+      - name: mass_proppant_per_gross_length_lb_per_ft
+        description: "Proppant mass per gross length converted from kg/m to lb/ft (calculated). WellView: MASSPROPTOTALPERLENGTHCALC"
+      - name: mass_proppant_per_net_length_lb_per_ft
+        description: "Proppant mass per net length converted from kg/m to lb/ft (calculated). WellView: MASSPROPTOTALPERLENGTHSUMCALC"
+
+      # -- proppant concentrations
+      - name: bh_conc_avg_all_stages_lb_per_gal
+        description: "Average BH concentration across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCBHAVGCALC"
+      - name: bh_conc_max_all_stages_lb_per_gal
+        description: "Maximum BH concentration across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCBHMAXCALC"
+      - name: bh_conc_min_all_stages_lb_per_gal
+        description: "Minimum BH concentration across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCBHMINCALC"
+      - name: surf_conc_avg_all_stages_lb_per_gal
+        description: "Average surface concentration across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCSURFAVGCALC"
+      - name: surf_conc_max_all_stages_lb_per_gal
+        description: "Maximum surface concentration across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCSURFMAXCALC"
+      - name: surf_conc_min_all_stages_lb_per_gal
+        description: "Minimum surface concentration across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCSURFMINCALC"
+      - name: conc_at_zone_avg_all_stages_lb_per_gal
+        description: "Average concentration at zone across all stages converted from kg/m3 to lb/gal (calculated). WellView: CONCINTAVGCALC"
+
+      # -- performance metrics
+      - name: fluid_efficiency_percent
+        description: "Fluid efficiency converted from proportion to percent. WellView: FLUIDEFFICIENCY"
+      - name: pump_power_total_hp
+        description: "Total pump power converted from watts to horsepower. WellView: POWERTOTAL"
+
+      # -- temperatures
+      - name: treat_temperature_fahrenheit
+        description: "Treatment temperature converted from Celsius to Fahrenheit. WellView: TEMPTREAT"
+      - name: treat_temperature_avg_fahrenheit
+        description: "Average treatment temperature converted from Celsius to Fahrenheit (calculated). WellView: TEMPTREATAVGCALC"
+
+      # -- performance rates
+      - name: length_gross_per_hour_ft_per_hr
+        description: "Gross length per hour converted from m/s to ft/hr (calculated). WellView: LENGTHPERDURNETCALC"
+      - name: length_net_per_hour_ft_per_hr
+        description: "Net length per hour converted from m/s to ft/hr (calculated). WellView: LENGTHSUMPERDURNETCALC"
+
+      # -- cost per length
+      - name: cost_per_length_gross_per_ft
+        description: "Cost per gross length converted from per-meter to per-foot rate (calculated). WellView: COSTPERLENGTHCALC"
+      - name: cost_per_length_net_per_ft
+        description: "Cost per net length converted from per-meter to per-foot rate (calculated). WellView: COSTPERLENGTHSUMCALC"
+      - name: cost_per_mass_proppant_per_lb
+        description: "Cost per proppant mass converted from per-kg to per-lb (calculated). WellView: COSTPERMASSPROPTOTALCALC"
+
+      # -- dates
+      - name: start_date
+        description: "Stimulation start date (NTZ). WellView: DTTMSTART"
+      - name: end_date
+        description: "Stimulation end date (NTZ). WellView: DTTMEND"
+      - name: min_start_date
+        description: "Minimum start date across intervals (calculated, NTZ). WellView: DTTMSTARTMINCALC"
+      - name: max_end_date
+        description: "Maximum end date across intervals (calculated, NTZ). WellView: DTTMENDMAXCALC"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__stimulation_intervals
+  # ==========================================================================
+  - name: stg_wellview__stimulation_intervals
+    description: >
+      Stimulation interval staging from WellView. One row per treatment interval/stage.
+      Individual treatment stages within a stimulation job including pressures, rates, volumes, proppant, and frac geometry.
+      Source: WVT_WVSTIMINT (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: stimulation_interval_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "WellView stimulation interval GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: parent_record_id
+        description: "Parent stimulation GUID FK. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_id
+        description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key. WellView: IDRECWELLBORETK"
+      - name: zone_id
+        description: "Zone GUID FK. WellView: IDRECZONEOR"
+      - name: zone_table_key
+        description: "Zone table key. WellView: IDRECZONEORTK"
+      - name: linked_zone_id
+        description: "Linked zone GUID (calculated). WellView: IDRECZONECALC"
+      - name: linked_zone_table_key
+        description: "Linked zone table key. WellView: IDRECZONECALCTK"
+      - name: string_deployment_method_id
+        description: "String (deployment method) GUID FK. WellView: IDRECSTRING"
+      - name: string_deployment_method_table_key
+        description: "String (deployment method) table key. WellView: IDRECSTRINGTK"
+      - name: phase_id
+        description: "Phase GUID (calculated). WellView: IDRECJOBPROGRAMPHASECALC"
+      - name: phase_table_key
+        description: "Phase table key. WellView: IDRECJOBPROGRAMPHASECALCTK"
+      - name: last_rig_id
+        description: "Rig/Service Unit GUID (calculated). WellView: IDRECLASTRIGCALC"
+      - name: last_rig_table_key
+        description: "Rig/Service Unit table key. WellView: IDRECLASTRIGCALCTK"
+      - name: other_in_hole_id
+        description: "Other in hole GUID (calculated). WellView: IDRECOTHERINHOLECALC"
+      - name: other_in_hole_table_key
+        description: "Other in hole table key. WellView: IDRECOTHERINHOLECALCTK"
+
+      # -- descriptive fields
+      - name: stage_number
+        description: "Stage number. WellView: INTREFNO"
+      - name: stage_type
+        description: "Stage type. WellView: TYP1"
+      - name: stage_subtype
+        description: "Stage subtype. WellView: TYP2"
+      - name: interval_description
+        description: "Interval description. WellView: DES"
+      - name: formation
+        description: "Formation name (calculated). WellView: FORMATIONCALC"
+      - name: reservoir
+        description: "Reservoir name (calculated). WellView: RESERVOIRCALC"
+      - name: delivery_mode
+        description: "Delivery mode. WellView: DELIVERYMODE"
+      - name: bh_pressure_method
+        description: "Bottom hole pressure method. WellView: PRESBHMETHOD"
+      - name: closure_pressure_method
+        description: "Closure pressure method. WellView: PRESCLOSUREMETHOD"
+      - name: diagnostic_method
+        description: "Frac diagnostic method. WellView: FRACDIAGNOSTICMETHOD"
+      - name: technical_result
+        description: "Technical result. WellView: RESULTTECHNICAL"
+      - name: tech_result_details
+        description: "Technical result details. WellView: RESULTTECHNICALDETAIL"
+      - name: tech_result_note
+        description: "Technical result note. WellView: RESULTTECHNICALNOTE"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: comment
+        description: "Comment text. WellView: COM"
+
+      # -- equipment and perf counts
+      - name: number_of_balls
+        description: "Number of balls. WellView: BALLSNO"
+      - name: exclude_from_calculations
+        description: "Whether to exclude from calculations. WellView: EXCLUDE"
+      - name: number_of_pumps_on_line
+        description: "Number of pumps on line. WellView: PUMPSONLINENO"
+      - name: number_of_pumps_on_line_at_end
+        description: "Number of pumps on line at end. WellView: PUMPSONLINEENDNO"
+      - name: number_of_pumps_down
+        description: "Number of pumps down (calculated). WellView: PUMPSONLINENODIFCALC"
+      - name: estimated_number_of_open_perfs
+        description: "Estimated number of open perforations. WellView: PERFSOPENNOEST"
+      - name: number_of_open_perfs
+        description: "Number of open perforations (calculated). WellView: PERFSOPENNOCALC"
+      - name: shot_total_alt
+        description: "Shot total alternate (calculated). WellView: PERFSHOTSALTCALC"
+      - name: shots_total_per_open_perfs
+        description: "Shot total per number of open perfs (calculated). WellView: PERFSHOTSPEROPENCALC"
+
+      # -- user numeric fields
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+      - name: user_number_2
+        description: "User-defined numeric field 2. WellView: USERNUM2"
+      - name: user_number_3
+        description: "User-defined numeric field 3. WellView: USERNUM3"
+
+      # -- durations
+      - name: interval_duration_hours
+        description: "Interval duration converted from days to hours (calculated). WellView: DURATIONCALC"
+      - name: shut_in_time_final_hours
+        description: "Final shut-in time converted from days to hours. WellView: SHUTINTMFINAL"
+      - name: pumping_duration_minutes
+        description: "Pumping duration converted from days to minutes. WellView: DURPUMP"
+      - name: closure_duration_minutes
+        description: "Closure duration converted from days to minutes. WellView: DURCLOSURE"
+
+      # -- depths
+      - name: top_depth_ft
+        description: "Top depth converted from meters to feet. WellView: DEPTHTOP"
+      - name: bottom_depth_ft
+        description: "Bottom depth converted from meters to feet. WellView: DEPTHBTM"
+      - name: top_depth_tvd_ft
+        description: "Top depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDTOPCALC"
+      - name: bottom_depth_tvd_ft
+        description: "Bottom depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDBTMCALC"
+      - name: interval_length_ft
+        description: "Interval length converted from meters to feet (calculated). WellView: LENGTHCALC"
+      - name: spacing_ft
+        description: "Spacing between intervals converted from meters to feet (calculated). WellView: LENGTHSPACINGCALC"
+      - name: top_depth_of_element_ft
+        description: "Top depth of element converted from meters to feet. WellView: DEPTHTOPELEMENT"
+      - name: bottom_depth_of_element_ft
+        description: "Bottom depth of element converted from meters to feet. WellView: DEPTHBTMELEMENT"
+      - name: estimated_sand_top_depth_ft
+        description: "Estimated sand top depth converted from meters to feet. WellView: DEPTHTOPPROPPANT"
+      - name: estimated_net_pay_ft
+        description: "Estimated net pay converted from meters to feet. WellView: NETPAYEST"
+      - name: perf_ball_size_ft
+        description: "Perf ball size converted from meters to feet. WellView: SZBALLS"
+
+      # -- frac geometry
+      - name: frac_height_ft
+        description: "Frac height converted from meters to feet. WellView: FRACHEIGHT"
+      - name: frac_length_ft
+        description: "Frac length converted from meters to feet. WellView: FRACLENGTH"
+      - name: frac_width_ft
+        description: "Frac width converted from meters to feet. WellView: FRACWIDTH"
+
+      # -- shut-in pressures
+      - name: opening_wellhead_pressure_psi
+        description: "Opening wellhead pressure converted from kPa to PSI. WellView: SHUTINPRESINITIAL"
+      - name: instant_shut_in_pressure_psi
+        description: "Instantaneous shut-in pressure converted from kPa to PSI. WellView: SHUTINPRESINST"
+      - name: one_minute_shut_in_pressure_psi
+        description: "1 minute shut-in pressure converted from kPa to PSI. WellView: SHUTINPRES1"
+      - name: three_minute_shut_in_pressure_psi
+        description: "3 minute shut-in pressure converted from kPa to PSI. WellView: SHUTINPRES3"
+      - name: four_minute_shut_in_pressure_psi
+        description: "4 minute shut-in pressure converted from kPa to PSI. WellView: SHUTINPRES4"
+      - name: five_minute_shut_in_pressure_psi
+        description: "5 minute shut-in pressure converted from kPa to PSI. WellView: SHUTINPRES5"
+      - name: ten_minute_shut_in_pressure_psi
+        description: "10 minute shut-in pressure converted from kPa to PSI. WellView: SHUTINPRES10"
+      - name: fifteen_minute_shut_in_pressure_psi
+        description: "15 minute shut-in pressure converted from kPa to PSI. WellView: SHUTINPRES15"
+      - name: post_treatment_shut_in_pressure_psi
+        description: "Post treatment shut-in pressure converted from kPa to PSI. WellView: SHUTINPRESFINAL"
+      - name: bh_post_treatment_shut_in_pressure_psi
+        description: "BH post treatment shut-in pressure converted from kPa to PSI. WellView: SHUTINPRESBHFINAL"
+      - name: three_minute_bleed_off_psi
+        description: "3 minute bleed off pressure converted from kPa to PSI (calculated). WellView: SHUTINPRES1TO4CALC"
+
+      # -- treatment pressures
+      - name: breakdown_pressure_psi
+        description: "Breakdown pressure converted from kPa to PSI. WellView: PRESBREAKDOWN"
+      - name: bh_breakdown_pressure_psi
+        description: "BH breakdown pressure converted from kPa to PSI. WellView: PRESBHBREAKDOWN"
+      - name: screen_out_pressure_psi
+        description: "Screen out pressure converted from kPa to PSI. WellView: PRESSCREENOUT"
+      - name: closure_pressure_psi
+        description: "Closure pressure converted from kPa to PSI. WellView: PRESCLOSURE"
+      - name: bh_closure_pressure_psi
+        description: "BH closure pressure converted from kPa to PSI. WellView: PRESBHCLOSURE"
+      - name: hydrostatic_pressure_psi
+        description: "Hydrostatic pressure converted from kPa to PSI. WellView: PRESHYD"
+      - name: treat_pressure_avg_psi
+        description: "Average treatment pressure converted from kPa to PSI. WellView: PRESTREATAVG"
+      - name: treat_pressure_min_psi
+        description: "Minimum treatment pressure converted from kPa to PSI. WellView: PRESTREATMIN"
+      - name: treat_pressure_max_psi
+        description: "Maximum treatment pressure converted from kPa to PSI. WellView: PRESTREATMAX"
+      - name: treat_pressure_max_minus_min_psi
+        description: "Treatment pressure range (max - min) converted from kPa to PSI (calculated). WellView: PRESMAXMINTREATCALC"
+      - name: friction_pressure_loss_psi
+        description: "Friction pressure loss converted from kPa to PSI. WellView: PRESFRICTIONLOSS"
+      - name: sleeve_shift_pressure_psi
+        description: "Sleeve shift pressure converted from kPa to PSI. WellView: PRESSLEEVESHIFT"
+
+      # -- tubing pressures
+      - name: tubing_pressure_avg_psi
+        description: "Average tubing pressure converted from kPa to PSI. WellView: PRESAVGTUBING"
+      - name: tubing_pressure_min_psi
+        description: "Minimum tubing pressure converted from kPa to PSI. WellView: PRESMINTUBING"
+      - name: tubing_pressure_max_psi
+        description: "Maximum tubing pressure converted from kPa to PSI. WellView: PRESMAXTUBING"
+      - name: tubing_pressure_max_minus_min_psi
+        description: "Tubing pressure range (max - min) converted from kPa to PSI (calculated). WellView: PRESMAXMINTUBINGCALC"
+
+      # -- casing pressures
+      - name: casing_pressure_avg_psi
+        description: "Average casing pressure converted from kPa to PSI. WellView: PRESAVGCASING"
+      - name: casing_pressure_min_psi
+        description: "Minimum casing pressure converted from kPa to PSI. WellView: PRESMINCASING"
+      - name: casing_pressure_max_psi
+        description: "Maximum casing pressure converted from kPa to PSI. WellView: PRESMAXCASING"
+      - name: casing_pressure_max_minus_min_psi
+        description: "Casing pressure range (max - min) converted from kPa to PSI (calculated). WellView: PRESMAXMINCASINGCALC"
+
+      # -- annulus pressures
+      - name: annulus_pressure_avg_psi
+        description: "Average annulus pressure converted from kPa to PSI. WellView: PRESAVGANNULUS"
+      - name: annulus_pressure_min_psi
+        description: "Minimum annulus pressure converted from kPa to PSI. WellView: PRESMINANNULUS"
+      - name: annulus_pressure_max_psi
+        description: "Maximum annulus pressure converted from kPa to PSI. WellView: PRESMAXANNULUS"
+      - name: annulus_pressure_max_minus_min_psi
+        description: "Annulus pressure range (max - min) converted from kPa to PSI (calculated). WellView: PRESMAXMINANNULUSCALC"
+
+      # -- pressure gradients
+      - name: breakdown_gradient_psi_per_ft
+        description: "Breakdown gradient converted from kPa/m to PSI/ft. WellView: BREAKDOWNGRADIENT"
+      - name: closure_gradient_psi_per_ft
+        description: "Closure gradient converted from kPa/m to PSI/ft. WellView: CLOSUREGRADIENT"
+      - name: frac_gradient_psi_per_ft
+        description: "Frac gradient converted from kPa/m to PSI/ft. WellView: FRACGRADIENT"
+      - name: frac_gradient_post_treat_psi_per_ft
+        description: "Post treatment frac gradient converted from kPa/m to PSI/ft. WellView: FRACGRADIENTEND"
+
+      # -- treatment rates
+      - name: clean_rate_avg_bbl_per_min
+        description: "Average clean rate converted from m3/day to BBL/min. WellView: RATECLEANAVG"
+      - name: clean_rate_max_bbl_per_min
+        description: "Maximum clean rate converted from m3/day to BBL/min. WellView: RATECLEANMAX"
+      - name: clean_rate_min_bbl_per_min
+        description: "Minimum clean rate converted from m3/day to BBL/min. WellView: RATECLEANMIN"
+      - name: slurry_rate_avg_bbl_per_min
+        description: "Average slurry rate converted from m3/day to BBL/min. WellView: RATESLURRYAVG"
+      - name: slurry_rate_max_bbl_per_min
+        description: "Maximum slurry rate converted from m3/day to BBL/min. WellView: RATESLURRYMAX"
+      - name: slurry_rate_min_bbl_per_min
+        description: "Minimum slurry rate converted from m3/day to BBL/min. WellView: RATESLURRYMIN"
+      - name: annulus_rate_avg_bbl_per_min
+        description: "Average annulus rate converted from m3/day to BBL/min. WellView: RATEAVGANNULUS"
+      - name: annulus_rate_max_bbl_per_min
+        description: "Maximum annulus rate converted from m3/day to BBL/min. WellView: RATEMAXANNULUS"
+      - name: casing_rate_avg_bbl_per_min
+        description: "Average casing rate converted from m3/day to BBL/min. WellView: RATEAVGCASING"
+      - name: casing_rate_max_bbl_per_min
+        description: "Maximum casing rate converted from m3/day to BBL/min. WellView: RATEMAXCASING"
+      - name: tubing_rate_avg_bbl_per_min
+        description: "Average tubing rate converted from m3/day to BBL/min. WellView: RATEAVGTUBING"
+      - name: tubing_rate_max_bbl_per_min
+        description: "Maximum tubing rate converted from m3/day to BBL/min. WellView: RATEMAXTUBING"
+      - name: bh_rate_avg_bbl_per_min
+        description: "Average BH rate converted from m3/day to BBL/min. WellView: RATEBHAVG"
+      - name: bh_rate_max_bbl_per_min
+        description: "Maximum BH rate converted from m3/day to BBL/min. WellView: RATEBHMAX"
+      - name: bh_rate_min_bbl_per_min
+        description: "Minimum BH rate converted from m3/day to BBL/min. WellView: RATEBHMIN"
+      - name: breakdown_rate_bbl_per_min
+        description: "Breakdown rate converted from m3/day to BBL/min. WellView: RATEBREAKDOWN"
+
+      # -- volumes
+      - name: volume_clean_total_bbl
+        description: "Total clean volume converted from m3 to barrels (entered). WellView: VOLCLEANTOTAL"
+      - name: volume_clean_total_calc_bbl
+        description: "Total clean volume converted from m3 to barrels (calculated). WellView: VOLCLEANTOTALCALC"
+      - name: volume_slurry_total_bbl
+        description: "Total slurry volume converted from m3 to barrels (entered). WellView: VOLSLURRYTOTAL"
+      - name: volume_slurry_total_calc_bbl
+        description: "Total slurry volume converted from m3 to barrels (calculated). WellView: VOLSLURRYTOTALCALC"
+      - name: volume_recovered_total_bbl
+        description: "Total recovered volume converted from m3 to barrels (entered). WellView: VOLRECOVEREDTOTAL"
+      - name: volume_recovered_total_calc_bbl
+        description: "Total recovered volume converted from m3 to barrels (calculated). WellView: VOLRECOVEREDTOTALCALC"
+      - name: volume_co2_total_bbl
+        description: "Total CO2 volume converted from m3 to barrels (entered). WellView: VOLCO2TOTAL"
+      - name: volume_co2_total_calc_bbl
+        description: "Total CO2 volume converted from m3 to barrels (calculated). WellView: VOLCO2TOTALCALC"
+      - name: volume_n2_total_bbl
+        description: "Total N2 volume converted from m3 to barrels (entered). WellView: VOLN2TOTAL"
+      - name: volume_n2_total_calc_bbl
+        description: "Total N2 volume converted from m3 to barrels (calculated). WellView: VOLN2TOTALCALC"
+      - name: total_clean_minus_recovered_volume_bbl
+        description: "Total clean minus recovered volume converted from m3 to barrels (calculated). WellView: VOLNETCLEANCALC"
+      - name: total_slurry_minus_recovered_volume_bbl
+        description: "Total slurry minus recovered volume converted from m3 to barrels (calculated). WellView: VOLNETSLURRYCALC"
+
+      # -- gas volumes
+      - name: gas_lost_downhole_mcf
+        description: "Gas lost downhole converted from m3 to MCF. WellView: GASVOLLOSTDOWNHOLE"
+      - name: gas_lost_surface_mcf
+        description: "Gas lost surface converted from m3 to MCF. WellView: GASVOLLOSTSURFACE"
+      - name: gas_lost_transport_mcf
+        description: "Gas lost transport converted from m3 to MCF. WellView: GASVOLLOSTTRANSPORT"
+
+      # -- surface concentrations
+      - name: surf_conc_avg_lb_per_gal
+        description: "Average surface proppant concentration converted from kg/m3 to lb/gal. WellView: CONCSURFAVG"
+      - name: surf_conc_max_lb_per_gal
+        description: "Maximum surface proppant concentration converted from kg/m3 to lb/gal. WellView: CONCSURFMAX"
+      - name: surf_conc_min_lb_per_gal
+        description: "Minimum surface proppant concentration converted from kg/m3 to lb/gal. WellView: CONCSURFMIN"
+
+      # -- bottom hole concentrations
+      - name: bh_conc_avg_lb_per_gal
+        description: "Average BH proppant concentration converted from kg/m3 to lb/gal. WellView: CONCBHAVG"
+      - name: bh_conc_max_lb_per_gal
+        description: "Maximum BH proppant concentration converted from kg/m3 to lb/gal. WellView: CONCBHMAX"
+      - name: bh_conc_min_lb_per_gal
+        description: "Minimum BH proppant concentration converted from kg/m3 to lb/gal. WellView: CONCBHMIN"
+
+      # -- zone concentration
+      - name: concentration_at_zone_lb_per_gal
+        description: "Concentration at zone converted from kg/m3 to lb/gal. WellView: CONCINT"
+
+      # -- proppant masses
+      - name: proppant_designed_lb
+        description: "Designed proppant mass converted from kg to pounds. WellView: MASSPROPDESIGN"
+      - name: proppant_in_formation_lb
+        description: "Proppant in formation converted from kg to pounds. WellView: MASSPROPINFRM"
+      - name: proppant_in_wellbore_lb
+        description: "Proppant in wellbore converted from kg to pounds. WellView: MASSPROPINWELLBORE"
+      - name: proppant_return_to_surface_lb
+        description: "Proppant returned to surface converted from kg to pounds. WellView: MASSPROPRETURN"
+      - name: proppant_total_lb
+        description: "Total proppant mass converted from kg to pounds (entered). WellView: MASSPROPTOTAL"
+      - name: proppant_total_calc_lb
+        description: "Total proppant mass converted from kg to pounds (calculated). WellView: MASSPROPTOTALCALC"
+      - name: proppant_total_design_ratio_percent
+        description: "Proppant total to design ratio converted from proportion to percent. WellView: RATIOPROPDESIGNTOTAL"
+
+      # -- pump power
+      - name: pump_power_avg_hp
+        description: "Average pump power converted from watts to horsepower. WellView: PUMPPOWERAVG"
+      - name: fluid_pump_power_hp
+        description: "Fluid pump power converted from watts to horsepower. WellView: PUMPPOWERFLUID"
+      - name: co2_pump_power_hp
+        description: "CO2 pump power converted from watts to horsepower. WellView: PUMPPOWERCO2"
+      - name: pump_power_max_hp
+        description: "Maximum pump power converted from watts to horsepower. WellView: PUMPPOWERMAX"
+
+      # -- temperatures
+      - name: static_temperature_fahrenheit
+        description: "Static temperature converted from Celsius to Fahrenheit. WellView: TEMPSTATICAVG"
+      - name: treat_temperature_fahrenheit
+        description: "Treatment temperature converted from Celsius to Fahrenheit. WellView: TEMPTREATAVG"
+
+      # -- fluid efficiency
+      - name: fluid_efficiency_percent
+        description: "Fluid efficiency converted from proportion to percent. WellView: FLUIDEFFICIENCY"
+
+      # -- dates
+      - name: start_date
+        description: "Interval start date (NTZ). WellView: DTTMSTART"
+      - name: end_date
+        description: "Interval end date (NTZ). WellView: DTTMEND"
+      - name: min_start_date
+        description: "Minimum start date (calculated, NTZ). WellView: DTTMSTARTMINCALC"
+      - name: max_end_date
+        description: "Maximum end date (calculated, NTZ). WellView: DTTMENDMAXCALC"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__stimulation_fluid_systems
+  # ==========================================================================
+  - name: stg_wellview__stimulation_fluid_systems
+    description: >
+      Stimulation fluid system staging from WellView. One row per fluid system.
+      Normalized list of fluid systems designed and/or used during a stimulation, with properties and volumes.
+      Source: WVT_WVSTIMINTFLUID (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: stimulation_fluid_system_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "WellView stimulation fluid system GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: parent_record_id
+        description: "Parent stimulation interval GUID FK. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- descriptive fields
+      - name: fluid_description
+        description: "Fluid description. WellView: DES"
+      - name: fluid_name
+        description: "Fluid name. WellView: FLUIDNAME"
+      - name: vendor_fluid_name
+        description: "Vendor fluid name. WellView: VENDORFLUIDNAME"
+      - name: fluid_type_1
+        description: "Fluid type. WellView: TYP1"
+      - name: fluid_type_2
+        description: "Fluid subtype. WellView: TYP2"
+      - name: purpose
+        description: "Fluid purpose. WellView: PURPOSE"
+      - name: vendor
+        description: "Vendor name. WellView: VENDOR"
+      - name: vendor_code
+        description: "Vendor code. WellView: VENDORCODE"
+      - name: source_field
+        description: "Fluid source. WellView: SOURCE"
+      - name: environment_type
+        description: "Environment type. WellView: ENVIRONMENTTYP"
+      - name: evaluation_method
+        description: "Evaluation method. WellView: EVALMETHOD"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: comment
+        description: "Comment text. WellView: COM"
+
+      # -- fluid properties
+      - name: fluid_density_api
+        description: "Fluid density. WellView: FLUIDDENSITY"
+      - name: ph_level
+        description: "pH level. WellView: PH"
+      - name: vapor_pressure_kpa
+        description: "Vapor pressure in kPa. WellView: PRESVAPOR"
+      - name: volume_design_ratio_bbl_per_bbl
+        description: "Actual/design fluid volume ratio (calculated). WellView: RATIOVOLUMEDESIGNCALC"
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+
+      # -- measurements
+      - name: viscosity_cp
+        description: "Viscosity converted from pascal-seconds to centipoise. WellView: VISCOSITY"
+      - name: reference_temperature_fahrenheit
+        description: "Reference temperature converted from Celsius to Fahrenheit. WellView: TEMPREF"
+      - name: filter_size_inches
+        description: "Filter size converted from meters to inches. WellView: FILTERSZ"
+      - name: mass_total_lb
+        description: "Fluid total mass converted from kg to pounds. WellView: MASSTOTAL"
+
+      # -- volumes
+      - name: volume_bbl
+        description: "Volume converted from m3 to barrels. WellView: VOLUME"
+      - name: volume_calc_bbl
+        description: "Calculated volume converted from m3 to barrels (calculated). WellView: VOLUMECALC"
+      - name: volume_design_bbl
+        description: "Design volume converted from m3 to barrels. WellView: VOLUMEDESIGN"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__stimulation_fluid_additives
+  # ==========================================================================
+  - name: stg_wellview__stimulation_fluid_additives
+    description: >
+      Stimulation fluid additive staging from WellView. One row per additive.
+      Chemical additives per fluid system with amounts, concentrations, and vendor details.
+      Source: WVT_WVSTIMINTFLUIDADD (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: stimulation_fluid_additive_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "WellView stimulation fluid additive GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: parent_record_id
+        description: "Parent fluid system GUID FK. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- descriptive fields
+      - name: additive_type
+        description: "Additive type. WellView: TYP1"
+      - name: additive_subtype
+        description: "Additive subtype. WellView: TYP2"
+      - name: additive_name
+        description: "Additive name. WellView: DES"
+      - name: vendor_additive_name
+        description: "Vendor additive name. WellView: VENDORADDNAME"
+      - name: purpose
+        description: "Additive purpose. WellView: PURPOSE"
+      - name: reference_number
+        description: "Reference number. WellView: REFNO"
+      - name: units
+        description: "Unit label. WellView: UNITLABEL"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: comment
+        description: "Comment text. WellView: COM"
+
+      # -- amount information
+      - name: design_amount
+        description: "Design amount. WellView: AMOUNTDESIGN"
+      - name: actual_amount
+        description: "Actual amount. WellView: AMOUNT"
+
+      # -- additive properties
+      - name: additive_density_api
+        description: "Additive density. WellView: DENSITY"
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+
+      # -- calculated totals
+      - name: total_mass_of_additive_lb
+        description: "Total mass of additive converted from kg to pounds (calculated). WellView: MASSTOTALCALC"
+      - name: total_volume_of_additive_bbl
+        description: "Total volume of additive converted from m3 to barrels (calculated). WellView: VOLTOTALCALC"
+
+      # -- concentration limits
+      - name: concentration_max_percent
+        description: "Maximum concentration converted from proportion to percent. WellView: CONCMAX"
+      - name: concentration_min_percent
+        description: "Minimum concentration converted from proportion to percent. WellView: CONCMIN"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__stimulation_proppant
+  # ==========================================================================
+  - name: stg_wellview__stimulation_proppant
+    description: >
+      Stimulation proppant staging from WellView. One row per proppant record.
+      Normalized list of proppants designed and/or used during a stimulation, with amounts and ratios.
+      Source: WVT_WVSTIMINTPROP (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: stimulation_proppant_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "WellView stimulation proppant GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+      - name: parent_record_id
+        description: "Parent stimulation interval GUID FK. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- descriptive fields
+      - name: proppant_type
+        description: "Proppant type. WellView: TYP1"
+      - name: proppant_subtype
+        description: "Proppant subtype. WellView: TYP2"
+      - name: proppant_description
+        description: "Proppant description. WellView: DES"
+      - name: sand_size
+        description: "Sand size. WellView: SZ"
+      - name: note
+        description: "Note. WellView: NOTE"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+
+      # -- performance ratio
+      - name: actual_to_design_proppant_mass_ratio
+        description: "Actual to design proppant mass ratio (calculated). WellView: RATIOTAMOUNTDESIGNCALC"
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+
+      # -- proppant amounts
+      - name: design_amount_lb
+        description: "Design proppant amount converted from kg to pounds. WellView: AMOUNTDESIGN"
+      - name: actual_amount_lb
+        description: "Actual proppant amount converted from kg to pounds. WellView: AMOUNT"
+      - name: calculated_amount_lb
+        description: "Calculated proppant amount converted from kg to pounds (calculated). WellView: AMOUNTCALC"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__swabs
+  # ==========================================================================
+  - name: stg_wellview__swabs
+    description: >
+      Swab staging from WellView. One row per swab operation.
+      Swab operation headers with dates, volumes, and gas recovery totals.
+      Source: WVT_WVSWAB (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: swab_sk
+        description: "Surrogate key (MD5 hash of swab_id)"
+
+      # -- identifiers
+      - name: swab_id
+        description: "WellView swab GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: "Job GUID FK. WellView: IDRECJOB"
+      - name: job_table_key
+        description: "Job table key. WellView: IDRECJOBTK"
+      - name: wellbore_id
+        description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
+      - name: wellbore_table_key
+        description: "Wellbore table key. WellView: IDRECWELLBORETK"
+      - name: completion_zone_id
+        description: "Completion/zone GUID FK. WellView: IDRECZONECOMPLETION"
+      - name: completion_zone_table_key
+        description: "Completion/zone table key. WellView: IDRECZONECOMPLETIONTK"
+
+      # -- descriptive fields
+      - name: proposed_or_actual
+        description: "Whether swab is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: swab_company
+        description: "Swab company. WellView: CONTRACTOR"
+      - name: comments
+        description: "Comment text. WellView: COM"
+
+      # -- volumes
+      - name: total_volume_recovered_bbl
+        description: "Total volume recovered converted from m3 to barrels (calculated). WellView: VOLTOTALCALC"
+      - name: total_oil_recovered_bbl
+        description: "Total oil recovered converted from m3 to barrels (calculated). WellView: VOLTOTALOILCALC"
+      - name: total_bsw_recovered_bbl
+        description: "Total BSW recovered converted from m3 to barrels (calculated). WellView: VOLTOTALBSWCALC"
+
+      # -- gas volume
+      - name: total_gas_volume_mcf
+        description: "Total gas volume converted from m3 to MCF (calculated). WellView: VOLTOTALGASCALC"
+
+      # -- dates
+      - name: swab_date
+        description: "Swab date (NTZ). WellView: DTTM"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__swab_details
+  # ==========================================================================
+  - name: stg_wellview__swab_details
+    description: >
+      Swab detail staging from WellView. One row per swab run measurement.
+      Individual swab run measurements including fluid recoveries, pressures, depths, and fluid properties.
+      Source: WVT_WVSWABDETAILS (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: swab_detail_sk
+        description: "Surrogate key (MD5 hash of swab_detail_id)"
+
+      # -- identifiers
+      - name: swab_detail_id
+        description: "WellView swab detail GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: swab_id
+        description: "Parent swab GUID FK. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+
+      # -- descriptive fields
+      - name: swab_number
+        description: "Swab number. WellView: SWABNO"
+      - name: ph_value
+        description: "pH value. WellView: PH"
+      - name: comments
+        description: "Comment text. WellView: COM"
+
+      # -- duration
+      - name: swabbing_time_hours
+        description: "Swabbing time converted from days to hours. WellView: TMSWAB"
+
+      # -- pressures
+      - name: tubing_pressure_psi
+        description: "Tubing pressure converted from kPa to PSI. WellView: PRESTUB"
+      - name: casing_pressure_psi
+        description: "Casing pressure converted from kPa to PSI. WellView: PRESCAS"
+
+      # -- temperature
+      - name: wellhead_temperature_f
+        description: "Wellhead temperature converted from Celsius to Fahrenheit. WellView: TEMPWH"
+
+      # -- depths
+      - name: tagged_fluid_level_ft
+        description: "Tagged fluid level converted from meters to feet. WellView: DEPTHFLUIDLEVEL"
+      - name: pull_depth_ft
+        description: "Pull depth converted from meters to feet. WellView: DEPTHPULL"
+      - name: fluid_level_tvd_ft
+        description: "Fluid level TVD converted from meters to feet (calculated). WellView: DEPTHTVDFLUIDLEVELCALC"
+      - name: pull_depth_tvd_ft
+        description: "Pull depth TVD converted from meters to feet (calculated). WellView: DEPTHTVDPULLCALC"
+
+      # -- tank measurements
+      - name: tank_gauge_inches
+        description: "Tank gauge converted from meters to inches. WellView: TANKGAUGE"
+
+      # -- fluid volumes
+      - name: recovered_fluid_volume_bbl
+        description: "Recovered fluid volume converted from m3 to barrels. WellView: VOLFLUIDREC"
+      - name: oil_volume_bbl
+        description: "Oil volume converted from m3 to barrels (calculated). WellView: VOLOILCALC"
+      - name: bsw_volume_bbl
+        description: "BSW volume converted from m3 to barrels (calculated). WellView: VOLBSWCALC"
+      - name: cumulative_volume_bbl
+        description: "Cumulative recovered volume converted from m3 to barrels (calculated). WellView: VOLCUMCALC"
+      - name: cumulative_oil_volume_bbl
+        description: "Cumulative oil volume converted from m3 to barrels (calculated). WellView: VOLCUMOILCALC"
+      - name: cumulative_bsw_volume_bbl
+        description: "Cumulative BSW volume converted from m3 to barrels (calculated). WellView: VOLCUMBSWCALC"
+
+      # -- gas volumes and rates
+      - name: gas_volume_mcf
+        description: "Gas volume converted from m3 to MCF. WellView: VOLGAS"
+      - name: cumulative_gas_volume_mcf
+        description: "Cumulative gas volume converted from m3 to MCF (calculated). WellView: VOLCUMGASCALC"
+      - name: gas_rate_mcf_per_day
+        description: "Gas rate converted from m3/day to MCF/day. WellView: RATEGAS"
+
+      # -- oil rate
+      - name: oil_rate_bbl_per_day
+        description: "Oil rate converted from m3/day to BBL/day (calculated). WellView: OILRATECALC"
+
+      # -- fluid properties
+      - name: basic_sediments_water_percent
+        description: "Basic sediments and water converted from proportion to percent. WellView: BSW"
+      - name: sand_cut_percent
+        description: "Sand cut converted from proportion to percent. WellView: SANDCUT"
+      - name: salinity_ppm
+        description: "Salinity converted from proportion to PPM. WellView: SALINITY"
+      - name: h2s_ppm
+        description: "H2S concentration converted from proportion to PPM. WellView: H2S"
+
+      # -- density
+      - name: density_api
+        description: "Fluid density converted from kg/m3 to API gravity. WellView: DENSITY"
+
+      # -- dates
+      - name: swab_detail_date
+        description: "Swab detail start date (NTZ). WellView: DTTM"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "UI lock on this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock on child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "System lock on this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

@@ -1,0 +1,23 @@
+# Source: wellview_calcs — database/schema MUST match all other _src_wellview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+version: 2
+
+sources:
+  - name: wellview_calcs
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_WV120
+    schema: FORMENTERAOPS_WV120_CALC
+    tables:
+      - name: WVT_WVTUB
+        description: "Tubing strings — run/pull dates, set depth, string weight, and calc rollups"
+      - name: WVT_WVTUBCOMP
+        description: "Tubing components — individual joints/accessories within a tubing string"
+      - name: WVT_WVTUBCOMPMANDREL
+        description: "Tubing component mandrels — mandrel equipment within tubing components"
+      - name: WVT_WVTUBCOMPMANDRELINSERT
+        description: "Tubing component mandrel inserts — insert details within mandrels"
+      - name: WVT_WVTUBCOMPTALLY
+        description: "Tubing run tallies — joint-by-joint tally records for tubing components"
+      - name: WVT_WVROD
+        description: "Rod strings — rod string headers with run/pull dates, pump details, and calc rollups"
+      - name: WVT_WVRODCOMP
+        description: "Rod components — individual rod joints/accessories within a rod string"
