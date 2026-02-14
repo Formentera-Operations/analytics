@@ -55,9 +55,6 @@ renamed as (
         -- comments
         trim(com)::varchar as comment,
 
-        -- sequence
-        sysseq::int as sequence_number,
-
         -- system locking
         syslockmeui::boolean as system_lock_me_ui,
         syslockchildrenui::boolean as system_lock_children_ui,
@@ -136,9 +133,6 @@ final as (
 
         -- comments
         comment,
-
-        -- sequence
-        sequence_number,
 
         -- system locking
         system_lock_me_ui,

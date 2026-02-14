@@ -90,9 +90,6 @@ renamed as (
         utmgridzone::int as utm_grid_zone,
         trim(utmsource)::varchar as utm_data_source,
 
-        -- sequence
-        sysseq::int as sequence_number,
-
         -- system locking
         syslockmeui::boolean as system_lock_me_ui,
         syslockchildrenui::boolean as system_lock_children_ui,
@@ -206,9 +203,6 @@ final as (
         utm_northing_meters,
         utm_grid_zone,
         utm_data_source,
-
-        -- sequence
-        sequence_number,
 
         -- system locking
         system_lock_me_ui,

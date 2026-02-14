@@ -26,8 +26,6 @@ models:
           - not_null:
               config:
                 severity: warn
-      - name: parent_record_id
-        description: "Parent record GUID. WellView: IDRECPARENT"
       - name: wellbore_id
         description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
       - name: wellbore_table_key
