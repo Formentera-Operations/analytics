@@ -36,10 +36,10 @@ renamed as (
         trim(com)::varchar as comment,
 
         -- system / audit
-        syscreatedate::timestamp_ntz as created_at_utc,
+        syscreatedate::timestamp_ntz as created_at,
         trim(syscreateuser)::varchar as created_by,
-        sysmoddate::timestamp_ntz as last_mod_at_utc,
-        trim(sysmoduser)::varchar as last_mod_by,
+        sysmoddate::timestamp_ntz as modified_at,
+        trim(sysmoduser)::varchar as modified_by,
         trim(systag)::varchar as system_tag,
         syslockmeui::boolean as system_lock_me_ui,
         syslockchildrenui::boolean as system_lock_children_ui,
@@ -94,10 +94,10 @@ final as (
         comment,
 
         -- system / audit
-        created_at_utc,
+        created_at,
         created_by,
-        last_mod_at_utc,
-        last_mod_by,
+        modified_at,
+        modified_by,
         system_tag,
         system_lock_me_ui,
         system_lock_children_ui,

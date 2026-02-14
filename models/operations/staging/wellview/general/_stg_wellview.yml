@@ -524,13 +524,13 @@ models:
         description: "Free-text comment on the status change. WellView: COM"
 
       # -- system / audit
-      - name: created_at_utc
+      - name: created_at
         description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
       - name: created_by
         description: "User who created the record. WellView: SYSCREATEUSER"
-      - name: last_mod_at_utc
+      - name: modified_at
         description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
-      - name: last_mod_by
+      - name: modified_by
         description: "User who last modified the record. WellView: SYSMODUSER"
       - name: system_tag
         description: "System tag. WellView: SYSTAG"
