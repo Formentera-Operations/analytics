@@ -215,3 +215,181 @@ models:
         description: Associated ticket number
       - name: _loaded_at
         description: Timestamp when the record was loaded by dbt
+
+  - name: fct_drilling_time
+    description: >
+      Drilling time fact table. One row per time log entry from WellView daily
+      reports. Includes activity duration, classification codes, depth, ROP,
+      and NPT flag. Enriched with job SK, phase SK, and well EID.
+      Clustered by job_id and report_date. ~762K rows.
+    columns:
+      - name: job_time_log_sk
+        description: Surrogate key (MD5 hash of time_log_id)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: time_log_id
+        description: WellView time log entry natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: job_id
+        description: WellView job GUID (natural FK to dim_job)
+        data_tests:
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: phase_sk
+        description: FK to dim_phase surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_phase')
+                field: phase_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: report_date
+        description: Date of the daily report (with fallback to activity start date)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: is_report_date_inferred
+        description: True when report_date fell back to start_datetime (no matching job report)
+
+      - name: duration_hours
+        description: Total elapsed time for this activity (hours)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              config:
+                severity: warn
+
+      - name: is_problem_time
+        description: Whether this activity is non-productive time (NPT)
+
+  - name: fct_npt_events
+    description: >
+      Non-productive time (NPT) event fact table. One row per interval problem
+      from WellView. Includes event duration (gross/net), cost, severity, and
+      categorization hierarchy. Enriched with job SK and well EID. ~14K rows.
+    columns:
+      - name: job_interval_problem_sk
+        description: Surrogate key (MD5 hash of record_id)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: record_id
+        description: WellView interval problem natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: parent_record_id
+        description: WellView job GUID (IDRECPARENT — natural FK to dim_job)
+        data_tests:
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: event_date
+        description: Date the NPT event began (start_date cast to date)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: problem_duration_gross_hours
+        description: Total event duration from start to end (hours)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              config:
+                severity: warn
+
+      - name: problem_duration_net_hours
+        description: Event duration after adjustments (hours)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              config:
+                severity: warn
+
+      - name: major_category
+        description: High-level problem grouping (e.g., rig equip, formation)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: is_countable_npt
+        description: >
+          Whether this event should be included in NPT aggregations.
+          Inverse of exclude_from_problem_time_calculations (NULL treated as countable).
