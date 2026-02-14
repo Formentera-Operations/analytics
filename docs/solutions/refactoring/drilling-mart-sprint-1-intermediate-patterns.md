@@ -215,6 +215,7 @@ Portfolio total: 1,901,701 rows across 5,229 wells, $8.2B field estimate.
 
 ## Related
 
+- [Sprint 2 Patterns](drilling-mart-sprint-2-fact-table-patterns.md) — Fact table patterns: materialization decisions, data quality flags, FK NULL documentation
 - [WellView Entity Model](../../context/sources/wellview/entity_model.md) — Physical Well and Well Work entity definitions
 - [Sprint 1 Plan](../../docs/plans/2026-02-14-sprint-1-fct-daily-drilling-cost.md) — Implementation plan with column contracts
 - [dbt YAML Test Config](../build-errors/ci-dbt-parse-missing-arguments-deprecation.md) — `config:` wrapper requirement for test severity
