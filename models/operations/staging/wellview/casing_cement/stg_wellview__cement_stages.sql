@@ -1,103 +1,220 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'cement', 'stages', 'pumping', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'casing_cement']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per cement stage)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVCEMENTSTAGE') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idwell as well_id,
-        idrecparent as parent_record_id,
-        idrec as record_id,
+        -- identifiers
+        trim(idrec)::varchar as record_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecparent)::varchar as parent_record_id,
 
-        -- Stage information
-        stagenum as stage_number,
-        des as description,
-        objective as objective,
+        -- stage information
+        stagenum::float as stage_number,
+        trim(des)::varchar as description,
+        trim(objective)::varchar as objective,
+        trim(measmethod)::varchar as top_measurement_method,
+        trim(topplug)::varchar as top_plug,
+        trim(btmplug)::varchar as bottom_plug,
+        trim(tagmethod)::varchar as tag_method,
+        trim(pipemovenote)::varchar as pipe_movement_note,
+        trim(com)::varchar as comment,
 
-        -- Depths (converted to US units)
-        measmethod as top_measurement_method,
-        dttmstartpump as pump_start_date,
-        dttmendpump as pump_end_date,
-        topplug as top_plug,
-        btmplug as bottom_plug,
+        -- depths (converted from metric to US units)
+        {{ wv_meters_to_feet('depthtop') }} as top_depth_ft,
+        {{ wv_meters_to_feet('depthbtm') }} as bottom_depth_ft,
+        {{ wv_meters_to_feet('depthtvdtopcalc') }} as top_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthtvdbtmcalc') }} as bottom_depth_tvd_ft,
+        {{ wv_meters_to_feet('recipstroke') }} as reciprocation_stroke_length_ft,
+        {{ wv_meters_to_feet('depthtagged') }} as tagged_depth_ft,
+        {{ wv_meters_to_feet('depthdrillout') }} as depth_plug_drilled_out_to_ft,
 
-        -- Pumping timing
-        dttmreleasedpres as pressure_release_date,
-        plugfailed as plug_failed,
+        -- pump rates (converted from metric to US units)
+        {{ wv_cbm_per_sec_to_bbl_per_min('ratepumpstart') }} as initial_pump_rate_bbl_per_min,
+        {{ wv_cbm_per_sec_to_bbl_per_min('ratepumpend') }} as final_pump_rate_bbl_per_min,
+        {{ wv_cbm_per_sec_to_bbl_per_min('ratepumpavg') }} as avg_pump_rate_bbl_per_min,
 
-        -- Plug configuration
-        floatfailed as float_failed,
-        fullreturn as full_return,
+        -- pressures (converted from metric to US units)
+        {{ wv_kpa_to_psi('prespumpend') }} as final_pump_pressure_psi,
+        {{ wv_kpa_to_psi('presplugbump') }} as plug_bump_pressure_psi,
+        {{ wv_kpa_to_psi('presheld') }} as pressure_held_psi,
 
-        -- Pump rates (converted to BBL/MIN)
-        reciprocated as pipe_reciprocated,
-        reciprate as reciprocation_rate_spm,
-        rotated as pipe_rotated,
+        -- volumes (converted from metric to US units)
+        {{ wv_cbm_to_bbl('volreturncmnt') }} as cement_volume_return_bbl,
+        {{ wv_cbm_to_bbl('vollost') }} as volume_lost_bbl,
+        {{ wv_cbm_to_bbl('volinfrm') }} as volume_squeezed_in_to_formation_bbl,
 
-        -- Pressures (converted to PSI)
-        rotaterpm as pipe_rpm,
-        pipemovenote as pipe_movement_note,
-        tagmethod as tag_method,
-        dttmtagged as tag_cement_date,
+        -- weights (converted from metric to US units)
+        {{ wv_newtons_to_klbf('weighttagged') }} as tag_weight_1000_lbf,
 
-        -- Operational flags
-        dttmdrillout as drill_out_date,
-        dttmpropdrillout as proposed_drill_out_date,
-        com as comment,
+        -- sizes (converted from metric to US units)
+        {{ wv_meters_to_inches('oddrillout') }} as drill_out_diameter_inches,
 
-        -- Volumes (converted to barrels)
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        syslockme as system_lock_me,
+        -- pipe movement
+        reciprate::float as reciprocation_rate_spm,
+        rotaterpm::float as pipe_rpm,
 
-        -- Pipe movement
-        syslockchildren as system_lock_children,
-        syslockdate as system_lock_date,
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
+        -- duration (converted from metric to US units)
+        {{ wv_days_to_hours('durdrillouttopumpendcalc') }} as drill_out_to_pump_end_duration_hours,
 
-        -- Cement plug operations
-        systag as system_tag,
-        _fivetran_synced as fivetran_synced_at,
-        depthtop / 0.3048 as top_depth_ft,
-        depthbtm / 0.3048 as bottom_depth_ft,
-        depthtvdtopcalc / 0.3048 as top_depth_tvd_ft,
-        depthtvdbtmcalc / 0.3048 as bottom_depth_tvd_ft,
-        ratepumpstart / 228.941712 as initial_pump_rate_bbl_per_min,
-        ratepumpend / 228.941712 as final_pump_rate_bbl_per_min,
+        -- operational flags
+        plugfailed::boolean as plug_failed,
+        floatfailed::boolean as float_failed,
+        fullreturn::boolean as full_return,
+        reciprocated::boolean as pipe_reciprocated,
+        rotated::boolean as pipe_rotated,
 
-        -- Proposed operations
-        ratepumpavg / 228.941712 as avg_pump_rate_bbl_per_min,
+        -- dates
+        dttmstartpump::timestamp_ntz as pump_start_date,
+        dttmendpump::timestamp_ntz as pump_end_date,
+        dttmreleasedpres::timestamp_ntz as pressure_release_date,
+        dttmtagged::timestamp_ntz as tag_cement_date,
+        dttmdrillout::timestamp_ntz as drill_out_date,
+        dttmpropdrillout::timestamp_ntz as proposed_drill_out_date,
 
-        -- Comments
-        prespumpend / 6.894757 as final_pump_pressure_psi,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- System locking fields
-        presplugbump / 6.894757 as plug_bump_pressure_psi,
-        presheld / 6.894757 as pressure_held_psi,
-        volreturncmnt / 0.158987294928 as cement_volume_return_bbl,
-        vollost / 0.158987294928 as volume_lost_bbl,
-        volinfrm / 0.158987294928 as volume_squeezed_in_to_formation_bbl,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- System tracking fields
-        recipstroke / 0.3048 as reciprocation_stroke_length_ft,
-        depthtagged / 0.3048 as tagged_depth_ft,
-        weighttagged / 4448.2216152605 as tag_weight_1000_lbf,
-        depthdrillout / 0.3048 as depth_plug_drilled_out_to_ft,
-        oddrillout / 0.0254 as drill_out_diameter_inches,
+    from source
+),
 
-        -- Fivetran metadata
-        durdrillouttopumpendcalc / 0.0416666666666667 as drill_out_to_pump_end_duration_hours
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and record_id is not null
+),
 
-    from source_data
+-- 4. ENHANCED: Add surrogate key and _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['record_id']) }} as cement_stage_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        cement_stage_sk,
+
+        -- identifiers
+        record_id,
+        well_id,
+        parent_record_id,
+
+        -- stage information
+        stage_number,
+        description,
+        objective,
+        top_measurement_method,
+        top_plug,
+        bottom_plug,
+        tag_method,
+        pipe_movement_note,
+        comment,
+
+        -- depths
+        top_depth_ft,
+        bottom_depth_ft,
+        top_depth_tvd_ft,
+        bottom_depth_tvd_ft,
+        reciprocation_stroke_length_ft,
+        tagged_depth_ft,
+        depth_plug_drilled_out_to_ft,
+
+        -- pump rates
+        initial_pump_rate_bbl_per_min,
+        final_pump_rate_bbl_per_min,
+        avg_pump_rate_bbl_per_min,
+
+        -- pressures
+        final_pump_pressure_psi,
+        plug_bump_pressure_psi,
+        pressure_held_psi,
+
+        -- volumes
+        cement_volume_return_bbl,
+        volume_lost_bbl,
+        volume_squeezed_in_to_formation_bbl,
+
+        -- weights
+        tag_weight_1000_lbf,
+
+        -- sizes
+        drill_out_diameter_inches,
+
+        -- pipe movement
+        reciprocation_rate_spm,
+        pipe_rpm,
+
+        -- duration
+        drill_out_to_pump_end_duration_hours,
+
+        -- flags
+        plug_failed,
+        float_failed,
+        full_return,
+        pipe_reciprocated,
+        pipe_rotated,
+
+        -- dates
+        pump_start_date,
+        pump_end_date,
+        pressure_release_date,
+        tag_cement_date,
+        drill_out_date,
+        proposed_drill_out_date,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

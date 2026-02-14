@@ -1,91 +1,190 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'completion', 'well_test', 'transient', 'testing', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'reservoir_tests']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per well test)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVWELLTESTTRANS') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idrec as well_test_id,
-        idwell as well_id,
+        -- identifiers
+        trim(idrec)::varchar as well_test_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecjob)::varchar as job_id,
+        trim(idrecjobtk)::varchar as job_table_key,
+        trim(idrecwellbore)::varchar as wellbore_id,
+        trim(idrecwellboretk)::varchar as wellbore_table_key,
+        trim(idreczonecompletion)::varchar as completion_zone_id,
+        trim(idreczonecompletiontk)::varchar as completion_zone_table_key,
 
-        -- Test identification and metadata
-        dttm as test_date,
-        typ as test_type,
-        subtyp as test_subtype,
-        des as test_description,
-        displayflag as display_flag,
-        testedby as tested_by,
-        producedto as produced_to,
+        -- descriptive fields
+        trim(typ)::varchar as test_type,
+        trim(subtyp)::varchar as test_subtype,
+        trim(des)::varchar as test_description,
+        trim(testedby)::varchar as tested_by,
+        trim(producedto)::varchar as produced_to,
+        trim(formationcalc)::varchar as formation,
+        trim(formationlayercalc)::varchar as formation_layer,
+        trim(reservoircalc)::varchar as reservoir,
+        trim(phasesepmethod)::varchar as phase_separation_method,
+        trim(surfacetestequip)::varchar as surface_test_equipment,
+        trim(volumemethod)::varchar as volume_measurement_method,
+        trim(porositysource)::varchar as porosity_source,
+        trim(loadfluidtyp)::varchar as load_fluid_type,
+        trim(com)::varchar as comments,
 
-        -- Operational references
-        idrecjob as job_id,
-        idrecjobtk as job_table_key,
-        idrecwellbore as wellbore_id,
-        idrecwellboretk as wellbore_table_key,
-        idreczonecompletion as completion_zone_id,
-        idreczonecompletiontk as completion_zone_table_key,
+        -- measurements - depths (converted from metric to feet)
+        {{ wv_meters_to_feet('depthtop') }} as top_depth_ft,
+        {{ wv_meters_to_feet('depthbtm') }} as bottom_depth_ft,
+        {{ wv_meters_to_feet('depthtvdtopcalc') }} as top_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthtvdbtmcalc') }} as bottom_depth_tvd_ft,
 
-        -- Test depths (converted to feet)
-        formationcalc as formation,
-        formationlayercalc as formation_layer,
-        reservoircalc as reservoir,
-        phasesepmethod as phase_separation_method,
-
-        -- Formation and reservoir information
-        surfacetestequip as surface_test_equipment,
-        volumemethod as volume_measurement_method,
-        porositysource as porosity_source,
-
-        -- Test conditions and equipment
-        loadfluidtyp as load_fluid_type,
-        com as comments,
-        syscreatedate as created_at,
-
-        -- Porosity (converted to percentage)
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-
-        -- Load fluid information (converted to barrels)
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-
-        -- Total production volumes (converted to appropriate US units)
-        -- Oil and condensate in barrels
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        _fivetran_synced as fivetran_synced_at,
-
-        -- Gas volume in thousand cubic feet
-        depthtop / 0.3048 as top_depth_ft,
-
-        -- Comments
-        depthbtm / 0.3048 as bottom_depth_ft,
-
-        -- System fields
-        depthtvdtopcalc / 0.3048 as top_depth_tvd_ft,
-        depthtvdbtmcalc / 0.3048 as bottom_depth_tvd_ft,
+        -- measurements - porosity (converted to percentage)
         porosity / 0.01 as porosity_percent,
-        volloadfluid / 0.158987294928 as load_fluid_volume_bbl,
-        volloadfluidunrecov / 0.158987294928 as load_fluid_unrecovered_bbl,
-        volloadfluidrecovcalc / 0.158987294928 as load_fluid_recovered_bbl,
+
+        -- measurements - load fluid volumes (converted to barrels)
+        {{ wv_cbm_to_bbl('volloadfluid') }} as load_fluid_volume_bbl,
+        {{ wv_cbm_to_bbl('volloadfluidunrecov') }} as load_fluid_unrecovered_bbl,
+        {{ wv_cbm_to_bbl('volloadfluidrecovcalc') }} as load_fluid_recovered_bbl,
         volpercentloadfluidrecovcalc / 0.01 as load_fluid_recovery_percent,
-        volumeoiltotalcalc / 0.158987294928 as total_oil_volume_bbl,
-        volumecondtotalcalc / 0.158987294928 as total_condensate_volume_bbl,
-        volumewatertotalcalc / 0.158987294928 as total_water_volume_bbl,
 
-        -- Fivetran fields
-        volumegastotalcalc / 28.316846592 as total_gas_volume_mcf
+        -- measurements - total production volumes (converted to field units)
+        {{ wv_cbm_to_bbl('volumeoiltotalcalc') }} as total_oil_volume_bbl,
+        {{ wv_cbm_to_bbl('volumecondtotalcalc') }} as total_condensate_volume_bbl,
+        {{ wv_cbm_to_bbl('volumewatertotalcalc') }} as total_water_volume_bbl,
+        {{ wv_cbm_to_mcf('volumegastotalcalc') }} as total_gas_volume_mcf,
 
-    from source_data
+        -- dates
+        dttm::timestamp_ntz as test_date,
+
+        -- flags
+        displayflag::boolean as display_flag,
+
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
+
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
+
+    from source
+),
+
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and well_test_id is not null
+),
+
+-- 4. ENHANCED: Add surrogate key + _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['well_test_id']) }} as well_test_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        well_test_sk,
+
+        -- identifiers
+        well_test_id,
+        well_id,
+        job_id,
+        job_table_key,
+        wellbore_id,
+        wellbore_table_key,
+        completion_zone_id,
+        completion_zone_table_key,
+
+        -- descriptive fields
+        test_type,
+        test_subtype,
+        test_description,
+        tested_by,
+        produced_to,
+        formation,
+        formation_layer,
+        reservoir,
+        phase_separation_method,
+        surface_test_equipment,
+        volume_measurement_method,
+        porosity_source,
+        load_fluid_type,
+        comments,
+
+        -- measurements - depths
+        top_depth_ft,
+        bottom_depth_ft,
+        top_depth_tvd_ft,
+        bottom_depth_tvd_ft,
+
+        -- measurements - porosity
+        porosity_percent,
+
+        -- measurements - load fluid volumes
+        load_fluid_volume_bbl,
+        load_fluid_unrecovered_bbl,
+        load_fluid_recovered_bbl,
+        load_fluid_recovery_percent,
+
+        -- measurements - total production volumes
+        total_oil_volume_bbl,
+        total_condensate_volume_bbl,
+        total_water_volume_bbl,
+        total_gas_volume_mcf,
+
+        -- dates
+        test_date,
+
+        -- flags
+        display_flag,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

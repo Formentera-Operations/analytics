@@ -1,128 +1,220 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'wellhead', 'components', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'casing_cement']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per wellhead component)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVWELLHEADCOMP') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idrec as wellhead_component_id,
-        idwell as well_id,
-        idrecparent as wellhead_id,
+        -- identifiers
+        trim(idrec)::varchar as wellhead_component_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecparent)::varchar as wellhead_id,
+        trim(idrecstring)::varchar as string_id,
+        trim(idrecstringtk)::varchar as string_table_key,
+        sysseq::float as sequence_number,
 
-        -- String relationships
-        idrecstring as string_id,
-        idrecstringtk as string_table_key,
+        -- component classification
+        trim(typ1)::varchar as component_type,
+        trim(typ2)::varchar as component_subtype,
+        trim(des)::varchar as component_description,
+        trim(sect)::varchar as component_section,
 
-        -- Component classification
-        typ1 as component_type,
-        typ2 as component_subtype,
-        des as component_description,
-        sect as component_section,
+        -- manufacturer information
+        trim(make)::varchar as manufacturer,
+        trim(model)::varchar as component_model,
+        trim(sn)::varchar as serial_number,
+        trim(material)::varchar as component_material,
+        trim(refid)::varchar as reference_id,
 
-        -- Manufacturer information
-        make as manufacturer,
-        model as component_model,
-        sn as serial_number,
-        material as component_material,
-        refid as reference_id,
+        -- connection specifications
+        trim(conntoptyp)::varchar as top_connection_type,
+        trim(connbtmtyp)::varchar as bottom_connection_type,
+        trim(service)::varchar as service_type,
+        trim(productspeclevel)::varchar as product_specification_level,
+        trim(packofftype)::varchar as packoff_type,
+        trim(iconname)::varchar as icon_name,
+        trim(usertxt)::varchar as user_text,
+        trim(com)::varchar as comments,
+        trim(idreclastfailurecalc)::varchar as last_failure_id,
+        trim(idreclastfailurecalctk)::varchar as last_failure_table_key,
 
-        -- Physical dimensions (converted to US units)
-        conntoptyp as top_connection_type,
-        connbtmtyp as bottom_connection_type,
-        service as service_type,
-        productspeclevel as product_specification_level,
-        packofftype as packoff_type,
-        dttmstart as installation_datetime,
+        -- sizes (converted from metric to US units)
+        {{ wv_meters_to_inches('szid') }} as inner_diameter_in,
+        {{ wv_meters_to_inches('szidnom') }} as nominal_inner_diameter_in,
+        {{ wv_meters_to_inches('szodnom') }} as nominal_outer_diameter_in,
+        {{ wv_meters_to_inches('minbore') }} as minimum_bore_in,
+        {{ wv_meters_to_inches('conntopsz') }} as top_connection_size_in,
+        {{ wv_meters_to_inches('connbtmsz') }} as bottom_connection_size_in,
 
-        -- Calculated depths (converted to US units)
-        dttmend as removal_datetime,
-        dttmmanufacture as manufacture_datetime,
+        -- depths and lengths (converted from metric to US units)
+        {{ wv_meters_to_feet('length') }} as component_length_ft,
+        {{ wv_meters_to_feet('lengthcumcalc') }} as cumulative_length_ft,
+        {{ wv_meters_to_feet('depthtopcalc') }} as top_depth_ft,
+        {{ wv_meters_to_feet('depthbtmcalc') }} as bottom_depth_ft,
 
-        -- Pressure ratings (converted to US units)
-        cost as component_cost,
-        costunitlabel as cost_unit_label,
-        iconname as icon_name,
-        usertxt as user_text,
+        -- pressures (converted from metric to US units)
+        {{ wv_kpa_to_psi('workpres') }} as working_pressure_psi,
+        {{ wv_kpa_to_psi('maxpres') }} as maximum_pressure_psi,
+        {{ wv_kpa_to_psi('workprestop') }} as top_working_pressure_psi,
+        {{ wv_kpa_to_psi('workpresbtm') }} as bottom_working_pressure_psi,
 
-        -- Temperature rating (converted to US units)
-        com as comments,
+        -- temperatures (converted from metric to US units)
+        {{ wv_celsius_to_fahrenheit('temprating') }} as temperature_rating_f,
 
-        -- Connection specifications (converted to US units)
-        idreclastfailurecalc as last_failure_id,
-        idreclastfailurecalctk as last_failure_table_key,
-        szid as inner_diameter_m,
-        szidnom as nominal_inner_diameter_m,
+        -- volumes (converted from metric to US units)
+        {{ wv_cbm_to_bbl('volumevoid') }} as void_volume_bbl,
 
-        -- Volume and capacity (converted to US units)
-        szodnom as nominal_outer_diameter_m,
+        -- cost
+        cost::float as component_cost,
+        trim(costunitlabel)::varchar as cost_unit_label,
 
-        -- Service and specification details
-        length as component_length_m,
-        lengthcumcalc as cumulative_length_m,
-        minbore as minimum_bore_m,
+        -- dates
+        dttmstart::timestamp_ntz as installation_datetime,
+        dttmend::timestamp_ntz as removal_datetime,
+        dttmmanufacture::timestamp_ntz as manufacture_datetime,
 
-        -- Dates
-        depthtopcalc as top_depth_m,
-        depthbtmcalc as bottom_depth_m,
-        workpres as working_pressure_kpa,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- Cost information
-        maxpres as maximum_pressure_kpa,
-        workprestop as top_working_pressure_kpa,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- Visual and user information
-        workpresbtm as bottom_working_pressure_kpa,
-        temprating as temperature_rating_c,
-        conntopsz as top_connection_size_m,
+    from source
+),
 
-        -- Calculated relationships
-        connbtmsz as bottom_connection_size_m,
-        volumevoid as void_volume_m3,
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and wellhead_component_id is not null
+),
 
-        -- Metric equivalents for reference
-        sysseq as sequence_number,
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        _fivetran_synced as fivetran_synced_at,
-        szid / 0.0254 as inner_diameter_in,
-        szidnom / 0.0254 as nominal_inner_diameter_in,
-        szodnom / 0.0254 as nominal_outer_diameter_in,
-        length / 0.3048 as component_length_ft,
+-- 4. ENHANCED: Add surrogate key and _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['wellhead_component_id']) }} as wellhead_component_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
 
-        -- System fields
-        lengthcumcalc / 0.3048 as cumulative_length_ft,
-        minbore / 0.0254 as minimum_bore_in,
-        depthtopcalc / 0.3048 as top_depth_ft,
-        depthbtmcalc / 0.3048 as bottom_depth_ft,
-        workpres / 6.894757 as working_pressure_psi,
-        maxpres / 6.894757 as maximum_pressure_psi,
-        workprestop / 6.894757 as top_working_pressure_psi,
-        workpresbtm / 6.894757 as bottom_working_pressure_psi,
-        case
-            when temprating is not null
-                then temprating / 0.555555555555556 + 32
-        end as temperature_rating_f,
-        conntopsz / 0.0254 as top_connection_size_in,
-        connbtmsz / 0.0254 as bottom_connection_size_in,
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        wellhead_component_sk,
 
-        -- Fivetran fields
-        volumevoid / 0.158987294928 as void_volume_bbl
+        -- identifiers
+        wellhead_component_id,
+        well_id,
+        wellhead_id,
+        string_id,
+        string_table_key,
+        sequence_number,
 
-    from source_data
+        -- component classification
+        component_type,
+        component_subtype,
+        component_description,
+        component_section,
+
+        -- manufacturer information
+        manufacturer,
+        component_model,
+        serial_number,
+        component_material,
+        reference_id,
+
+        -- connection specifications
+        top_connection_type,
+        bottom_connection_type,
+        service_type,
+        product_specification_level,
+        packoff_type,
+        icon_name,
+        user_text,
+        comments,
+        last_failure_id,
+        last_failure_table_key,
+
+        -- sizes
+        inner_diameter_in,
+        nominal_inner_diameter_in,
+        nominal_outer_diameter_in,
+        minimum_bore_in,
+        top_connection_size_in,
+        bottom_connection_size_in,
+
+        -- depths and lengths
+        component_length_ft,
+        cumulative_length_ft,
+        top_depth_ft,
+        bottom_depth_ft,
+
+        -- pressures
+        working_pressure_psi,
+        maximum_pressure_psi,
+        top_working_pressure_psi,
+        bottom_working_pressure_psi,
+
+        -- temperatures
+        temperature_rating_f,
+
+        -- volumes
+        void_volume_bbl,
+
+        -- cost
+        component_cost,
+        cost_unit_label,
+
+        -- dates
+        installation_datetime,
+        removal_datetime,
+        manufacture_datetime,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

@@ -1,86 +1,202 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'completion', 'swab', 'testing', 'staging', 'details']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'perfs_stims']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per swab detail record)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVSWABDETAILS') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idrec as swab_detail_id,
-        idrecparent as swab_id,
-        idwell as well_id,
+        -- identifiers
+        trim(idrec)::varchar as swab_detail_id,
+        trim(idrecparent)::varchar as swab_id,
+        trim(idwell)::varchar as well_id,
 
-        -- Swab detail timing
-        dttm as swab_detail_date,
-        swabno as swab_number,
-        ph as ph_value,
+        -- descriptive fields
+        swabno::float as swab_number,
+        ph::float as ph_value,
+        trim(com)::varchar as comments,
 
-        -- Pressures (converted to PSI)
-        com as comments,
-        syscreatedate as created_at,
+        -- duration (converted from days to hours)
+        {{ wv_days_to_hours('tmswab') }} as swabbing_time_hours,
 
-        -- Temperature (converted to Fahrenheit)
-        syscreateuser as created_by,
+        -- pressures (converted to PSI)
+        {{ wv_kpa_to_psi('prestub') }} as tubing_pressure_psi,
+        {{ wv_kpa_to_psi('prescas') }} as casing_pressure_psi,
 
-        -- Depths (converted to feet)
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
+        -- temperature (converted to Fahrenheit)
+        {{ wv_celsius_to_fahrenheit('tempwh') }} as wellhead_temperature_f,
 
-        -- Tank measurements (converted to inches)
-        syslockme as system_lock_me,
+        -- depths (converted to feet)
+        {{ wv_meters_to_feet('depthfluidlevel') }} as tagged_fluid_level_ft,
+        {{ wv_meters_to_feet('depthpull') }} as pull_depth_ft,
+        {{ wv_meters_to_feet('depthtvdfluidlevelcalc') }} as fluid_level_tvd_ft,
+        {{ wv_meters_to_feet('depthtvdpullcalc') }} as pull_depth_tvd_ft,
 
-        -- Fluid volumes (converted to barrels)
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        _fivetran_synced as fivetran_synced_at,
-        tmswab / 0.0416666666666667 as swabbing_time_hours,
-        prestub / 6.894757 as tubing_pressure_psi,
+        -- tank measurements (converted to inches)
+        {{ wv_meters_to_inches('tankgauge') }} as tank_gauge_inches,
 
-        -- Gas volumes and rates (converted to MCF and MCF/day)
-        prescas / 6.894757 as casing_pressure_psi,
-        tempwh / 0.555555555555556 + 32 as wellhead_temperature_f,
-        depthfluidlevel / 0.3048 as tagged_fluid_level_ft,
+        -- fluid volumes (converted to barrels)
+        {{ wv_cbm_to_bbl('volfluidrec') }} as recovered_fluid_volume_bbl,
+        {{ wv_cbm_to_bbl('voloilcalc') }} as oil_volume_bbl,
+        {{ wv_cbm_to_bbl('volbswcalc') }} as bsw_volume_bbl,
+        {{ wv_cbm_to_bbl('volcumcalc') }} as cumulative_volume_bbl,
+        {{ wv_cbm_to_bbl('volcumoilcalc') }} as cumulative_oil_volume_bbl,
+        {{ wv_cbm_to_bbl('volcumbswcalc') }} as cumulative_bsw_volume_bbl,
 
-        -- Oil rate (converted to BBL/day)
-        depthpull / 0.3048 as pull_depth_ft,
+        -- gas volumes and rates (converted to MCF)
+        {{ wv_cbm_to_mcf('volgas') }} as gas_volume_mcf,
+        {{ wv_cbm_to_mcf('volcumgascalc') }} as cumulative_gas_volume_mcf,
+        {{ wv_cbm_to_mcf('rategas') }} as gas_rate_mcf_per_day,
 
-        -- Fluid properties (converted to percentages and API)
-        depthtvdfluidlevelcalc / 0.3048 as fluid_level_tvd_ft,
-        depthtvdpullcalc / 0.3048 as pull_depth_tvd_ft,
-        tankgauge / 0.0254 as tank_gauge_inches,
-        volfluidrec / 0.158987294928 as recovered_fluid_volume_bbl,
+        -- oil rate (converted to BBL/day)
+        {{ wv_cbm_per_day_to_bbl_per_day('oilratecalc') }} as oil_rate_bbl_per_day,
 
-        -- Density (converted to API gravity)
-        voloilcalc / 0.158987294928 as oil_volume_bbl,
-
-        -- Other properties
-        volbswcalc / 0.158987294928 as bsw_volume_bbl,
-        volcumcalc / 0.158987294928 as cumulative_volume_bbl,
-
-        -- System fields
-        volcumoilcalc / 0.158987294928 as cumulative_oil_volume_bbl,
-        volcumbswcalc / 0.158987294928 as cumulative_bsw_volume_bbl,
-        volgas / 28.316846592 as gas_volume_mcf,
-        volcumgascalc / 28.316846592 as cumulative_gas_volume_mcf,
-        rategas / 28.316846592 as gas_rate_mcf_per_day,
-        oilratecalc / 0.1589873 as oil_rate_bbl_per_day,
+        -- fluid properties (inline — percent and ppm, no macro)
         bsw / 0.01 as basic_sediments_water_percent,
         sandcut / 0.01 as sand_cut_percent,
         salinity / 1e-06 as salinity_ppm,
         h2s / 1e-06 as h2s_ppm,
 
-        -- Fivetran fields
-        power(nullif(density, 0), -1) / 7.07409872233005e-06 - 131.5 as density_api
+        -- density (inline — complex API gravity conversion)
+        power(nullif(density, 0), -1) / 7.07409872233005e-06 - 131.5 as density_api,
 
-    from source_data
+        -- dates
+        dttm::timestamp_ntz as swab_detail_date,
+
+        -- system locking
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockdate::timestamp_ntz as system_lock_date,
+
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
+
+    from source
+),
+
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and swab_detail_id is not null
+),
+
+-- 4. ENHANCED: Add surrogate key + _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['swab_detail_id']) }} as swab_detail_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        swab_detail_sk,
+
+        -- identifiers
+        swab_detail_id,
+        swab_id,
+        well_id,
+
+        -- descriptive fields
+        swab_number,
+        ph_value,
+        comments,
+
+        -- duration
+        swabbing_time_hours,
+
+        -- pressures
+        tubing_pressure_psi,
+        casing_pressure_psi,
+
+        -- temperature
+        wellhead_temperature_f,
+
+        -- depths
+        tagged_fluid_level_ft,
+        pull_depth_ft,
+        fluid_level_tvd_ft,
+        pull_depth_tvd_ft,
+
+        -- tank measurements
+        tank_gauge_inches,
+
+        -- fluid volumes
+        recovered_fluid_volume_bbl,
+        oil_volume_bbl,
+        bsw_volume_bbl,
+        cumulative_volume_bbl,
+        cumulative_oil_volume_bbl,
+        cumulative_bsw_volume_bbl,
+
+        -- gas volumes and rates
+        gas_volume_mcf,
+        cumulative_gas_volume_mcf,
+        gas_rate_mcf_per_day,
+
+        -- oil rate
+        oil_rate_bbl_per_day,
+
+        -- fluid properties
+        basic_sediments_water_percent,
+        sand_cut_percent,
+        salinity_ppm,
+        h2s_ppm,
+
+        -- density
+        density_api,
+
+        -- dates
+        swab_detail_date,
+
+        -- system locking
+        system_lock_me_ui,
+        system_lock_children_ui,
+        system_lock_me,
+        system_lock_children,
+        system_lock_date,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

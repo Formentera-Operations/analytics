@@ -1,90 +1,176 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'wellhead', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'casing_cement']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per wellhead)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVWELLHEAD') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idrec as wellhead_id,
-        idwell as well_id,
+        -- identifiers
+        trim(idrec)::varchar as wellhead_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecjob)::varchar as job_id,
+        trim(idrecjobtk)::varchar as job_table_key,
+        trim(idrecstring)::varchar as annulus_string_id,
+        trim(idrecstringtk)::varchar as annulus_string_table_key,
+        trim(idrecjobprogramphasecalc)::varchar as program_phase_id,
+        trim(idrecjobprogramphasecalctk)::varchar as program_phase_table_key,
+        trim(idreclastrigcalc)::varchar as last_rig_id,
+        trim(idreclastrigcalctk)::varchar as last_rig_table_key,
+        trim(idreclastfailurecalc)::varchar as last_failure_id,
+        trim(idreclastfailurecalctk)::varchar as last_failure_table_key,
 
-        -- Job and string relationships
-        idrecjob as job_id,
-        idrecjobtk as job_table_key,
-        idrecstring as annulus_string_id,
-        idrecstringtk as annulus_string_table_key,
-        idrecjobprogramphasecalc as program_phase_id,
-        idrecjobprogramphasecalctk as program_phase_table_key,
+        -- descriptive fields
+        trim(proposedoractual)::varchar as proposed_or_actual,
+        proprunversionno::float as proposed_run_version_number,
+        trim(typ)::varchar as wellhead_type,
+        trim(make)::varchar as manufacturer,
+        trim(profile)::varchar as wellhead_profile,
+        trim(service)::varchar as service_type,
+        trim(class)::varchar as wellhead_class,
+        trim(tempratingdes)::varchar as temperature_rating_description,
+        trim(productspeclevel)::varchar as product_specification_level,
+        trim(removereason)::varchar as removal_reason,
+        trim(com)::varchar as comments,
 
-        -- Basic wellhead information
-        proposedoractual as proposed_or_actual,
-        proprunversionno as proposed_run_version_number,
-        typ as wellhead_type,
-        make as manufacturer,
-        profile as wellhead_profile,
-        service as service_type,
-        class as wellhead_class,
+        -- sizes (converted from metric to US units)
+        {{ wv_meters_to_inches('sz') }} as wellhead_size_in,
 
-        -- Physical specifications (converted to US units)
-        tempratingdes as temperature_rating_description,
-        productspeclevel as product_specification_level,
+        -- depths (converted from metric to US units)
+        {{ wv_meters_to_feet('depthbtm') }} as set_depth_ft,
 
-        -- Pressure ratings (converted to US units)
-        dttmstart as installation_datetime,
-        dttmend as removal_datetime,
+        -- pressures (converted from metric to US units)
+        {{ wv_kpa_to_psi('workpres') }} as working_pressure_psi,
+        {{ wv_kpa_to_psi('maxpres') }} as maximum_pressure_psi,
 
-        -- Temperature ratings (converted to US units)
-        dttmoverhaul as overhaul_datetime,
-        dttmpropend as proposed_removal_datetime,
+        -- temperatures (converted from metric to US units)
+        {{ wv_celsius_to_fahrenheit('temprating') }} as temperature_rating_f,
 
-        -- Specification details
-        removereason as removal_reason,
+        -- dates
+        dttmstart::timestamp_ntz as installation_datetime,
+        dttmend::timestamp_ntz as removal_datetime,
+        dttmoverhaul::timestamp_ntz as overhaul_datetime,
+        dttmpropend::timestamp_ntz as proposed_removal_datetime,
 
-        -- Installation and operational dates
-        com as comments,
-        idreclastrigcalc as last_rig_id,
-        idreclastrigcalctk as last_rig_table_key,
-        idreclastfailurecalc as last_failure_id,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- Operational information
-        idreclastfailurecalctk as last_failure_table_key,
-        sz as wellhead_size_m,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- Calculated relationships
-        depthbtm as set_depth_m,
-        workpres as working_pressure_kpa,
-        maxpres as maximum_pressure_kpa,
-        temprating as temperature_rating_c,
+    from source
+),
 
-        -- Metric equivalents for reference
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and wellhead_id is not null
+),
 
-        -- System fields
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        _fivetran_synced as fivetran_synced_at,
-        sz / 0.0254 as wellhead_size_in,
-        depthbtm / 0.3048 as set_depth_ft,
-        workpres / 6.894757 as working_pressure_psi,
-        maxpres / 6.894757 as maximum_pressure_psi,
+-- 4. ENHANCED: Add surrogate key and _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['wellhead_id']) }} as wellhead_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
 
-        -- Fivetran fields
-        temprating / 0.555555555555556 + 32 as temperature_rating_f
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        wellhead_sk,
 
-    from source_data
+        -- identifiers
+        wellhead_id,
+        well_id,
+        job_id,
+        job_table_key,
+        annulus_string_id,
+        annulus_string_table_key,
+        program_phase_id,
+        program_phase_table_key,
+        last_rig_id,
+        last_rig_table_key,
+        last_failure_id,
+        last_failure_table_key,
+
+        -- descriptive fields
+        proposed_or_actual,
+        proposed_run_version_number,
+        wellhead_type,
+        manufacturer,
+        wellhead_profile,
+        service_type,
+        wellhead_class,
+        temperature_rating_description,
+        product_specification_level,
+        removal_reason,
+        comments,
+
+        -- sizes
+        wellhead_size_in,
+
+        -- depths
+        set_depth_ft,
+
+        -- pressures
+        working_pressure_psi,
+        maximum_pressure_psi,
+
+        -- temperatures
+        temperature_rating_f,
+
+        -- dates
+        installation_datetime,
+        removal_datetime,
+        overhaul_datetime,
+        proposed_removal_datetime,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

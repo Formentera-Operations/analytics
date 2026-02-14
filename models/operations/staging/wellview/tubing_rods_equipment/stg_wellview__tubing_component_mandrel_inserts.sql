@@ -1,80 +1,157 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'tubing', 'mandrels', 'inserts', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'tubing_rods_equipment']
+    )
+}}
 
-with source_data as (
+with
+
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVTUBCOMPMANDRELINSERT') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
 renamed as (
     select
-        -- Primary identifiers
-        idrec as insert_id,
-        idrecparent as mandrel_id,
-        idwell as well_id,
+        -- identifiers
+        trim(idrec)::varchar as insert_id,
+        trim(idrecparent)::varchar as mandrel_id,
+        trim(idwell)::varchar as well_id,
 
-        -- Valve information
-        valvetyp as valve_type,
-        valvedes as valve_description,
-        valvematerial as valve_material,
-        valvepacking as valve_packing,
+        -- descriptive fields
+        trim(valvetyp)::varchar as valve_type,
+        trim(valvedes)::varchar as valve_description,
+        trim(valvematerial)::varchar as valve_material,
+        trim(valvepacking)::varchar as valve_packing,
+        trim(make)::varchar as manufacturer,
+        trim(model)::varchar as model,
+        trim(sn)::varchar as serial_number,
+        trim(refid)::varchar as reference_id,
+        trim(latchtyp)::varchar as latch_type,
+        trim(latchmaterial)::varchar as latch_material,
+        trim(orificematerial)::varchar as orifice_material,
+        trim(retrievemeth)::varchar as retrieval_method,
+        trim(pullreason)::varchar as pull_reason,
+        trim(service)::varchar as service_type,
+        trim(com)::varchar as comments,
 
-        -- Dates
-        dttmrun as run_date,
-        dttmpull as pull_date,
+        -- measurements — dimensions (converted from meters to inches)
+        {{ wv_meters_to_inches('szod') }} as od_inches,
+        {{ wv_meters_to_inches('szport') }} as port_size_inches,
 
-        -- Manufacturing details
-        make as manufacturer,
-        model as model,
-        sn as serial_number,
-        refid as reference_id,
+        -- measurements — pressure (converted from kPa to psi)
+        {{ wv_kpa_to_psi('trorun') }} as tro_run_psi,
+        {{ wv_kpa_to_psi('tropull') }} as tro_pull_psi,
+        {{ wv_kpa_to_psi('pressurfgaugeopen') }} as surface_gauge_pressure_open_psi,
+        {{ wv_kpa_to_psi('pressurfgaugeclose') }} as surface_gauge_pressure_close_psi,
 
-        -- Dimensions (converted to US units)
-        latchtyp as latch_type,
-        latchmaterial as latch_material,
+        -- measurements — temperature (converted from Celsius to Fahrenheit)
+        {{ wv_celsius_to_fahrenheit('temp') }} as temperature_fahrenheit,
 
-        -- Pressure specifications (converted to US units)
-        orificematerial as orifice_material,
-        retrievemeth as retrieval_method,
-        pullreason as pull_reason,
-        service as service_type,
+        -- dates
+        dttmrun::timestamp_ntz as run_date,
+        dttmpull::timestamp_ntz as pull_date,
 
-        -- Temperature (converted to Fahrenheit)
-        com as comments,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- Latch specifications
-        syscreatedate as created_at,
-        syscreateuser as created_by,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- Material specifications
-        sysmoddate as modified_at,
+    from source
+),
 
-        -- Operational information
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockmeui as system_lock_me_ui,
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and insert_id is not null
+),
 
-        -- Comments
-        syslockchildrenui as system_lock_children_ui,
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['insert_id']) }} as mandrel_insert_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
 
-        -- System fields
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockdate as system_lock_date,
-        _fivetran_synced as fivetran_synced_at,
-        szod / 0.0254 as od_inches,
-        szport / 0.0254 as port_size_inches,
-        trorun / 6.894757 as tro_run_psi,
-        tropull / 6.894757 as tro_pull_psi,
-        pressurfgaugeopen / 6.894757 as surface_gauge_pressure_open_psi,
-        pressurfgaugeclose / 6.894757 as surface_gauge_pressure_close_psi,
+final as (
+    select
+        mandrel_insert_sk,
 
-        -- Fivetran metadata
-        temp / 0.555555555555556 + 32 as temperature_fahrenheit
+        -- identifiers
+        insert_id,
+        mandrel_id,
+        well_id,
 
-    from source_data
+        -- descriptive fields
+        valve_type,
+        valve_description,
+        valve_material,
+        valve_packing,
+        manufacturer,
+        model,
+        serial_number,
+        reference_id,
+        latch_type,
+        latch_material,
+        orifice_material,
+        retrieval_method,
+        pull_reason,
+        service_type,
+        comments,
+
+        -- measurements — dimensions
+        od_inches,
+        port_size_inches,
+
+        -- measurements — pressure
+        tro_run_psi,
+        tro_pull_psi,
+        surface_gauge_pressure_open_psi,
+        surface_gauge_pressure_close_psi,
+
+        -- measurements — temperature
+        temperature_fahrenheit,
+
+        -- dates
+        run_date,
+        pull_date,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

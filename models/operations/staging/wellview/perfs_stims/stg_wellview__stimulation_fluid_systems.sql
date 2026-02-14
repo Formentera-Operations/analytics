@@ -1,79 +1,170 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'stimulation', 'fluids', 'systems', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'perfs_stims']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per fluid system record)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVSTIMINTFLUID') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idwell as well_id,
-        idrecparent as parent_record_id,
-        idrec as record_id,
+        -- identifiers
+        trim(idrec)::varchar as record_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecparent)::varchar as parent_record_id,
 
-        -- Fluid identification
-        des as fluid_description,
-        fluidname as fluid_name,
-        vendorfluidname as vendor_fluid_name,
-        typ1 as fluid_type_1,
-        typ2 as fluid_type_2,
-        purpose as purpose,
+        -- descriptive fields
+        trim(des)::varchar as fluid_description,
+        trim(fluidname)::varchar as fluid_name,
+        trim(vendorfluidname)::varchar as vendor_fluid_name,
+        trim(typ1)::varchar as fluid_type_1,
+        trim(typ2)::varchar as fluid_type_2,
+        trim(purpose)::varchar as purpose,
+        trim(vendor)::varchar as vendor,
+        trim(vendorcode)::varchar as vendor_code,
+        trim(source)::varchar as source_field,
+        trim(environmenttyp)::varchar as environment_type,
+        trim(evalmethod)::varchar as evaluation_method,
+        trim(usertxt1)::varchar as user_text_1,
+        trim(com)::varchar as comment,
 
-        -- Vendor information
-        vendor as vendor,
-        vendorcode as vendor_code,
-        source as source,
+        -- fluid properties
+        fluiddensity::float as fluid_density_api,
+        ph::float as ph_level,
+        presvapor::float as vapor_pressure_kpa,
+        ratiovolumedesigncalc::float as volume_design_ratio_bbl_per_bbl,
+        usernum1::float as user_number_1,
 
-        -- Fluid properties
-        fluiddensity as fluid_density_api,  -- Note: Complex conversion applied in view
-        ph as ph_level,
-        presvapor as vapor_pressure_kpa,
-        environmenttyp as environment_type,  -- Note: Kept in kPa as per view
-        evalmethod as evaluation_method,
+        -- viscosity (converted to centipoise)
+        {{ wv_pas_to_cp('viscosity') }} as viscosity_cp,
 
-        -- Environmental classification
-        ratiovolumedesigncalc as volume_design_ratio_bbl_per_bbl,
-        usernum1 as user_number_1,
+        -- temperature (converted to Fahrenheit)
+        {{ wv_celsius_to_fahrenheit('tempref') }} as reference_temperature_fahrenheit,
 
-        -- Physical specifications
-        usertxt1 as user_text_1,
-        com as comment,
+        -- filter size (converted to inches)
+        {{ wv_meters_to_inches('filtersz') }} as filter_size_inches,
 
-        -- Volume information (converted to barrels)
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
+        -- mass (converted to pounds)
+        {{ wv_kg_to_lb('masstotal') }} as mass_total_lb,
 
-        -- User fields
-        syslockdate as system_lock_date,
-        syscreatedate as created_at,
+        -- volumes (converted to barrels)
+        {{ wv_cbm_to_bbl('volume') }} as volume_bbl,
+        {{ wv_cbm_to_bbl('volumecalc') }} as volume_calc_bbl,
+        {{ wv_cbm_to_bbl('volumedesign') }} as volume_design_bbl,
 
-        -- Comments
-        syscreateuser as created_by,
+        -- system locking
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockdate::timestamp_ntz as system_lock_date,
 
-        -- System locking fields
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        _fivetran_synced as fivetran_synced_at,
-        viscosity / 0.001 as viscosity_cp,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
 
-        -- System tracking fields
-        tempref / 0.555555555555556 + 32 as reference_temperature_fahrenheit,
-        filtersz / 0.0254 as filter_size_inches,
-        masstotal / 0.45359237 as mass_total_lb,
-        volume / 0.158987294928 as volume_bbl,
-        volumecalc / 0.158987294928 as volume_calc_bbl,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- Fivetran metadata
-        volumedesign / 0.158987294928 as volume_design_bbl
+    from source
+),
 
-    from source_data
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and record_id is not null
+),
+
+-- 4. ENHANCED: Add surrogate key + _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['record_id']) }} as stimulation_fluid_system_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        stimulation_fluid_system_sk,
+
+        -- identifiers
+        record_id,
+        well_id,
+        parent_record_id,
+
+        -- descriptive fields
+        fluid_description,
+        fluid_name,
+        vendor_fluid_name,
+        fluid_type_1,
+        fluid_type_2,
+        purpose,
+        vendor,
+        vendor_code,
+        source_field,
+        environment_type,
+        evaluation_method,
+        user_text_1,
+        comment,
+
+        -- fluid properties
+        fluid_density_api,
+        ph_level,
+        vapor_pressure_kpa,
+        volume_design_ratio_bbl_per_bbl,
+        user_number_1,
+
+        -- measurements
+        viscosity_cp,
+        reference_temperature_fahrenheit,
+        filter_size_inches,
+        mass_total_lb,
+
+        -- volumes
+        volume_bbl,
+        volume_calc_bbl,
+        volume_design_bbl,
+
+        -- system locking
+        system_lock_me_ui,
+        system_lock_children_ui,
+        system_lock_me,
+        system_lock_children,
+        system_lock_date,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

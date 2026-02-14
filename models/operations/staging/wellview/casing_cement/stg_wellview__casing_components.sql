@@ -1,131 +1,268 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'casing', 'components', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'casing_cement']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per casing component)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVCASCOMP') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idrec as component_id,
-        idrecparent as casing_string_id,
-        idwell as well_id,
-        sysseq as component_sequence,
+        -- identifiers
+        trim(idrec)::varchar as component_id,
+        trim(idrecparent)::varchar as casing_string_id,
+        trim(idwell)::varchar as well_id,
+        sysseq::float as component_sequence,
 
-        -- Basic component information
-        des as component_description,
-        compsubtyp as component_subtype,
-        iconname as icon_name,
-        com as comments,
+        -- descriptive fields
+        trim(des)::varchar as component_description,
+        trim(compsubtyp)::varchar as component_subtype,
+        trim(iconname)::varchar as icon_name,
+        trim(com)::varchar as comments,
+        trim(grade)::varchar as component_grade,
+        trim(material)::varchar as material_specification,
+        trim(make)::varchar as manufacturer,
+        trim(model)::varchar as component_model,
+        trim(heatrating)::varchar as heat_rating,
+        trim(usedclass)::varchar as used_class,
+        trim(sn)::varchar as serial_number,
+        trim(refid)::varchar as reference_id,
+        trim(conntyptop)::varchar as top_connection_type,
+        trim(conntypbtm)::varchar as bottom_connection_type,
+        trim(connthrdtop)::varchar as top_connection_thread,
+        trim(connthrdbtm)::varchar as bottom_connection_thread,
+        trim(conntgtperftop)::varchar as top_connection_target_performance,
+        trim(conntgtperfbtm)::varchar as bottom_connection_target_performance,
+        trim(upsettop)::varchar as top_upset,
+        trim(upsetbtm)::varchar as bottom_upset,
+        trim(connectcalc)::varchar as connection_info,
+        trim(connectaltcalc)::varchar as connection_info_alt,
+        trim(costunitlabel)::varchar as cost_unit_label,
+        trim(itemnocalc)::varchar as item_number,
+        trim(desjtcalc)::varchar as description_with_joints,
+        trim(currentstatuscalc)::varchar as current_status,
+        trim(idreclastfailurecalc)::varchar as last_failure_id,
+        trim(idreclastfailurecalctk)::varchar as last_failure_table_key,
 
-        -- Physical specifications (converted to US units)
-        incltopcalc as top_inclination_deg,
-        inclbtmcalc as bottom_inclination_deg,
-        inclmaxcalc as max_inclination_deg,
-        joints as joint_count,
-        jointstallycalc as joints_in_tally,
-        centralizersnotallycalc as centralizer_count_tally,
+        -- inclinations
+        incltopcalc::float as top_inclination_deg,
+        inclbtmcalc::float as bottom_inclination_deg,
+        inclmaxcalc::float as max_inclination_deg,
 
-        -- Depths and positions (converted to US units)
-        conntyptop as top_connection_type,
-        conntypbtm as bottom_connection_type,
-        connthrdtop as top_connection_thread,
-        connthrdbtm as bottom_connection_thread,
-        conntgtperftop as top_connection_target_performance,
-        conntgtperfbtm as bottom_connection_target_performance,
-        upsettop as top_upset,
+        -- joints and quantities
+        joints::float as joint_count,
+        jointstallycalc::float as joints_in_tally,
+        centralizersnotallycalc::float as centralizer_count_tally,
 
-        -- Inclinations (already in degrees)
-        upsetbtm as bottom_upset,
-        connectcalc as connection_info,
-        connectaltcalc as connection_info_alt,
+        -- sizes (converted from metric to US units)
+        {{ wv_meters_to_inches('szodnom') }} as nominal_od_in,
+        {{ wv_meters_to_inches('szidnom') }} as nominal_id_in,
+        {{ wv_meters_to_inches('szodmax') }} as max_od_in,
+        {{ wv_meters_to_inches('szdrift') }} as drift_diameter_in,
+        {{ wv_meters_to_inches('connsztop') }} as top_connection_size_in,
+        {{ wv_meters_to_inches('connszbtm') }} as bottom_connection_size_in,
 
-        -- Joints and quantities
-        grade as component_grade,
-        material as material_specification,
-        make as manufacturer,
+        -- depths (converted from metric to US units)
+        {{ wv_meters_to_feet('length') }} as component_length_ft,
+        {{ wv_meters_to_feet('depthtopcalc') }} as top_depth_ft,
+        {{ wv_meters_to_feet('depthbtmcalc') }} as bottom_depth_ft,
+        {{ wv_meters_to_feet('depthtopcorrected') }} as top_depth_corrected_ft,
+        {{ wv_meters_to_feet('depthtvdtopcalc') }} as top_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthtvdbtmcalc') }} as bottom_depth_tvd_ft,
+        {{ wv_meters_to_feet('lengthcumcalc') }} as cumulative_length_ft,
+        {{ wv_meters_to_feet('lengthtallycalc') }} as tally_length_ft,
 
-        -- Weights and forces (converted to US units)
-        model as component_model,
-        heatrating as heat_rating,
-        usedclass as used_class,
+        -- weights and forces (converted from metric to US units)
+        {{ wv_kgm_to_lb_per_ft('wtperlength') }} as weight_per_length_lb_per_ft,
+        {{ wv_newtons_to_klbf('weightcalc') }} as component_weight_kips,
+        {{ wv_newtons_to_klbf('weightcumcalc') }} as cumulative_weight_klbf,
+        {{ wv_newtons_to_klbf('tensilemax') }} as max_tensile_strength_klbf,
 
-        -- Torque specifications (converted to US units)
-        sn as serial_number,
-        refid as reference_id,
+        -- torque (converted from metric to US units)
+        {{ wv_nm_to_ft_lb('torquemin') }} as min_makeup_torque_ft_lb,
+        {{ wv_nm_to_ft_lb('torquemax') }} as max_torque_ft_lb,
 
-        -- Pressure ratings (converted to US units)
-        dttmmanufacture as manufacture_datetime,
-        dttmstatuscalc as status_datetime,
-        cost as component_cost,
-        costunitlabel as cost_unit_label,
+        -- pressures (converted from metric to US units)
+        {{ wv_kpa_to_psi('presburst') }} as burst_pressure_psi,
+        {{ wv_kpa_to_psi('prescollapse') }} as collapse_pressure_psi,
+        {{ wv_kpa_to_psi('presaxialinner') }} as axial_inner_pressure_psi,
+        {{ wv_kpa_to_psi('presaxialouter') }} as axial_outer_pressure_psi,
 
-        -- Volumes (converted to US units)
-        itemnocalc as item_number,
-        desjtcalc as description_with_joints,
-        currentstatuscalc as current_status,
+        -- volumes (converted from metric to US units)
+        {{ wv_cbm_to_bbl('volumeinternalcalc') }} as internal_volume_bbl,
+        {{ wv_cbm_to_bbl('volumedispcalc') }} as displaced_volume_bbl,
+        {{ wv_cbm_to_bbl('volumedispcumcalc') }} as cumulative_displaced_volume_bbl,
 
-        -- Connection specifications
-        idreclastfailurecalc as last_failure_id,
-        idreclastfailurecalctk as last_failure_table_key,
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        syslockdate as system_lock_date,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
+        -- cost
+        cost::float as component_cost,
 
-        -- Material and manufacturing
-        _fivetran_synced as fivetran_synced_at,
-        szodnom / 0.0254 as nominal_od_in,
-        szidnom / 0.0254 as nominal_id_in,
-        szodmax / 0.0254 as max_od_in,
-        szdrift / 0.0254 as drift_diameter_in,
-        length / 0.3048 as component_length_ft,
-        wtperlength / 1.48816394356955 as weight_per_length_lb_per_ft,
-        depthtopcalc / 0.3048 as top_depth_ft,
+        -- dates
+        dttmmanufacture::timestamp_ntz as manufacture_datetime,
+        dttmstatuscalc::timestamp_ntz as status_datetime,
 
-        -- Dates
-        depthbtmcalc / 0.3048 as bottom_depth_ft,
-        depthtopcorrected / 0.3048 as top_depth_corrected_ft,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+        syslockdate::timestamp_ntz as system_lock_date,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
 
-        -- Cost information
-        depthtvdtopcalc / 0.3048 as top_depth_tvd_ft,
-        depthtvdbtmcalc / 0.3048 as bottom_depth_tvd_ft,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- Calculated fields
-        lengthcumcalc / 0.3048 as cumulative_length_ft,
-        lengthtallycalc / 0.3048 as tally_length_ft,
-        weightcalc / 4448.2216152605 as component_weight_kips,
+    from source
+),
 
-        -- Reference IDs
-        weightcumcalc / 4448.2216152605 as cumulative_weight_klbf,
-        tensilemax / 4448.2216152605 as max_tensile_strength_klbf,
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and component_id is not null
+),
 
-        -- System fields
-        torquemin / 1.3558179483314 as min_makeup_torque_ft_lb,
-        torquemax / 1.3558179483314 as max_torque_ft_lb,
-        presburst / 6.894757 as burst_pressure_psi,
-        prescollapse / 6.894757 as collapse_pressure_psi,
-        presaxialinner / 6.894757 as axial_inner_pressure_psi,
-        presaxialouter / 6.894757 as axial_outer_pressure_psi,
-        volumeinternalcalc / 0.158987294928 as internal_volume_bbl,
-        volumedispcalc / 0.158987294928 as displaced_volume_bbl,
-        volumedispcumcalc / 0.158987294928 as cumulative_displaced_volume_bbl,
-        connsztop / 0.0254 as top_connection_size_in,
+-- 4. ENHANCED: Add surrogate key and _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['component_id']) }} as casing_component_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
 
-        -- Fivetran fields
-        connszbtm / 0.0254 as bottom_connection_size_in
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        casing_component_sk,
 
-    from source_data
+        -- identifiers
+        component_id,
+        casing_string_id,
+        well_id,
+        component_sequence,
+
+        -- descriptive fields
+        component_description,
+        component_subtype,
+        icon_name,
+        comments,
+        component_grade,
+        material_specification,
+        manufacturer,
+        component_model,
+        heat_rating,
+        used_class,
+        serial_number,
+        reference_id,
+        top_connection_type,
+        bottom_connection_type,
+        top_connection_thread,
+        bottom_connection_thread,
+        top_connection_target_performance,
+        bottom_connection_target_performance,
+        top_upset,
+        bottom_upset,
+        connection_info,
+        connection_info_alt,
+        cost_unit_label,
+        item_number,
+        description_with_joints,
+        current_status,
+        last_failure_id,
+        last_failure_table_key,
+
+        -- inclinations
+        top_inclination_deg,
+        bottom_inclination_deg,
+        max_inclination_deg,
+
+        -- joints and quantities
+        joint_count,
+        joints_in_tally,
+        centralizer_count_tally,
+
+        -- sizes
+        nominal_od_in,
+        nominal_id_in,
+        max_od_in,
+        drift_diameter_in,
+        top_connection_size_in,
+        bottom_connection_size_in,
+
+        -- depths
+        component_length_ft,
+        top_depth_ft,
+        bottom_depth_ft,
+        top_depth_corrected_ft,
+        top_depth_tvd_ft,
+        bottom_depth_tvd_ft,
+        cumulative_length_ft,
+        tally_length_ft,
+
+        -- weights and forces
+        weight_per_length_lb_per_ft,
+        component_weight_kips,
+        cumulative_weight_klbf,
+        max_tensile_strength_klbf,
+
+        -- torque
+        min_makeup_torque_ft_lb,
+        max_torque_ft_lb,
+
+        -- pressures
+        burst_pressure_psi,
+        collapse_pressure_psi,
+        axial_inner_pressure_psi,
+        axial_outer_pressure_psi,
+
+        -- volumes
+        internal_volume_bbl,
+        displaced_volume_bbl,
+        cumulative_displaced_volume_bbl,
+
+        -- cost
+        component_cost,
+
+        -- dates
+        manufacture_datetime,
+        status_datetime,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+        system_lock_date,
+        system_lock_me,
+        system_lock_children,
+        system_lock_me_ui,
+        system_lock_children_ui,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

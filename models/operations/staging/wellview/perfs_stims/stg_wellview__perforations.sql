@@ -1,175 +1,336 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'perforations', 'completions', 'guns', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'perfs_stims']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per perforation record)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVPERFORATION') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idwell as well_id,
-        idrec as record_id,
+        -- identifiers
+        trim(idrec)::varchar as record_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecparent)::varchar as parent_record_id,
+        trim(idrecwellbore)::varchar as wellbore_id,
+        trim(idrecwellboretk)::varchar as wellbore_table_key,
+        trim(idreczoneor)::varchar as zone_id,
+        trim(idreczoneortk)::varchar as zone_table_key,
+        trim(idreczonecalc)::varchar as linked_zone_id,
+        trim(idreczonecalctk)::varchar as linked_zone_table_key,
+        trim(idrecstring)::varchar as string_perforated_id,
+        trim(idrecstringtk)::varchar as string_perforated_table_key,
+        trim(idrecjob)::varchar as job_id,
+        trim(idrecjobtk)::varchar as job_table_key,
+        trim(idreclog)::varchar as reference_log_id,
+        trim(idreclogtk)::varchar as reference_log_table_key,
+        trim(idrecjobprogramphasecalc)::varchar as phase_id,
+        trim(idrecjobprogramphasecalctk)::varchar as phase_table_key,
+        trim(idreclastcompletioncalc)::varchar as last_completion_id,
+        trim(idreclastcompletioncalctk)::varchar as last_completion_table_key,
+        trim(idreclastrigcalc)::varchar as last_rig_id,
+        trim(idreclastrigcalctk)::varchar as last_rig_table_key,
+        trim(idrecotherinholecalc)::varchar as other_in_hole_id,
+        trim(idrecotherinholecalctk)::varchar as other_in_hole_table_key,
 
-        -- Basic perforation information
-        proposedoractual as proposed_or_actual,
-        dttm as perforation_date,
-        typ as perforation_type,
+        -- descriptive fields
+        trim(proposedoractual)::varchar as proposed_or_actual,
+        trim(typ)::varchar as perforation_type,
+        trim(conveymeth)::varchar as conveyance_method,
+        trim(chargetyp)::varchar as charge_type,
+        trim(chargemake)::varchar as charge_make,
+        trim(explosivetyp)::varchar as explosive_type,
+        trim(orientation)::varchar as orientation,
+        trim(orientmethod)::varchar as orientation_method,
+        trim(balance)::varchar as over_under_balanced,
+        trim(fluidtyp)::varchar as fluid_type,
+        trim(presbhtyp)::varchar as bh_pressure_type,
+        trim(currentstatuscalc)::varchar as current_status,
+        trim(statusprimarycalc)::varchar as open_or_closed,
+        trim(resulttechnical)::varchar as technical_result,
+        trim(resulttechnicaldetail)::varchar as tech_result_details,
+        trim(resulttechnicalnote)::varchar as tech_result_note,
+        trim(formationcalc)::varchar as formation,
+        trim(reservoircalc)::varchar as reservoir,
+        trim(contractor)::varchar as perforation_company,
+        trim(icondrawshort)::varchar as draw_short,
+        trim(com)::varchar as comment,
+        intno::float as stage_number,
+        cluserrefno::float as cluster_reference_number,
 
-        -- Perforation depths (converted to US units)
-        shotplan as shots_planned,
-        shottotal as entered_shot_total,
-        shotstotalcalc as calculated_shot_total,
-        shotstotalaltcalc as calculated_shot_total_alt,
-        shotsmisfirecalc as shots_misfired,
-        intno as stage_number,
+        -- gun specifications
+        trim(gundes)::varchar as gun_description,
+        trim(gunmetallurgy)::varchar as gun_metallurgy,
+        trim(guncentralize)::varchar as gun_centralize,
+        trim(gunleftinhole)::varchar as gun_left_in_hole,
+        trim(carrierdes)::varchar as carrier_description,
+        trim(carriermake)::varchar as carrier_make,
+        phasing::float as phasing_degrees,
 
-        -- Reference depths (converted to US units)
-        cluserrefno as cluster_reference_number,
-        gundes as gun_description,
-        gunmetallurgy as gun_metallurgy,
-        guncentralize as gun_centralize,
-        gunleftinhole as gun_left_in_hole,
+        -- shot information
+        shotplan::float as shots_planned,
+        shottotal::float as entered_shot_total,
+        shotstotalcalc::float as calculated_shot_total,
+        shotstotalaltcalc::float as calculated_shot_total_alt,
+        shotsmisfirecalc::float as shots_misfired,
 
-        -- Fluid depths (converted to US units)
-        conveymeth as conveyance_method,
-        carrierdes as carrier_description,
-        carriermake as carrier_make,
-        chargetyp as charge_type,
+        -- depths (converted from metric to US units)
+        {{ wv_meters_to_feet('depthtop') }} as top_depth_ft,
+        {{ wv_meters_to_feet('depthbtm') }} as bottom_depth_ft,
+        {{ wv_meters_to_feet('depthtvdtopcalc') }} as top_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthtvdbtmcalc') }} as bottom_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthtoptobtmcalc') }} as perforation_interval_thickness_ft,
+        {{ wv_meters_to_feet('depthmppcalc') }} as depth_mpp_ft,
+        {{ wv_meters_to_feet('depthcsngcollarref') }} as collar_ref_depth_ft,
+        {{ wv_meters_to_feet('depthtvdcsngcollarrefcalc') }} as collar_ref_depth_tvd_ft,
+        {{ wv_meters_to_feet('distancereftotopcalc') }} as distance_ref_to_top_ft,
+        {{ wv_meters_to_feet('depthgauge') }} as gauge_depth_ft,
+        {{ wv_meters_to_feet('depthtvdgaugecalc') }} as gauge_depth_tvd_ft,
+        {{ wv_meters_to_feet('depthfluidbefore') }} as fluid_depth_before_shot_ft,
+        {{ wv_meters_to_feet('depthfluidafter') }} as fluid_depth_after_shot_ft,
+        {{ wv_meters_to_feet('depthtvdfluidbeforecalc') }} as fluid_depth_before_shot_tvd_ft,
+        {{ wv_meters_to_feet('depthtvdfluidaftercalc') }} as fluid_depth_after_shot_tvd_ft,
 
-        -- Shot information
-        chargemake as charge_make,
-        explosivetyp as explosive_type,
-        phasing as phasing_degrees,
-        orientation as orientation,
-        orientmethod as orientation_method,
-        balance as over_under_balanced,
-        fluidtyp as fluid_type,
+        -- shot density (per-foot rate)
+        {{ wv_per_meter_to_per_foot('shotdensity') }} as shot_density_shots_per_ft,
+        {{ wv_per_meter_to_per_foot('shotstotalaltperdensitycalc') }} as shots_total_per_density_per_ft,
 
-        -- Stage and cluster information
-        presbhtyp as bh_pressure_type,
-        currentstatuscalc as current_status,
+        -- gun and charge sizes (converted to inches)
+        {{ wv_meters_to_inches('szgun') }} as gun_size_inches,
+        {{ wv_meters_to_inches('szholeact') }} as estimated_actual_hole_diameter_inches,
+        {{ wv_meters_to_inches('szholenom') }} as nominal_hole_diameter_inches,
+        {{ wv_meters_to_inches('penetrationnom') }} as nominal_penetration_inches,
 
-        -- Gun specifications (converted to US units)
-        dttmstatuscalc as current_status_date,
-        statusprimarycalc as open_or_closed,
-        resulttechnical as technical_result,
-        resulttechnicaldetail as tech_result_details,
-        resulttechnicalnote as tech_result_note,
-        formationcalc as formation,
-
-        -- Carrier information
-        reservoircalc as reservoir,
-        idrecwellbore as wellbore_id,
-
-        -- Charge specifications (converted to US units)
-        idrecwellboretk as wellbore_table_key,
-        idreczoneor as zone_id,
-        idreczoneortk as zone_table_key,
-        idreczonecalc as linked_zone_id,
-        idreczonecalctk as linked_zone_table_key,
-        idrecstring as string_perforated_id,
-        idrecstringtk as string_perforated_table_key,
-
-        -- Hole specifications (converted to US units)
-        idrecjob as job_id,
-        idrecjobtk as job_table_key,
-        idreclog as reference_log_id,
-
-        -- Perforating conditions
-        idreclogtk as reference_log_table_key,
-        idrecjobprogramphasecalc as phase_id,
-        idrecjobprogramphasecalctk as phase_table_key,
-        idreclastcompletioncalc as last_completion_id,
-        idreclastcompletioncalctk as last_completion_table_key,
-
-        -- Fluid information
-        idreclastrigcalc as last_rig_id,
-        idreclastrigcalctk as last_rig_table_key,
-        idrecotherinholecalc as other_in_hole_id,
-        idrecotherinholecalctk as other_in_hole_table_key,
-
-        -- Pressure measurements (converted to US units)
-        contractor as perforation_company,
-        icondrawshort as draw_short,
-        com as comment,
-        syslockmeui as system_lock_me_ui,
-        syslockchildrenui as system_lock_children_ui,
-        syslockme as system_lock_me,
-        syslockchildren as system_lock_children,
-        syslockdate as system_lock_date,
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-
-        -- Status and results
-        sysmoddate as modified_at,
-        sysmoduser as modified_by,
-        systag as system_tag,
-        _fivetran_synced as fivetran_synced_at,
-        depthtop / 0.3048 as top_depth_ft,
-        depthbtm / 0.3048 as bottom_depth_ft,
-
-        -- Formation and reservoir
-        depthtvdtopcalc / 0.3048 as top_depth_tvd_ft,
-        depthtvdbtmcalc / 0.3048 as bottom_depth_tvd_ft,
-
-        -- Wellbore and zone relationships
-        depthtoptobtmcalc / 0.3048 as perforation_interval_thickness_ft,
-        depthmppcalc / 0.3048 as depth_mpp_ft,
-        depthcsngcollarref / 0.3048 as collar_ref_depth_ft,
-        depthtvdcsngcollarrefcalc / 0.3048 as collar_ref_depth_tvd_ft,
-        distancereftotopcalc / 0.3048 as distance_ref_to_top_ft,
-        depthgauge / 0.3048 as gauge_depth_ft,
-
-        -- String and equipment references
-        depthtvdgaugecalc / 0.3048 as gauge_depth_tvd_ft,
-        depthfluidbefore / 0.3048 as fluid_depth_before_shot_ft,
-        depthfluidafter / 0.3048 as fluid_depth_after_shot_ft,
-        depthtvdfluidbeforecalc / 0.3048 as fluid_depth_before_shot_tvd_ft,
-        depthtvdfluidaftercalc / 0.3048 as fluid_depth_after_shot_tvd_ft,
-        shotdensity / 3.28083989501312 as shot_density_shots_per_ft,
-
-        -- Phase and completion references
-        shotstotalaltperdensitycalc / 3.28083989501312 as shots_total_per_density_per_ft,
-        szgun / 0.0254 as gun_size_inches,
+        -- charge size (grams — inline, no macro)
         chargesz / 0.001 as charge_size_grams,
-        szholeact / 0.0254 as estimated_actual_hole_diameter_inches,
-        szholenom / 0.0254 as nominal_hole_diameter_inches,
-        penetrationnom / 0.0254 as nominal_penetration_inches,
-        balancepres / 6.894757 as over_under_pressure_psi,
-        presdesignbh / 6.894757 as design_bh_pressure_psi,
 
-        -- Operational information
-        presinitsurf / 6.894757 as initial_surface_pressure_psi,
-        presfinalsurf / 6.894757 as final_surface_pressure_psi,
+        -- pressures (converted to PSI)
+        {{ wv_kpa_to_psi('balancepres') }} as over_under_pressure_psi,
+        {{ wv_kpa_to_psi('presdesignbh') }} as design_bh_pressure_psi,
+        {{ wv_kpa_to_psi('presinitsurf') }} as initial_surface_pressure_psi,
+        {{ wv_kpa_to_psi('presfinalsurf') }} as final_surface_pressure_psi,
+        {{ wv_kpa_to_psi('presbh') }} as bottom_hole_pressure_psi,
+        {{ wv_kpa_to_psi('presdatum') }} as datum_pressure_psi,
+        {{ wv_kpa_to_psi('presmpp') }} as mpp_pressure_psi,
+        {{ wv_kpa_to_psi('presduringperf') }} as pressure_during_perforation_psi,
+        {{ wv_kpa_to_psi('presbhtodatumcalc') }} as pressure_bh_to_datum_psi,
+        {{ wv_kpa_to_psi('presbhtomppcalc') }} as pressure_bh_to_mpp_psi,
+        {{ wv_kpa_to_psi('preshhsurftompp') }} as estimated_hh_surf_to_mpp_psi,
+        {{ wv_kpa_to_psi('presbhsitphhcalc') }} as bh_pressure_for_sitp_hh_psi,
 
-        -- User fields (volume field converted to barrels)
-        fluiddensity / 119.826428404623 as fluid_density_lb_per_gal,
-
-        -- Comments
-        ratefluidbefore / 7.3152 as fluid_rate_before_shot_ft_per_hr,
-
-        -- System locking fields
-        ratefluidafter / 7.3152 as fluid_rate_after_shot_ft_per_hr,
-        presbh / 6.894757 as bottom_hole_pressure_psi,
-        presdatum / 6.894757 as datum_pressure_psi,
-        presmpp / 6.894757 as mpp_pressure_psi,
-        presduringperf / 6.894757 as pressure_during_perforation_psi,
-
-        -- System tracking fields
-        presbhtodatumcalc / 6.894757 as pressure_bh_to_datum_psi,
-        presbhtomppcalc / 6.894757 as pressure_bh_to_mpp_psi,
-        preshhsurftompp / 6.894757 as estimated_hh_surf_to_mpp_psi,
+        -- pressure gradient (psi/ft — inline, no macro)
         presgradientgaugetompp / 22.620593832021 as pressure_gradient_gauge_to_mpp_psi_per_ft,
-        presbhsitphhcalc / 6.894757 as bh_pressure_for_sitp_hh_psi,
 
-        -- Fivetran metadata
-        usernum1 / 0.158987294928 as vol_fluid_bbl
+        -- fluid density
+        {{ wv_kgm3_to_lb_per_gal('fluiddensity') }} as fluid_density_lb_per_gal,
 
-    from source_data
+        -- fluid rates
+        {{ wv_mps_to_ft_per_hr('ratefluidbefore') }} as fluid_rate_before_shot_ft_per_hr,
+        {{ wv_mps_to_ft_per_hr('ratefluidafter') }} as fluid_rate_after_shot_ft_per_hr,
+
+        -- volumes (converted to barrels)
+        {{ wv_cbm_to_bbl('usernum1') }} as vol_fluid_bbl,
+
+        -- dates
+        dttm::timestamp_ntz as perforation_date,
+        dttmstatuscalc::timestamp_ntz as current_status_date,
+
+        -- system locking
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockdate::timestamp_ntz as system_lock_date,
+
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
+
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
+
+    from source
+),
+
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and record_id is not null
+),
+
+-- 4. ENHANCED: Add surrogate key + _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['record_id']) }} as perforation_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        perforation_sk,
+
+        -- identifiers
+        record_id,
+        well_id,
+        parent_record_id,
+        wellbore_id,
+        wellbore_table_key,
+        zone_id,
+        zone_table_key,
+        linked_zone_id,
+        linked_zone_table_key,
+        string_perforated_id,
+        string_perforated_table_key,
+        job_id,
+        job_table_key,
+        reference_log_id,
+        reference_log_table_key,
+        phase_id,
+        phase_table_key,
+        last_completion_id,
+        last_completion_table_key,
+        last_rig_id,
+        last_rig_table_key,
+        other_in_hole_id,
+        other_in_hole_table_key,
+
+        -- descriptive fields
+        proposed_or_actual,
+        perforation_type,
+        conveyance_method,
+        charge_type,
+        charge_make,
+        explosive_type,
+        orientation,
+        orientation_method,
+        over_under_balanced,
+        fluid_type,
+        bh_pressure_type,
+        current_status,
+        open_or_closed,
+        technical_result,
+        tech_result_details,
+        tech_result_note,
+        formation,
+        reservoir,
+        perforation_company,
+        draw_short,
+        comment,
+        stage_number,
+        cluster_reference_number,
+
+        -- gun specifications
+        gun_description,
+        gun_metallurgy,
+        gun_centralize,
+        gun_left_in_hole,
+        carrier_description,
+        carrier_make,
+        phasing_degrees,
+
+        -- shot information
+        shots_planned,
+        entered_shot_total,
+        calculated_shot_total,
+        calculated_shot_total_alt,
+        shots_misfired,
+
+        -- depths
+        top_depth_ft,
+        bottom_depth_ft,
+        top_depth_tvd_ft,
+        bottom_depth_tvd_ft,
+        perforation_interval_thickness_ft,
+        depth_mpp_ft,
+        collar_ref_depth_ft,
+        collar_ref_depth_tvd_ft,
+        distance_ref_to_top_ft,
+        gauge_depth_ft,
+        gauge_depth_tvd_ft,
+        fluid_depth_before_shot_ft,
+        fluid_depth_after_shot_ft,
+        fluid_depth_before_shot_tvd_ft,
+        fluid_depth_after_shot_tvd_ft,
+
+        -- shot density
+        shot_density_shots_per_ft,
+        shots_total_per_density_per_ft,
+
+        -- gun and charge sizes
+        gun_size_inches,
+        estimated_actual_hole_diameter_inches,
+        nominal_hole_diameter_inches,
+        nominal_penetration_inches,
+        charge_size_grams,
+
+        -- pressures
+        over_under_pressure_psi,
+        design_bh_pressure_psi,
+        initial_surface_pressure_psi,
+        final_surface_pressure_psi,
+        bottom_hole_pressure_psi,
+        datum_pressure_psi,
+        mpp_pressure_psi,
+        pressure_during_perforation_psi,
+        pressure_bh_to_datum_psi,
+        pressure_bh_to_mpp_psi,
+        estimated_hh_surf_to_mpp_psi,
+        bh_pressure_for_sitp_hh_psi,
+        pressure_gradient_gauge_to_mpp_psi_per_ft,
+
+        -- fluid measurements
+        fluid_density_lb_per_gal,
+        fluid_rate_before_shot_ft_per_hr,
+        fluid_rate_after_shot_ft_per_hr,
+
+        -- volumes
+        vol_fluid_bbl,
+
+        -- dates
+        perforation_date,
+        current_status_date,
+
+        -- system locking
+        system_lock_me_ui,
+        system_lock_children_ui,
+        system_lock_me,
+        system_lock_children,
+        system_lock_date,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final

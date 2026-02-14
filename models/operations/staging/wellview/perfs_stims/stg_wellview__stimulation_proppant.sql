@@ -1,59 +1,132 @@
-{{ config(
-    materialized='view',
-    tags=['wellview', 'stimulation', 'proppant', 'sand', 'staging']
-) }}
+{{
+    config(
+        materialized='view',
+        tags=['wellview', 'staging', 'perfs_stims']
+    )
+}}
 
-with source_data as (
+with
+
+-- 1. SOURCE: Raw data + Fivetran dedup on idrec (one row per proppant record)
+source as (
     select * from {{ source('wellview_calcs', 'WVT_WVSTIMINTPROP') }}
-    where _fivetran_deleted = false
+    qualify 1 = row_number() over (
+        partition by idrec
+        order by _fivetran_synced desc
+    )
 ),
 
+-- 2. RENAMED: Column renaming, type casting, trimming. No filtering, no logic.
 renamed as (
     select
-        -- Primary identifiers
-        idwell as well_id,
-        idrecparent as parent_record_id,
-        idrec as record_id,
+        -- identifiers
+        trim(idrec)::varchar as record_id,
+        trim(idwell)::varchar as well_id,
+        trim(idrecparent)::varchar as parent_record_id,
 
-        -- Proppant classification
-        typ1 as proppant_type,
-        typ2 as proppant_subtype,
-        des as proppant_description,
-        sz as sand_size,
+        -- descriptive fields
+        trim(typ1)::varchar as proppant_type,
+        trim(typ2)::varchar as proppant_subtype,
+        trim(des)::varchar as proppant_description,
+        trim(sz)::varchar as sand_size,
+        trim(note)::varchar as note,
+        trim(usertxt1)::varchar as user_text_1,
 
-        -- Amount information (converted to pounds)
-        ratiotamountdesigncalc as actual_to_design_proppant_mass_ratio,
-        note as note,
-        usernum1 as user_number_1,
+        -- performance ratio
+        ratiotamountdesigncalc::float as actual_to_design_proppant_mass_ratio,
+        usernum1::float as user_number_1,
 
-        -- Performance ratio
-        usertxt1 as user_text_1,
+        -- proppant amounts (converted to pounds)
+        {{ wv_kg_to_lb('amountdesign') }} as design_amount_lb,
+        {{ wv_kg_to_lb('amount') }} as actual_amount_lb,
+        {{ wv_kg_to_lb('amountcalc') }} as calculated_amount_lb,
 
-        -- Notes and references
-        syslockmeui as system_lock_me_ui,
+        -- system locking
+        syslockmeui::boolean as system_lock_me_ui,
+        syslockchildrenui::boolean as system_lock_children_ui,
+        syslockme::boolean as system_lock_me,
+        syslockchildren::boolean as system_lock_children,
+        syslockdate::timestamp_ntz as system_lock_date,
 
-        -- User fields
-        syslockchildrenui as system_lock_children_ui,
-        syslockme as system_lock_me,
+        -- system / audit
+        syscreatedate::timestamp_ntz as created_at_utc,
+        trim(syscreateuser)::varchar as created_by,
+        sysmoddate::timestamp_ntz as last_mod_at_utc,
+        trim(sysmoduser)::varchar as last_mod_by,
+        trim(systag)::varchar as system_tag,
 
-        -- System locking fields
-        syslockchildren as system_lock_children,
-        syslockdate as system_lock_date,
-        syscreatedate as created_at,
-        syscreateuser as created_by,
-        sysmoddate as modified_at,
+        -- ingestion metadata
+        _fivetran_deleted::boolean as _fivetran_deleted,
+        _fivetran_synced::timestamp_tz as _fivetran_synced
 
-        -- System tracking fields
-        sysmoduser as modified_by,
-        systag as system_tag,
-        _fivetran_synced as fivetran_synced_at,
-        amountdesign / 0.45359237 as design_amount_lb,
-        amount / 0.45359237 as actual_amount_lb,
+    from source
+),
 
-        -- Fivetran metadata
-        amountcalc / 0.45359237 as calculated_amount_lb
+-- 3. FILTERED: Remove soft deletes and null PKs. No transformations.
+filtered as (
+    select *
+    from renamed
+    where
+        coalesce(_fivetran_deleted, false) = false
+        and record_id is not null
+),
 
-    from source_data
+-- 4. ENHANCED: Add surrogate key + _loaded_at.
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['record_id']) }} as stimulation_proppant_sk,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+-- 5. FINAL: Explicit column list, logically grouped. This is the contract.
+final as (
+    select
+        stimulation_proppant_sk,
+
+        -- identifiers
+        record_id,
+        well_id,
+        parent_record_id,
+
+        -- descriptive fields
+        proppant_type,
+        proppant_subtype,
+        proppant_description,
+        sand_size,
+        note,
+        user_text_1,
+
+        -- performance ratio
+        actual_to_design_proppant_mass_ratio,
+        user_number_1,
+
+        -- proppant amounts
+        design_amount_lb,
+        actual_amount_lb,
+        calculated_amount_lb,
+
+        -- system locking
+        system_lock_me_ui,
+        system_lock_children_ui,
+        system_lock_me,
+        system_lock_children,
+        system_lock_date,
+
+        -- system / audit
+        created_at_utc,
+        created_by,
+        last_mod_at_utc,
+        last_mod_by,
+        system_tag,
+
+        -- dbt metadata
+        _fivetran_deleted,
+        _fivetran_synced,
+        _loaded_at
+
+    from enhanced
 )
 
-select * from renamed
+select * from final
