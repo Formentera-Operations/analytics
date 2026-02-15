@@ -1,0 +1,45 @@
+# combo_curve context index
+# Structure: domains/ (relationships) + tables/ (column definitions)
+#
+# Domain files (load for cross-table context):
+#   domains/wells.yaml — 3 tables (company wells, project wells, projects)
+#   domains/forecasting.yaml — 3 tables (forecasts, forecast outputs, daily volumes)
+#   domains/economics.yaml — 5 tables (scenarios, econ runs, one liners, monthly results, model options)
+#
+# Per-table files (load for single-model work):
+#   tables/{table_name}.yaml
+#
+# Total: 3 domains, 11 staged tables (23 total in CC_RAW)
+#
+# Table catalog:
+#
+# wells domain:
+#   WELLS (225 cols, 5K rows) -> stg_cc__company_wells
+#   PROJECT_WELLS (297 cols, 284K rows) -> stg_cc__project_wells
+#   PROJECTS (6 cols, 242 rows) -> stg_cc__projects
+#
+# forecasting domain:
+#   FORECASTS (10 cols, 2K rows) -> stg_cc__forecasts
+#   FORECAST_OUTPUTS (23 cols, 2.1M rows) -> stg_cc__forecast_outputs
+#   FORECASTED_DAILY_VOLUMES_BY_PROJECT (9 cols, 13K rows) -> stg_cc__daily_forecasts
+#
+# economics domain:
+#   PROJECT_SCENARIOS (7 cols, 956 rows) -> stg_cc__scenarios
+#   ECON_RUNS (9 cols, 953 rows) -> stg_cc__economic_run_parameters
+#   ECON_RUN_ONE_LINERS (12 cols, 1.2M rows) -> stg_cc__economic_one_liners
+#   ECON_RUN_MONTHLY_EXPORT_RESULTS (217 cols, 262M rows) -> stg_cc__economic_runs
+#   PROJECT_ECON_MODEL_GENERAL_OPTIONS (17 cols, 964 rows) -> stg_cc__project_econ_model_general_options
+#
+# unstaged tables (in CC_RAW but no staging model):
+#   DAILY_PRODUCTIONS (20 cols, 7M rows)
+#   MONTHLY_PRODUCTIONS (13 cols, 65K rows)
+#   DIRECTIONAL_SURVEYS (15 cols, 1.3K rows)
+#   PROJECT_COMPANY_WELLS (247 cols, 5K rows)
+#   PROJECT_ECON_MODEL_EXPENSES (18 cols, 239K rows)
+#   PROJECT_SCENARIO_ECON_RUNS (8 cols, 800 rows)
+#   PROJECT_SCENARIO_ECON_RUN_MONTHLY_ECON_RESULTS (269 cols, 3.2K rows)
+#   FORECASTED_MONTHLY_VOLUMES_BY_PROJECT (9 cols, 51K rows)
+#   TYPE_CURVES (1.3K rows)
+#   TAGS (6 rows)
+#   WELL_COMMENTS (4 rows)
+#   USER_ROLES (43 rows)

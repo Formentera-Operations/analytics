@@ -1,0 +1,32 @@
+# ComboCurve: Economics
+# Scenarios, economic runs, one-liner summaries, monthly cash flow, model configuration
+#
+# Types: txt=string float=float int=integer ts=timestamp_ntz bool=boolean variant=variant(JSON)
+#
+# OMITTED (on most tables): PROJECTCUSTOMHEADER9 (Portable connector artifact)
+#
+# Staged: stg_cc__scenarios, stg_cc__economic_run_parameters, stg_cc__economic_one_liners,
+#         stg_cc__economic_runs, stg_cc__project_econ_model_general_options
+#
+# Relationships:
+#   PROJECTS 1:many -> PROJECT_SCENARIOS (via PROJECT)
+#   PROJECT_SCENARIOS 1:many -> ECON_RUNS (via SCENARIO + PROJECT)
+#   ECON_RUNS 1:many -> ECON_RUN_ONE_LINERS (via ECONRUN)
+#   ECON_RUNS 1:many -> ECON_RUN_MONTHLY_EXPORT_RESULTS (via ECONRUN)
+#   PROJECTS 1:many -> PROJECT_ECON_MODEL_GENERAL_OPTIONS (via PROJECT)
+#
+# Key patterns:
+#   - ECON_RUN_MONTHLY_EXPORT_RESULTS is massive (262M rows, 217 cols) — most cols are TEXT needing numeric cast
+#   - ECON_RUN_ONE_LINERS.OUTPUT is VARIANT with all summary metrics (NPV, IRR, EUR, breakeven, etc.)
+#   - Staging model naming is counterintuitive:
+#       stg_cc__economic_runs -> ECON_RUN_MONTHLY_EXPORT_RESULTS (262M rows, monthly detail)
+#       stg_cc__economic_run_parameters -> ECON_RUNS (953 rows, run metadata)
+#   - PRMS classification: reservesCategory, reservesSubCategory, resourcesClass on one liners
+
+
+# Tables in this domain (column details in tables/ directory):
+#   PROJECT_SCENARIOS: Economic/forecast scenarios within projects.
+#   ECON_RUNS: Economic run execution metadata (status, date, output params).
+#   ECON_RUN_ONE_LINERS: Summary economic metrics per well per run. OUTPUT column is VARIANT with all metrics.
+#   ECON_RUN_MONTHLY_EXPORT_RESULTS: Monthly cash flow detail per well. 217 columns, mostly TEXT. Largest table.
+#   PROJECT_ECON_MODEL_GENERAL_OPTIONS: Economic model configuration with VARIANT columns for settings.

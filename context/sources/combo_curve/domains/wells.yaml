@@ -1,0 +1,25 @@
+# ComboCurve: Wells
+# Company wells, project wells, and project containers
+#
+# Types: txt=string float=float int=integer ts=timestamp_ntz bool=boolean variant=variant(JSON)
+#
+# OMITTED (on most tables): PROJECTCUSTOMHEADER9 (Portable connector artifact)
+#
+# Staged: stg_cc__company_wells, stg_cc__project_wells, stg_cc__projects
+#
+# Relationships:
+#   PROJECTS 1:many -> PROJECT_WELLS (via PROJECT)
+#   WELLS ~= PROJECT_WELLS (same well schema, project-scoped copy with additional fields)
+#   WELLS.ID matches PROJECT_WELLS via CHOSENID or well-level join
+#
+# Key patterns:
+#   - WELLS is company-level (5K rows, 225 cols)
+#   - PROJECT_WELLS is project-scoped (284K rows, 297 cols) — same well can appear in many projects
+#   - PROJECT_WELLS has additional economic/forecast fields not on WELLS (BEFOREINCOMETAXCASHFLOW, IRR, etc.)
+#   - Custom fields (customString0-24, customNumber0-19, etc.) are tenant-configurable
+
+
+# Tables in this domain (column details in tables/ directory):
+#   WELLS: Company-level well master data. Identifiers, location, production metrics, completion, custom fields.
+#   PROJECT_WELLS: Project-scoped wells with economic enrichment. Superset of WELLS columns.
+#   PROJECTS: Project containers. Minimal metadata (id, name, timestamps).

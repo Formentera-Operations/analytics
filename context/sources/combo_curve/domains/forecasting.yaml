@@ -1,0 +1,27 @@
+# ComboCurve: Forecasting
+# Forecast definitions, decline curve outputs, daily forecast volumes
+#
+# Types: txt=string float=float int=integer ts=timestamp_ntz bool=boolean variant=variant(JSON)
+#
+# OMITTED (on most tables): PROJECTCUSTOMHEADER9 (Portable connector artifact)
+#
+# Staged: stg_cc__forecasts, stg_cc__forecast_outputs, stg_cc__daily_forecasts
+#
+# Relationships:
+#   PROJECTS 1:many -> FORECASTS (via PROJECT)
+#   FORECASTS 1:many -> FORECAST_OUTPUTS (via FORECAST + PROJECT)
+#   FORECASTS 1:many -> FORECASTED_DAILY_VOLUMES_BY_PROJECT (via FORECAST + PROJECT)
+#   FORECAST_OUTPUTS grain: one row per well per phase per forecast
+#   FORECASTED_DAILY_VOLUMES_BY_PROJECT grain: one row per well per forecast (phases nested in VARIANT)
+#
+# Key patterns:
+#   - FORECAST_OUTPUTS contains decline curve parameters in VARIANT columns (BEST, RATIO, TYPECURVEDATA)
+#   - FORECASTED_DAILY_VOLUMES_BY_PROJECT.PHASES requires FLATTEN to extract daily values by phase
+#   - Forecast types: auto, manual, typeCurve
+#   - Phases: oil, gas, water
+
+
+# Tables in this domain (column details in tables/ directory):
+#   FORECASTS: Forecast run definitions. Name, type, project, run date, tags.
+#   FORECAST_OUTPUTS: Decline curve parameters per well per phase. Contains VARIANT columns for curve segments.
+#   FORECASTED_DAILY_VOLUMES_BY_PROJECT: Daily forecast volumes with nested phase data in VARIANT column.
