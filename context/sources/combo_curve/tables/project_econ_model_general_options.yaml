@@ -1,0 +1,21 @@
+# combo_curve / economics / project_econ_model_general_options
+# Source: context/sources/combo_curve/domains/economics.yaml
+#
+PROJECT_ECON_MODEL_GENERAL_OPTIONS: Economic model configuration. Each row is a set of general economic model options (BOE conversion, discount rates, tax settings, cutoff criteria) associated with a project. 964 rows. -> stg_cc__project_econ_model_general_options
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp
+  BOECONVERSION(variant) #BOE conversion factors (JSON: gas/ngl/drip condensate to BOE ratios)
+  COPIEDFROM(txt) #Source model ID if copied from another model
+  CREATEDAT(ts) #Record creation timestamp
+  CREATEDBY(txt) #User who created the record
+  DISCOUNTTABLE(variant) #Discount rate table configuration (JSON: discount rates for NPV calculations)
+  ECONMODELTYPE(txt) #Economic model type (e.g., scenario, type_well)
+  ID(txt) #Model options unique identifier (24-char hex)
+  INCOMETAX(variant) #Income tax configuration (JSON: federal/state rates, deductions)
+  LASTUPDATEDBY(txt) #User who last updated the record
+  MAINOPTIONS(variant) #Main model options (JSON: well life, cutoff criteria, date settings)
+  NAME(txt) #Economic model name
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (ignore)
+  REPORTINGUNITS(variant) #Reporting units configuration (JSON: volume/price units)
+  _UNIQUE(bool) #Uniqueness flag for the model within a scenario
+  UPDATEDAT(ts) #Last update timestamp

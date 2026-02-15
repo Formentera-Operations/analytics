@@ -1,0 +1,16 @@
+# combo_curve / economics / econ_runs
+# Source: context/sources/combo_curve/domains/economics.yaml
+#
+# NOTE: Despite the staging model name stg_cc__economic_run_parameters, this table
+# contains run-level metadata (ID, status, date), not the detailed results.
+#
+ECON_RUNS: Economic evaluation run parameters. Each row is a single economic run execution within a scenario, storing run metadata and output configuration. 953 rows. -> stg_cc__economic_run_parameters
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp
+  ID(txt) #Economic run unique identifier (24-char hex)
+  OUTPUTPARAMS(variant) #Output parameters configuration (JSON object specifying which metrics to calculate)
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (ignore)
+  RUNDATE(ts) #Date/time the economic run was executed
+  SCENARIO(txt) #Parent scenario ID (FK to PROJECT_SCENARIOS.ID)
+  STATUS(txt) #Run status (e.g., completed, failed, running)
+  TAGS(variant) #Array of tag IDs associated with the run

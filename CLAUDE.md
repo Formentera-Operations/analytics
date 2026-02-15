@@ -52,6 +52,10 @@ The `context/` directory is the agent's domain knowledge base. It describes the 
 
 Per-table files are the column-level source of truth. They define what each source column means, its data type, and its business concept. Load the specific table file for the staging model you're working on — not the entire domain.
 
+**When building or updating context files:**
+- **Always validate column names against Snowflake `information_schema.columns`** — never rely solely on API docs or vendor documentation
+- **Portable sources (combo_curve, enverus)** have unpredictable column name transformations. The connector restructures some field names beyond simple camelCase→UPPER_SNAKE_CASE (e.g., API `drillingCapex` → Snowflake `TOTALDRILLING`). See `docs/solutions/ingestion/portable-column-naming-mismatches.md`
+
 ## Project Map
 
 ```
@@ -64,6 +68,9 @@ context/
     wellview/wellview.md           ← WellView system overview, calc tables, unit conversions
     wellview/tables/*.yaml         ← 496 per-table column definition files
     wellview/domains/*.yaml        ← 16 domain relationship files
+    combo_curve/combo_curve.md     ← ComboCurve system overview, hierarchy, Portable ingestion
+    combo_curve/tables/*.yaml      ← 11 per-table column definition files
+    combo_curve/domains/*.yaml     ← 3 domain relationship files
 docs/
   conventions/
     staging.md                     ← 5-CTE pattern, tag schema, type casting, column grouping
@@ -82,6 +89,7 @@ docs/
     LOCAL_SETUP.md                 ← Dev environment, Snowflake connection, venv, gotchas
   solutions/
     build-errors/                  ← CI failure patterns and fixes
+    ingestion/                     ← Pipeline/connector issues (Portable, Fivetran, Estuary)
     logic-errors/                  ← Domain-specific debugging
     refactoring/                   ← Migration trackers and refactor guides
   plans/                           ← Sprint plans and implementation scripts

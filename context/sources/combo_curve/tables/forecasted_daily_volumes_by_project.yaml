@@ -1,0 +1,13 @@
+# combo_curve / forecasting / forecasted_daily_volumes_by_project
+# Source: context/sources/combo_curve/domains/forecasting.yaml
+#
+FORECASTED_DAILY_VOLUMES_BY_PROJECT: Daily forecast volumes with nested phase data. Each row is a well+forecast combination containing a PHASES variant with nested daily volume arrays per phase (gas, oil, water). Requires FLATTEN to explode into rows. 13,130 rows. -> stg_cc__daily_forecasts
+  _ID(txt) #Primary key identifier
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp
+  FORECAST(txt) #Parent forecast ID (FK to FORECASTS.ID)
+  FORECASTTYPE(txt) #Forecast type (e.g., deterministic)
+  PHASES(variant) #Nested JSON containing daily volumes by phase (gas, oil, water). Each phase has an array of {date, value} objects. Requires FLATTEN to explode into rows.
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (ignore)
+  RESOLUTION(txt) #Time resolution (daily)
+  WELL(txt) #Well ID (FK to WELLS.ID)

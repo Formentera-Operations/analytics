@@ -1,0 +1,14 @@
+# combo_curve / forecasting / forecasts
+# Source: context/sources/combo_curve/domains/forecasting.yaml
+#
+FORECASTS: Forecast run definitions. Each row is a named forecast run within a project, containing decline curve analysis for one or more wells. 2,043 rows. -> stg_cc__forecasts
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp
+  CREATEDAT(ts) #Record creation timestamp
+  ID(txt) #Forecast unique identifier (24-char hex)
+  NAME(txt) #Forecast name
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (ignore)
+  RUNDATE(ts) #Date the forecast was run
+  TAGS(variant) #Array of tag IDs associated with the forecast
+  TYPE(txt) #Forecast type (e.g., deterministic, probabilistic)
+  UPDATEDAT(ts) #Last update timestamp

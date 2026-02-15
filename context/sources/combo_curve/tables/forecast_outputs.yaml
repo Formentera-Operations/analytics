@@ -1,0 +1,27 @@
+# combo_curve / forecasting / forecast_outputs
+# Source: context/sources/combo_curve/domains/forecasting.yaml
+#
+FORECAST_OUTPUTS: Decline curve parameters and forecast results per well per phase. Each row is a single well+phase combination within a forecast run, containing the fitted decline curve segments and review status. 2,083,923 rows. -> stg_cc__forecast_outputs
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp
+  BEST(variant) #Best-fit decline curve parameters (segments array with qi, b, di, etc.)
+  CREATEDAT(ts) #Record creation timestamp
+  DATA_FREQ(txt) #Data frequency (daily, monthly)
+  FORECAST(txt) #Parent forecast ID (FK to FORECASTS.ID)
+  FORECASTSUBTYPE(txt) #Forecast subtype (e.g., rate, ratio)
+  FORECASTTYPE(txt) #Forecast type (e.g., auto, manual, typeCurve)
+  FORECASTED(bool) #Whether this output has been forecasted
+  FORECASTEDAT(ts) #When the forecast was generated
+  FORECASTEDBY(txt) #User who generated the forecast
+  ID(txt) #Forecast output unique identifier (24-char hex)
+  PHASE(txt) #Production phase (oil, gas, water)
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (ignore)
+  RATIO(variant) #Ratio decline curve parameters (for gas/oil ratio forecasts)
+  REVIEWEDAT(ts) #When the forecast was reviewed
+  REVIEWEDBY(txt) #User who reviewed the forecast
+  STATUS(txt) #Forecast status (e.g., in_progress, reviewed)
+  TYPECURVE(txt) #Type curve ID if forecast derived from type curve
+  TYPECURVEAPPLYSETTINGS(variant) #Settings for how the type curve was applied
+  TYPECURVEDATA(variant) #Raw type curve data points
+  UPDATEDAT(ts) #Last update timestamp
+  WELL(txt) #Well ID (FK to WELLS.ID)
