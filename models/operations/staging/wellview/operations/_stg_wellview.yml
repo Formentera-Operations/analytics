@@ -1613,3 +1613,156 @@ models:
         description: "Fivetran sync timestamp (TZ)"
       - name: _loaded_at
         description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__safety_checks
+  # ==========================================================================
+  - name: stg_wellview__safety_checks
+    description: >
+      Safety check staging from WellView. One row per safety meeting or
+      inspection record linked to a daily report.
+      Source: WVT_WVJOBSAFETYCHK (CALC schema). Contains check type, result,
+      inspector, tour, and scheduling metadata. ~57,857 rows.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: safety_check_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      # -- identifiers
+      - name: record_id
+        description: "WellView safety check GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent daily report GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- descriptive fields
+      - name: check_type
+        description: "Safety check type (e.g., Safety Meeting, BOP Drill). WellView: TYP"
+      - name: check_frequency
+        description: "Check frequency classification. WellView: TYPFREQUENCY"
+      - name: check_result
+        description: "Result of the check (e.g., Acceptable, Failed). WellView: RESULT"
+      - name: inspector
+        description: "Person who conducted the check. WellView: INSPECTOR"
+      - name: tour
+        description: "Tour/shift when check was performed (Day/Night). WellView: TOUR"
+      - name: description
+        description: "Check topic or description. WellView: DES"
+      - name: comment
+        description: "Additional comments. WellView: COM"
+      # -- temporal
+      - name: check_datetime
+        description: "Datetime of the safety check. WellView: DTTM"
+      - name: next_check_datetime
+        description: "Next scheduled check datetime (calc). WellView: NEXTDTTMCALC"
+      - name: report_number
+        description: "Daily report number (calc). WellView: REPORTNOCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__safety_incidents
+  # ==========================================================================
+  - name: stg_wellview__safety_incidents
+    description: >
+      Safety incident staging from WellView. One row per safety event,
+      near miss, or injury record linked to a daily report.
+      Source: WVT_WVJOBSAFETYINCIDENT (CALC schema). Contains incident
+      classification (type, severity, cause), reportability flag, lost time,
+      estimated cost, witness info, and rig crew context. ~4,711 rows.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: safety_incident_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      # -- identifiers
+      - name: record_id
+        description: "WellView safety incident GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent daily report GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: phase_id
+        description: "Job program phase GUID (calc). WellView: IDRECJOBPROGRAMPHASECALC"
+      - name: last_rig_id
+        description: "Last rig assignment GUID (calc). WellView: IDRECLASTRIGCALC"
+      # -- classification
+      - name: incident_type
+        description: "Primary incident type (e.g., Near Miss, First Aid, LTI). WellView: TYP1"
+      - name: incident_subtype
+        description: "Secondary incident classification. WellView: TYP2"
+      - name: category
+        description: "Incident category. WellView: CATEGORY"
+      - name: severity
+        description: "Actual severity level. WellView: SEVERITY"
+      - name: potential_severity
+        description: "Potential severity if conditions were worse. WellView: POTENTIALSEVERITY"
+      - name: cause
+        description: "Root cause of the incident. WellView: CAUSE"
+      - name: ops_function
+        description: "Operational function during incident. WellView: OPSFUNCTION"
+      # -- flags
+      - name: is_reportable
+        description: "Whether the incident is OSHA/regulatory reportable (derived from REPORTABLE field)"
+      - name: is_lost_time_incident
+        description: "Whether the incident resulted in lost work time (derived from LOSTTIME > 0)"
+      - name: reportable
+        description: "Raw reportable field value for audit. WellView: REPORTABLE"
+      # -- measures
+      - name: lost_time_hours
+        description: "Hours of lost work time. WellView: LOSTTIME"
+      - name: estimated_cost
+        description: "Estimated cost of the incident. WellView: ESTCOST"
+      # -- temporal
+      - name: incident_datetime
+        description: "Datetime of the incident. WellView: DTTM"
+      - name: tour
+        description: "Tour/shift when incident occurred (Day/Night). WellView: TOUR"
+      - name: report_number
+        description: "Daily report number (calc). WellView: REPORTNOCALC"
+      # -- people
+      - name: reported_by
+        description: "Person who reported the incident. WellView: REPORTEDBY"
+      - name: witness
+        description: "Witness name. WellView: WITNESS"
+      - name: rig_crew_name
+        description: "Rig crew name (calc). WellView: RIGCREWNAMECALC"
+      # -- descriptive
+      - name: description
+        description: "Incident description. WellView: DES"
+      - name: comment
+        description: "Additional comments. WellView: COM"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

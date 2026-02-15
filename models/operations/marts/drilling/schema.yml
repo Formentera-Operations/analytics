@@ -393,3 +393,165 @@ models:
         description: >
           Whether this event should be included in NPT aggregations.
           Inverse of exclude_from_problem_time_calculations (NULL treated as countable).
+
+  - name: fct_stimulation
+    description: >
+      Stimulation fact table. One row per actual stimulation job from WellView.
+      Contains pre-aggregated metrics from WellView calc rollups: stage counts,
+      proppant mass, fluid volumes, treatment rates, pressures, and costs.
+      Enriched with job SK and well EID. Filtered to actual (not proposed) stims.
+      Table materialization. ~3,842 rows.
+    columns:
+      - name: stimulation_sk
+        description: Surrogate key (MD5 hash of record_id)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: record_id
+        description: WellView stimulation natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key (NULL when stim has no job link)
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: stimulation_type
+        description: Stimulation type (e.g., Hydraulic Frac, Acid)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: stim_start_date
+        description: Date the stimulation began (start_date cast to date)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: actual_total_stages
+        description: Total number of stages (WellView calc rollup)
+
+      - name: total_number_of_clusters
+        description: Total cluster count across all stages (WellView calc)
+
+      - name: proppant_total_calc_lb
+        description: Total proppant mass in pounds (WellView calc)
+
+      - name: volume_clean_total_calc_bbl
+        description: Total clean fluid volume in barrels (WellView calc)
+
+      - name: total_cost
+        description: Total stimulation cost
+
+      - name: has_job_link
+        description: Whether this stim record has a linked WellView job
+
+  - name: fct_safety_events
+    description: >
+      Safety event fact table. UNION of safety checks (~57,856 rows) and
+      safety incidents (~4,711 rows) from WellView. Discriminated by
+      event_type ('check' or 'incident'). Enriched with job SK (via
+      parent_record_id → job) and well EID. Table materialization. ~62,567 rows.
+    columns:
+      - name: safety_event_sk
+        description: Surrogate key (from source staging model)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: record_id
+        description: WellView safety record natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_id
+        description: WellView job GUID (parent_record_id from safety records)
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: event_type
+        description: Event discriminator — 'check' or 'incident'
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['check', 'incident']
+
+      - name: event_date
+        description: Date of the safety event
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: type_primary
+        description: Primary classification (check type or incident type)
+
+      - name: is_reportable
+        description: Whether the event is OSHA/regulatory reportable (incidents only)
+
+      - name: is_lost_time_incident
+        description: Whether the event resulted in lost work time (incidents only)
+
+      - name: lost_time_hours
+        description: Hours of lost work time (incidents only, NULL for checks)
+
+      - name: estimated_cost
+        description: Estimated cost of the event (incidents only, NULL for checks)
