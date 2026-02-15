@@ -11,5 +11,5 @@ prod-artifacts/
 # dbt MCP server (personal paths - see .env.dbt-mcp.example)
 .env.dbt-mcp
 
-# Local Claude Code scripts
-scripts/
+# Local Claude Code prompt scripts (not the harness tooling)
+scripts/sprint*-prompt.md
