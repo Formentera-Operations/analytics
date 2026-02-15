@@ -1,0 +1,68 @@
+# Peloton WellView: Tubing, Rods & Other Equipment
+# Tubing/rod/other strings + components + extension tables (ESP, packers, pumps, sensors, etc.)
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__tubing_strings, stg_wellview__tubing_components, stg_wellview__tubing_component_mandrels, stg_wellview__tubing_component_mandrel_inserts,
+#   stg_wellview__tubing_run_tallies, stg_wellview__rod_strings, stg_wellview__rod_components, stg_wellview__other_in_hole_equipment
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvTub: Tubing string information including run & pull dates, set depth. +parent
+#   wvTubComp: Tubing component details including OD, weight, grade. +parent
+#   wvTubCompHanger: Additional tubing hanger details +extension
+#   wvTubCompESPIntake: ESP intake detail information. +extension
+#   wvTubCompESPMotor: ESP motor and cables detail information. +extension
+#   wvTubCompESPMotorPwrCable: ESP power cable details. +parent
+#   wvTubCompESPPump: ESP pump details. +extension
+#   wvTubCompGravelPk: Gravel pack details. +extension
+#   wvTubCompMandrel: Mandrel station number. +extension
+#   wvTubCompMandrelInsert: Details of mandrel insert including run and pull date, material, sizes. +parent
+#   wvTubCompPacker: Packer details including setting information, elastomer type, polish bore siz...
+#   wvTubCompPCPStator: Progressive cavity pump stator details. +extension
+#   wvTubCompPump: Tubing pump details including barrel, plunger, seat assembly, standing & trav...
+#   wvTubCompSensor: Sensor details. +extension
+#   wvTubCompSensorSpec: Tubing sensor specifications. +parent
+#   wvTubCompSSSV: SSSV control type and fluid. +extension
+#   wvTubCompSSSVInsert: SSSV insert details. +parent
+#   wvTubCompTally: Individual joints run for the selected 'Tubing Component'. +parent
+#   wvTubCompControlLine: Line details relating to the 'Tubing Component'. +parent
+#   wvTubCompAcc: Accessories related to this component. +parent
+#   wvTubCompStatus: Status of component by date. +parent
+#   wvTubCompPresRating: Burst and collapse pressure changes over time. +parent
+#   wvRod: Rod string information including run & pull dates, set depth. +parent
+#   wvRodComp: Component details including OD, weight, grade. +parent
+#   wvRodCompPCPRotor: Progressive cavity pump rotor details. +extension
+#   wvRodCompPolishRod: Polish rod details. +extension
+#   wvRodCompPump: Rod pump details including barrel, plunger, seat assembly, standing & traveli...
+#   wvRodCompAcc: Accessories related to this component. +parent
+#   wvRodCompStatus: Status of component by date. +parent
+#   wvOtherStr: Wireline and Work Strings. +parent
+#   wvOtherStrComp: Wirelinehead/rope socket, perf guns and other details are tracked here. +parent
+#   wvOtherStrCompTally: Individual joints run for the selected 'Other String Component'. +parent
+#   wvOtherStrCompWireHead: wvOtherStrCompWireHead +extension
+#   wvOtherStrCompAcc: Accessories related to this component. +parent
+#   wvOtherStrCompStatus: Status of component by date. +parent
+#   wvOtherStrCompPresRating: Burst and collapse pressure changes over time. +parent
+#   wvOtherStrParam: Operating parameters by time and depth or the work string. +parent
+#   wvOtherStrParamLink: Link the operational parameter to the 'Perforation' and/or 'Other In Hole' +p...
+#   wvOtherInHole: Items in the hole that are not part of a string. +parent
+#   wvOtherInHoleGP: Detailed gravel pack information. +extension
+#   wvOtherInHolePacker: Detailed 'Other In Hole' packer information. +extension
+#   wvOtherInHolePlunger: Details of plungers associated with the bumper spring assembly. Plunger type,...
+#   wvOtherInHolePlug: Detailed 'Other In Hole' plug information. +extension
+#   wvOtherInHoleAcc: Accessories related to this component. +parent
+#   wvOtherInHolePresRating: Burst and collapse pressure changes over time. +parent
+#   wvOtherInHoleStatus: Status by date. +parent

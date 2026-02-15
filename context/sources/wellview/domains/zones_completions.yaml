@@ -1,0 +1,33 @@
+# Peloton WellView: Zones & Completions
+# Zone definitions, zone statuses/allocations/production types, completions, completion zones/statuses/links
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__zones
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvZone: Licensed producing (or injecting) intervals. Zones are 'wellbore contact inte...
+#   wvZoneStatus: Status of the 'Zone' by date. +parent
+#   wvZoneFormationCalc: Calculation of the formation(s). EQN: 'Zone.Top Depth' < 'Wellbore Formation....
+#   wvZoneAlloc: This table allows you to allocate a product and fraction on a specified date....
+#   wvZoneAlias: History of 'Zone' ID changes. +parent
+#   wvZoneProdTypCalc: Distinct list of 'Production Volume.activyttyp' for this 'Zone'. +parent
+#   wvZoneProdTypDataCalc: Summarized production data by 'Production Volume.Activity Type'. +parent
+#   wvCompletion: A wellbore completion is comprised of one or more wellbore contact intervals ...
+#   wvCompletionZone: Commingled 'Zone' that participate in this completion relationship. +parent
+#   wvCompletionStatus: Status of the 'Completion' by date. +parent
+#   wvCompletionLink: Define the completion relationship (flow path) by linking to 'Tubing String',...
+#   wvCompletionAlias: History of completion ID changes. +parent

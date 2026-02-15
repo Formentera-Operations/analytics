@@ -1,0 +1,29 @@
+# Peloton Prodview: Admin
+# Approval workflows, tasks, responsible teams, partner management, agreements
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dbl_day=day dbl_sec=seconds
+#   dbl_calc=double(calc) dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+
+# Tables in this domain (column details in tables/ directory):
+#   pvUnitAgreemt: Partnership Agreements +parent
+#   pvUnitAgreemtPartner: Agreement Partners +parent
+#   pvApproval: Approval Processes
+#   pvApprovalStep: Process Steps +parent
+#   pvApprovalStepDeliv: Deliverables +parent
+#   pvApprovalStepPreReq: Prerequisites +parent | All <avStep>s that must be completed prior to startin...
+#   pvApprovalStepRev: Approvers +parent | Approvals required for this <avStep>
+#   pvApprovalStepRevAction: Action Required +parent
+#   pvTask: Tasks | Tasks including request, assign, complete details.
+#   pvTaskDetail: Task Details +parent | Tasks including request, assign, complete details.
+#   pvRespTeam: Responsible Teams | Names, roles and contact information for personnel involv...
+#   pvRespTeamMember: Responsible Team Members +parent | Names, roles and contact information for p...
+#   pvPartner: Partners
+#   pvPartnerContact: Partner Contacts +parent

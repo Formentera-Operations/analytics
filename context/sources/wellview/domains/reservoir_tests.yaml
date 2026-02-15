@@ -1,0 +1,46 @@
+# Peloton WellView: Reservoir & Equipment Tests
+# Well tests (transient, pressure survey, flowback, fluid level, production log, injectivity), equipment pressure tests, SSSV tests
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__well_tests, stg_wellview__well_test_flow_periods, stg_wellview__well_test_results
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvWellTestTrans: Transient well test data. +parent
+#   wvWellTestTransDST: Cushion, blow, etc details relating to DST test. +extension
+#   wvWellTestTransFlowPer: Summary pressures, rates, volumes for each flow period of the 'Well Test'. +p...
+#   wvWellTestTransGauge: Gauge details including make, model, pressure & temperature ratings. +parent
+#   wvWellTestTransGaugeData: Pressure, temperature by date/time for the gauge. +parent
+#   wvWellTestTransRate: Rate, density, H2S, salinity by date/time. +parent
+#   wvWellTestTransResult: Results of the 'Well Test'. +parent
+#   wvWellTestPresTrav: Pressure survey test details. +parent
+#   wvWellTestPresTravGauge: Gauge details including make, model, pressure & temperature ratings. +parent
+#   wvWellTestPresTravData: Depth, pressure and temperature details for the 'Pressure Survey Test'. +parent
+#   wvWellTestFlowback: Initial flowback recorded during the completion of the well, prior to handove...
+#   wvWellTestFlowbackData: Initial flowback recorded during the completion of the well, prior to handove...
+#   wvWellTestFlowbackPer: Define the Start and End dates the daily testing period. The 'Flowback Test D...
+#   wvWellTestFluidLevel: Fluid Level test details. +parent
+#   wvWellTestLogProd: Production log test summary. +parent
+#   wvWellTestLogProdData: Production log test data by zone. +parent
+#   wvTestEquip: Equipment tests - Packer Isolation, SCVF, Wellhead, etc. +parent
+#   wvTestEquipData: Equipment test data details including time, pressure, and volume. +parent
+#   wvTestEquipAnnulus: wvTestEquipAnnulus +parent
+#   wvTestEquipValveDH: wvTestEquipValveDH +parent
+#   wvTestEquipValveSurf: Equipment test data details including time, pressure, and volume. +parent
+#   wvTestSSSV: SSSV test details. +parent
+#   wvTestSSSVData: SSSV test - time and pressure data. +parent
+#   wvWellTestProd: Details of production tests. +parent
+#   wvWellTestInject: Injectivity test details. +parent

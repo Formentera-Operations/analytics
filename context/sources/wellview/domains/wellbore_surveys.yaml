@@ -1,0 +1,45 @@
+# Peloton WellView: Wellbore, Surveys & Formations
+# Wellbores, sections, key depths, directional surveys, formations, reservoirs, rig activity calcs
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__wellbores, stg_wellview__wellbore_depths, stg_wellview__wellbore_directional_surveys, stg_wellview__wellbore_directional_survey_data,
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvWellbore: Description for all wellbores in this well. +parent
+#   wvWellboreSize: Intervals within the wellbore that are defined by changes in hole diameter. +...
+#   wvWellboreSummaryCalc: Summarized wellbore sections. This table is populated from 'Wellbore Section'...
+#   wvWellboreSumExcludeCalc: Summarized wellbore sections. This table is populated from 'Wellbore Section'...
+#   wvWellboreKeyDepth: Kick off and other key depths (ex. +parent
+#   wvWellboreDirSurvey: Directional (deviation) survey data. Any number of Proposed and Actual survey...
+#   wvWellboreDirSurveyData: Detailed directional (deviation) survey data including measured depth, inclin...
+#   wvWellboreFormation: Geological formations. +parent
+#   wvWellboreFormationPickOth: Other formation top and bottom picks that cannot be classified as Prog, Drill...
+#   wvWBFRigActivityCalc: Interpretation of derived time codes from sensor data grouped by 'Formation R...
+#   wvWBFRigActivityDtlCalc: Interpretation of derived time codes from sensor data grouped by <wvWBFRigAct...
+#   wvWBFStandCalc: Summary of Stand KPIs. +parent
+#   wvWellboreOther: Describes hole washouts or other changes in hole size not described in the 'W...
+#   wvWellborePBTD: Plug Back Total Depth history for the 'Wellbore'. +parent
+#   wvWellboreReservoir: A subsurface pool of hydrocarbons contained in rock formations. +parent
+#   wvWellboreStatus: Status of the 'Wellbore' by date. +parent
+#   wvWellboreAlias: History or Wellbore ID changes. +parent
+#   wvWCompDirSurveyCalc: Composite surveys for this wellbore, using the wellbore VS. +parent
+#   wvWCompDirSurveyPropCalc: Composite proposed surveys for this wellbore, using the wellbore VS. +parent
+#   wvWDSVSCalc: Directional survey curves of other wellbores in this well with vertical secti...
+#   wvWDSVSDataCalc: Directional survey data points with vertical section calculated using the dir...
+#   wvWBRigActivityCalc: Interpretation of derived time codes from sensor data grouped by 'Wellbore Ri...
+#   wvWBRigActivityDtlCalc: Interpretation of derived time codes from sensor data grouped by <wvWBRigActi...
+#   wvWBStandCalc: Summary of Stand KPIs. +parent

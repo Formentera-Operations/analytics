@@ -1,0 +1,23 @@
+# Peloton Prodview: Equipment
+# Equipment and compressors with service records, downtimes, runtime entries
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dbl_day=day dbl_sec=seconds
+#   dbl_calc=double(calc) dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+
+# Tables in this domain (column details in tables/ directory):
+#   pvUnitEquip: Equipment +parent
+#   pvUnitEquipService: Service Requirements +parent
+#   pvUnitEquipServiceRec: Service Records +parent | History of service performed on this equipment
+#   pvUnitEquipDownTm: Equipment Downtimes +parent
+#   pvUnitEquipUnit: Related Units or Nodes +parent
+#   pvUnitEquipMeas: Related Measurements +parent
+#   pvUnitCompressor: Compressors +parent
+#   pvUnitCompressorEntry: Compressor Entries +parent | Interstage Temperatures and Pressures

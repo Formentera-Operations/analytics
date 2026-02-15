@@ -1,0 +1,25 @@
+# Peloton Prodview: Allocations
+# Production allocation, disposition, distribution, and balance at monthly/daily granularity
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N) s32_calc=calculated_string32
+#   dbl_m3=m3 dbl_m3_calc=m3(calc) dbl_kPa=kPa dbl_degC=degC
+#   dbl_pct=proportion dbl_m3pm3=m3/m3 dbl_kgpm3=kg/m3 dbl_m3pd=m3/day
+#   dbl_deg=degrees dbl_kg=kilograms dbl_days=days dbl_day=day dbl_sec=seconds
+#   dbl_calc=double(calc) dt_calc=datetime(calc)
+#
+# OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+
+
+# Tables in this domain (column details in tables/ directory):
+#   pvUnitBalanceMonthCalc: Monthly Unit Balance +parent
+#   pvUnitBalanceMonthDayCalc: Daily Unit Balance +parent
+#   pvUnitAllocMonth: Monthly Allocations +parent | Lost Production Due to Downtime
+#   pvUnitAllocMonthDay: Daily Allocations +parent | Lost Production Due to Downtime
+#   pvUnitAllocWarn: Calculation Warnings +parent | Warnings or errors identified while calculatin...
+#   pvUnitDispMonth: Monthly Dispositions +parent
+#   pvUnitDispMonthDay: Daily Dispositions +parent
+#   pvUnitDistribMonth: Monthly Distributions +parent
+#   pvUnitDistribMonthDay: Daily Distributions +parent
+#   pvUnitTolOR: Balance Tolerance Exceptions +parent | Overrides the default tolerance specif...

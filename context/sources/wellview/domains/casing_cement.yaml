@@ -1,0 +1,45 @@
+# Peloton WellView: Casing, Cement & Wellheads
+# Casing strings/components, cement stages/fluids/additives, wellheads, leak-off tests
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__casing_strings, stg_wellview__casing_components, stg_wellview__casing_tally, stg_wellview__cement_activities,
+#   stg_wellview__cement_stages, stg_wellview__cement_stage_fluids, stg_wellview__wellheads, stg_wellview__wellhead_components
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvRiser: Riser information including run dates, depths and component details. +parent
+#   wvRiserComp: Component details including OD, weight, grade. +parent
+#   wvCas: Casing string information including run date, set depth. +parent
+#   wvCasComp: Casing component details including OD, weight, grade. +parent
+#   wvCasCompECP: Additional external casing packer details for the casing component. +extension
+#   wvCasCompLnrHngr: Additional liner hanger details for the casing component. +extension
+#   wvCasCompSlottedLnr: Additional slotted liner details for the casing component. +extension
+#   wvCasCompTally: Individual joints run for the selected casing component. +parent
+#   wvCasCompAcc: Accessories related to this component. +parent
+#   wvCasCompStatus: Status of component by date. +parent
+#   wvCasCompPresRating: Burst and collapse pressure changes over time. +parent
+#   wvCement: Description of the overall cement activity. +parent
+#   wvCementStage: Description of the cement stage(s) for the cement activity. +parent
+#   wvCementStageFluid: Each of the fluids that make up each stage, such as preflush, lead slurry, ta...
+#   wvCementStageFluidAdd: Additives in the cement stage fluid. +parent
+#   wvCementStageFluidVisc: Viscometer readings for the fluid. +parent
+#   wvWellhead: Wellhead details including installation date, size, make, model and working p...
+#   wvWellheadComp: Define the vertical components in the stack. +parent
+#   wvWellheadCompSub: Wellhead equipment outlet information including the equipment attached to the...
+#   wvWellheadCompSubAcc: Accessories related to this component. +parent
+#   wvWellheadCompAcc: Accessories related to this component. +parent
+#   wvTestLeakOff: Leak off test details including pressure, density, and volume. +parent
+#   wvTestLeakOffData: Test data details including time, pressure, and volume. +parent
