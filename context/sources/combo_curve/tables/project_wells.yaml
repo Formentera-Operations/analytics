@@ -22,6 +22,8 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   INPTID(txt) #IHS/Enverus INPT well identifier
   LEASENAME(txt) #Lease name
   LEASENUMBER(txt) #Lease number
+  DATASOURCECUSTOMNAME(txt) #Custom data source name assigned by operator
+  DRILLINGINFOID(txt) #DrillingInfo/Enverus well identifier
 
   # -- Project Context --
   PROJECT(txt) #Project ID this well belongs to (FK to PROJECTS.ID)
@@ -93,35 +95,26 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
 
   # -- Working Interest and Net Revenue Interest (project-specific) --
   WIOIL(float) #Working interest for oil (decimal, e.g., 0.75 = 75%)
-  WIGAS(float) #Working interest for gas (decimal)
-  WINGL(float) #Working interest for NGL (decimal)
-  WIDRIP(float) #Working interest for drip condensate (decimal)
   NRIOIL(float) #Net revenue interest for oil (decimal, e.g., 0.625 = 62.5%)
-  NRIGAS(float) #Net revenue interest for gas (decimal)
-  NRINGL(float) #Net revenue interest for NGL (decimal)
-  NRIDRIP(float) #Net revenue interest for drip condensate (decimal)
 
   # -- Economics (project-specific) --
   BEFOREINCOMETAXCASHFLOW(float) #Before income tax cash flow ($)
   FIRSTDISCOUNTCASHFLOW(float) #First discount rate cash flow / PV ($)
   GASBREAKEVEN(float) #Gas breakeven price ($/MCF)
   OILBREAKEVEN(float) #Oil breakeven price ($/BBL)
-  INVESTMENTPERWELL(float) #Total investment per well ($)
-  INTERNALRATEOFRETURN(float) #Internal rate of return (decimal, e.g., 0.25 = 25%)
-  PAYOUTMONTHS(float) #Payout period (months)
-  UNDISCOUNTEDROIBEFIT(float) #Undiscounted ROI before income tax (decimal)
+  IRR(float) #Internal rate of return (decimal, e.g., 0.25 = 25%)
+  PAYOUTDURATION(num) #Payout period duration
+  UNDISCOUNTEDROI(float) #Undiscounted return on investment (decimal)
+  ECONFIRSTPRODUCTIONDATE(txt) #Economic first production date (stored as TEXT)
+  ECONRUNDATE(ts) #Economic run date timestamp
 
-  # -- Reserves (project-specific) --
-  REMAINOILRESERVES(float) #Remaining oil reserves (MBBL)
-  REMAINGASRESERVES(float) #Remaining gas reserves (MMCF)
-  REMAINWATERRESERVES(float) #Remaining water reserves (MBBL)
-  REMAINBOERESERVES(float) #Remaining BOE reserves (MBOE)
-  REMAINMMCFGERESERVES(float) #Remaining gas equivalent reserves (MMCFGE)
-  EUROIL(float) #Estimated ultimate recovery for oil (MBBL)
-  EURGAS(float) #Estimated ultimate recovery for gas (MMCF)
-  EURBOE(float) #Estimated ultimate recovery BOE (MBOE)
-  EURMMCFGE(float) #Estimated ultimate recovery gas equivalent (MMCFGE)
-  EURWATER(float) #Estimated ultimate recovery water (MBBL)
+  # -- EUR and Shrunk EUR (project-specific) --
+  GASSHRUNKEUR(float) #Shrunk EUR for gas (MMCF, after shrinkage/processing losses)
+  GASSHRUNKEUROVERPLL(float) #Shrunk gas EUR per perforated lateral length (MCF/FT)
+  NGLSHRUNKEUR(float) #Shrunk EUR for NGL (MBBL)
+  NGLSHRUNKEUROVERPLL(num) #Shrunk NGL EUR per perforated lateral length
+  OILSHRUNKEUR(float) #Shrunk EUR for oil (MBBL)
+  OILSHRUNKEUROVERPLL(float) #Shrunk oil EUR per perforated lateral length (BBL/FT)
 
   # -- Completion --
   COMPLETIONSTARTDATE(txt) #Completion start date (stored as TEXT, requires date parsing)
@@ -130,6 +123,8 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   DRILLENDDATE(txt) #Drilling end date (stored as TEXT, requires date parsing)
   DATERIGRELEASE(txt) #Rig release date (stored as TEXT, requires date parsing)
   PERMITDATE(txt) #Permit issue date (stored as TEXT, requires date parsing)
+  GROSSPERFORATEDINTERVAL(num) #Gross perforated interval length (FT)
+  TIL(ts) #Turned-in-line date timestamp
 
   # -- First Treatment (first frac job) --
   FIRSTSTAGECOUNT(int) #Number of frac stages in first treatment
@@ -139,6 +134,9 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   FIRSTPROPPANTPERFLUID(float) #Proppant loading in first treatment (LB/GAL)
   FIRSTPROPPANTPERPERFORATEDINTERVAL(float) #Proppant per perforated interval in first treatment (LB/FT)
   FIRSTMAXINJECTIONRATE(int) #Max injection rate in first treatment (BPM)
+  FIRSTMAXINJECTIONPRESSURE(num) #Max injection pressure in first treatment (PSI)
+  FIRSTADDITIVEVOLUME(float) #Additive volume in first treatment (BBL)
+  FIRSTCLUSTERCOUNT(num) #Number of perforation clusters in first treatment
   FIRSTFRACVENDOR(txt) #Frac vendor for first treatment
   FIRSTTREATMENTTYPE(txt) #Treatment type for first frac job
 
@@ -149,10 +147,22 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   TOTALPROPWEIGHT(int) #Total proppant weight across all treatments (LB)
   TOTALPROPPANTPERFLUID(float) #Total proppant loading (LB/GAL)
   TOTALPROPPANTPERPERFORATEDINTERVAL(float) #Total proppant per perforated interval (LB/FT)
+  TOTALADDITIVEVOLUME(float) #Total additive volume across all treatments (BBL)
+  TOTALCLUSTERCOUNT(num) #Total number of perforation clusters across all treatments
   NUMTREATMENTRECORDS(int) #Number of treatment records for this well
   PROPPANTTYPE(txt) #Proppant type (e.g., Sand, Ceramic, Resin Coated)
   PROPPANTMESHSIZE(txt) #Proppant mesh size (e.g., 40/70, 100 mesh)
   STAGESPACING(int) #Stage spacing (FT)
+
+  # -- Refrac Treatment --
+  REFRACDATE(txt) #Refrac treatment date (stored as TEXT, requires date parsing)
+  REFRACADDITIVEVOLUME(float) #Additive volume in refrac treatment (BBL)
+  REFRACCLUSTERCOUNT(num) #Number of perforation clusters in refrac treatment
+  REFRACFLUIDPERPERFORATEDINTERVAL(float) #Fluid per perforated interval in refrac treatment (BBL/FT)
+  REFRACFLUIDVOLUME(float) #Total fluid volume in refrac treatment (BBL)
+  REFRACPROPWEIGHT(float) #Total proppant weight in refrac treatment (LB)
+  REFRACPROPPANTPERFLUID(float) #Proppant loading in refrac treatment (LB/GAL)
+  REFRACPROPPANTPERPERFORATEDINTERVAL(float) #Proppant per perforated interval in refrac treatment (LB/FT)
 
   # -- Production Metrics: Cumulative --
   CUMOIL(float) #Cumulative oil production (MBBL)
@@ -248,11 +258,11 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   MATRIXPERMEABILITY(int) #Matrix permeability (mD)
   THICKNESS(int) #Gross formation thickness (FT)
   OILAPIGRAVITY(float) #Oil API gravity (degrees)
+  INITIALRESTEMP(num) #Initial reservoir temperature (degrees F)
 
   # -- Well Equipment --
   CASINGID(int) #Casing inner diameter (IN)
   TUBINGID(int) #Tubing inner diameter (IN)
-  TUBINGDEPTH(int) #Tubing set depth (FT)
   CHOKESIZE(int) #Choke size (64ths IN)
   UPPERPERFORATION(int) #Upper perforation depth (FT)
   LOWERPERFORATION(int) #Lower perforation depth (FT)
@@ -260,6 +270,10 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   # -- Parent/Child --
   PARENTCHILDANYZONE(txt) #Parent/child classification across all zones
   PARENTCHILDSAMEZONE(txt) #Parent/child classification within same zone
+
+  # -- Horizontal Well Spacing --
+  HZWELLSPACINGANYZONE(num) #Horizontal well spacing across any zone (FT)
+  HZWELLSPACINGSAMEZONE(num) #Horizontal well spacing within same zone (FT)
 
   # -- Gas Analysis --
   GASSPECIFICGRAVITY(int) #Gas specific gravity (air = 1.0)
@@ -270,6 +284,7 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
 
   # -- Data Availability --
   HASDAILY(bool) #True if daily production data exists
+  HASDIRECTIONALSURVEY(bool) #True if directional survey data exists
   HASMONTHLY(bool) #True if monthly production data exists
 
   # -- Import Tracking --
@@ -278,49 +293,82 @@ PROJECT_WELLS: Project-scoped well data. Extends company WELLS with economic/for
   MOSTRECENTIMPORTTYPE(txt) #Type of most recent import
 
   # -- Custom Fields (tenant-specific, Formentera mappings noted where known) --
-  CUSTOMBOOL0(bool) #Custom boolean field 0
-  CUSTOMBOOL4(bool) #Custom boolean field 4
-  CUSTOMDATE0(ts) #Custom date field 0
-  CUSTOMDATE9(ts) #Custom date field 9
-  CUSTOMNUMBER0(float) #Custom number field 0
-  CUSTOMNUMBER1(int) #Custom number field 1
-  CUSTOMNUMBER2(int) #Custom number field 2
-  CUSTOMNUMBER3(int) #Custom number field 3
-  CUSTOMNUMBER5(int) #Custom number field 5
-  CUSTOMNUMBER6(int) #Custom number field 6
-  CUSTOMNUMBER7(int) #Custom number field 7
-  CUSTOMNUMBER9(int) #Custom number field 9
-  CUSTOMNUMBER18(int) #Custom number field 18
-  CUSTOMNUMBER19(int) #Custom number field 19
-  CUSTOMSTRING0(txt) #Custom string field 0
-  CUSTOMSTRING1(txt) #Custom string field 1 (Formentera: reserve_category)
-  CUSTOMSTRING2(txt) #Custom string field 2
-  CUSTOMSTRING3(txt) #Custom string field 3 (Formentera: operator_category — "OP" = operated)
-  CUSTOMSTRING4(txt) #Custom string field 4
-  CUSTOMSTRING5(txt) #Custom string field 5
-  CUSTOMSTRING6(txt) #Custom string field 6
-  CUSTOMSTRING7(txt) #Custom string field 7
-  CUSTOMSTRING8(txt) #Custom string field 8
-  CUSTOMSTRING9(txt) #Custom string field 9
-  CUSTOMSTRING11(txt) #Custom string field 11
-  CUSTOMSTRING12(txt) #Custom string field 12
-  CUSTOMSTRING13(txt) #Custom string field 13
-  CUSTOMSTRING14(txt) #Custom string field 14
-  CUSTOMSTRING15(txt) #Custom string field 15
-  CUSTOMSTRING16(txt) #Custom string field 16
-  CUSTOMSTRING17(txt) #Custom string field 17
-  CUSTOMSTRING18(txt) #Custom string field 18
-  CUSTOMSTRING19(txt) #Custom string field 19
-  CUSTOMSTRING20(txt) #Custom string field 20
-  CUSTOMSTRING21(txt) #Custom string field 21
-  CUSTOMSTRING22(txt) #Custom string field 22 (Formentera: company_name)
+  CUSTOMBOOL0(bool) #Tenant-configurable custom boolean field 0
+  CUSTOMBOOL1(bool) #Tenant-configurable custom boolean field 1
+  CUSTOMBOOL2(bool) #Tenant-configurable custom boolean field 2
+  CUSTOMBOOL4(bool) #Tenant-configurable custom boolean field 4
+  CUSTOMDATE0(ts) #Tenant-configurable custom date field 0
+  CUSTOMDATE1(txt) #Tenant-configurable custom date field 1 (stored as TEXT)
+  CUSTOMDATE2(txt) #Tenant-configurable custom date field 2 (stored as TEXT)
+  CUSTOMDATE3(txt) #Tenant-configurable custom date field 3 (stored as TEXT)
+  CUSTOMDATE4(txt) #Tenant-configurable custom date field 4 (stored as TEXT)
+  CUSTOMDATE9(ts) #Tenant-configurable custom date field 9
+  CUSTOMNUMBER0(float) #Tenant-configurable custom number field 0
+  CUSTOMNUMBER1(int) #Tenant-configurable custom number field 1
+  CUSTOMNUMBER2(int) #Tenant-configurable custom number field 2
+  CUSTOMNUMBER3(int) #Tenant-configurable custom number field 3
+  CUSTOMNUMBER4(float) #Tenant-configurable custom number field 4
+  CUSTOMNUMBER5(int) #Tenant-configurable custom number field 5
+  CUSTOMNUMBER6(int) #Tenant-configurable custom number field 6
+  CUSTOMNUMBER7(int) #Tenant-configurable custom number field 7
+  CUSTOMNUMBER8(float) #Tenant-configurable custom number field 8
+  CUSTOMNUMBER9(int) #Tenant-configurable custom number field 9
+  CUSTOMNUMBER10(float) #Tenant-configurable custom number field 10
+  CUSTOMNUMBER11(float) #Tenant-configurable custom number field 11
+  CUSTOMNUMBER12(float) #Tenant-configurable custom number field 12
+  CUSTOMNUMBER13(float) #Tenant-configurable custom number field 13
+  CUSTOMNUMBER14(float) #Tenant-configurable custom number field 14
+  CUSTOMNUMBER15(float) #Tenant-configurable custom number field 15
+  CUSTOMNUMBER16(float) #Tenant-configurable custom number field 16
+  CUSTOMNUMBER17(float) #Tenant-configurable custom number field 17
+  CUSTOMNUMBER18(int) #Tenant-configurable custom number field 18
+  CUSTOMNUMBER19(int) #Tenant-configurable custom number field 19
+  CUSTOMSTRING0(txt) #Tenant-configurable custom string field 0
+  CUSTOMSTRING1(txt) #Tenant-configurable custom string field 1 (Formentera: reserve_category)
+  CUSTOMSTRING2(txt) #Tenant-configurable custom string field 2
+  CUSTOMSTRING3(txt) #Tenant-configurable custom string field 3 (Formentera: operator_category — "OP" = operated)
+  CUSTOMSTRING4(txt) #Tenant-configurable custom string field 4
+  CUSTOMSTRING5(txt) #Tenant-configurable custom string field 5
+  CUSTOMSTRING6(txt) #Tenant-configurable custom string field 6
+  CUSTOMSTRING7(txt) #Tenant-configurable custom string field 7
+  CUSTOMSTRING8(txt) #Tenant-configurable custom string field 8
+  CUSTOMSTRING9(txt) #Tenant-configurable custom string field 9
+  CUSTOMSTRING10(txt) #Tenant-configurable custom string field 10
+  CUSTOMSTRING11(txt) #Tenant-configurable custom string field 11
+  CUSTOMSTRING12(txt) #Tenant-configurable custom string field 12
+  CUSTOMSTRING13(txt) #Tenant-configurable custom string field 13
+  CUSTOMSTRING14(txt) #Tenant-configurable custom string field 14
+  CUSTOMSTRING15(txt) #Tenant-configurable custom string field 15
+  CUSTOMSTRING16(txt) #Tenant-configurable custom string field 16
+  CUSTOMSTRING17(txt) #Tenant-configurable custom string field 17
+  CUSTOMSTRING18(txt) #Tenant-configurable custom string field 18
+  CUSTOMSTRING19(txt) #Tenant-configurable custom string field 19
+  CUSTOMSTRING20(txt) #Tenant-configurable custom string field 20
+  CUSTOMSTRING21(txt) #Tenant-configurable custom string field 21
+  CUSTOMSTRING22(txt) #Tenant-configurable custom string field 22 (Formentera: company_name)
+  CUSTOMSTRING23(txt) #Tenant-configurable custom string field 23
+  CUSTOMSTRING24(txt) #Tenant-configurable custom string field 24
   TYPECURVEAREA(txt) #Type curve area classification
+
+  # -- Project Custom Headers (Portable connector artifacts) --
+  PROJECTCUSTOMHEADER(txt) #Portable connector artifact — project-scoped custom header
+  PROJECTCUSTOMHEADER1(txt) #Portable connector artifact — project-scoped custom header 1
+  PROJECTCUSTOMHEADER2(txt) #Portable connector artifact — project-scoped custom header 2
+  PROJECTCUSTOMHEADER3(txt) #Portable connector artifact — project-scoped custom header 3
+  PROJECTCUSTOMHEADER4(txt) #Portable connector artifact — project-scoped custom header 4
+  PROJECTCUSTOMHEADER5(txt) #Portable connector artifact — project-scoped custom header 5
+  PROJECTCUSTOMHEADER6(txt) #Portable connector artifact — project-scoped custom header 6
+  PROJECTCUSTOMHEADER7(txt) #Portable connector artifact — project-scoped custom header 7
+  PROJECTCUSTOMHEADER8(txt) #Portable connector artifact — project-scoped custom header 8
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact — project-scoped custom header 9
+  PROJECTCUSTOMHEADER10(txt) #Portable connector artifact — project-scoped custom header 10
+  PROJECTCUSTOMHEADER11(txt) #Portable connector artifact — project-scoped custom header 11
+  PROJECTCUSTOMHEADER12(txt) #Portable connector artifact — project-scoped custom header 12
+  PROJECTCUSTOMHEADER13(txt) #Portable connector artifact — project-scoped custom header 13
 
   # -- Metadata --
   CREATEDAT(ts) #Record creation timestamp (ComboCurve)
   UPDATEDAT(ts) #Record last update timestamp (ComboCurve)
   DATASOURCE(txt) #Data source system (e.g., IHS, DI, manual)
   DATAPOOL(txt) #Data pool identifier
-  DELETEDDATE(txt) #Soft delete timestamp (non-null = deleted, stored as TEXT)
-  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (not a ComboCurve field)
   _PORTABLE_EXTRACTED(ts) #Portable ingestion timestamp (maps to _loaded_at in staging)

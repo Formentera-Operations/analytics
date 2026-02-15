@@ -159,69 +159,69 @@ ECON_RUN_MONTHLY_EXPORT_RESULTS: Monthly cash flow and economic detail by well p
   TOTALTANGIBLECAPEX(txt) #Total tangible capital expenditure
   TOTALGROSSCAPEX(txt) #Total gross capital expenditure (before WI adjustment)
   # --- CAPEX (Drilling) ---
-  DRILLINGCAPEX(txt) #Drilling capital expenditure
-  DRILLINGINTANGIBLECAPEX(txt) #Drilling intangible CAPEX
-  DRILLINGTANGIBLECAPEX(txt) #Drilling tangible CAPEX
+  TOTALDRILLING(txt) #Total drilling CAPEX (requires numeric casting)
+  INTANGIBLEDRILLING(txt) #Intangible drilling CAPEX (requires numeric casting)
+  TANGIBLEDRILLING(txt) #Tangible drilling CAPEX (requires numeric casting)
   # --- CAPEX (Completion) ---
-  COMPLETIONCAPEX(txt) #Completion capital expenditure
-  COMPLETIONINTANGIBLECAPEX(txt) #Completion intangible CAPEX
-  COMPLETIONTANGIBLECAPEX(txt) #Completion tangible CAPEX
+  TOTALCOMPLETION(txt) #Total completion CAPEX (requires numeric casting)
+  INTANGIBLECOMPLETION(txt) #Intangible completion CAPEX (requires numeric casting)
+  TANGIBLECOMPLETION(txt) #Tangible completion CAPEX (requires numeric casting)
   # --- CAPEX (Development) ---
-  DEVELOPMENTCAPEX(txt) #Development capital expenditure
-  DEVELOPMENTINTANGIBLECAPEX(txt) #Development intangible CAPEX
-  DEVELOPMENTTANGIBLECAPEX(txt) #Development tangible CAPEX
+  TOTALDEVELOPMENT(txt) #Total development CAPEX (requires numeric casting)
+  INTANGIBLEDEVELOPMENT(txt) #Intangible development CAPEX (requires numeric casting)
+  TANGIBLEDEVELOPMENT(txt) #Tangible development CAPEX (requires numeric casting)
   # --- CAPEX (Facilities) ---
-  FACILITIESCAPEX(txt) #Facilities capital expenditure
-  FACILITIESINTANGIBLECAPEX(txt) #Facilities intangible CAPEX
-  FACILITIESTANGIBLECAPEX(txt) #Facilities tangible CAPEX
+  TOTALFACILITIES(txt) #Total facilities CAPEX (requires numeric casting)
+  INTANGIBLEFACILITIES(txt) #Intangible facilities CAPEX (requires numeric casting)
+  TANGIBLEFACILITIES(txt) #Tangible facilities CAPEX (requires numeric casting)
   # --- CAPEX (Pad) ---
-  PADCAPEX(txt) #Pad capital expenditure
-  PADINTANGIBLECAPEX(txt) #Pad intangible CAPEX
-  PADTANGIBLECAPEX(txt) #Pad tangible CAPEX
+  TOTALPAD(txt) #Total pad CAPEX (requires numeric casting)
+  INTANGIBLEPAD(txt) #Intangible pad CAPEX (requires numeric casting)
+  TANGIBLEPAD(txt) #Tangible pad CAPEX (requires numeric casting)
   # --- CAPEX (Pipelines) ---
-  PIPELINESCAPEX(txt) #Pipelines capital expenditure
-  PIPELINESINTANGIBLECAPEX(txt) #Pipelines intangible CAPEX
-  PIPELINESTANGIBLECAPEX(txt) #Pipelines tangible CAPEX
+  TOTALPIPELINES(txt) #Total pipelines CAPEX (requires numeric casting)
+  INTANGIBLEPIPELINES(txt) #Intangible pipelines CAPEX (requires numeric casting)
+  TANGIBLEPIPELINES(txt) #Tangible pipelines CAPEX (requires numeric casting)
   # --- CAPEX (Waterline) ---
-  WATERLINECAPEX(txt) #Waterline capital expenditure
-  WATERLINEINTANGIBLECAPEX(txt) #Waterline intangible CAPEX
-  WATERLINETANGIBLECAPEX(txt) #Waterline tangible CAPEX
+  TOTALWATERLINE(txt) #Total waterline CAPEX (requires numeric casting)
+  INTANGIBLEWATERLINE(txt) #Intangible waterline CAPEX (requires numeric casting)
+  TANGIBLEWATERLINE(txt) #Tangible waterline CAPEX (requires numeric casting)
   # --- CAPEX (Appraisal) ---
-  APPRAISALCAPEX(txt) #Appraisal capital expenditure
-  APPRAISALINTANGIBLECAPEX(txt) #Appraisal intangible CAPEX
-  APPRAISALTANGIBLECAPEX(txt) #Appraisal tangible CAPEX
+  TOTALAPPRAISAL(txt) #Total appraisal CAPEX (requires numeric casting)
+  INTANGIBLEAPPRAISAL(txt) #Intangible appraisal CAPEX (requires numeric casting)
+  TANGIBLEAPPRAISAL(txt) #Tangible appraisal CAPEX (requires numeric casting)
   # --- CAPEX (Exploration) ---
-  EXPLORATIONCAPEX(txt) #Exploration capital expenditure
-  EXPLORATIONINTANGIBLECAPEX(txt) #Exploration intangible CAPEX
-  EXPLORATIONTANGIBLECAPEX(txt) #Exploration tangible CAPEX
+  TOTALEXPLORATION(txt) #Total exploration CAPEX (requires numeric casting)
+  INTANGIBLEEXPLORATION(txt) #Intangible exploration CAPEX (requires numeric casting)
+  TANGIBLEEXPLORATION(txt) #Tangible exploration CAPEX (requires numeric casting)
   # --- CAPEX (Artificial Lift) ---
-  ARTIFICIALLIFTCAPEX(txt) #Artificial lift capital expenditure
-  ARTIFICIALLIFTINTANGIBLECAPEX(txt) #Artificial lift intangible CAPEX
-  ARTIFICIALLIFTTANGIBLECAPEX(txt) #Artificial lift tangible CAPEX
+  TOTALARTIFICIALLIFT(txt) #Total artificial lift CAPEX (requires numeric casting)
+  INTANGIBLEARTIFICIALLIFT(txt) #Intangible artificial lift CAPEX (requires numeric casting)
+  TANGIBLEARTIFICIALLIFT(txt) #Tangible artificial lift CAPEX (requires numeric casting)
   # --- CAPEX (Workover) ---
-  WORKOVERCAPEX(txt) #Workover capital expenditure
-  WORKOVERINTANGIBLECAPEX(txt) #Workover intangible CAPEX
-  WORKOVERTANGIBLECAPEX(txt) #Workover tangible CAPEX
+  TOTALWORKOVER(txt) #Total workover CAPEX (requires numeric casting)
+  INTANGIBLEWORKOVER(txt) #Intangible workover CAPEX (requires numeric casting)
+  TANGIBLEWORKOVER(txt) #Tangible workover CAPEX (requires numeric casting)
   # --- CAPEX (Abandonment) ---
-  ABANDONMENTCAPEX(txt) #Abandonment capital expenditure
-  ABANDONMENTINTANGIBLECAPEX(txt) #Abandonment intangible CAPEX
-  ABANDONMENTTANGIBLECAPEX(txt) #Abandonment tangible CAPEX
+  TOTALABANDONMENT(txt) #Total abandonment CAPEX (requires numeric casting)
+  INTANGIBLEABANDONMENT(txt) #Intangible abandonment CAPEX (requires numeric casting)
+  TANGIBLEABANDONMENT(txt) #Tangible abandonment CAPEX (requires numeric casting)
   # --- CAPEX (Salvage) ---
-  SALVAGECAPEX(txt) #Salvage capital expenditure
-  SALVAGEINTANGIBLECAPEX(txt) #Salvage intangible CAPEX
-  SALVAGETANGIBLECAPEX(txt) #Salvage tangible CAPEX
+  TOTALSALVAGE(txt) #Total salvage CAPEX (requires numeric casting)
+  INTANGIBLESALVAGE(txt) #Intangible salvage CAPEX (requires numeric casting)
+  TANGIBLESALVAGE(txt) #Tangible salvage CAPEX (requires numeric casting)
   # --- CAPEX (Leasehold) ---
-  LEASEHOLDCAPEX(txt) #Leasehold capital expenditure
-  LEASEHOLDINTANGIBLECAPEX(txt) #Leasehold intangible CAPEX
-  LEASEHOLDTANGIBLECAPEX(txt) #Leasehold tangible CAPEX
+  TOTALLEASEHOLD(txt) #Total leasehold CAPEX (requires numeric casting)
+  INTANGIBLELEASEHOLD(txt) #Intangible leasehold CAPEX (requires numeric casting)
+  TANGIBLELEASEHOLD(txt) #Tangible leasehold CAPEX (requires numeric casting)
   # --- CAPEX (Legal) ---
-  LEGALCAPEX(txt) #Legal capital expenditure
-  LEGALINTANGIBLECAPEX(txt) #Legal intangible CAPEX
-  LEGALTANGIBLECAPEX(txt) #Legal tangible CAPEX
+  TOTALLEGAL(txt) #Total legal CAPEX (requires numeric casting)
+  INTANGIBLELEGAL(txt) #Intangible legal CAPEX (requires numeric casting)
+  TANGIBLELEGAL(txt) #Tangible legal CAPEX (requires numeric casting)
   # --- CAPEX (Other Investment) ---
-  OTHERINVESTMENTCAPEX(txt) #Other investment capital expenditure
-  OTHERINVESTMENTINTANGIBLECAPEX(txt) #Other investment intangible CAPEX
-  OTHERINVESTMENTTANGIBLECAPEX(txt) #Other investment tangible CAPEX
+  TOTALOTHERINVESTMENT(txt) #Total other investment CAPEX (requires numeric casting)
+  INTANGIBLEOTHERINVESTMENT(txt) #Intangible other investment CAPEX (requires numeric casting)
+  TANGIBLEOTHERINVESTMENT(txt) #Tangible other investment CAPEX (requires numeric casting)
   # --- Taxes ---
   FEDERALINCOMETAX(txt) #Federal income tax
   STATEINCOMETAX(txt) #State income tax
