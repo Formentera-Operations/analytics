@@ -1,0 +1,1425 @@
+# Snowflake Cortex Analyst Semantic Model
+# Domain: Drilling Cost, Time & NPT Analysis
+# Tables: DIM_JOB (trimmed), DIM_PHASE, FCT_DAILY_DRILLING_COST, FCT_DRILLING_TIME, FCT_NPT_EVENTS
+# Columns: 99 | Metrics: 30
+
+name: Drilling Cost & Time
+description: >
+  Drilling operations cost tracking, time accounting, and non-productive time
+  analysis for Formentera Operations. Covers daily cost line items by vendor
+  and account hierarchy, activity-level time logs with 4-level code structure,
+  phase-level plan vs actual performance, and NPT event categorization.
+  Data sourced from WellView via dbt mart models. ~2,000 operated wells.
+
+tables:
+  # ─────────────────────────────────────────────
+  # DIMENSION: Jobs (trimmed for cost/time/NPT)
+  # ─────────────────────────────────────────────
+  - name: DIM_JOB
+    synonyms:
+      - jobs
+      - drilling jobs
+      - well jobs
+      - operations
+      - workovers
+    description: >
+      One row per drilling, completion, workover, or well servicing job.
+      The central organizing entity for all well work. Trimmed to fields
+      relevant for cost tracking, time analysis, and NPT review.
+      42,825 jobs across ~2,000 wells.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: DIM_JOB
+    primary_key:
+      columns:
+        - JOB_SK
+
+    dimensions:
+      - name: JOB_SK
+        synonyms:
+          - job surrogate key
+        description: Surrogate key for joining to fact tables (MD5 hash of job_id)
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_ID
+        synonyms:
+          - job identifier
+          - WellView job ID
+        description: WellView natural key (GUID) for the job
+        expr: JOB_ID
+        data_type: VARCHAR
+        unique: true
+
+      - name: EID
+        synonyms:
+          - well identifier
+          - entity ID
+          - well number
+        description: >
+          Formentera 6-character well entity identifier. Links to well_360
+          golden record. NULL for historical wells not in the well_360 spine.
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        synonyms:
+          - WellView well ID
+        description: WellView internal well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_TYPE_PRIMARY
+        synonyms:
+          - job type
+          - operation type
+          - work type
+        description: >
+          Primary job classification. Common values: Initial Drilling,
+          Original Completion, Flowback, Facilites Initial Build,
+          Workover, Recompletion, Swab, Pump Change, Rod Part, Tubing Repair.
+        expr: JOB_TYPE_PRIMARY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Initial Drilling
+          - Original Completion
+          - Flowback
+          - Facilites Initial Build
+          - Workover
+          - Swab
+
+      - name: JOB_CATEGORY
+        synonyms:
+          - category
+          - job class
+        description: >
+          High-level job grouping. Common values: Drilling, Completion,
+          Facilities, General Well Servicing, Well Work, Workover,
+          Production Maintenance, LOE, ReCompletion/Workover.
+        expr: JOB_CATEGORY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Drilling
+          - Completion
+          - Facilities
+          - General Well Servicing
+          - Well Work
+          - Workover
+
+      - name: TARGET_FORMATION
+        synonyms:
+          - formation
+          - target zone
+        description: Primary geological target formation for the job
+        expr: TARGET_FORMATION
+        data_type: VARCHAR
+        unique: false
+
+      - name: STATUS_PRIMARY
+        synonyms:
+          - job status
+        description: Current status of the job
+        expr: STATUS_PRIMARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: RIG_CONTRACTOR
+        synonyms:
+          - rig company
+          - drilling contractor
+        description: Name of the rig contractor (from latest rig assignment)
+        expr: RIG_CONTRACTOR
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Patterson UTI
+          - Helmerich & Payne
+          - Nabors
+
+      - name: RIG_NUMBER
+        synonyms:
+          - rig
+          - rig name
+        description: Rig number or identifier
+        expr: RIG_NUMBER
+        data_type: VARCHAR
+        unique: false
+
+      - name: AFE_NUMBER_PRIMARY
+        synonyms:
+          - AFE
+          - AFE number
+          - authorization for expenditure
+        description: Primary AFE number associated with this job
+        expr: AFE_NUMBER_PRIMARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: IS_ACTIVE
+        synonyms:
+          - active
+          - still running
+          - open
+        description: >
+          True when the job has no end date. Note: 8% of jobs are
+          incorrectly active due to legacy data or close-out gaps.
+        expr: IS_ACTIVE
+        data_type: BOOLEAN
+        unique: false
+
+    time_dimensions:
+      - name: JOB_START_AT
+        synonyms:
+          - start date
+          - job start
+          - began
+        description: Date and time the job began
+        expr: JOB_START_AT
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: JOB_END_AT
+        synonyms:
+          - end date
+          - job end
+          - finished
+          - completed date
+        description: Date and time the job ended (NULL if still active)
+        expr: JOB_END_AT
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: SPUD_AT
+        synonyms:
+          - spud date
+          - spud
+          - when was it spudded
+        description: Date and time the well was spudded (drilling jobs only)
+        expr: SPUD_AT
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: DURATION_DAYS
+        synonyms:
+          - job duration
+          - how long
+          - days
+        description: >
+          Job duration in days (start to end, or start to now if active).
+          Unreliable for active jobs with close-out gaps.
+        expr: DURATION_DAYS
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: TARGET_DEPTH_FT
+        synonyms:
+          - target depth
+          - planned depth
+          - TD target
+        description: Planned target depth in feet
+        expr: TARGET_DEPTH_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: TOTAL_DEPTH_FT
+        synonyms:
+          - total depth
+          - TD
+          - actual depth
+        description: Actual total depth reached in feet
+        expr: TOTAL_DEPTH_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: DEPTH_DRILLED_FT
+        synonyms:
+          - footage drilled
+          - drilled depth
+          - footage
+        description: Total footage drilled in feet
+        expr: DEPTH_DRILLED_FT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: ROP_FT_PER_HR
+        synonyms:
+          - ROP
+          - rate of penetration
+          - drilling rate
+        description: Average rate of penetration in feet per hour
+        expr: ROP_FT_PER_HR
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: DRILLING_TIME_HOURS
+        synonyms:
+          - drill time
+          - rotating hours
+        description: Total drilling time in hours (rotating + sliding)
+        expr: DRILLING_TIME_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: AFE_AMOUNT_PRIMARY
+        synonyms:
+          - AFE budget
+          - authorized amount
+          - budget
+        description: Gross AFE authorized amount in USD
+        expr: AFE_AMOUNT_PRIMARY
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_FIELD_ESTIMATE
+        synonyms:
+          - field estimate
+          - actual cost
+          - FE
+          - estimated cost
+        description: Total field estimate cost in USD (actual spend tracker)
+        expr: TOTAL_FIELD_ESTIMATE
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      # ── Cost Efficiency ──
+      - name: avg_cost_per_foot
+        synonyms:
+          - cost per foot
+          - drilling cost per foot
+          - $/ft
+        description: >
+          Average drilling cost per foot of depth drilled. Key well economics
+          benchmark. Lower is better. Calculated as total field estimate divided
+          by total footage drilled.
+        expr: SUM(TOTAL_FIELD_ESTIMATE) / NULLIF(SUM(DEPTH_DRILLED_FT), 0)
+
+      - name: afe_variance_pct
+        synonyms:
+          - budget variance percent
+          - AFE overrun
+          - over budget percentage
+        description: >
+          Percentage variance from AFE budget. Negative = over budget.
+          Calculated as (AFE amount - field estimate) / AFE amount.
+        expr: >
+          SUM(AFE_AMOUNT_PRIMARY - TOTAL_FIELD_ESTIMATE)
+          / NULLIF(SUM(AFE_AMOUNT_PRIMARY), 0)
+
+      # ── Drilling Performance ──
+      - name: avg_rop
+        synonyms:
+          - average rate of penetration
+          - average ROP
+          - drilling speed
+          - feet per hour
+        description: >
+          Average rate of penetration across jobs in feet per hour.
+          Higher is better. Key drilling efficiency metric.
+        expr: AVG(ROP_FT_PER_HR)
+
+      - name: avg_job_duration
+        synonyms:
+          - average job length
+          - average days per job
+          - mean duration
+        description: Average job duration in days (excludes jobs with no end date)
+        expr: AVG(CASE WHEN IS_ACTIVE = FALSE THEN DURATION_DAYS END)
+
+      # ── Portfolio Counts ──
+      - name: total_jobs
+        synonyms:
+          - job count
+          - number of jobs
+          - how many jobs
+        description: Total count of jobs
+        expr: COUNT(*)
+
+      - name: active_job_count
+        synonyms:
+          - open jobs
+          - active jobs
+          - running jobs
+        description: Count of currently active (open) jobs
+        expr: COUNT_IF(IS_ACTIVE = TRUE)
+
+      - name: total_footage_drilled
+        synonyms:
+          - total footage
+          - feet drilled
+          - footage
+        description: Total footage drilled across all jobs in feet
+        expr: SUM(DEPTH_DRILLED_FT)
+
+  # ─────────────────────────────────────────────
+  # DIMENSION: Phases
+  # ─────────────────────────────────────────────
+  - name: DIM_PHASE
+    synonyms:
+      - phases
+      - drilling phases
+      - program phases
+      - well program
+    description: >
+      One row per job program phase. Phases represent planned stages within
+      a job (e.g., Drill Surface, Run Casing, Cement). Enables planned vs
+      actual analysis on duration, depth, cost, and drilling performance.
+      12,358 phases across all jobs.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: DIM_PHASE
+    primary_key:
+      columns:
+        - PHASE_SK
+
+    dimensions:
+      - name: PHASE_SK
+        description: Surrogate key (MD5 hash of phase record_id)
+        expr: PHASE_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: PHASE_ID
+        description: WellView natural key for the phase
+        expr: PHASE_ID
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job surrogate key
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_ID
+        description: WellView job GUID (parent job)
+        expr: JOB_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: PHASE_TYPE_1
+        synonyms:
+          - phase type
+          - phase name
+          - section
+        description: >
+          Primary phase classification. Examples: Surface, Intermediate,
+          Production, Mob, Stimulation, Flowback, Drillout, Toe-Prep.
+        expr: PHASE_TYPE_1
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Surface
+          - Intermediate
+          - Production
+          - Mob
+          - Stimulation
+          - Flowback
+
+      - name: PHASE_TYPE_2
+        synonyms:
+          - sub-phase
+          - activity
+        description: >
+          Secondary phase classification. Examples: Drill, Casing and Cement,
+          NU Test and Drill Out, Drill Curve, Rig Up.
+        expr: PHASE_TYPE_2
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Drill
+          - Casing and Cement
+          - Drill Curve
+          - Rig Up
+
+      - name: PHASE_DESCRIPTION
+        description: Free-text description of the phase
+        expr: PHASE_DESCRIPTION
+        data_type: VARCHAR
+        unique: false
+
+    time_dimensions:
+      - name: ACTUAL_START_DATE
+        synonyms:
+          - phase start
+          - started
+        description: Actual phase start date/time
+        expr: ACTUAL_START_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: ACTUAL_END_DATE
+        synonyms:
+          - phase end
+          - ended
+        description: Actual phase end date/time
+        expr: ACTUAL_END_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: ACTUAL_DEPTH_PROGRESS_FT
+        synonyms:
+          - footage drilled
+          - depth progress
+        description: Actual depth drilled during this phase (feet)
+        expr: ACTUAL_DEPTH_PROGRESS_FT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: ACTUAL_DURATION_DAYS
+        synonyms:
+          - phase duration
+          - actual days
+        description: Actual phase duration in days
+        expr: ACTUAL_DURATION_DAYS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: PLANNED_LIKELY_DURATION_DAYS
+        synonyms:
+          - planned duration
+          - expected days
+        description: Planned most-likely duration in days
+        expr: PLANNED_LIKELY_DURATION_DAYS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: DURATION_VARIANCE_DAYS
+        synonyms:
+          - schedule variance
+          - days over/under
+        description: Actual minus planned duration (positive = over, negative = under)
+        expr: DURATION_VARIANCE_DAYS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: ROP_FT_PER_HOUR
+        synonyms:
+          - phase ROP
+          - drilling rate
+        description: Rate of penetration during this phase (ft/hr)
+        expr: ROP_FT_PER_HOUR
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: ACTUAL_PHASE_FIELD_EST
+        synonyms:
+          - phase cost
+          - actual cost
+        description: Actual field estimate cost for this phase (USD)
+        expr: ACTUAL_PHASE_FIELD_EST
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: PLANNED_LIKELY_PHASE_COST
+        synonyms:
+          - planned cost
+          - budgeted cost
+        description: Planned most-likely cost for this phase (USD)
+        expr: PLANNED_LIKELY_PHASE_COST
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      # ── Plan vs Actual ──
+      - name: avg_duration_variance
+        synonyms:
+          - schedule variance
+          - average days over
+          - plan vs actual days
+        description: >
+          Average duration variance across phases (days). Positive = phases
+          took longer than planned. Key schedule performance indicator.
+        expr: AVG(DURATION_VARIANCE_DAYS)
+
+      - name: pct_phases_on_schedule
+        synonyms:
+          - on-time percentage
+          - schedule adherence
+        description: >
+          Percentage of phases completed on or under planned duration.
+          Higher is better.
+        expr: >
+          COUNT_IF(DURATION_VARIANCE_DAYS <= 0)
+          / NULLIF(COUNT_IF(DURATION_VARIANCE_DAYS IS NOT NULL), 0)
+
+      - name: avg_phase_cost
+        synonyms:
+          - average phase cost
+          - mean phase spend
+        description: Average actual cost per phase (USD)
+        expr: AVG(ACTUAL_PHASE_FIELD_EST)
+
+      - name: avg_phase_rop
+        synonyms:
+          - average phase ROP
+          - phase drilling rate
+        description: Average rate of penetration across phases (ft/hr)
+        expr: AVG(ROP_FT_PER_HOUR)
+
+  # ─────────────────────────────────────────────
+  # FACT: Daily Drilling Cost
+  # ─────────────────────────────────────────────
+  - name: FCT_DAILY_DRILLING_COST
+    synonyms:
+      - drilling costs
+      - daily costs
+      - cost line items
+      - well costs
+      - spending
+      - expenditures
+    description: >
+      One row per cost line item from WellView daily reports. The primary
+      cost tracking table for drilling and completions operations. Each
+      line item has a report date, account coding hierarchy (6 levels),
+      vendor, and field estimate amount. 1.9M rows, 126+ vendors per well.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: FCT_DAILY_DRILLING_COST
+    primary_key:
+      columns:
+        - DAILY_COST_SK
+
+    dimensions:
+      - name: DAILY_COST_SK
+        description: Surrogate key for cost line item
+        expr: DAILY_COST_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: COST_LINE_ID
+        description: WellView natural key for cost line item
+        expr: COST_LINE_ID
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        description: WellView well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_CATEGORY
+        synonyms:
+          - job type
+        description: Job classification (Drilling, Completion, Facilities, etc.)
+        expr: JOB_CATEGORY
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_TYPE_PRIMARY
+        description: Primary job type
+        expr: JOB_TYPE_PRIMARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: SPEND_CATEGORY
+        synonyms:
+          - cost category
+          - expense category
+          - cost type
+        description: >
+          Level 3 account classification. Common values: SERVICES & REPAIRS,
+          WELL CONSTRUCTION & SERVICING, RENTAL EQUIPMENT, CONTRACT LABOR & SUPERVISION,
+          FUEL & POWER, CHEMICALS & TREATING.
+        expr: SPEND_CATEGORY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - SERVICES & REPAIRS
+          - WELL CONSTRUCTION & SERVICING
+          - RENTAL EQUIPMENT
+          - CONTRACT LABOR & SUPERVISION
+          - FUEL & POWER
+
+      - name: EXPENSE_TYPE
+        synonyms:
+          - expense classification
+        description: Level 4 account classification
+        expr: EXPENSE_TYPE
+        data_type: VARCHAR
+        unique: false
+
+      - name: TANGIBLE_INTANGIBLE
+        synonyms:
+          - T/I
+          - tangible or intangible
+        description: Whether the cost is tangible or intangible (Level 5 account code)
+        expr: TANGIBLE_INTANGIBLE
+        data_type: VARCHAR
+        unique: false
+
+      - name: AFE_CATEGORY
+        description: AFE category classification (Level 6 account code)
+        expr: AFE_CATEGORY
+        data_type: VARCHAR
+        unique: false
+
+      - name: ACCOUNT_NAME
+        synonyms:
+          - account
+          - account description
+        description: Human-readable account name
+        expr: ACCOUNT_NAME
+        data_type: VARCHAR
+        unique: false
+
+      - name: VENDOR_NAME
+        synonyms:
+          - vendor
+          - supplier
+          - contractor
+          - service company
+        description: Vendor or service company name
+        expr: VENDOR_NAME
+        data_type: VARCHAR
+        unique: false
+
+      - name: OPS_CATEGORY
+        synonyms:
+          - operations category
+        description: Operational category classification
+        expr: OPS_CATEGORY
+        data_type: VARCHAR
+        unique: false
+
+    time_dimensions:
+      - name: REPORT_DATE
+        synonyms:
+          - date
+          - cost date
+          - when
+        description: Date the cost was incurred (from daily report)
+        expr: REPORT_DATE
+        data_type: DATE
+        unique: false
+
+    measures:
+      - name: FIELD_ESTIMATE_COST
+        synonyms:
+          - cost
+          - amount
+          - spend
+          - cost amount
+          - field estimate
+        description: Cost amount for this line item in USD (field estimate basis)
+        expr: FIELD_ESTIMATE_COST
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: CUMULATIVE_FIELD_ESTIMATE_COST
+        synonyms:
+          - running total
+          - cumulative cost
+        description: Running cumulative field estimate cost (USD)
+        expr: CUMULATIVE_FIELD_ESTIMATE_COST
+        data_type: NUMBER
+        default_aggregation: max
+
+    metrics:
+      - name: total_drilling_cost
+        synonyms:
+          - total cost
+          - total spend
+          - how much did we spend
+          - total expenditure
+        description: Total drilling cost across all line items (USD)
+        expr: SUM(FIELD_ESTIMATE_COST)
+
+      - name: avg_daily_cost
+        synonyms:
+          - average daily spend
+          - cost per day
+          - daily burn rate
+        description: Average daily drilling cost (USD per day)
+        expr: SUM(FIELD_ESTIMATE_COST) / NULLIF(COUNT(DISTINCT REPORT_DATE), 0)
+
+      - name: cost_line_item_count
+        synonyms:
+          - line items
+          - number of cost entries
+        description: Total number of cost line items
+        expr: COUNT(*)
+
+      - name: distinct_vendor_count
+        synonyms:
+          - number of vendors
+          - vendor count
+          - how many vendors
+        description: Count of distinct vendors across cost line items
+        expr: COUNT(DISTINCT VENDOR_NAME)
+
+  # ─────────────────────────────────────────────
+  # FACT: Drilling Time
+  # ─────────────────────────────────────────────
+  - name: FCT_DRILLING_TIME
+    synonyms:
+      - time log
+      - time entries
+      - drilling time
+      - activity time
+      - operations time
+    description: >
+      One row per time log entry from WellView daily reports. Records
+      activity-level time accounting with a 4-level code hierarchy,
+      duration, depth, ROP, and NPT classification. The heartbeat of
+      drilling operations tracking. 754K rows.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: FCT_DRILLING_TIME
+    primary_key:
+      columns:
+        - JOB_TIME_LOG_SK
+
+    dimensions:
+      - name: JOB_TIME_LOG_SK
+        description: Surrogate key for time log entry
+        expr: JOB_TIME_LOG_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: PHASE_SK
+        description: FK to dim_phase
+        expr: PHASE_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        description: WellView well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: TIME_LOG_CODE_1
+        synonyms:
+          - activity
+          - activity code
+          - operation
+        description: >
+          Level 1 activity code. Common values: PRODUCTION DRILLING,
+          SURFACE DRILLING, INTERMEDIATE DRILLING, FRAC, FLOWBACK,
+          WELL PREP, COIL TUBING OPS, RIG MOVE, WIRELINE.
+        expr: TIME_LOG_CODE_1
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - PRODUCTION DRILLING
+          - SURFACE DRILLING
+          - INTERMEDIATE DRILLING
+          - FRAC
+          - FLOWBACK
+          - WELL PREP
+
+      - name: TIME_LOG_CODE_2
+        synonyms:
+          - sub-activity
+        description: Level 2 activity code (more specific classification)
+        expr: TIME_LOG_CODE_2
+        data_type: VARCHAR
+        unique: false
+
+      - name: TIME_LOG_CODE_3
+        description: Level 3 activity code
+        expr: TIME_LOG_CODE_3
+        data_type: VARCHAR
+        unique: false
+
+      - name: OPS_CATEGORY
+        description: Operational category classification
+        expr: OPS_CATEGORY
+        data_type: VARCHAR
+        unique: false
+
+      - name: FORMATION
+        synonyms:
+          - geological formation
+          - rock
+        description: Formation being drilled at this depth
+        expr: FORMATION
+        data_type: VARCHAR
+        unique: false
+
+      - name: IS_PROBLEM_TIME
+        synonyms:
+          - NPT flag
+          - problem time
+        description: Whether this time entry is classified as non-productive time
+        expr: IS_PROBLEM_TIME
+        data_type: BOOLEAN
+        unique: false
+
+    time_dimensions:
+      - name: REPORT_DATE
+        synonyms:
+          - date
+          - day
+        description: Date of the daily report containing this time entry
+        expr: REPORT_DATE
+        data_type: DATE
+        unique: false
+
+      - name: START_DATETIME
+        synonyms:
+          - start time
+          - began
+        description: Start time of this activity
+        expr: START_DATETIME
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: END_DATETIME
+        synonyms:
+          - end time
+          - ended
+        description: End time of this activity
+        expr: END_DATETIME
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: DURATION_HOURS
+        synonyms:
+          - hours
+          - time spent
+          - duration
+        description: Total elapsed time for this activity in hours
+        expr: DURATION_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: PROBLEM_TIME_HOURS
+        synonyms:
+          - NPT hours
+          - problem hours
+        description: Hours classified as non-productive time
+        expr: PROBLEM_TIME_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: NO_PROBLEM_TIME_HOURS
+        synonyms:
+          - productive hours
+        description: Hours classified as productive time
+        expr: NO_PROBLEM_TIME_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: ROP_FT_PER_HOUR
+        synonyms:
+          - ROP
+          - rate of penetration
+        description: Rate of penetration during this activity (ft/hr)
+        expr: ROP_FT_PER_HOUR
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: START_DEPTH_FT
+        description: Depth at start of activity (feet MD)
+        expr: START_DEPTH_FT
+        data_type: NUMBER
+        default_aggregation: min
+
+      - name: END_DEPTH_FT
+        description: Depth at end of activity (feet MD)
+        expr: END_DEPTH_FT
+        data_type: NUMBER
+        default_aggregation: max
+
+      - name: DAYS_FROM_SPUD
+        synonyms:
+          - days since spud
+        description: Number of days from spud to this activity
+        expr: DAYS_FROM_SPUD
+        data_type: NUMBER
+        default_aggregation: max
+
+      - name: RIG_DAYS
+        description: Rig day count for this entry
+        expr: RIG_DAYS
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      # ── Time Accounting ──
+      - name: total_hours
+        synonyms:
+          - total time
+          - total duration
+          - all hours
+        description: Total hours across all time log entries
+        expr: SUM(DURATION_HOURS)
+
+      - name: total_productive_hours
+        synonyms:
+          - productive time
+          - non-NPT hours
+        description: Total productive (non-problem) hours
+        expr: SUM(NO_PROBLEM_TIME_HOURS)
+
+      - name: total_npt_hours
+        synonyms:
+          - NPT hours
+          - problem time total
+          - non-productive time
+        description: Total non-productive time hours from time log
+        expr: SUM(PROBLEM_TIME_HOURS)
+
+      - name: npt_percentage
+        synonyms:
+          - NPT rate
+          - NPT percent
+          - problem time percentage
+          - non-productive time ratio
+        description: >
+          Percentage of total time classified as non-productive. Lower is better.
+          Key operational efficiency metric. Industry benchmark: 10-20%.
+        expr: >
+          SUM(PROBLEM_TIME_HOURS)
+          / NULLIF(SUM(DURATION_HOURS), 0)
+
+      # ── Drilling Performance ──
+      - name: avg_rop_time_log
+        synonyms:
+          - average ROP
+          - rate of penetration
+          - drilling speed
+        description: >
+          Average rate of penetration across time log entries (ft/hr).
+          More granular than dim_job ROP — calculated at activity level.
+        expr: AVG(ROP_FT_PER_HOUR)
+
+      - name: total_rig_days
+        synonyms:
+          - rig days
+          - days on rig
+        description: Total rig days across all time entries
+        expr: SUM(RIG_DAYS)
+
+      - name: total_footage_drilled_time
+        synonyms:
+          - footage from time log
+          - depth progress
+        description: Total footage drilled calculated from time log entries (ft)
+        expr: SUM(END_DEPTH_FT - START_DEPTH_FT)
+
+  # ─────────────────────────────────────────────
+  # FACT: NPT Events
+  # ─────────────────────────────────────────────
+  - name: FCT_NPT_EVENTS
+    synonyms:
+      - NPT
+      - non-productive time
+      - problems
+      - incidents
+      - downtime
+      - lost time
+    description: >
+      One row per non-productive time event from WellView interval problems.
+      Captures equipment failures, formation issues, weather delays, and
+      other unplanned events that cost time and money. Includes duration
+      (gross/net), cost, severity, and a 3-level categorization hierarchy.
+      14,013 events across 1,829 jobs.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: FCT_NPT_EVENTS
+    primary_key:
+      columns:
+        - JOB_INTERVAL_PROBLEM_SK
+
+    dimensions:
+      - name: JOB_INTERVAL_PROBLEM_SK
+        description: Surrogate key for NPT event
+        expr: JOB_INTERVAL_PROBLEM_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        description: WellView well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: MAJOR_CATEGORY
+        synonyms:
+          - problem category
+          - NPT category
+          - issue type
+        description: >
+          High-level problem classification. Examples: rig equip, formation,
+          weather, logistics, wellbore, drilling fluid.
+        expr: MAJOR_CATEGORY
+        data_type: VARCHAR
+        unique: false
+
+      - name: PROBLEM_TYPE
+        synonyms:
+          - problem type
+          - issue
+        description: Specific problem type within the major category
+        expr: PROBLEM_TYPE
+        data_type: VARCHAR
+        unique: false
+
+      - name: PROBLEM_SUBTYPE
+        description: Further sub-classification of the problem
+        expr: PROBLEM_SUBTYPE
+        data_type: VARCHAR
+        unique: false
+
+      - name: SEVERITY
+        synonyms:
+          - severity level
+          - impact
+        description: Severity rating of the NPT event
+        expr: SEVERITY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - High
+          - Medium
+          - Low
+
+      - name: ACCOUNTABLE_PARTY
+        synonyms:
+          - responsible party
+          - who caused it
+        description: Party accountable for the NPT event
+        expr: ACCOUNTABLE_PARTY
+        data_type: VARCHAR
+        unique: false
+
+      - name: ACTION_TAKEN
+        synonyms:
+          - resolution
+          - fix
+        description: Action taken to resolve the problem
+        expr: ACTION_TAKEN
+        data_type: VARCHAR
+        unique: false
+
+      - name: FORMATION
+        description: Formation where the NPT event occurred
+        expr: FORMATION
+        data_type: VARCHAR
+        unique: false
+
+      - name: IS_COUNTABLE_NPT
+        synonyms:
+          - include in NPT
+          - countable
+        description: >
+          Whether this event should be included in NPT aggregations.
+          False for events excluded from problem time calculations.
+        expr: IS_COUNTABLE_NPT
+        data_type: BOOLEAN
+        unique: false
+
+      - name: DESCRIPTION
+        synonyms:
+          - what happened
+          - details
+        description: Free-text description of the NPT event
+        expr: DESCRIPTION
+        data_type: VARCHAR
+        unique: false
+
+    time_dimensions:
+      - name: EVENT_DATE
+        synonyms:
+          - date
+          - when
+          - problem date
+        description: Date the NPT event began
+        expr: EVENT_DATE
+        data_type: DATE
+        unique: false
+
+      - name: START_DATE
+        description: Start datetime of the NPT event
+        expr: START_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: END_DATE
+        description: End datetime of the NPT event
+        expr: END_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: PROBLEM_DURATION_GROSS_HOURS
+        synonyms:
+          - gross hours
+          - total NPT hours
+        description: Total event duration from start to end (hours)
+        expr: PROBLEM_DURATION_GROSS_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: PROBLEM_DURATION_NET_HOURS
+        synonyms:
+          - net hours
+          - net NPT
+          - adjusted hours
+        description: Event duration after adjustments (hours)
+        expr: PROBLEM_DURATION_NET_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: ESTIMATED_LOST_TIME_HOURS
+        synonyms:
+          - lost time
+        description: Estimated total time lost due to this event (hours)
+        expr: ESTIMATED_LOST_TIME_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: PROBLEM_COST
+        synonyms:
+          - NPT cost
+          - problem cost
+          - cost impact
+        description: Direct cost attributed to this NPT event (USD)
+        expr: PROBLEM_COST
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: COST_RECOVERY
+        synonyms:
+          - recovered cost
+        description: Amount recovered (e.g., insurance, vendor credit) for this event (USD)
+        expr: COST_RECOVERY
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      # ── NPT Impact ──
+      - name: total_npt_gross_hours
+        synonyms:
+          - total NPT
+          - total problem hours
+          - total downtime
+        description: Total gross NPT hours across all events
+        expr: SUM(PROBLEM_DURATION_GROSS_HOURS)
+
+      - name: total_npt_net_hours
+        synonyms:
+          - net NPT
+          - adjusted NPT hours
+        description: Total net (adjusted) NPT hours across all events
+        expr: SUM(PROBLEM_DURATION_NET_HOURS)
+
+      - name: total_npt_cost
+        synonyms:
+          - NPT cost
+          - problem cost total
+          - downtime cost
+        description: Total direct cost of all NPT events (USD)
+        expr: SUM(PROBLEM_COST)
+
+      - name: npt_event_count
+        synonyms:
+          - number of NPT events
+          - problem count
+          - incident count
+        description: Total count of NPT events
+        expr: COUNT(*)
+
+      - name: countable_npt_event_count
+        synonyms:
+          - countable NPT events
+          - reportable NPT count
+        description: Count of NPT events included in aggregations (excludes excluded events)
+        expr: COUNT_IF(IS_COUNTABLE_NPT = TRUE)
+
+      - name: avg_npt_duration
+        synonyms:
+          - average NPT event length
+          - mean problem duration
+        description: Average gross duration per NPT event (hours)
+        expr: AVG(PROBLEM_DURATION_GROSS_HOURS)
+
+      - name: avg_npt_cost_per_event
+        synonyms:
+          - average NPT cost
+          - cost per event
+        description: Average direct cost per NPT event (USD)
+        expr: AVG(PROBLEM_COST)
+
+      - name: net_npt_cost_after_recovery
+        synonyms:
+          - net NPT cost
+          - cost after recovery
+        description: NPT cost minus any recovered amounts (insurance, vendor credits)
+        expr: SUM(PROBLEM_COST) - COALESCE(SUM(COST_RECOVERY), 0)
+
+# ─────────────────────────────────────────────
+# RELATIONSHIPS (joins between tables)
+# ─────────────────────────────────────────────
+relationships:
+  - name: COST_TO_JOB
+    left_table: FCT_DAILY_DRILLING_COST
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+  - name: TIME_TO_JOB
+    left_table: FCT_DRILLING_TIME
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+  - name: TIME_TO_PHASE
+    left_table: FCT_DRILLING_TIME
+    right_table: DIM_PHASE
+    relationship_columns:
+      - left_column: PHASE_SK
+        right_column: PHASE_SK
+    relationship_type: many_to_one
+
+  - name: NPT_TO_JOB
+    left_table: FCT_NPT_EVENTS
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+  - name: PHASE_TO_JOB
+    left_table: DIM_PHASE
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+# ─────────────────────────────────────────────
+# VERIFIED QUERIES (example business questions)
+# ─────────────────────────────────────────────
+verified_queries:
+  - name: total_drilling_cost_by_well
+    question: What is the total drilling cost for each well?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    use_as_onboarding_question: true
+    sql: >
+      SELECT j.EID, SUM(c.FIELD_ESTIMATE_COST) AS total_cost
+      FROM __FCT_DAILY_DRILLING_COST c
+      JOIN __DIM_JOB j ON c.JOB_SK = j.JOB_SK
+      WHERE j.EID IS NOT NULL
+      GROUP BY j.EID
+      ORDER BY total_cost DESC
+
+  - name: npt_hours_by_category
+    question: How many NPT hours by problem category?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    use_as_onboarding_question: true
+    sql: >
+      SELECT MAJOR_CATEGORY,
+             SUM(PROBLEM_DURATION_NET_HOURS) AS total_net_hours,
+             COUNT(*) AS event_count
+      FROM __FCT_NPT_EVENTS
+      WHERE IS_COUNTABLE_NPT = TRUE
+      GROUP BY MAJOR_CATEGORY
+      ORDER BY total_net_hours DESC
+
+  - name: cost_by_spend_category
+    question: What are the top spend categories for drilling costs?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    use_as_onboarding_question: true
+    sql: >
+      SELECT SPEND_CATEGORY,
+             SUM(FIELD_ESTIMATE_COST) AS total_cost,
+             COUNT(*) AS line_items
+      FROM __FCT_DAILY_DRILLING_COST
+      GROUP BY SPEND_CATEGORY
+      ORDER BY total_cost DESC
+
+  - name: hooey_well_cost_summary
+    question: What is the total cost breakdown for the Hooey well?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    sql: >
+      SELECT j.JOB_TYPE_PRIMARY,
+             j.JOB_CATEGORY,
+             SUM(c.FIELD_ESTIMATE_COST) AS total_cost,
+             COUNT(*) AS line_items
+      FROM __FCT_DAILY_DRILLING_COST c
+      JOIN __DIM_JOB j ON c.JOB_SK = j.JOB_SK
+      WHERE j.EID = '109181'
+      GROUP BY j.JOB_TYPE_PRIMARY, j.JOB_CATEGORY
+      ORDER BY total_cost DESC
+
+  - name: time_breakdown_by_activity
+    question: What is the time breakdown by activity code?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    sql: >
+      SELECT TIME_LOG_CODE_1,
+             SUM(DURATION_HOURS) AS total_hours,
+             COUNT(*) AS entries,
+             AVG(ROP_FT_PER_HOUR) AS avg_rop
+      FROM __FCT_DRILLING_TIME
+      WHERE TIME_LOG_CODE_1 IS NOT NULL
+      GROUP BY TIME_LOG_CODE_1
+      ORDER BY total_hours DESC

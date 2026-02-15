@@ -1,0 +1,1339 @@
+# Snowflake Cortex Analyst Semantic Model
+# Domain: Completions, Stimulation, AFE Budgeting & Safety
+# Tables: DIM_JOB (slim), DIM_WELLBORE, BRIDGE_JOB_AFE, FCT_STIMULATION, FCT_SAFETY_EVENTS
+# Columns: 99 | Metrics: 29
+
+name: Completions & Safety
+description: >
+  Completions, stimulation performance, AFE budget tracking, wellbore
+  characteristics, and safety event analysis for Formentera Operations.
+  Covers hydraulic fracturing metrics (stages, proppant, pressures, costs),
+  AFE budget vs actual variance, wellbore directional profiles, and HSE
+  checks and incidents. Data sourced from WellView via dbt mart models.
+
+tables:
+  # ─────────────────────────────────────────────
+  # DIMENSION: Jobs (slim for completions/safety)
+  # ─────────────────────────────────────────────
+  - name: DIM_JOB
+    synonyms:
+      - jobs
+      - well jobs
+      - completions
+      - workovers
+    description: >
+      One row per drilling, completion, workover, or well servicing job.
+      Slim version with join keys, classification, dates, and cost summary
+      for linking to stimulation, safety, AFE, and wellbore tables.
+      42,825 jobs across ~2,000 wells.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: DIM_JOB
+    primary_key:
+      columns:
+        - JOB_SK
+
+    dimensions:
+      - name: JOB_SK
+        synonyms:
+          - job surrogate key
+        description: Surrogate key for joining to fact tables (MD5 hash of job_id)
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_ID
+        synonyms:
+          - job identifier
+          - WellView job ID
+        description: WellView natural key (GUID) for the job
+        expr: JOB_ID
+        data_type: VARCHAR
+        unique: true
+
+      - name: EID
+        synonyms:
+          - well identifier
+          - entity ID
+          - well number
+        description: >
+          Formentera 6-character well entity identifier. Links to well_360
+          golden record. NULL for historical wells not in the well_360 spine.
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        synonyms:
+          - WellView well ID
+        description: WellView internal well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELLBORE_ID
+        description: WellView wellbore GUID associated with this job
+        expr: WELLBORE_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_TYPE_PRIMARY
+        synonyms:
+          - job type
+          - operation type
+          - work type
+        description: >
+          Primary job classification. Common values: Initial Drilling,
+          Original Completion, Flowback, Facilites Initial Build,
+          Workover, Recompletion, Swab, Pump Change, Rod Part, Tubing Repair.
+        expr: JOB_TYPE_PRIMARY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Initial Drilling
+          - Original Completion
+          - Flowback
+          - Facilites Initial Build
+          - Workover
+          - Swab
+
+      - name: JOB_CATEGORY
+        synonyms:
+          - category
+          - job class
+        description: >
+          High-level job grouping. Common values: Drilling, Completion,
+          Facilities, General Well Servicing, Well Work, Workover,
+          Production Maintenance, LOE, ReCompletion/Workover.
+        expr: JOB_CATEGORY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Drilling
+          - Completion
+          - Facilities
+          - General Well Servicing
+          - Well Work
+          - Workover
+
+      - name: STATUS_PRIMARY
+        synonyms:
+          - job status
+        description: Current status of the job
+        expr: STATUS_PRIMARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: AFE_NUMBER_PRIMARY
+        synonyms:
+          - AFE
+          - AFE number
+          - authorization for expenditure
+        description: Primary AFE number associated with this job
+        expr: AFE_NUMBER_PRIMARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: IS_ACTIVE
+        synonyms:
+          - active
+          - still running
+          - open
+        description: >
+          True when the job has no end date. Note: 8% of jobs are
+          incorrectly active due to legacy data or close-out gaps.
+        expr: IS_ACTIVE
+        data_type: BOOLEAN
+        unique: false
+
+    time_dimensions:
+      - name: JOB_START_AT
+        synonyms:
+          - start date
+          - job start
+          - began
+        description: Date and time the job began
+        expr: JOB_START_AT
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: JOB_END_AT
+        synonyms:
+          - end date
+          - job end
+          - finished
+          - completed date
+        description: Date and time the job ended (NULL if still active)
+        expr: JOB_END_AT
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: DURATION_DAYS
+        synonyms:
+          - job duration
+          - how long
+          - days
+        description: >
+          Job duration in days (start to end, or start to now if active).
+          Unreliable for active jobs with close-out gaps.
+        expr: DURATION_DAYS
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: AFE_AMOUNT_PRIMARY
+        synonyms:
+          - AFE budget
+          - authorized amount
+          - budget
+        description: Gross AFE authorized amount in USD
+        expr: AFE_AMOUNT_PRIMARY
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_FIELD_ESTIMATE
+        synonyms:
+          - field estimate
+          - actual cost
+          - FE
+          - estimated cost
+        description: Total field estimate cost in USD (actual spend tracker)
+        expr: TOTAL_FIELD_ESTIMATE
+        data_type: NUMBER
+        default_aggregation: sum
+
+  # ─────────────────────────────────────────────
+  # DIMENSION: Wellbores
+  # ─────────────────────────────────────────────
+  - name: DIM_WELLBORE
+    synonyms:
+      - wellbores
+      - holes
+      - laterals
+      - sidetracks
+    description: >
+      One row per wellbore. Describes the physical drilled hole including
+      depths, directional profile, and trajectory. The original hole is
+      the primary wellbore; sidetracks and laterals are additional wellbores.
+      6,528 wellbores across ~2,000 wells.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: DIM_WELLBORE
+    primary_key:
+      columns:
+        - WELLBORE_SK
+
+    dimensions:
+      - name: WELLBORE_SK
+        description: Surrogate key (MD5 hash of wellbore record_id)
+        expr: WELLBORE_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: WELLBORE_ID
+        synonyms:
+          - wellbore identifier
+        description: WellView natural key for the wellbore
+        expr: WELLBORE_ID
+        data_type: VARCHAR
+        unique: true
+
+      - name: WELL_ID
+        description: WellView well GUID (parent well)
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        synonyms:
+          - well identifier
+          - entity ID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELLBORE_NAME
+        synonyms:
+          - name
+          - hole name
+        description: Wellbore name (e.g., "Original Hole", "Sidetrack 1")
+        expr: WELLBORE_NAME
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELLBORE_API_UWI
+        synonyms:
+          - API number
+          - UWI
+        description: API or UWI number for the wellbore
+        expr: WELLBORE_API_UWI
+        data_type: VARCHAR
+        unique: false
+
+      - name: PURPOSE
+        description: Wellbore purpose (e.g., Geological, Development)
+        expr: PURPOSE
+        data_type: VARCHAR
+        unique: false
+
+      - name: PROFILE_TYPE
+        synonyms:
+          - well type
+          - trajectory type
+        description: Directional profile type (e.g., Horizontal, Vertical, Directional)
+        expr: PROFILE_TYPE
+        data_type: VARCHAR
+        unique: false
+
+      - name: PROFILE_CATEGORY
+        synonyms:
+          - well category
+        description: Normalized profile category (Horizontal, Directional, or Vertical)
+        expr: PROFILE_CATEGORY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Horizontal
+          - Directional
+          - Vertical
+
+      - name: CURRENT_STATUS
+        description: Current wellbore status
+        expr: CURRENT_STATUS
+        data_type: VARCHAR
+        unique: false
+
+    time_dimensions:
+      - name: SPUD_DATE
+        synonyms:
+          - spud
+          - drill start
+        description: Date drilling began on this wellbore
+        expr: SPUD_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: TD_DATE
+        synonyms:
+          - TD date
+          - total depth date
+          - drill end
+        description: Date total depth was reached
+        expr: TD_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: MD_TOTAL_FT
+        synonyms:
+          - measured depth
+          - total depth
+          - MD
+        description: Total measured depth in feet
+        expr: MD_TOTAL_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: TVD_TOTAL_FT
+        synonyms:
+          - true vertical depth
+          - TVD
+        description: Total true vertical depth in feet
+        expr: TVD_TOTAL_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: KICKOFF_DEPTH_FT
+        synonyms:
+          - KOP
+          - kickoff point
+          - kickoff
+        description: Depth where directional drilling begins (feet)
+        expr: KICKOFF_DEPTH_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: MAX_INCLINATION_DEGREES
+        synonyms:
+          - max angle
+          - inclination
+        description: Maximum wellbore inclination in degrees (90 = horizontal)
+        expr: MAX_INCLINATION_DEGREES
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: MAX_DEPARTURE_FT
+        synonyms:
+          - lateral length
+          - horizontal displacement
+          - departure
+        description: Maximum horizontal departure from surface location in feet
+        expr: MAX_DEPARTURE_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: DURATION_HOURS
+        synonyms:
+          - drilling duration
+        description: Total drilling duration for this wellbore in hours
+        expr: DURATION_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      - name: avg_measured_depth
+        synonyms:
+          - average depth
+          - mean MD
+        description: Average total measured depth across wellbores (feet)
+        expr: AVG(MD_TOTAL_FT)
+
+      - name: avg_lateral_departure
+        synonyms:
+          - average lateral length
+          - mean departure
+          - average horizontal displacement
+        description: >
+          Average maximum horizontal departure across wellbores (feet).
+          Proxy for lateral length in horizontal wells.
+        expr: AVG(MAX_DEPARTURE_FT)
+
+      - name: wellbore_count
+        synonyms:
+          - number of wellbores
+          - how many wellbores
+        description: Total count of wellbores
+        expr: COUNT(*)
+
+  # ─────────────────────────────────────────────
+  # BRIDGE: Job <> AFE
+  # ─────────────────────────────────────────────
+  - name: BRIDGE_JOB_AFE
+    synonyms:
+      - AFEs
+      - authorizations for expenditure
+      - job AFEs
+      - budgets
+    description: >
+      Many-to-many bridge between jobs and AFEs. A job can have multiple
+      AFEs and an AFE can fund multiple jobs. Carries gross AFE amounts,
+      field estimates, and variance calculations. 21,842 linkages across
+      20,934 jobs and 11,706 distinct AFEs.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: BRIDGE_JOB_AFE
+    primary_key:
+      columns:
+        - JOB_AFE_SK
+
+    dimensions:
+      - name: JOB_AFE_SK
+        description: Surrogate key for the job-AFE relationship
+        expr: JOB_AFE_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_ID
+        description: WellView job GUID
+        expr: JOB_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: AFE_NUMBER
+        synonyms:
+          - AFE
+          - authorization number
+        description: AFE number identifier (e.g., "25-1-0001")
+        expr: AFE_NUMBER
+        data_type: VARCHAR
+        unique: false
+
+      - name: AFE_TYPE
+        description: Type of AFE
+        expr: AFE_TYPE
+        data_type: VARCHAR
+        unique: false
+
+      - name: AFE_STATUS
+        description: Current status of the AFE
+        expr: AFE_STATUS
+        data_type: VARCHAR
+        unique: false
+
+      - name: COST_TYPE
+        description: Cost classification type
+        expr: COST_TYPE
+        data_type: VARCHAR
+        unique: false
+
+    time_dimensions:
+      - name: AFE_DATE
+        synonyms:
+          - approval date
+        description: Date the AFE was approved
+        expr: AFE_DATE
+        data_type: DATE
+        unique: false
+
+      - name: AFE_CLOSE_DATE
+        synonyms:
+          - close date
+          - closed
+        description: Date the AFE was closed
+        expr: AFE_CLOSE_DATE
+        data_type: DATE
+        unique: false
+
+    measures:
+      - name: TOTAL_AFE_AMOUNT
+        synonyms:
+          - AFE amount
+          - budget
+          - authorized amount
+        description: Total gross AFE authorized amount (USD)
+        expr: TOTAL_AFE_AMOUNT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_AFE_SUPPLEMENTAL_AMOUNT
+        synonyms:
+          - supplemental
+          - supplement
+        description: Additional supplemental AFE amount (USD)
+        expr: TOTAL_AFE_SUPPLEMENTAL_AMOUNT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_AFE_PLUS_SUPPLEMENTAL_AMOUNT
+        synonyms:
+          - total budget
+          - total authorized
+        description: Combined AFE plus supplemental amount (USD)
+        expr: TOTAL_AFE_PLUS_SUPPLEMENTAL_AMOUNT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_FIELD_ESTIMATE
+        synonyms:
+          - actual spend
+          - field estimate
+        description: Total field estimate (actual tracked cost) for this AFE-job (USD)
+        expr: TOTAL_FIELD_ESTIMATE
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: AFE_MINUS_FIELD_ESTIMATE_VARIANCE
+        synonyms:
+          - variance
+          - budget variance
+          - over/under
+        description: AFE amount minus field estimate (positive = under budget, negative = over)
+        expr: AFE_MINUS_FIELD_ESTIMATE_VARIANCE
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: WORKING_INTEREST_PERCENT
+        synonyms:
+          - WI
+          - working interest
+        description: Working interest percentage on this AFE
+        expr: WORKING_INTEREST_PERCENT
+        data_type: NUMBER
+        default_aggregation: avg
+
+    metrics:
+      - name: total_afe_budget
+        synonyms:
+          - total budget
+          - total authorized
+          - AFE portfolio
+        description: Total AFE authorized amount across all job-AFE linkages (USD)
+        expr: SUM(TOTAL_AFE_PLUS_SUPPLEMENTAL_AMOUNT)
+
+      - name: total_afe_variance
+        synonyms:
+          - total budget variance
+          - total overrun
+        description: >
+          Total AFE variance (positive = under budget, negative = over).
+          Sum of all AFE-minus-field-estimate variances.
+        expr: SUM(AFE_MINUS_FIELD_ESTIMATE_VARIANCE)
+
+      - name: pct_afes_over_budget
+        synonyms:
+          - overrun rate
+          - budget overrun percentage
+        description: Percentage of AFE-job linkages where actual exceeds budget
+        expr: >
+          COUNT_IF(AFE_MINUS_FIELD_ESTIMATE_VARIANCE < 0)
+          / NULLIF(COUNT_IF(AFE_MINUS_FIELD_ESTIMATE_VARIANCE IS NOT NULL), 0)
+
+      - name: avg_working_interest
+        synonyms:
+          - average WI
+          - mean working interest
+        description: Average working interest percentage across AFEs
+        expr: AVG(WORKING_INTEREST_PERCENT)
+
+  # ─────────────────────────────────────────────
+  # FACT: Stimulation
+  # ─────────────────────────────────────────────
+  - name: FCT_STIMULATION
+    synonyms:
+      - stimulations
+      - fracs
+      - frac jobs
+      - hydraulic fracturing
+      - completions
+      - sand frac
+      - acid frac
+    description: >
+      One row per actual stimulation job from WellView. Contains
+      pre-aggregated metrics from WellView calc rollups: stage counts,
+      proppant mass, fluid volumes, treatment rates, pressures, and costs.
+      Filtered to actual (not proposed) stimulations. 3,838 stim records
+      across 1,762 jobs. Covers sand fracs, acid fracs, and other stim types.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: FCT_STIMULATION
+    primary_key:
+      columns:
+        - STIMULATION_SK
+
+    dimensions:
+      - name: STIMULATION_SK
+        description: Surrogate key for stimulation record
+        expr: STIMULATION_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job (NULL when stim has no job link)
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        description: WellView well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_ID
+        description: WellView job GUID
+        expr: JOB_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: STIMULATION_TYPE
+        synonyms:
+          - stim type
+          - frac type
+          - treatment type
+        description: Type of stimulation (e.g., Sand Frac, Acid, Hydraulic Frac)
+        expr: STIMULATION_TYPE
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Sand Frac
+          - Acid
+          - Hydraulic Frac
+
+      - name: STIMULATION_SUBTYPE
+        description: Sub-classification of stimulation type
+        expr: STIMULATION_SUBTYPE
+        data_type: VARCHAR
+        unique: false
+
+      - name: STIM_TREAT_COMPANY
+        synonyms:
+          - frac company
+          - pumping company
+          - service company
+        description: Company performing the stimulation treatment
+        expr: STIM_TREAT_COMPANY
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - Liberty Energy
+          - Halliburton
+          - ProPetro
+
+      - name: STIM_TREAT_SUPERVISOR
+        synonyms:
+          - frac supervisor
+        description: Supervisor overseeing the stimulation
+        expr: STIM_TREAT_SUPERVISOR
+        data_type: VARCHAR
+        unique: false
+
+      - name: DIVERSION_METHOD
+        description: Diversion method used (if any)
+        expr: DIVERSION_METHOD
+        data_type: VARCHAR
+        unique: false
+
+      - name: HAS_JOB_LINK
+        description: Whether this stim record has a linked WellView job
+        expr: HAS_JOB_LINK
+        data_type: BOOLEAN
+        unique: false
+
+    time_dimensions:
+      - name: STIM_START_DATE
+        synonyms:
+          - frac start
+          - start date
+          - when was it fracked
+        description: Date the stimulation began
+        expr: STIM_START_DATE
+        data_type: DATE
+        unique: false
+
+      - name: START_DATE
+        description: Stimulation start datetime
+        expr: START_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+      - name: END_DATE
+        synonyms:
+          - frac end
+        description: Stimulation end datetime
+        expr: END_DATE
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: CALCULATED_STAGES
+        synonyms:
+          - stages
+          - stage count
+          - number of stages
+          - frac stages
+        description: Number of stimulation stages (WellView calculated)
+        expr: CALCULATED_STAGES
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_NUMBER_OF_CLUSTERS
+        synonyms:
+          - clusters
+          - cluster count
+        description: Total cluster count across all stages
+        expr: TOTAL_NUMBER_OF_CLUSTERS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: CLUSTERS_PER_STAGE
+        description: Average clusters per stage
+        expr: CLUSTERS_PER_STAGE
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: STAGES_PER_DAY
+        synonyms:
+          - frac efficiency
+          - pumping rate
+        description: Average stages completed per day
+        expr: STAGES_PER_DAY
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: PROPPANT_TOTAL_CALC_LB
+        synonyms:
+          - proppant
+          - sand
+          - proppant mass
+          - total proppant
+          - pounds of sand
+        description: Total proppant mass pumped in pounds
+        expr: PROPPANT_TOTAL_CALC_LB
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: MASS_PROPPANT_PER_STAGE_LB
+        synonyms:
+          - proppant per stage
+          - sand per stage
+        description: Average proppant mass per stage (lbs)
+        expr: MASS_PROPPANT_PER_STAGE_LB
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: MASS_PROPPANT_PER_GROSS_LENGTH_LB_PER_FT
+        synonyms:
+          - proppant intensity
+          - proppant loading
+          - lbs per foot
+        description: Proppant mass per gross lateral foot (lbs/ft)
+        expr: MASS_PROPPANT_PER_GROSS_LENGTH_LB_PER_FT
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: VOLUME_CLEAN_TOTAL_CALC_BBL
+        synonyms:
+          - clean volume
+          - fluid volume
+          - total fluid
+          - barrels pumped
+        description: Total clean fluid volume pumped in barrels
+        expr: VOLUME_CLEAN_TOTAL_CALC_BBL
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: VOLUME_SLURRY_TOTAL_CALC_BBL
+        synonyms:
+          - slurry volume
+        description: Total slurry volume (fluid + proppant) in barrels
+        expr: VOLUME_SLURRY_TOTAL_CALC_BBL
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TREAT_RATE_AVG_BBL_PER_MIN
+        synonyms:
+          - pump rate
+          - treatment rate
+        description: Average treatment rate in barrels per minute
+        expr: TREAT_RATE_AVG_BBL_PER_MIN
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: TREAT_PRESSURE_AVG_ALL_STAGES_PSI
+        synonyms:
+          - treating pressure
+          - frac pressure
+          - average pressure
+        description: Average treating pressure across all stages (PSI)
+        expr: TREAT_PRESSURE_AVG_ALL_STAGES_PSI
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: TREAT_PRESSURE_MAX_ALL_STAGES_PSI
+        synonyms:
+          - max pressure
+        description: Maximum treating pressure across all stages (PSI)
+        expr: TREAT_PRESSURE_MAX_ALL_STAGES_PSI
+        data_type: NUMBER
+        default_aggregation: max
+
+      - name: BREAKDOWN_PRESSURE_AVG_PSI
+        synonyms:
+          - breakdown pressure
+        description: Average breakdown pressure across stages (PSI)
+        expr: BREAKDOWN_PRESSURE_AVG_PSI
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: LENGTH_GROSS_FT
+        synonyms:
+          - gross lateral length
+          - frac length
+          - stimulated length
+        description: Gross lateral length covered by stimulation (feet)
+        expr: LENGTH_GROSS_FT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: LENGTH_NET_FT
+        synonyms:
+          - net lateral length
+        description: Net lateral length (excluding unstimulated intervals) in feet
+        expr: LENGTH_NET_FT
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: TOTAL_COST
+        synonyms:
+          - stim cost
+          - frac cost
+          - completion cost
+        description: Total stimulation cost (USD)
+        expr: TOTAL_COST
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: COST_PER_STAGE
+        synonyms:
+          - cost per stage
+          - stage cost
+        description: Average cost per stage (USD)
+        expr: COST_PER_STAGE
+        data_type: NUMBER
+        default_aggregation: avg
+
+      - name: TOTAL_PUMP_DURATION_CALC_HOURS
+        synonyms:
+          - pump time
+          - pumping hours
+        description: Total pump duration in hours
+        expr: TOTAL_PUMP_DURATION_CALC_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      # ── Completion Intensity ──
+      - name: total_stages
+        synonyms:
+          - stage count total
+          - stages pumped
+        description: Total stages pumped across all stimulations
+        expr: SUM(CALCULATED_STAGES)
+
+      - name: total_proppant_lb
+        synonyms:
+          - total proppant
+          - total sand
+          - pounds of proppant
+        description: Total proppant mass pumped across all stimulations (lbs)
+        expr: SUM(PROPPANT_TOTAL_CALC_LB)
+
+      - name: total_proppant_tons
+        synonyms:
+          - proppant in tons
+          - sand tonnage
+        description: Total proppant mass in short tons (2,000 lbs/ton)
+        expr: SUM(PROPPANT_TOTAL_CALC_LB) / 2000.0
+
+      - name: total_clean_volume_bbl
+        synonyms:
+          - total fluid
+          - total clean volume
+          - barrels pumped
+        description: Total clean fluid volume pumped across all stimulations (bbl)
+        expr: SUM(VOLUME_CLEAN_TOTAL_CALC_BBL)
+
+      - name: total_stim_cost
+        synonyms:
+          - total stimulation cost
+          - total frac cost
+          - completion cost total
+        description: Total stimulation cost across all records (USD)
+        expr: SUM(TOTAL_COST)
+
+      # ── Completion Efficiency ──
+      - name: avg_stages_per_stim
+        synonyms:
+          - average stages
+          - mean stage count
+        description: Average number of stages per stimulation job
+        expr: AVG(CALCULATED_STAGES)
+
+      - name: avg_proppant_per_stage
+        synonyms:
+          - sand per stage
+          - proppant loading per stage
+        description: Average proppant mass per stage (lbs/stage)
+        expr: AVG(MASS_PROPPANT_PER_STAGE_LB)
+
+      - name: avg_proppant_per_foot
+        synonyms:
+          - proppant intensity
+          - proppant loading
+          - lbs per foot
+          - sand per foot
+        description: >
+          Average proppant mass per gross lateral foot (lbs/ft).
+          Key completion design intensity metric. Higher loading
+          generally indicates more aggressive stimulation.
+        expr: AVG(MASS_PROPPANT_PER_GROSS_LENGTH_LB_PER_FT)
+
+      - name: avg_cost_per_stage
+        synonyms:
+          - cost per stage
+          - stage economics
+        description: Average cost per stimulation stage (USD)
+        expr: AVG(COST_PER_STAGE)
+
+      - name: avg_stages_per_day
+        synonyms:
+          - frac efficiency
+          - pumping efficiency
+          - stages per day
+        description: >
+          Average stages completed per day. Key operational efficiency
+          metric for frac crews. Higher is better.
+        expr: AVG(STAGES_PER_DAY)
+
+      - name: avg_treat_pressure
+        synonyms:
+          - average treating pressure
+          - mean frac pressure
+        description: Average treating pressure across all stages and stims (PSI)
+        expr: AVG(TREAT_PRESSURE_AVG_ALL_STAGES_PSI)
+
+      - name: avg_pump_rate
+        synonyms:
+          - average pump rate
+          - treatment rate
+        description: Average treatment pump rate (bbl/min)
+        expr: AVG(TREAT_RATE_AVG_BBL_PER_MIN)
+
+      - name: stim_count
+        synonyms:
+          - number of stims
+          - stimulation count
+          - frac count
+        description: Total count of stimulation records
+        expr: COUNT(*)
+
+  # ─────────────────────────────────────────────
+  # FACT: Safety Events
+  # ─────────────────────────────────────────────
+  - name: FCT_SAFETY_EVENTS
+    synonyms:
+      - safety
+      - safety checks
+      - safety incidents
+      - HSE
+      - health and safety
+      - OSHA
+    description: >
+      UNION of safety checks and safety incidents from WellView. Discriminated
+      by event_type ('check' or 'incident'). Checks are routine inspections
+      (57,856 rows). Incidents are unplanned safety events (4,711 rows).
+      Enriched with job SK and well EID. 62,567 total rows.
+    base_table:
+      database: FO_PRODUCTION_DB
+      schema: MARTS
+      table: FCT_SAFETY_EVENTS
+    primary_key:
+      columns:
+        - SAFETY_EVENT_SK
+
+    dimensions:
+      - name: SAFETY_EVENT_SK
+        description: Surrogate key for safety event
+        expr: SAFETY_EVENT_SK
+        data_type: VARCHAR
+        unique: true
+
+      - name: JOB_SK
+        description: FK to dim_job
+        expr: JOB_SK
+        data_type: VARCHAR
+        unique: false
+
+      - name: EID
+        description: Formentera well entity identifier
+        expr: EID
+        data_type: VARCHAR
+        unique: false
+
+      - name: WELL_ID
+        description: WellView well GUID
+        expr: WELL_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: JOB_ID
+        description: WellView job GUID
+        expr: JOB_ID
+        data_type: VARCHAR
+        unique: false
+
+      - name: EVENT_TYPE
+        synonyms:
+          - type
+          - check or incident
+        description: >
+          Event discriminator. 'check' = routine safety inspection.
+          'incident' = unplanned safety event.
+        expr: EVENT_TYPE
+        data_type: VARCHAR
+        unique: false
+        sample_values:
+          - check
+          - incident
+
+      - name: TYPE_PRIMARY
+        synonyms:
+          - safety type
+          - check type
+          - incident type
+        description: Primary classification (check type or incident type)
+        expr: TYPE_PRIMARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: TYPE_SECONDARY
+        description: Secondary classification (incidents only)
+        expr: TYPE_SECONDARY
+        data_type: VARCHAR
+        unique: false
+
+      - name: CATEGORY
+        description: Safety event category (incidents only)
+        expr: CATEGORY
+        data_type: VARCHAR
+        unique: false
+
+      - name: RESULT_OR_SEVERITY
+        synonyms:
+          - severity
+          - result
+        description: Check result or incident severity
+        expr: RESULT_OR_SEVERITY
+        data_type: VARCHAR
+        unique: false
+
+      - name: CAUSE
+        synonyms:
+          - root cause
+        description: Cause of the incident (incidents only)
+        expr: CAUSE
+        data_type: VARCHAR
+        unique: false
+
+      - name: RESPONSIBLE_PERSON
+        synonyms:
+          - inspector
+          - reported by
+        description: Person who conducted the check or reported the incident
+        expr: RESPONSIBLE_PERSON
+        data_type: VARCHAR
+        unique: false
+
+      - name: IS_REPORTABLE
+        synonyms:
+          - OSHA reportable
+          - regulatory reportable
+        description: Whether the event is OSHA/regulatory reportable (incidents only)
+        expr: IS_REPORTABLE
+        data_type: BOOLEAN
+        unique: false
+
+      - name: IS_LOST_TIME_INCIDENT
+        synonyms:
+          - LTI
+          - lost time
+        description: Whether the event resulted in lost work time (incidents only)
+        expr: IS_LOST_TIME_INCIDENT
+        data_type: BOOLEAN
+        unique: false
+
+      - name: DESCRIPTION
+        synonyms:
+          - what happened
+          - details
+        description: Free-text description of the safety event
+        expr: DESCRIPTION
+        data_type: VARCHAR
+        unique: false
+
+    time_dimensions:
+      - name: EVENT_DATE
+        synonyms:
+          - date
+          - when
+          - safety date
+        description: Date of the safety event
+        expr: EVENT_DATE
+        data_type: DATE
+        unique: false
+
+      - name: EVENT_DATETIME
+        description: Date and time of the safety event
+        expr: EVENT_DATETIME
+        data_type: TIMESTAMP_NTZ
+        unique: false
+
+    measures:
+      - name: LOST_TIME_HOURS
+        synonyms:
+          - hours lost
+          - LTI hours
+        description: Hours of lost work time (incidents only, NULL for checks)
+        expr: LOST_TIME_HOURS
+        data_type: NUMBER
+        default_aggregation: sum
+
+      - name: ESTIMATED_COST
+        synonyms:
+          - incident cost
+          - safety cost
+        description: Estimated cost of the event in USD (incidents only)
+        expr: ESTIMATED_COST
+        data_type: NUMBER
+        default_aggregation: sum
+
+    metrics:
+      # ── Safety Counts ──
+      - name: total_safety_events
+        synonyms:
+          - safety event count
+          - total checks and incidents
+        description: Total count of all safety events (checks + incidents)
+        expr: COUNT(*)
+
+      - name: safety_check_count
+        synonyms:
+          - number of checks
+          - inspections
+          - check count
+        description: Count of routine safety checks/inspections
+        expr: COUNT_IF(EVENT_TYPE = 'check')
+
+      - name: safety_incident_count
+        synonyms:
+          - number of incidents
+          - incident count
+          - how many incidents
+        description: Count of unplanned safety incidents
+        expr: COUNT_IF(EVENT_TYPE = 'incident')
+
+      - name: incident_rate
+        synonyms:
+          - incident percentage
+          - incident ratio
+        description: >
+          Percentage of safety events that are incidents (vs routine checks).
+          Lower is better.
+        expr: >
+          COUNT_IF(EVENT_TYPE = 'incident')
+          / NULLIF(COUNT(*), 0)
+
+      # ── Incident Severity ──
+      - name: reportable_incident_count
+        synonyms:
+          - OSHA reportable count
+          - regulatory incidents
+          - reportable count
+        description: Count of OSHA/regulatory reportable incidents
+        expr: COUNT_IF(IS_REPORTABLE = TRUE)
+
+      - name: lost_time_incident_count
+        synonyms:
+          - LTI count
+          - lost time incidents
+          - LTIs
+        description: Count of lost time incidents (worker missed next shift)
+        expr: COUNT_IF(IS_LOST_TIME_INCIDENT = TRUE)
+
+      - name: total_lost_time_hours
+        synonyms:
+          - total LTI hours
+          - lost work hours
+        description: Total hours of lost work time from safety incidents
+        expr: SUM(LOST_TIME_HOURS)
+
+      - name: total_incident_cost
+        synonyms:
+          - safety cost
+          - total incident cost
+        description: Total estimated cost of safety incidents (USD)
+        expr: SUM(ESTIMATED_COST)
+
+      - name: ltir
+        synonyms:
+          - lost time incident rate
+          - LTIR
+        description: >
+          Lost time incident rate. Count of LTIs as a percentage
+          of total safety events. Industry standard HSE metric.
+        expr: >
+          COUNT_IF(IS_LOST_TIME_INCIDENT = TRUE)
+          / NULLIF(COUNT(*), 0)
+
+# ─────────────────────────────────────────────
+# RELATIONSHIPS (joins between tables)
+# ─────────────────────────────────────────────
+relationships:
+  - name: STIM_TO_JOB
+    left_table: FCT_STIMULATION
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+  - name: SAFETY_TO_JOB
+    left_table: FCT_SAFETY_EVENTS
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+  - name: AFE_TO_JOB
+    left_table: BRIDGE_JOB_AFE
+    right_table: DIM_JOB
+    relationship_columns:
+      - left_column: JOB_SK
+        right_column: JOB_SK
+    relationship_type: many_to_one
+
+  - name: JOB_TO_WELLBORE
+    left_table: DIM_JOB
+    right_table: DIM_WELLBORE
+    relationship_columns:
+      - left_column: WELL_ID
+        right_column: WELL_ID
+    relationship_type: many_to_one
+
+# ─────────────────────────────────────────────
+# VERIFIED QUERIES (example business questions)
+# ─────────────────────────────────────────────
+verified_queries:
+  - name: stim_summary_by_type
+    question: What is the average proppant and stages by stimulation type?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    use_as_onboarding_question: true
+    sql: >
+      SELECT STIMULATION_TYPE,
+             COUNT(*) AS stim_count,
+             AVG(CALCULATED_STAGES) AS avg_stages,
+             AVG(PROPPANT_TOTAL_CALC_LB) AS avg_proppant_lb,
+             AVG(TOTAL_COST) AS avg_cost
+      FROM __FCT_STIMULATION
+      GROUP BY STIMULATION_TYPE
+      ORDER BY stim_count DESC
+
+  - name: safety_incident_summary
+    question: How many safety incidents and checks have we had?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    use_as_onboarding_question: true
+    sql: >
+      SELECT EVENT_TYPE,
+             COUNT(*) AS event_count,
+             SUM(LOST_TIME_HOURS) AS total_lost_hours,
+             SUM(CASE WHEN IS_REPORTABLE THEN 1 ELSE 0 END) AS reportable_count
+      FROM __FCT_SAFETY_EVENTS
+      GROUP BY EVENT_TYPE
+
+  - name: afe_budget_variance
+    question: Which jobs are over budget on their AFE?
+    verified_at: 1739577600
+    verified_by: Rob Stover
+    use_as_onboarding_question: true
+    sql: >
+      SELECT j.EID,
+             j.JOB_TYPE_PRIMARY,
+             a.AFE_NUMBER,
+             a.TOTAL_AFE_AMOUNT AS budget,
+             a.TOTAL_FIELD_ESTIMATE AS actual,
+             a.AFE_MINUS_FIELD_ESTIMATE_VARIANCE AS variance
+      FROM __BRIDGE_JOB_AFE a
+      JOIN __DIM_JOB j ON a.JOB_SK = j.JOB_SK
+      WHERE a.AFE_MINUS_FIELD_ESTIMATE_VARIANCE < 0
+        AND j.EID IS NOT NULL
+      ORDER BY a.AFE_MINUS_FIELD_ESTIMATE_VARIANCE ASC
