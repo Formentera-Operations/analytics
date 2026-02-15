@@ -1,0 +1,17 @@
+# prodview / reference / pvUnitOtherTag
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitOtherTag: Other Reference Tags +parent | Other reference tags. Used to specifiy SCADA, financial, regulatory or other reference tags for comp
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Value(s255) #Value
+  IDRecItem(s32) #Link
+  Com(txt255) #Note
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

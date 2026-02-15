@@ -1,0 +1,14 @@
+# wellview / reservoir_tests / wvTestEquipData
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestEquipData: Equipment test data details including time, pressure, and volume. +parent
+  Tm(dbl_days) #Time
+  Pres(dbl_kPa) #Pressure
+  PresAnnulus(dbl_kPa) #Annulus Pressure
+  OrificeSz(dbl_m) #Orifice Size
+  BledFluidTyp(s100) #Fluid Bled Type
+  BledVol(dbl_m3) #Volume Bled
+  BledRate(dbl_m3pd) #Rate Bled
+  CircPos(s20) #Circulating Position
+  RefNo(s10) #Reference #
+  PresRelatedTbg(dbl_kPa) #Pressure in Related Tubing

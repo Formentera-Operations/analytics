@@ -1,0 +1,40 @@
+# wellview / operations_jobs / wvJobSafetyIncident
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSafetyIncident: Description of safety incidents that occurred during the 'Job'. +parent
+  DtTm(dt) #Date
+  Category(s50) #Category
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  Severity(s50) #Severity
+  LostTime(bool) #Lost time?
+  Reportable(bool) #Reportable Incident?
+  Cause(s50) #Cause
+  Com(txt2k) #Comment
+  Tour(s50) #Tour
+  OpsFunction(s50) #Ops Function
+  AffectOnline(s50) #Online or Offline Activity
+  IDRecJobContact(s32) #Job Contact
+  ReportedBy(s50) #Reported By
+  IDRecJobServiceContract(s32) #Service Contract
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  PotentialSeverity(s50) #Potential Severity
+  EstCost(dbl_cost) #Estimated Cost
+  Witness(s255) #Witness
+  WitnessTyp(s100) #Witness Type
+  WitnessContact(s100) #Witness Contact
+  ReportNoCalc(dbl_calc) #Report Number
+  IncidentID1(s50) #Incident ID1
+  IncidentID2(s50) #Incident ID2
+  IncidentID3(s50) #Incident ID3
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserBoolean1(bool) #User Boolean 1
+  UserBoolean2(bool) #User Boolean 2
+  UserBoolean3(bool) #User Boolean 3

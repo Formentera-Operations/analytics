@@ -1,0 +1,8 @@
+# wellview / operations_jobs / wvJobRigBOPParam
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigBOPParam: Define a set depth, start and end date to override the 'Rig BOP.Set Depth' for drawing purposes. +parent
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  DepthBtm(dbl_m) #Set Depth
+  Note(s255) #Note

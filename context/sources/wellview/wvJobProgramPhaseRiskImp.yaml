@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJobProgramPhaseRiskImp
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramPhaseRiskImp: Impact of the risk on schedule, people, environment, cost, etc. +parent
+  Typ1(s100) #Impact Type
+  Typ2(s100) #Impact Subtype
+  Score(dbl) #Score
+  ScoreMax(dbl) #Max Possible Score
+  Com(txt2k) #Comment

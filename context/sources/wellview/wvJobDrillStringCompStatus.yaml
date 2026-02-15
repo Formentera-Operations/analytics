@@ -1,0 +1,8 @@
+# wellview / operations_jobs / wvJobDrillStringCompStatus
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringCompStatus: Status of the drill string component by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  IconName(s255) #Icon Override
+  Note(s255) #Note

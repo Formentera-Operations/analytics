@@ -1,0 +1,5 @@
+# wellview / zones_completions / wvZoneFormationCalc
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvZoneFormationCalc: Calculation of the formation(s). EQN: 'Zone.Top Depth' < 'Wellbore Formation.Final Bottom MD' and 'Zone.Bottom Depth' >= 'Wellbore Formation.Final ... +parent
+  IDRecFormation(s32_calc) #Formation

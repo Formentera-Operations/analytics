@@ -1,0 +1,12 @@
+# prodview / reference / pvUnitRegBodySubmission
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitRegBodySubmission: Regulatory Reporting Submissions +parent | Regulatory reporting submissions.
+  Form(s50) #Regulatory Form Name
+  DtTmStartProd(dt) #Start Date
+  DtTmEndProd(dt) #End Date
+  DtTmSubmission(dt) #Submission Date
+  UserSubmission(s255) #Submission User
+  PPA(bool) #PPA?
+  DtTmPPA(dt) #PPA Date
+  UserPPA(s255) #PPA User

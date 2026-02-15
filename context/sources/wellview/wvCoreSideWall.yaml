@@ -1,0 +1,28 @@
+# wellview / geological_evaluations / wvCoreSideWall
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvCoreSideWall: Description of sidewall cores. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  RunNo(s10) #Run No
+  Typ(s100) #Type
+  Des(s100) #Description
+  Purpose(s50) #Purpose
+  Contractor(s50) #Coring Company
+  IDRecLog(s32) #Reference Log
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  IDRecGeoEval(s32) #Geological Evaluation
+  Com(txt2k) #Comment
+  SamplesPlan(int) ## Samples Planned
+  SamplesRecover(int) ## Samples Recovered
+  SamplesEmpty(int) ## Samples Empty
+  SamplesLostinHole(int) ## Samples Lost in Hole
+  BulletsFire(int) ## Bullets Fired
+  BulletsMisfire(int) ## Bullets Misfired
+  IDRecDrillStringComp(s32) #Drill String Component
+  SzDiaCore(dbl_m) #Core Diameter
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit

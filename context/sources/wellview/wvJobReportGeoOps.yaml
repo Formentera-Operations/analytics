@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobReportGeoOps
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportGeoOps: Daily geological operations. +parent
+  RptTmActGeo(s100) #Geological Activity at Report Time
+  SummaryGeo(txt2k) #Geological Ops This Report Period
+  PlanNextRptGeo(txt2k) #Geological Ops Next Report Period
+  StatusGeo(s100) #Geological Status
+  UserTxt1(s100) #User Txt
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

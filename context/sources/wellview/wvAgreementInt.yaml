@@ -1,0 +1,14 @@
+# wellview / asset_management / wvAgreementInt
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvAgreementInt: List of partners and their associated interest or royalty details. +parent
+  CompanyName(s50) #Company Name
+  CompanyCode(s50) #Company Code
+  InterestTyp1(s100) #Interest Type
+  InterestTyp2(s100) #Interest Subtype
+  Des(s100) #Description
+  Interest(dbl_pct) #Interest
+  RefNo(s5) #Company Reference #
+  DtTmStatus(dt) #Status Date
+  Status(s50) #Company Status
+  Com(txt2k) #Comment

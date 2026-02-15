@@ -1,0 +1,69 @@
+# wellview / casing_cement / wvCas
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCas: Casing string information including run date, set depth. +parent
+  ProposedOrActual(s100) #Proposed/Actual Run
+  Des(s100) #Casing Description
+  DepthBtm(dbl_m) #Set Depth
+  DtTmRun(dt) #Run Date
+  IDRecJobRun(s32) #Run Job
+  IDRecWellBore(s32) #Wellbore
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version
+  DtTmPickup(dt) #Pick Up Date
+  DtTmOnBottom(dt) #On Bottom Date
+  DtTmOutOfHole(dt) #Out of Hole Date
+  Tapered(bool) #Tapered?
+  Tension(dbl_N) #Set Tension
+  OperatingPressLimit(dbl_kPa) #Operating Pressure Limit
+  StringWtUp(dbl_N) #String Weight Up
+  StringWtDown(dbl_N) #String Weight Down
+  TravelEquipWt(dbl_N) #Travelling Equipment Weight
+  Contractor(s50) #Make-Up Contractor
+  LatPosition(s20) #Lateral Position
+  Centralizers(s100) #Centralizers
+  Scratchers(s100) #Scratchers
+  CentralizersStandOffAvg(dbl_pct) #Casing Standoff Avg
+  CentralizersStandOffMin(dbl_pct) #Casing Standoff Min
+  CentralizersNoTallyCalc(int_calc) ## Centralizers (Tally)
+  VolumeShoeTrack(dbl_m3) #Shoe Track Volume
+  DtTmPull(dt) #Pull Date
+  IDRecJobPull(s32) #Pull Job
+  PullReason(s100) #Pull Reason
+  PullReasonDetail(s100) #Pull Reason Details
+  DtTmPropPull(dt) #Proposed Pull Date
+  DtTmCutPull(dt) #Cut/Pull Date
+  DepthCutPull(dbl_m) #Depth Cut/Pull
+  DepthTVDCutPullCalc(dbl_m_calc) #Depth Cut/Pull (TVD)
+  ReasonCutPull(s100) #Reason Cut/Pull
+  NoteCutPull(s255) #Cut/Pull Note
+  DtTmPropCutPull(dt) #Proposed Cut/Pull Date
+  SzODNomMaxCalc(dbl_m_calc) #String Nominal OD
+  SzODNomCompMaxCalc(dbl_m_calc) #Max Nominal OD
+  SzIDNomMinCalc(dbl_m_calc) #String Nominal ID
+  SzIDNomCompMinCalc(dbl_m_calc) #Min Nominal ID
+  WtPerLengthCalc(dbl_kgpm_calc) #Weight/Length
+  GradeCalc(s20_calc) #String Grade
+  ConnThrdTopCalc(s20_calc) #Top Connection
+  SzDriftMinCalc(dbl_m_calc) #String Min Drift
+  LengthCalc(dbl_m_calc) #Length
+  StickUpKBCalc(dbl_m_calc) #Stick Up
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Set Depth (TVD)
+  VolumeInternalCalc(dbl_m3_calc) #String Internal Volume
+  LeakOffPresCalc(dbl_kPa_calc) #Leak Off Pressure
+  LeakOffDensityFluidCalc(dbl_kgpm3_calc) #Leak Off Equivalent Fluid Density
+  TotalStretchSumCalc(dbl_m_calc) #Total Stretch
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  WellboreSzCalc(dbl_m_calc) #Wellbore Size
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  ComponentsCalc(txt2k_calc) #String Components
+  CompCasDimCalc(txt2k_calc) #Tapered String Dimensions
+  CompCasDimSzODNomCalc(s100_calc) #Tapered String OD
+  DurOnBottomToPickUpCalc(dbl_days_calc) #On Bottom - Pick Up Duration
+  DurRunToPullCalc(dbl_days_calc) #Duration Run to Pull
+  DepthOnBtmToPickUpCalc(dbl_mpd_calc) #Set Depth/(On Btm - PU)
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  ComplexityIndex(s50) #Complexity Index

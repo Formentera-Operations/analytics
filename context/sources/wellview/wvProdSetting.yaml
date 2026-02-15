@@ -1,0 +1,14 @@
+# wellview / production_operations / wvProdSetting
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSetting: Producing method - Flowing, Plunger lift, Gas lift, Rod pump, ESP, PCP, other. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  ProdMethTyp(s100) #Method Type
+  ProdMethDetail(s20) #Production Method Details
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  SettingObjective(s50) #Setting Objective
+  SettingResult(s50) #Setting Result
+  Com(txt2k) #Comment

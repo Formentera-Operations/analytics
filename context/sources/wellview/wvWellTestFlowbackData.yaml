@@ -1,0 +1,82 @@
+# wellview / reservoir_tests / wvWellTestFlowbackData
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestFlowbackData: Initial flowback recorded during the completion of the well, prior to handover to production. Data from the testing company. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ(s100) #Flowback/Shut-In
+  DurCalc(dbl_days_calc) #Duration
+  DurCumCalc(dbl_days_calc) #Cum Duration
+  DurFlowbackCumCalc(dbl_days_calc) #Cum Flowback Duration
+  DurShutInCumCalc(dbl_days_calc) #Cum Shut In Duration
+  Com(txt255) #Note
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  PresBH(dbl_kPa) #Bottomhole Pressure
+  PresWH(dbl_kPa) #Wellhead Pressure
+  TempWH(dbl_degC) #Wellhead Temperature
+  TempBH(dbl_degC) #Bottomhole Temperature
+  SzChoke(dbl_m) #Choke Size
+  SzChokeUpstream(dbl_m) #Choke Size Upstream
+  VolHCLiq(dbl_m3) #Vol Oil
+  VolHCLiqCumCalc(dbl_m3_calc) #Cum Vol Oil
+  RateHCLiqHrCalc(dbl_m3pd_calc) #Hourly Oil Rate
+  RateHCLiqDayCalc(dbl_m3pd_calc) #Daily Oil Rate
+  VolLoadToRecovHCLiqCalc(dbl_m3_calc) #Vol Load Oil to Recover
+  VolPctLoadHCLiqRecovCalc(dbl_pct_calc) #Load Oil Recovered
+  DensityHCLiq(dbl_kgpm3) #Oil Density
+  VolWater(dbl_m3) #Vol Water
+  VolWaterCumCalc(dbl_m3_calc) #Cum Vol Water
+  RateWaterHrCalc(dbl_m3pd_calc) #Hourly Water Rate
+  RateWaterDayCalc(dbl_m3pd_calc) #Daily Water Rate
+  VolLoadToRecovWaterCalc(dbl_m3_calc) #Vol Load Water to Recover
+  VolPctLoadWaterRecovCalc(dbl_pct_calc) #Load Water Recovered
+  DensityWater(dbl_kgpm3) #Water Density
+  Chlorides(dbl_kgpm3) #Chlorides
+  pHWater(dbl) #pH
+  SalinityWater(dbl_pct) #Salinity
+  BSW(dbl_pct) #BSW
+  VolSand(dbl_m3) #Vol Sand
+  VolSandCumCalc(dbl_m3_calc) #Cum Vol Sand
+  RateSandHrCalc(dbl_m3pd_calc) #Hourly Sand Rate
+  RateSandDayCalc(dbl_m3pd_calc) #Daily Sand Rate
+  VolLoadToRecovSandCalc(dbl_m3_calc) #Vol Load Sand to Recover
+  VolPctLoadSandRecovCalc(dbl_pct_calc) #Load Sand Recovered
+  SandCut(dbl_pct) #Sand Cut
+  SandDes(s100) #Sand Description
+  SolidsTotal(dbl_pct) #Total Dissolved Solids
+  SzOrifice(dbl_m) #Orifice Size
+  PresDiff(dbl_kPa) #Differential Pressure
+  PresStatic(dbl_kPa) #Static Pressure (gauge)
+  TempSep(dbl_degC) #Separator Temperature
+  H2S(dbl_pct) #H2S
+  CO2(dbl_pct) #CO2
+  DensityGas(dbl_kgpm3) #Gas Density
+  VolGas(dbl_m3) #Vol Gas
+  VolGasCumCalc(dbl_m3_calc) #Cum Vol Gas
+  RateGasHrCalc(dbl_m3pd_calc) #Hourly Gas Rate
+  RateGasDayCalc(dbl_m3pd_calc) #Daily Gas Rate
+  VolLoadToRecovGasCalc(dbl_m3_calc) #Vol Load Gas to Recover
+  VolPctLoadGasRecovCalc(dbl_pct_calc) #Load Gas Recovered
+  RatioGasHCLiqCalc(dbl_m3pm3_calc) #Gas Oil Ratio
+  RatioWaterGasCalc(dbl_m3pm3_calc) #Water Gas Ratio
+  DestGas(s100) #Flare/Sales/Both
+  VolGasFlare(dbl_m3) #Vol Flare Gas
+  VolGasFlareCumCalc(dbl_m3_calc) #Cum Vol Flare Gas
+  RateGasFlareHrCalc(dbl_m3pd_calc) #Hourly Flare Gas Rate
+  RateGasFlareDayCalc(dbl_m3pd_calc) #Daily Flare Gas Rate
+  VolGasSales(dbl_m3) #Vol Sales Gas
+  VolGasSalesCumCalc(dbl_m3_calc) #Cum Vol Sales Gas
+  RateGasSalesHrCalc(dbl_m3pd_calc) #Hourly Sales Gas Rate
+  RateGasSalesDayCalc(dbl_m3pd_calc) #Daily Sales Gas Rate
+  PresStaticSales(dbl_kPa) #Sales Static Pressure (gauge)
+  TempSales(dbl_degC) #Sales Temperature
+  VolTotalFluid(dbl_m3) #Vol Total Fluid
+  VolTotalFluidCumCalc(dbl_m3_calc) #Cum Total Fluid
+  RateTotalFluidHrCalc(dbl_m3pd_calc) #Hourly Total Fluid Rate
+  RateTotalFluidDayCalc(dbl_m3pd_calc) #Daily Total Fluid Rate
+  DensitySample(dbl_kgpm3) #Sample Density
+  UserNum1(dbl) #User Num1
+  UserNum2(dbl) #User Num2
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2

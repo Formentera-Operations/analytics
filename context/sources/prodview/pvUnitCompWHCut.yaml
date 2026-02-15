@@ -1,0 +1,8 @@
+# prodview / completions / pvUnitCompWHCut
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompWHCut: Wellhead Cuts +parent | Measured cut for the selected completion sample on this day.
+  DtTmStart(dt) #Effective Date
+  BSW(dbl_pct) #BS&W
+  SandCut(dbl_pct) #Sand Cut
+  Com(txt255) #Note

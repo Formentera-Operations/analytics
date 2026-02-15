@@ -1,0 +1,27 @@
+# wellview / operations_jobs / wvJobReportHazardID
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportHazardID: Daily hazard IDs submitted by vendor and operator for this reporting period. +parent
+  CompanyTyp(s100) #Company Type
+  Company(s100) #Company
+  NoRpt(int) #Number of Reports
+  Com(txt2k) #Comment
+  RefNo(s20) #Reference #
+  DtTmStart(dt) #Date Report Submitted
+  Tour(s50) #Tour
+  Typ1(s100) #Problem Type
+  Typ2(s100) #Problem Subtype
+  Des(s255) #Description
+  EmployeeName(s50) #Employee Name
+  EmployeeTyp(s100) #Employee Type
+  Severity(s50) #Severity
+  PotentialSeverity(s50) #Potential Severity
+  ActionTyp(s100) #Required Action Type
+  Status(s50) #Status
+  DtTmEnd(dt) #Date Closed
+  Solution(txt2k) #Solution
+  HazardIDA(s50) #Hazard IDA
+  HazardIDB(s50) #Hazard IDB
+  HazardIDC(s50) #Hazard IDC
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

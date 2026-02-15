@@ -1,0 +1,27 @@
+# prodview / completions / pvUnitCompIntTest
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompIntTest: Flowback Tests +parent
+  Des(s100) #Des
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  OperationTyp(s50) #Operation Type
+  TestUnitNum(s50) #Test Unit Number
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  UOMGasStat(s20) #Static Pressure Units
+  UOMGasDiff(s20) #Differential Pressure Units
+  UOMMeterTemp(s20) #Meter Temperature Units
+  UOMSzOrifice(s20) #Orifice Size Units
+  DurCumTest(dbl_days) #Test Hours
+  VolCumHCLiq(dbl_m3) #Cumulative Vol Oil/Cond
+  VolCumGas(dbl_m3) #Cumulative Vol Gas
+  VolCumWater(dbl_m3) #Cumulative Vol Water
+  VolCumSand(dbl_m3) #Cumulative Vol Sand
+  RateHCLiqCalc(dbl_m3pd) #Daily Oil/Cond Rate
+  RateGas(dbl_m3pd) #Daily Gas Rate
+  RateWater(dbl_m3pd) #Daily Water Rate
+  RateSand(dbl_m3pd) #Daily Sand Rate
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #% of Remaining Recoverable Water
+  UserTxt3(s50) #UserTxt3

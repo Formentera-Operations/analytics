@@ -1,0 +1,97 @@
+# wellview / operations_jobs / wvJobDrillStringDrillParam
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringDrillParam: Operating parameters by time and depth. It is recommended that you enter at least one drilling parameter per 'Daily Operation' period. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthStart(dbl_m) #Start Depth
+  DepthEnd(dbl_m) #End Depth
+  IDRecWellbore(s32) #Wellbore
+  TmDrill(dbl_days) #Drilling Time
+  TmCirc(dbl_days) #Circulation Time
+  TmTrip(dbl_days) #Trip Time
+  TmOther(dbl_days) #Other Time
+  Typ1(s100) #Parameter Type
+  Typ2(s100) #Parameter Subtype
+  ExcludeFromNewHole(bool) #Exclude From New Hole?
+  RefNoStand(s10) #Stand Ref #
+  Note(s255) #Note
+  WOB(dbl_N) #Weight on Bit
+  RPMString(dbl_rpm) #RPM
+  LiquidInjRate(dbl_m3pd) #Flow Rate
+  LiquidInjRateRiser(dbl_m3pd) #Riser Boost
+  SPPDrill(dbl_kPa) #Stand Pipe Pressure
+  ROPInst(dbl_mpd) #ROP Instantaneous
+  ECDEndOverride(dbl_kgpm3) #ECD End Override
+  SzODVGStab(dbl_m) #VG Stabilizer OD
+  HookLoadRotating(dbl_N) #Drilling String Weight
+  HookLoadPickUp(dbl_N) #Pick-Up String Weight
+  HookLoadSlackOff(dbl_N) #Slack-Off String Weight
+  HookLoadOffBottom(dbl_N) #Off-Bottom String Weight
+  TorqueDrill(dbl) #Drilling Torque
+  TorqueOffBtm(dbl) #Off Bottom Torque
+  TorqueUnits(s10) #Torque Units
+  RPMMotor(dbl_rpm) #Motor RPM
+  TFO(dbl_deg) #Tool Face Orientation
+  TFORef(s10) #TFO Reference
+  SPPDiff(dbl_kPa) #SPP Differential Pressure
+  GasInjRate(dbl_m3pd) #Gas Injection Rate
+  InjTemp(dbl_degC) #Injection Temperature
+  BHAAnPres(dbl_kPa) #Bottom Hole Annulus Pressure
+  BHTemp(dbl_degC) #BH Temperature
+  SurfAnnPres(dbl_kPa) #Surface Annulus Pressure
+  SurfAnnTemp(dbl_degC) #Surface Annulus Temperature
+  LiquidReturnRate(dbl_m3pd) #Liquid Return Rate
+  GasReturnRate(dbl_m3pd) #Gas Return Rate
+  AirPercent(dbl_pct) #Air Percent
+  DepthDrilledCalc(dbl_m_calc) #Interval Depth Drilled
+  DepthDrilledCumCalc(dbl_m_calc) #Cum Depth Drilled
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  ROPCalc(dbl_mpd_calc) #Interval ROP
+  ROPCumCalc(dbl_mpd_calc) #Total ROP
+  TmDrillCumCalc(dbl_days_calc) #Cum Drilling Time
+  TmCircCumCalc(dbl_days_calc) #Cum Circulating Time
+  TmTripCumCalc(dbl_days_calc) #Cum Trip Time
+  TmOtherCumCalc(dbl_days_calc) #Cum Other Time
+  RPMTotalCalc(dbl_rpm_calc) #Bit RPM
+  DragUpCalc(dbl_N_calc) #Drag Up
+  DragDownCalc(dbl_N_calc) #Drag Down
+  BitRevsCalc(dbl_calc) #Bit Revs
+  BitRevsCumCalc(dbl_calc) #Cum Bit Revs
+  TmRotatingCalc(dbl_days_calc) #Rotating Time
+  TmSlidingCalc(dbl_days_calc) #Sliding Time
+  FormationCalc(s255_calc) #Formation
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  OutOfRangeCalc(txt2k_calc) #Out of Planned Range
+  InclStartCalc(dbl_deg_calc) #Top Inclination
+  InclEndCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  IDRecOtherInHoleCalc(s32_calc) #Other In Hole
+  DurationCalc(dbl_days_calc) #Duration
+  DurPlugDrillOutCalc(dbl_days_calc) #Duration Between Plugs
+  LengthToPlugDepthTopCalc(dbl_m_calc) #Start Depth - Linked Plug Depth
+  ReportNoCalc(dbl_calc) #Report Number
+  ReportDayCalc(dbl_days_calc) #Job Day
+  DaysFromSpudCalc(dbl_days_calc) #Days From Spud
+  DurationTimeLogCumSpudCalc(dbl_days_calc) #Cum Time Log Days From Spud
+  DurationTimeLogTotCumCalc(dbl_days_calc) #Cum Time Log Days
+  DurationProblemTimeCumCalc(dbl_days_calc) #Cum Problem Time
+  DurationNoProbTimeCumCalc(dbl_days_calc) #Cum Time Log - Problem Time
+  DepthStartNoExcCalc(dbl_m_calc) #Start Depth (no excluded params)
+  DepthEndNoExcCalc(dbl_m_calc) #End Depth (no excluded params)
+  DepthDrilledNoExcCalc(dbl_m_calc) #Interval Depth Drilled (no excluded params)
+  DepthDrilledCumNoExcCalc(dbl_m_calc) #Cum Depth Drilled (no excluded params)
+  TmDrillCumNoExcCalc(dbl_days_calc) #Cum Drilling Time (no excluded params)
+  BitRevsNoExcCalc(dbl_calc) #Bit Revs (no excluded params)
+  BitRevsCumNoExcCalc(dbl_calc) #Cum Bit Revs (no excluded params)
+  ROPNoExcCalc(dbl_mpd_calc) #Interval ROP (no excluded params)
+  ROPCumNoExcCalc(dbl_mpd_calc) #Total ROP (no excluded params)
+  RPMTotalNoExcCalc(dbl_rpm_calc) #Bit RPM (no excluded params)
+  PlugDebrisDes(s50) #Debris Description
+  PlugGrindQuality(s50) #Grind Quality
+  SweepViscIn(dbl_Pas) #Sweep Viscosity In
+  SweepViscOut(dbl_Pas) #Sweep Viscosity Out
+  SweepVol(dbl_m3) #Sweep Volume
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

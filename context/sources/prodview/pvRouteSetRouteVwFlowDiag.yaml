@@ -1,0 +1,5 @@
+# prodview / routes / pvRouteSetRouteVwFlowDiag
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvRouteSetRouteVwFlowDiag: Other Units Displayed on Diagram +parent | Components of the network to display with this routes items on the flow network diagram.
+  IDRecUnit(s32) #Units Displayed

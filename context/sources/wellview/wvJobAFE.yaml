@@ -1,0 +1,46 @@
+# wellview / operations_jobs / wvJobAFE
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobAFE: AFE definition. +parent
+  AFENumber(s50) #AFE Number
+  AFENumberSupp(s50) #Supplemental AFE Number
+  DtTmAFE(dt) #AFE Date
+  Typ(s100) #AFE Type
+  CostTyp(s100) #Cost Type
+  ProjectName(s50) #Project Name
+  ProjectRefNumber(s100) #Project Ref Number
+  ContactName(s50) #Contact Name
+  AFEStatus(s50) #AFE Status
+  DtTmAFEClose(dt) #AFE Close Date
+  WorkingInt(dbl_pct) #Working Interest
+  WorkingIntNote(s255) #Working Interest Note
+  Exclude(bool) #Exclude From Cost Calcs?
+  Com(txt2k) #Comment
+  AFEAmtCalc(dbl_cost_calc) #Total AFE Amount
+  AFEAmtNormCalc(dbl_cost_calc) #Normalized Total AFE Amount
+  AFESupAmtCalc(dbl_cost_calc) #Total AFE Supp Amount
+  AFESupAmtNormCalc(dbl_cost_calc) #Normalized Total AFE Supp Amount
+  AFETotalCalc(dbl_cost_calc) #Total AFE + Supp Amount
+  AFETotalNormCalc(dbl_cost_calc) #Normalized Total AFE + Supp Amount
+  CostTotalCalc(dbl_cost_calc) #Total Field Estimate
+  CostNormTotalCalc(dbl_cost_calc) #Normalized Total Field Est
+  VarianceFieldCalc(dbl_cost_calc) #AFE-Field Estimate
+  VarianceNormFieldCalc(dbl_cost_calc) #Normalized AFE-Field Estimate
+  FinalInvoiceTotalCalc(dbl_cost_calc) #Total Final Invoice
+  FinalInvoiceTotalNormCalc(dbl_cost_calc) #Normalized Total Final Invoice
+  VarianceAFEFinalCalc(dbl_cost_calc) #AFE - Final Invoice
+  VarianceNormAFEFinalCalc(dbl_cost_calc) #Normalized AFE - Final Invoice
+  VarianceFieldFinalCalc(dbl_cost_calc) #Field - Final Invoice
+  VarianceNormFieldFinalCalc(dbl_cost_calc) #Normalized Field - Final Invoice
+  AFECostTypCalc(s200_calc) #AFE Number - Cost Type
+  CostForecastCalc(dbl_cost_calc) #Forecast Amount
+  CostNormForecastCalc(dbl_cost_calc) #Normalized Forecast Amount
+  AFETotalNetCalc(dbl_cost_calc) #Net Total AFE + Supp Amount
+  AFEAmtNetCalc(dbl_cost_calc) #Net Total AFE Amount
+  AFESupAmtNetCalc(dbl_cost_calc) #Net Total AFE Supp Amount
+  CostNetTotalCalc(dbl_cost_calc) #Net Total Field Est
+  CostNetForecastCalc(dbl_cost_calc) #Net Forecast Amount
+  VarianceNetFieldCalc(dbl_cost_calc) #Net AFE-Field Estimate
+  FinalInvoiceTotalNetCalc(dbl_cost_calc) #Net Total Final Invoice
+  VarianceNetAFEFinalCalc(dbl_cost_calc) #Net AFE - Final Invoice
+  VarianceNetFieldFinalCalc(dbl_cost_calc) #Net Field - Final Invoice

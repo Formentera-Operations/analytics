@@ -1,0 +1,23 @@
+# wellview / operations_jobs / wvJRFluidsActionCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRFluidsActionCalc: Summary of 'Lease Fluid' and 'Well Fluid' up to and including this report, grouped by Fluid Type and SubType +parent
+  FluidTyp(s100_calc) #Fluid Type
+  ActionTyp(s100_calc) #Fluid Sub Type
+  ToWell(dbl_m3_calc) #To well
+  CumToWell(dbl_m3_calc) #Cum to Well
+  FromWell(dbl_m3_calc) #From well
+  CumFromWell(dbl_m3_calc) #Cum from Well
+  ToLease(dbl_m3_calc) #To lease
+  CumToLease(dbl_m3_calc) #Cum to Lease
+  FromLease(dbl_m3_calc) #From lease
+  CumFromLease(dbl_m3_calc) #Cum from Lease
+  NonRecov(dbl_m3_calc) #Non-recoverable fluid
+  CumNonRecov(dbl_m3_calc) #Cum Non-recoverable fluid
+  LeftToRecover(dbl_m3_calc) #Left to recover
+  InTanks(dbl_m3_calc) #Lease Balance
+  IDRecJob(s32_calc) #Job
+  DtTmStart(dt_calc) #Start Date
+  DtTmEnd(dt_calc) #End Date
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

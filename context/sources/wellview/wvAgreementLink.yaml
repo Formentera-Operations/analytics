@@ -1,0 +1,10 @@
+# wellview / asset_management / wvAgreementLink
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvAgreementLink: Link to 'Zone'(s), 'Job'(s), 'AFE'(s) that are relevant to this agreement. +parent
+  IDRecItem(s32) #Associated Items
+  DepthTop(dbl_m) #Top Depth
+  DepthBtm(dbl_m) #Bottom Depth
+  DesTop(s255) #Top Depth Des
+  DesBtm(s255) #Bottom Depth Des
+  Com(txt2k) #Comment

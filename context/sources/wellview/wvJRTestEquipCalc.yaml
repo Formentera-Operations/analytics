@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJRTestEquipCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRTestEquipCalc: Summary of 'Equipment Pressure Test'  records linked to this job. +parent
+  IDRecTestEquip(s32_calc) #Equipment Test
+  DurationSinceLastChk(dbl_days_calc) #Days Since LastTest
+  DurationNextChk(dbl_days_calc) #Days Until Next Test
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

@@ -1,0 +1,6 @@
+# wellview / integrity_barriers / wvWellBarrierTypAnnot
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvWellBarrierTypAnnot: Annotations for the 'Well Barrier Type'. +parent
+  Depth(dbl_m) #Depth
+  Annotation(s100) #Annotation

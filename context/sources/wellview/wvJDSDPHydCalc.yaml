@@ -1,0 +1,25 @@
+# wellview / operations_jobs / wvJDSDPHydCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJDSDPHydCalc: Hydraulic calculations based on the conditions at the bottom depth of the drilling parameter. +parent
+  AVCasMax(dbl_mpd_calc) #Max Casing AV
+  AVCasMin(dbl_mpd_calc) #Min Casing AV
+  AVOpenHoleMax(dbl_mpd_calc) #Max Open Hole AV
+  AVOpenHoleMin(dbl_mpd_calc) #Min Open Hole AV
+  AVRiserMax(dbl_mpd_calc) #Max Riser AV
+  AVRiserMin(dbl_mpd_calc) #Min Riser AV
+  DensityLastMudChk(dbl_kgpm3_calc) #Mud Density
+  ECDEnd(dbl_kgpm3_calc) #ECD End
+  HydPwrBit(dbl_W_calc) #Bit Hydraulic Power
+  HydPwrPerArea(dbl_Wpm2_calc) #Bit Hydraulic Power Per Hole Area
+  JetVelocity(dbl_mpd_calc) #Bit Jet Velocity
+  PressureDropAnn(dbl_kPa_calc) #Annular Pressure Drop
+  PressureDropBit(dbl_kPa_calc) #Bit Pressure Drop
+  PressureDropBitRatio(dbl_pct_calc) #Percent of Pressure Drop at Bit
+  VolumeBitToShoe(dbl_m3_calc) #Bit to Shoe Volume
+  VolumeCasTopToRiserTop(dbl_m3_calc) #Top of Casing to Top of Riser Volume
+  VolumePumpToBit(dbl_m3_calc) #Drill String Volume
+  VolumeShoeToCasTop(dbl_m3_calc) #Shoe to Top of Casing Volume
+  CalcError(s255_calc) #Error
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

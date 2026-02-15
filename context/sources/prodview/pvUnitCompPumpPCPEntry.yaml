@@ -1,0 +1,16 @@
+# prodview / artificial_lift / pvUnitCompPumpPCPEntry
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpPCPEntry: PCP Entries +parent | RPM, Rod torque and electric current for the time interval defined in <wvProdSetting>. To access thi
+  DtTm(dt) #Date
+  ElectricCurrent(double, amp) #Electric Current
+  RodTorque(double, newton meters) #Rod Torque
+  RPM(integer, rotations per minute) #RPM
+  VolPerDayCalc(dbl_m3pd_calc) #Volume Throughput
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

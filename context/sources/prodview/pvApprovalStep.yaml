@@ -1,0 +1,25 @@
+# prodview / admin / pvApprovalStep
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvApprovalStep: Process Steps +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  RequiredBy(s50) #Required By
+  DtTmAssigned(dt) #Assigned Date
+  DtTmRequired(dt) #Required Date
+  Status(s50) #Status
+  DurPlan(dbl_days) #Estimated Duration
+  DtTmStart(dt) #Start Date
+  DtTmApprovalCompleteOR(dt) #Approval Complete Date
+  DtTmLatestPlanStartCalc(dt_calc) #Latest Plan Start
+  DtTmEarliestPlanStartCalc(dt_calc) #Earliest Plan Start
+  PrereqCompleteCalc(boolean, calculated) #Prerequisites Complete?
+  DelivCompleteCalc(boolean, calculated) #Deliverables Completed?
+  DtTmDelivCompleteCalc(dt_calc) #Date Deliverables Completed
+  PreReqCalc(string 255, calculated) #Prerequisites
+  ApprovalCompleteCalc(boolean, calculated) #Approvals Complete?
+  DtTmApprovalCompleteCalc(dt_calc) #Date Approvals Complete
+  DurActCalc(double, days, calculated) #Actual Duration
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence

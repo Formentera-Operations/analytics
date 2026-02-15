@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJobApprovalStepRev
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApprovalStepRev: Approvals required for this 'Approval Process Step' +parent
+  Typ(s100) #Type
+  DtTm(dt) #Approval Date
+  ApproveRqd(bool) #Approval Required?
+  Approved(bool) #Approved/Reviewed?
+  ApproveReject(bool) #Rejected?
+  Name(s50) #Approvers Name
+  Title(s50) #Approvers Title
+  Company(s100) #Company
+  Role(s50) #Role
+  Email(s50) #Email
+  UserID(s50) #User ID
+  AmountMin(dbl_cost) #Amount Min
+  AmountMax(dbl_cost) #Amount Max
+  Com(txt2k) #Comment

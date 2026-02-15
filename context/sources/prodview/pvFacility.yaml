@@ -1,0 +1,26 @@
+# prodview / facilities / pvFacility
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacility: Facilities | List of injection and production facility groupings.
+  Name(s255) #Facility Name
+  IDPa(s50) #EID
+  FacilityIDA(s50) #AllocMeterID
+  FacilityIDB(s50) #CostCenter
+  FacilityIDC(s50) #Facility IDC
+  FacilityIDD(s50) #Facility IDD
+  Typ1(s50) #Facility Type
+  Typ2(s50) #Facility Sub Type
+  TypRegulatory(s50) #Regulatory Facility Type
+  TypPA(s50) #Production Accounting Facility Type
+  IDRecUnitPrimary(s32) #Primary Reporting Unit
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DtTmHide(dt) #Hide Record As Of
+  HideFacRev(bool) #Hide Facility in Facility Reviewer
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  PermanentID(s32) #Permanent Facility ID
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  Com(txt2k) #Note

@@ -1,0 +1,35 @@
+# wellview / geological_evaluations / wvWellTestRFT
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvWellTestRFT: Repeat formation tests. +parent
+  DtTm(dt) #Date
+  RunNo(s10) #Run Number
+  RunMethod(s20) #Conveyance
+  WellSituation(s20) #Well Condition
+  TestedBy(s50) #Tested By
+  IDRecWellbore(s32) #Wellbore
+  IDRecLog(s32) #Reference Log
+  QtyTestPlan(int) #Planned Number of Tests
+  QtyTestExecute(int) #Executed Tests
+  QtyTestReliable(int) #Reliable Tests
+  DurRun(dbl_days) #Duration of Test
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  ReservoirCalc(s255_calc) #Reservoir
+  ZoneCalc(s255_calc) #Zone
+  Com(txt2k) #Comment
+  ToolTyp(s100) #Tool Type
+  ToolConfig(s50) #Tool Configuration
+  ProbeTyp(s100) #Probe Type
+  LengthProbe(dbl_m) #Probe Length
+  SurfaceTestUnitName(s50) #Surface Test Unit Name
+  IDRecGaugeUsed(s32) #Gauge Used for Measurements
+  VolPretestSample(dbl_m3) #Pretest Volume
+  DurPretestMax(dbl_days) #Pretest Max Duration
+  RatePretestSample(dbl_m3pd) #Pretest Sample Rate
+  Analyst(s50) #Analyst
+  AnalysisCom(txt2k) #Analysis Comment

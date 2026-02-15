@@ -1,0 +1,42 @@
+# prodview / allocations / pvUnitBalanceMonthDayCalc
+# Source: context/sources/prodview/domains/allocations.yaml
+#
+pvUnitBalanceMonthDayCalc: Daily Unit Balance +parent
+  IDRecUnit(s32_calc) #Unit
+  DtTm(dt_calc) #Date
+  Year(integer, calculated) #Year
+  Month(integer, calculated) #Month
+  DayOfMonth(integer, calculated) #Day
+  Balanced(boolean, calculated) #All Products Balanced?
+  BalHCLiq(boolean, calculated) #Oil/Condensate Balanced?
+  BalGas(boolean, calculated) #Gas Balanced?
+  BalWater(boolean, calculated) #Water Balanced?
+  BalSand(boolean, calculated) #Sand Balanced?
+  PctBalHCLiq(dbl_pct_calc) #Percent Balance Oil/Condensate
+  PctBalGas(dbl_pct_calc) #Percent Balance Gas
+  PctBalWater(dbl_pct_calc) #Percent Balance Water
+  PctBalSand(dbl_pct_calc) #Percent Balance Sand
+  VolBalHCLiq(dbl_m3_calc) #Balance Oil/Condensate
+  VolBalGas(dbl_m3_calc) #Balance Gas
+  VolBalWater(dbl_m3_calc) #Balance Water
+  VolBalSand(dbl_m3_calc) #Balance Sand
+  VolInsHCLiq(dbl_m3_calc) #Ins Oil/Condensate
+  VolInsGas(dbl_m3_calc) #Ins Gas
+  VolInsWater(dbl_m3_calc) #Ins Water
+  VolInsSand(dbl_m3_calc) #Ins Sand
+  VolOutsHCLiq(dbl_m3_calc) #Outs Oil/Condensate
+  VolOutsGas(dbl_m3_calc) #Outs Gas
+  VolOutsWater(dbl_m3_calc) #Outs Water
+  VolOutsSand(dbl_m3_calc) #Outs Sand
+  VolStartInvHCLiq(dbl_m3_calc) #Opening Inventory Oil/Condensate
+  VolStartInvGas(dbl_m3_calc) #Opening Inventory Gas Equivalent of Oil/Condensate
+  VolStartInvWater(dbl_m3_calc) #Opening Inventory Water
+  VolStartInvSand(dbl_m3_calc) #Opening Inventory Sand
+  VolEndInvHCLiq(dbl_m3_calc) #Closing Inventory Oil/Condensate
+  VolEndInvGas(dbl_m3_calc) #Closing Inventory Gas Equivalent of Oil/Condensate
+  VolEndInvWater(dbl_m3_calc) #Closing Inventory Water
+  VolEndInvSand(dbl_m3_calc) #Closing Inventory Sand
+  VolChgInvHCLiq(dbl_m3_calc) #Change in Inventory Oil/Condensate
+  VolChgInvGas(dbl_m3_calc) #Change in Inv Gas Equivalent of Oil/Cond
+  VolChgInvWater(dbl_m3_calc) #Change in Inventory Water
+  VolChgInvSand(dbl_m3_calc) #Change in Inventory Sand

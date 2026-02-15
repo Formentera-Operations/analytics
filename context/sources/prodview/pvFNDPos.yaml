@@ -1,0 +1,12 @@
+# prodview / flow_network / pvFNDPos
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvFNDPos: Flow Network Diagram Unit Positions | Positioning of the units within the flow network diagram.
+  Typ(s50) #Position Type
+  TblKey(s50) #Table Key
+  FldKey(s50) #Field Key
+  IdRecUnit(s32) #Unit Id
+  FilterValue(s255) #Value
+  VertSortFlowDiag(int) #Vertical Sort Order on Diagram
+  HorizSortFlowDiag(int) #Horizontal Sort Order on Diagram
+  AdminOnlyEdit(bool) #Admin Only Edit

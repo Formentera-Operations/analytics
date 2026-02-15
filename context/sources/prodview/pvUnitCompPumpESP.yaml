@@ -1,0 +1,11 @@
+# prodview / artificial_lift / pvUnitCompPumpESP
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpESP: ESP Details +ext,parent
+  ActiveStgs(int) #Number of Active Stages
+  HsngMat(s20) #Pump Housing Material
+  HsngStgs(int) #Number of Stages in Pump Housing
+  HydHeadDesign(double, meter) #Designed Hydrostatic Head
+  ImpellerMat(s20) #Impeller Material
+  PresInDesign(dbl_kPa) #Designed Intake Pressure
+  VolRateDesign(dbl_m3pd) #Designed Volumetric Rate

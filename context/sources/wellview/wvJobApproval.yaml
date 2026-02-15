@@ -1,0 +1,14 @@
+# wellview / operations_jobs / wvJobApproval
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApproval: An approval process. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  Status(s50) #Status
+  DtTmStart(dt) #Start Date
+  DtTmRequiredByOR(dt) #Required By Date OR
+  DtTmLatestPlanStartCalc(dt_calc) #Latest Start Date
+  DtTmRequiredByCalc(dt_calc) #Required By Date
+  IntegrationTyp(s100) #Integration
+  Com(txt2k) #Comment

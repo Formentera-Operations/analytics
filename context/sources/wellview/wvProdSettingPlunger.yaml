@@ -1,0 +1,9 @@
+# wellview / production_operations / wvProdSettingPlunger
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSettingPlunger: Arrival, open, delay, shut in times and pressure for the time interval defined in 'Production Setting'. +extension
+  TmArrival(dbl_days) #Tm Arrival
+  TmOpen(dbl_days) #Tm Open
+  TmDelay(dbl_days) #Tm Delay
+  TmShutIn(dbl_days) #Tm Shut In
+  PresOpen(dbl_kPa) #Pressure Open

@@ -1,0 +1,12 @@
+# wellview / perfs_stims / wvStimIntFluidAddComp
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntFluidAddComp: Fluid additive ingredients for the fluid system. +parent
+  Typ1(s100) #Add Comp Type
+  Typ2(s100) #Add Comp Subtype
+  Des(s100) #Ingredient Description
+  Amount(dbl) #Amount
+  UnitLabel(s10) #Units
+  ConcMax(dbl_pct) #Concentration Max
+  RefNo(s50) #Reference #
+  Note(s255) #Note

@@ -1,0 +1,26 @@
+# prodview / artificial_lift / pvUnitCompPumpPlungerEntry
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpPlungerEntry: Plunger Lift Entries +parent
+  DtTm(dt) #Date
+  PlungerOnPressure(dbl_kPa) #Plunger OnPressure
+  TripCountTotal(int) #Total Trips
+  TripCountSuccess(int) #Successful Trips
+  TripCountFail(int) #Failed Trips
+  DurOn(dbl_sec) #Duration On
+  DurOff(dbl_sec) #Duration Off
+  AfterFlowTime(dbl_day) #After Flow
+  TravelTimeAvg(dbl_sec) #Average Travel Time
+  TravelTimeMax(dbl_sec) #Maximum Travel Time
+  TravelTimeMin(dbl_sec) #Minimum Travel Time
+  TravelTimeTarget(dbl_sec) #Target Travel Time
+  Com(txt2k) #Note
+  UserTxt1(s50) #Plunger Make
+  UserTxt2(s50) #Plunger Model
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #Plunger Inspection Date
+  UserDtTm2(dt) #Plunger Replace Date
+  UserDtTm3(dt) #User Date 3

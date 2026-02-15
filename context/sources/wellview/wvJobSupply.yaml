@@ -1,0 +1,29 @@
+# wellview / operations_jobs / wvJobSupply
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSupply: Inventory of supplies for the 'Job'. Ex. Fuel, cement. +parent
+  Des(s100) #Supply Item Description
+  Typ(s100) #Type
+  UnitLabel(s10) #Unit Label
+  UnitSz(dbl) #Unit Size
+  Cost(dbl_cost) #Field Est
+  EnvironmentTyp(s100) #Environmental Type
+  EnergyFactor(dbl_J) #Energy Factor
+  ConsumeDesign(dbl) #Planned Consumed Amount
+  Note(s255) #Note
+  Vendor(s100) #Vendor
+  VendorCode(s100) #Vendor Code
+  VendorSubCode(s100) #Vendor Subcode
+  CodeDes(s100) #Code Description
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  ReceivedCalc(dbl_calc) #Total Received
+  ConsumedCalc(dbl_calc) #Total Consumed
+  ReturnedCalc(dbl_calc) #Total Returned
+  InventoryCalc(dbl_calc) #Inventory On Location
+  CostCalc(dbl_cost_calc) #Total Field Est
+  ConsumeDesignVarCalc(dbl_calc) #Planned - Actual Consumed Amount

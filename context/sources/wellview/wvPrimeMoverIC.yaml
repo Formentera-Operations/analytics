@@ -1,0 +1,8 @@
+# wellview / surface_equipment / wvPrimeMoverIC
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvPrimeMoverIC: Specific information related to internal combustion prime movers. +extension
+  Fuel(s10) #Fuel
+  Cycle(s10) #Cycle
+  NoCyl(int) #Number of Cylinders
+  StarterTyp(s100) #Starter Type

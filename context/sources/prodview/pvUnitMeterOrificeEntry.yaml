@@ -1,0 +1,42 @@
+# prodview / meters / pvUnitMeterOrificeEntry
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterOrificeEntry: Gas Meters Readings +ext,parent | Entries for orifice meters can track gas volume or derive a volume through pressure and temperature 
+  DtTm(dt) #Date
+  VolEnterGas(dbl_m3) #Gas Flowed
+  PresDiff(dbl) #Differential Pressure (psi)
+  PresStatic(dbl) #Static Pressure (psi)
+  Temp(dbl) #Flow Temperature (°F)
+  DurOnOR(dbl_days) #Hours On
+  Com(txt255) #Comments
+  ComFFV(txt255) #FFV Note
+  DurOnCalc(double, days, calculated) #Meter Hours On
+  PresStaticCalc(double, kilopascals, calculated) #Calculated Static Pressure (gauge)
+  PresDiffCalc(double, kilopascals, calculated) #Calculated Differential Pressure
+  TempCalc(double, degrees celcius, calculated) #Calculated Temperature
+  SzOrifice(dbl) #Orifice Size
+  Cprime(dbl) #C'
+  VolUncorrGasCalc(dbl_m3) #Calculated Gas Volume
+  VolEnterORGas(dbl_m3) #Entered Gas Volume Override
+  ReasonOR(s100) #Override Reason
+  VolGasCalc(dbl_m3_calc) #Final Gas Volume
+  VolSourceCalc(string 20, calculated) #Volume Source
+  HeatEnter(double, joule) #SCADA Heat
+  FactHeatEnter(double, joule per cubic meter) #SCADA Heat Factor
+  HeatEnterOR(double, joule) #Entered Heat Override
+  FactHeatEnterOR(double, joule per cubic meter) #Entered Heat Factor Override
+  HeatCalc(double, joule, calculated) #Final Heat
+  FactHeatCalc(double, joule per cubic meter, calculated) #Final Heat Factor
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  IDRecGasAnalysisCalc(s32_calc) #Gas Analysis
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

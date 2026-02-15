@@ -1,0 +1,13 @@
+# prodview / reference / pvOpenStateCompLoad
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvOpenStateCompLoad: Comp Opening Load Inventories +parent | The Unit Opening Inventories table provides a completion's beginning values for a particular day to 
+  IDRecUnitComp(s32) #Completion
+  IDRecUnitOrigin(s32) #Originating Unit
+  IDRecCompOrigin(s32) #Originating Completion
+  DtTmInv(dt) #Date Product Inventoried
+  VolHCLiq(dbl_m3) #Oil/Condensate Volume
+  VolGas(dbl_m3) #Gas Volume
+  VolWater(dbl_m3) #Water Volume
+  VolSand(dbl_m3) #Sand Volume
+  KeepWhole(bool) #Keep Whole?

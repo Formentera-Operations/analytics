@@ -1,0 +1,10 @@
+# prodview / tanks / pvUnitTankStrapData
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankStrapData: Tank Strap Details +parent | Reading/volume pairs for the strap.
+  Level(s50) #Level
+  Factor(dbl_m3) #Factor
+  VolOR(dbl_m3) #Volume Override
+  IncrementCalc(integer, calculated) #Increments
+  VolCalc(dbl_m3_calc) #Volume
+  sysSeq(int) #Sequence

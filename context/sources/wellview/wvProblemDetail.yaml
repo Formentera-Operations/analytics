@@ -1,0 +1,45 @@
+# wellview / production_operations / wvProblemDetail
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProblemDetail: Production equipment failure links to specific equipment. +parent
+  Category(s50) #Equipment Category
+  IDRecFailedItem(s32) #Failed Item Link
+  Des(s100) #Description
+  AreaFailed(s50) #Area Failed
+  SubItem(s20) #Failed Part of Item
+  Depth(dbl_m) #Failure Depth
+  DurEquipInService(dbl_days) #Equipment Life OR
+  DurEquipCalc(dbl_days_calc) #String Pull Date - Run Date
+  DurStartToRunCalc(dbl_days_calc) #Duration Failure to Run Date
+  DurRun(dbl_days) #Run Hours
+  Com(txt2k) #Comment
+  DesStringCalc(s100_calc) #String Description
+  DtTmRunCalc(dt_calc) #String Run Date
+  DtTmPullCalc(dt_calc) #String Pull Date
+  PullReasonCalc(s100_calc) #Pull Reason
+  PullReasonDetailCalc(s100_calc) #Pull Reason Detail
+  DesCompCalc(s100_calc) #Component Description
+  CompSubTypCalc(s100_calc) #Component Subtype
+  SzODNomCalc(dbl_m_calc) #OD Nominal
+  SzIDNomCalc(dbl_m_calc) #ID
+  SzODMaxCalc(dbl_m_calc) #Max OD
+  WtPerLengthCalc(dbl_kgpm_calc) #Weight/Length
+  GradeCalc(s20_calc) #Grade
+  LengthCalc(dbl_m_calc) #Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  MakeCalc(s100_calc) #Make
+  ModelCalc(s100_calc) #Model
+  SNCalc(s50_calc) #Serial Number
+  ConnectCalc(s50_calc) #Connections
+  MaterialCalc(s50_calc) #Material
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  ConditionRunCalc(s50_calc) #Condition Run
+  ConditionPullCalc(s50_calc) #Condition Pull
+  HoursStartCalc(dbl_days_calc) #Starting Hours
+  CompComCalc(txt2k_calc) #Comment
+  DesAccCalc(s100_calc) #Accessory Description

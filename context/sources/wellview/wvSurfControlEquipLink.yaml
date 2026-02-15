@@ -1,0 +1,8 @@
+# wellview / surface_equipment / wvSurfControlEquipLink
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvSurfControlEquipLink: Link the surface control equipment to relevant downhole equipment. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecItem(s32) #Link to Component
+  Note(s255) #Note

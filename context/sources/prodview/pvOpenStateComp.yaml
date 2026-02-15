@@ -1,0 +1,38 @@
+# prodview / reference / pvOpenStateComp
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvOpenStateComp: Completion Recoverables +parent | Recoverable fluid at the beginning of this period.
+  IDRecComp(s32) #Completion
+  VolAllocRemainRecovHCLiq(dbl_m3) #Allocated Recoverable Hydrocarbon Liquid Volume
+  VolAllocRemainRecovGas(dbl_m3) #Allocated Recoverable Gas Volume
+  VolAllocRemainRecovWater(dbl_m3) #Allocated Recoverable Water Volume
+  VolAllocRemainRecovSand(dbl_m3) #Allocated Recoverable Sand Volume
+  VolGathRemainRecovHCLiq(dbl_m3) #Gathered Recoverable Hydrocarbon Liquid Volume
+  VolGathRemainRecovGas(dbl_m3) #Gathered Recoverable Gas Volume
+  VolGathRemainRecovWater(dbl_m3) #Gathered Recoverable Water Volume
+  VolGathRemainRecovSand(dbl_m3) #Gathered Recoverable Sand Volume
+  RateNewProdAllocHCLiq(dbl_m3pd) #New Prod Oil/Cond Rate
+  RateNewProdAllocGas(dbl_m3pd) #New Prod Gas Rate
+  RateNewProdAllocWater(dbl_m3pd) #New Prod Water Rate
+  RateNewProdAllocSand(dbl_m3pd) #New Prod Sand Rate
+  RateGathDayTotLiq(dbl_m3pd) #Gath Day Total Liquids Rate
+  RateGathDayHCLiq(dbl_m3pd) #Gath Day Oil/Cond Rate
+  RateGathDayGas(dbl_m3pd) #Gath Day Gas Rate
+  RateGathDayWater(dbl_m3pd) #Gath Day Water Rate
+  RateGathDaySand(dbl_m3pd) #Gath Day Sand Rate
+  RateGathMonthTotLiq(dbl_m3pd) #Gath Month Total Liquids Rate
+  RateGathMonthHCLiq(dbl_m3pd) #Gath Month Oil/Cond Rate
+  RateGathMonthGas(dbl_m3pd) #Gath Month Gas Rate
+  RateGathMonthWater(dbl_m3pd) #Gath Month Water Rate
+  RateGathMonthSand(dbl_m3pd) #Gath Month Sand Rate
+  RateNewProdGathDayHCLiq(dbl_m3pd) #New Gath Day Oil/Cond Rate
+  RateNewProdGathDayGas(dbl_m3pd) #New Gath Day Gas Rate
+  RateNewProdGathDayWater(dbl_m3pd) #New Gath Day Water Rate
+  RateNewProdGathDaySand(dbl_m3pd) #New Gath Day Sand Rate
+  VolProdCumHCLiq(dbl_m3) #Cumulated HCLiq
+  VolProdCumOil(dbl_m3) #Cumulated Oil
+  VolProdCumCond(dbl_m3) #Cumulated Cond
+  VolProdCumNGL(dbl_m3) #Cumulated NGL
+  VolProdCumGas(dbl_m3) #Cumulated Gas
+  VolProdCumWater(dbl_m3) #Cumulated Water
+  VolProdCumSand(dbl_m3) #Cumulated Sand

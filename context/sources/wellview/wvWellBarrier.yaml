@@ -1,0 +1,13 @@
+# wellview / integrity_barriers / wvWellBarrier
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvWellBarrier: Definition of well barriers/envelopes and their start and end dates. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RequiredBy(s50) #Required By
+  IDRecWellbore(s32) #Wellbore
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase

@@ -1,0 +1,10 @@
+# wellview / production_operations / wvProduction
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProduction: Production volumes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  DataSource(s50) #Data Source
+  ActivityTyp(s50) #Activity Type
+  Com(txt2k) #Comment

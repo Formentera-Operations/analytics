@@ -1,0 +1,6 @@
+# prodview / fluid_analysis / pvGasAnalysisCompCalc
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvGasAnalysisCompCalc: Gas Composition Calcs +parent
+  Component(string 20, calculated) #Component
+  MoleFracAirFree(double, mol/mol, calculated) #Mole Fraction - Air Free as Received

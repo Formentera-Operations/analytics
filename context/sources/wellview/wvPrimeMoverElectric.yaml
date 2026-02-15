@@ -1,0 +1,15 @@
+# wellview / surface_equipment / wvPrimeMoverElectric
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvPrimeMoverElectric: Specific information related to electric prime movers. +extension
+  Typ(s100) #Type
+  CurrentRating(dbl_A) #Current Rating
+  VoltageRating(dbl_V) #Voltage Rating
+  NEMARating(s10) #NEMA Rating
+  UtilityCo(s20) #Utility Company
+  VarSpdDrv(bool) #Variable Speed Drive?
+  VarSpdDrvMake(s100) #VSD Make
+  VarSpdDrvModel(s100) #VSD Model
+  VarSpdDrvLowerFreq(dbl_Hz) #VSD Lower Freq
+  VarSpdDrvUpperFreq(dbl_Hz) #VSD Upper Frequency
+  MotorPoles(int) #Motor Poles

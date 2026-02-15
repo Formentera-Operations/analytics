@@ -1,0 +1,38 @@
+# prodview / meters / pvUnitMeterRate
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterRate: Rate Meters +parent | Rate or engineering estimates would be created as rate meters.
+  Name(s50) #Meter Name
+  UOMVol(s20) #Rate Volume Units
+  UOMPeriod(s10) #Rate Duration
+  RefIDA(s50) #Reference ID
+  TypFluid(s20) #Fluid Type
+  IDRecDurOpSource(s32) #Source of Operating Hours
+  EstMissingDay(bool) #Estimate Missing Days?
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Pressure Base
+  RegulatoryID(s50) #Gas Meter Disposition
+  OtherID(s50) #DSCode
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Rate Due
+  IDRecUnitNodeCalc(s32_calc) #Node
+  EntryReqPeriod(s50) #Entry Requirement Period
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence

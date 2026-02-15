@@ -1,0 +1,43 @@
+# prodview / flow_network / pvUnitNode
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNode: Unit Nodes +parent | 'Unit Node's allow flow in or out of a 'Unit' and allow connection between different 'Unit's.
+  Name(s50) #Node Name
+  Typ(s50) #NodeType
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  DesFluid(s50) #Fluid Description
+  KeepWhole(s20) #Keep Whole?
+  TypFluidBaseRestrict(s20) #Restricted Fluid
+  SortFlowDiag(int) #Sort Order on Diagram
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  DtTmHide(dt) #Hide Record As Of
+  OtherID(s50) #Other ID
+  CorrectionID1(txt2k) #Correction ID 1
+  CorrectionTyp1(s50) #Correction Type 1
+  CorrectionID2(txt2k) #Correction ID 2
+  CorrectionTyp2(s50) #Correction Type 2
+  UseVirutalAnalysis(bool) #Use Virtual Analysis?
+  Component(s50) #Component
+  ComponentPhase(s50) #Component Phase
+  DispositionPoint(bool) #Disposition Point?
+  DispProductName(s50) #Disposition Product
+  TypDisp1(s50) #Disposition Type
+  TypDisp2(s50) #Disposition Subtype
+  TypDispHCLiq(s50) #HCLiq Disposition Type
+  DispIDA(s50) #Disposition IDA
+  DispIDB(s50) #Disposition IDB
+  ReportGroup(s50) #Report Node Grouping
+  PurchaserName(s100) #Purchaser Name
+  PurchaserCode1(s100) #Purchaser Code 1
+  PurchaserCode2(s100) #Purchaser Code 2
+  Com(stringlong 100) #Note
+  FacProductName(s50) #Facility Product
+  InGathered(s50) #Include/Exclude From Gathered
+  UserTxt1(s50) #Gas Purch Tag for Reporting
+  UserTxt2(s50) #Gas Gath Sys Tag for Reporting
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

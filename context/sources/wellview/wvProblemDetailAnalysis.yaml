@@ -1,0 +1,20 @@
+# wellview / production_operations / wvProblemDetailAnalysis
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProblemDetailAnalysis: Production equipment failure analysis. +parent
+  PartTyp1(s100) #Part Type
+  PartTyp2(s100) #Part Subtype
+  PartDes(s100) #Part Description
+  PartRefNo(s20) #Part Reference #
+  DurEquip(dbl_days) #Part Life
+  Material(s50) #Material
+  Com(txt2k) #Comment
+  DtTmInspect(dt) #Inspection Date
+  AnalysisTyp(s100) #Analysis Type
+  Analyst(s50) #Analyst
+  Condition(s50) #Condition
+  Metallurgy(s100) #Metallurgy of Failed Part
+  PartCost(dbl_cost) #Part Cost
+  RootCause1(s255) #Root Cause
+  RootCause2(s255) #Root Cause Detail
+  ActionRqd(bool) #Action Required?

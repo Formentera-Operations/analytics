@@ -1,0 +1,69 @@
+# wellview / operations_jobs / wvJobDrillStringComp
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringComp: Drill String component details including OD, weight, grade. Drill string components may include drill pipe, drill collars, etc. +parent
+  Des(s100) #Item Description
+  IconName(s255) #Icon
+  SzODNom(dbl_m) #OD
+  SzIDNom(dbl_m) #ID
+  WtPerLength(dbl_kgpm) #Mass Per Length
+  Grade(s20) #Grade
+  Length(dbl_m) #Length
+  Joints(int) #Joints
+  CompSubTyp(s100) #Equipment Type
+  ConnTypTop(s20) #Top Connection Type
+  ConnThrdTop(s20) #Top Connection Thread
+  ConnSzTop(dbl_m) #Top Connection Size
+  UpsetTop(s20) #Top Upset
+  ConnTypBtm(s20) #Bottom Connection Type
+  ConnThrdBtm(s20) #Bottom Connection Thread
+  ConnSzBtm(dbl_m) #Bottom Connection Size
+  UpsetBtm(s20) #Bottom Upset
+  TorqueMin(dbl_Nm) #Make-up Torque
+  ConnectCalc(s50_calc) #Connections
+  ConnectAltCalc(s50_calc) #Connections (Alt)
+  SzODMax(dbl_m) #Gauge OD
+  SzDrift(dbl_m) #Drift
+  FishNeckOD(dbl_m) #Fishing Neck OD
+  FishNeckLength(dbl_m) #Fishing Neck Length
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  LengthTallyCalc(dbl_m_calc) #Tally Length
+  JointsTallyCalc(int_calc) #Joints in Tally
+  WeightCalc(dbl_N_calc) #Weight
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced (Open End)
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  CentralizersNoTallyCalc(int_calc) ## Centralizers (Tally)
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s50) #Material
+  Coating(s20) #Coating
+  Service(s20) #Service
+  RadioactiveSource(bool) #Radioactive Source?
+  LineToSurf(bool) #Line to Surface?
+  Com(txt2k) #Comment
+  ItemNoCalc(s10_calc) #Item Number
+  DesJtCalc(s100_calc) #Description-#Jts
+  ConditionRun(s50) #Condition Run
+  ConditionPull(s50) #Condition Pull
+  UsedClass(s10) #Class
+  HoursStart(dbl_days) #Starting Hours
+  HoursEndCalc(dbl_days_calc) #End Hours
+  DtTmLastInspect(dt) #Last Inspection Date
+  DaysSinceInspectCalc(dbl_days_calc) #Days Since Last Inspection
+  CurrentStatus(s50) #Current Status
+  CurrentStatusCalc(s100_calc) #Current Status
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  TorqueMax(dbl_Nm) #Max Torque
+  TensileMax(dbl_N) #Max Tensile Strength
+  TempRating(dbl_degC) #Temperature Rating
+  DepthDrilledJobCalc(dbl_m_calc) #Depth Drilled Job
+  CompTotalRunCalc(dbl_calc) #Total # Runs
+  TmDrilledJobCalc(dbl_days_calc) #Drilling Time for Job
+  TmCircJobCalc(dbl_days_calc) #Circ Time for Job
+  RefID(s50) #Reference ID
+  Owner(s50) #Owner
+  DtTmManufacture(dt) #Manufacture Date
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

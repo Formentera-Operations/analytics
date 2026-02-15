@@ -1,0 +1,16 @@
+# prodview / admin / pvApprovalStepRev
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvApprovalStepRev: Approvers +parent | Approvals required for this <avStep>
+  Typ(s100) #Type
+  Company(s100) #Company
+  Role(s50) #Role
+  Title(s50) #Approvers Title
+  Name(s50) #Approvers Name
+  Email(s50) #Email
+  UserID(s50) #User ID
+  ApproveRqd(bool) #Approval Required?
+  Approved(bool) #Approved/Reviewed?
+  DtTm(dt) #Approval Date
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence

@@ -1,0 +1,11 @@
+# prodview / reference / pvUnitProb
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitProb: Unit Problems +parent | Problems encountered on this completion. Can be populated with problems associated with this complet
+  Des(s100) #Failure Description
+  DtTmStart(dt) #Failure Date
+  DtTmEnd(dt) #Resolved Date
+  IDRecItem(s32) #Link
+  IDRecDownTm(s32) #Related Down Time
+  Typ(s100) #Type of Failure
+  Status(s50) #Status

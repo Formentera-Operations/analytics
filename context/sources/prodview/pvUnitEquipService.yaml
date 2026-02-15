@@ -1,0 +1,9 @@
+# prodview / equipment / pvUnitEquipService
+# Source: context/sources/prodview/domains/equipment.yaml
+#
+pvUnitEquipService: Service Requirements +parent
+  Typ1(s50) #Service Type
+  Typ2(s50) #Service Subtype
+  DurBetwnService(dbl_days) #Duration Between Service
+  DtTmNextCalc(dt_calc) #Next Service Due
+  Com(txt2k) #Comment

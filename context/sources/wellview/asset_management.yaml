@@ -17,160 +17,20 @@
 #
 # Staged: none
 
-wvNote: General notes that do not fall under another category in the data structure. +parent
-  DtTm(dt) #Date
-  Typ1(s100) #Type 1
-  Typ2(s100) #Type 2
-  Com(txt2k) #Comment
 
-wvSourceDest: Water sources. +parent
-  Typ1(s50) #Type
-  Typ2(s50) #Subtype
-  Des(s50) #Description
-  RefID(s50) #Ref ID
-  GeologicalDes(s50) #Geological Description
-  Com(txt2k) #Comment
-  DtTmLicenseStart(dt) #License Start Date
-  DtTmLicenseEnd(dt) #License End Date
-  LicenseNo(s50) #License #
-  DiversionTyp1(s50) #Diversion Type
-  DiversionTyp2(s50) #Diversion Subtype
-  DiversionAuth(s50) #Diversion Authority
-  RateDiversionMax(dbl_m3) #Max Diversion Rate
-
-wvOperatorHistory: History of operators of this well. +parent
-  Operator(s50) #Operator Name
-  OperatorCode(s50) #Operator Code
-  ChangeTyp1(s100) #Change Type
-  ChangeTyp2(s100) #Change Subtype
-  DtTmStart(dt) #Start Date
-  DtTmEnd(dt) #End Date
-  Source(s50) #Source
-  Com(txt2k) #Comment
-
-wvOperatorHistoryLink: Link the operator to a specific 'Wellbore' and / or 'Zone' if desired to track the history or operators to this level of detail. +parent
-  IDRecItem(s32) #Associated Items
-  Com(txt2k) #Comment
-
-wvResponsibleTeam: Names, roles and contact information for personnel involved with the well. A start and end date allow you to track changes to the contact over time. +parent
-  Typ(s100) #Type
-  Company(s100) #Company
-  ContactName(s50) #Contact Name
-  Title(s100) #Title
-  Role(s50) #Role
-  Department(s50) #Department
-  Location(s50) #Location
-  DtTmStart(dt) #Start Date
-  DtTmEnd(dt) #End Date
-  RptDist(s50) #Report Distribution
-  Com(txt2k) #Comment
-  PhoneOffice(s20) #Phone Office
-  PhoneMobile(s20) #Phone Mobile
-  PhoneHome(s20) #Phone Home
-  PhoneAlt(s20) #Phone Alternate #
-  PhonePager(s20) #Pager
-  Fax(s20) #Fax
-  Email(s255) #Email
-
-wvLegalStatus: Legal status of the well. +parent
-  Typ1(s100) #Type
-  Typ2(s100) #Subtype
-  Des(s100) #Description
-  DtTmStart(dt) #Start Date
-  DtTmEnd(dt) #End Date
-  RefNo(s50) #Reference #
-  ContactName(s50) #Contact Name
-  Status(s50) #Status
-  Com(txt2k) #Comment
-
-wvAgreement: Agreement details - working interest, acquisition, divestiture. +parent
-  Typ1(s100) #Agreement Type
-  Typ2(s100) #Agreement Subtype
-  Des(s100) #Agreement Description
-  RefNo(s50) #Reference #
-  ContractNo(s50) #Contract #
-  DtTmStart(dt) #Agreement Start Date
-  DtTmEnd(dt) #Agreement End Date
-  Com(txt2k) #Comment
-  DtTmStatus(dt) #Status Date
-  Status(s50) #Status
-
-wvAgreementDate: List of relevant dates for the agreement. +parent
-  DtTm(dt) #Date
-  Typ1(s100) #Type
-  Typ2(s100) #Subtype
-  Note(s255) #Note
-
-wvAgreementInt: List of partners and their associated interest or royalty details. +parent
-  CompanyName(s50) #Company Name
-  CompanyCode(s50) #Company Code
-  InterestTyp1(s100) #Interest Type
-  InterestTyp2(s100) #Interest Subtype
-  Des(s100) #Description
-  Interest(dbl_pct) #Interest
-  RefNo(s5) #Company Reference #
-  DtTmStatus(dt) #Status Date
-  Status(s50) #Company Status
-  Com(txt2k) #Comment
-
-wvAgreementContact: Names, roles and contact information for personnel involved with the agreement. +parent
-  ContactName(s50) #Contact Name
-  Title(s20) #Title
-  Role(s50) #Role
-  Department(s50) #Department
-  CompanyName(s50) #Company Name
-  Location(s50) #Location
-  PhoneOffice(s20) #Phone Office
-  PhoneMobile(s20) #Phone Mobile
-  PhoneHome(s20) #Phone Home
-  PhoneAlt(s20) #Phone Alternate #
-  PhonePager(s20) #Pager
-  Fax(s20) #Fax
-  Email(s255) #Email
-  RptDist(s50) #Report Distribution
-  Com(txt2k) #Comment
-
-wvAgreementLink: Link to 'Zone'(s), 'Job'(s), 'AFE'(s) that are relevant to this agreement. +parent
-  IDRecItem(s32) #Associated Items
-  DepthTop(dbl_m) #Top Depth
-  DepthBtm(dbl_m) #Bottom Depth
-  DesTop(s255) #Top Depth Des
-  DesBtm(s255) #Bottom Depth Des
-  Com(txt2k) #Comment
-
-wvAgreementDataObl: Partner data obligation and status, per agreement. +parent
-  Typ1(s100) #Data Type
-  Typ2(s100) #Data Subtype
-  Des(s100) #Description
-  CompanyName(s50) #Company Name
-  RefNo(s5) #Reference #
-  Source(s50) #Source
-  CopiesNo(int) #Number of Copies
-  DtTmRequired(dt) #Required Date
-  DtTmStatus(dt) #Status Date
-  Status(s50) #Status
-  Com(txt2k) #Comment
-
-wvExtReport: External reporting allows you to track regulatory and external reporting requirements that do not reside in other parts of the data model. +parent
-  Typ1(s100) #Type
-  Typ2(s100) #Subtype
-  Des(s100) #Description
-  RequiredBy(s50) #Required By
-  Com(txt2k) #Comment
-
-wvExtReportDetail: Define the status and report date. +parent
-  DtTm(dt) #Report Date
-  ReportByName(s50) #Report By Name
-  ReportByCompany(s100) #Report By Company
-  Status(s50) #Status
-
-wvExtReportDetailCheckList: Define the detailed elements for the regulatory or external submission. +parent
-  Typ1(s100) #Type
-  Typ2(s100) #Subtyp
-  Des(s255) #Description
-  RefNo(s20) #Reference #
-  Value(s50) #Value
-  ValueUnit(s50) #Value Unit
-  IDRecItem(s32) #Link
-  ActionRqd(bool) #Action Required?
-  Com(txt2k) #Comment
+# Tables in this domain (column details in tables/ directory):
+#   wvNote: General notes that do not fall under another category in the data structure. ...
+#   wvSourceDest: Water sources. +parent
+#   wvOperatorHistory: History of operators of this well. +parent
+#   wvOperatorHistoryLink: Link the operator to a specific 'Wellbore' and / or 'Zone' if desired to trac...
+#   wvResponsibleTeam: Names, roles and contact information for personnel involved with the well. A ...
+#   wvLegalStatus: Legal status of the well. +parent
+#   wvAgreement: Agreement details - working interest, acquisition, divestiture. +parent
+#   wvAgreementDate: List of relevant dates for the agreement. +parent
+#   wvAgreementInt: List of partners and their associated interest or royalty details. +parent
+#   wvAgreementContact: Names, roles and contact information for personnel involved with the agreemen...
+#   wvAgreementLink: Link to 'Zone'(s), 'Job'(s), 'AFE'(s) that are relevant to this agreement. +p...
+#   wvAgreementDataObl: Partner data obligation and status, per agreement. +parent
+#   wvExtReport: External reporting allows you to track regulatory and external reporting requ...
+#   wvExtReportDetail: Define the status and report date. +parent
+#   wvExtReportDetailCheckList: Define the detailed elements for the regulatory or external submission. +parent

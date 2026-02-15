@@ -1,0 +1,6 @@
+# prodview / routes / pvRouteSetRouteUserID
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvRouteSetRouteUserID: Route Name User IDs +parent | List of User ID's that have security rights to the associated <pvRoute>.
+  UserID(s50) #User ID
+  Typ(s50) #Type

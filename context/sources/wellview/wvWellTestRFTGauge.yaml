@@ -1,0 +1,8 @@
+# wellview / geological_evaluations / wvWellTestRFTGauge
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvWellTestRFTGauge: RFT gauge details. +parent
+  Typ(s100) #Gauge Type
+  SN(s50) #Serial No
+  DtTmCalibrate(dt) #Last Calibration Date
+  PresRef(s10) #Reference Pressure

@@ -1,0 +1,20 @@
+# wellview / casing_cement / wvTestLeakOff
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvTestLeakOff: Leak off test details including pressure, density, and volume. +parent
+  TestTyp(s100) #Test Type
+  DtTm(dt) #Test Date
+  IDRecCas(s32) #Last Casing String Run
+  IDRecFrm(s32) #Wellbore Formation Tested
+  LeakOffOccurred(bool) #Leak Off Occurred?
+  LeakOffPres(dbl_kPa) #Applied Surface Pressure
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  FluidTyp(s100) #Fluid Type
+  DensityFluid(dbl_kgpm3) #Fluid Density
+  LeakOffRate(dbl_m3pd) #Leak Off Rate Avg
+  VolPumped(dbl_m3) #Volume Pumped
+  LeakOffPresCalc(dbl_kPa_calc) #Leak Off Pressure
+  LeakOffDensityFluidCalc(dbl_kgpm3_calc) #Leak Off Equivalent Fluid Density
+  DataSource(s50) #Data Source
+  Com(txt2k) #Comment

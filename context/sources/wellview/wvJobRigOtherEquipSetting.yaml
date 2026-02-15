@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJobRigOtherEquipSetting
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigOtherEquipSetting: Other equipment settings. +parent
+  Typ1(s100) #Setting Type
+  Typ2(s100) #Setting Subtype
+  Des(s100) #Description
+  Value(dbl) #Value
+  UnitLabel(s10) #Unit

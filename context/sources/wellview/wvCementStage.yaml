@@ -1,0 +1,45 @@
+# wellview / casing_cement / wvCementStage
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCementStage: Description of the cement stage(s) for the cement activity. +parent
+  StageNum(int) #Stage Number
+  Des(s100) #Description
+  Objective(s50) #Objective
+  Com(txt2k) #Comment
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  MeasMethod(s20) #Top Measurement Method
+  DtTmStartPump(dt) #Pump Start Date
+  DtTmEndPump(dt) #Pump End Date
+  TopPlug(bool) #Top Plug?
+  BtmPlug(bool) #Bottom Plug?
+  RatePumpStart(dbl_m3pd) #Initial Pump Rate
+  RatePumpEnd(dbl_m3pd) #Final Pump Rate
+  RatePumpAvg(dbl_m3pd) #Avg Pump Rate
+  PresPumpEnd(dbl_kPa) #Final Pump Pressure
+  PresPlugBump(dbl_kPa) #Plug Bump Pressure
+  PresHeld(dbl_kPa) #Pressure Held
+  DtTmReleasedPres(dt) #Pressure Release Date
+  PlugFailed(bool) #Plug Failed?
+  FloatFailed(bool) #Float Failed?
+  FullReturn(bool) #Full Return?
+  VolReturnCmnt(dbl_m3) #Cement Volume Return
+  VolLost(dbl_m3) #Volume Lost
+  VolInFrm(dbl_m3) #Volume Squeezed in to Formation
+  Reciprocated(bool) #Pipe Reciprocated?
+  RecipStroke(dbl_m) #Reciprocation Stroke Length
+  RecipRate(dbl_spm) #Reciprocation Rate
+  Rotated(bool) #Pipe Rotated?
+  RotateRPM(dbl_rpm) #Pipe RPM
+  PipeMoveNote(s255) #Pipe Movement Note
+  DepthTagged(dbl_m) #Tagged Depth
+  TagMethod(s50) #Tag Method
+  WeightTagged(dbl_N) #Tag Weight
+  DepthDrillOut(dbl_m) #Depth Plug Drilled Out To
+  DtTmTagged(dt) #Tag Cement Date
+  DtTmDrillOut(dt) #Drill Out Date
+  ODDrillOut(dbl_m) #Drill Out Diameter
+  DurDrillOutToPumpEndCalc(dbl_days_calc) #Drill Out - Pump End Duration
+  DtTmPropDrillOut(dt) #Proposed Drill Out Date

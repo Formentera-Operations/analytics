@@ -1,0 +1,27 @@
+# wellview / operations_jobs / wvJRCostCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRCostCalc: All 'Daily Cost' and 'Daily Recurring Cost' combined for this reporting period. +parent
+  Des(s100_calc) #Cost Description
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Code5(s100_calc) #Code 5
+  Code6(s100_calc) #Code 6
+  Cost(dbl_cost_calc) #Field Est
+  Vendor(s100_calc) #Vendor
+  IDRecAFECustom(s32_calc) #Custom AFE Allocation
+  IDRecPhaseCustom(s32_calc) #Custom Phase Allocation
+  OpsCategory(s50_calc) #Ops Category
+  UnschedTyp(s100_calc) #Unscheduled Type
+  SN(s50_calc) #Serial Number
+  TicketNo(s50_calc) #Ticket Number
+  PONo(s50_calc) #Purchase Order Number
+  Note(s255_calc) #Note
+  UserTxt1(s50_calc) #User Text 1
+  VendorCode(s100_calc) #Vendor Code
+  VendorSubCode(s100_calc) #Vendor Sub Code
+  WorkOrderNo(s50_calc) #Work Order Number
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

@@ -1,0 +1,34 @@
+# wellview / reservoir_tests / wvWellTestFluidLevel
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestFluidLevel: Fluid Level test details. +parent
+  DtTm(dt) #Date
+  IDRecString(s32) #String
+  TestedBy(s50) #Tested By
+  Status(s20) #Status
+  IDRecJob(s32) #Job
+  DisplayFlag(bool) #Display Flag
+  Com(txt2k) #Comment
+  FluidTyp(s100) #Fluid Type
+  DepthFluidLevel(dbl_m) #Fluid Level
+  DepthTVDFluidLevelCalc(dbl_m_calc) #Fluid Level (TVD)
+  DepthFluidLevelCorr(dbl_m) #Fluid Level Corrected
+  DepthTVDFluidLevelCorrCalc(dbl_m_calc) #Fluid Level Corrected (TVD)
+  DepthFluidAbovePump(dbl_m) #Fluid Above Pump
+  DepthTVDFluidAbovePumpCalc(dbl_m_calc) #Fluid Above Pump (TVD)
+  Joints(int) #Joints
+  LengthAvgJoint(dbl_m) #Avg Joint Length
+  NoteCorrection(s255) #Note Correction
+  RateLiquid(dbl_m3pd) #Rate Liquid
+  RateGas(dbl_m3pd) #Rate Gas
+  DurationShutIn(dbl_days) #Shut-in Hours
+  PresTubStart(dbl_kPa) #Initial Tubing Pressure
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCasStart(dbl_kPa) #Initial Casing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  PresBH(dbl_kPa) #Flowing Bottom Hole Pressure
+  Density(dbl_kgpm3) #Fluid Density
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  PresGradient(dbl_kPapm) #Pressure Gradient
+  PresHyd(dbl_kPa) #Hydrostatic Pressure

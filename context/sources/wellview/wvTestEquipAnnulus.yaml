@@ -1,0 +1,17 @@
+# wellview / reservoir_tests / wvTestEquipAnnulus
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestEquipAnnulus: wvTestEquipAnnulus +parent
+  RefNo(s10) #Test Ref #
+  DtTm(dt) #Date
+  Duration(dbl_days) #Duration
+  CondInit(s100) #Initial Condition
+  PresInit(dbl_kPa) #Initial Pressure
+  PresStart(dbl_kPa) #Start Pressure
+  PresEnd(dbl_kPa) #End Pressure
+  RatePump(dbl_m3pd) #Rate of Pumping
+  VolPump(dbl_m3) #Volume Pumped
+  VolLost(dbl_m3) #Volume Lost
+  CondFinal(s100) #Final Condition
+  PresFinal(dbl_kPa) #Final Pressure
+  Com(txt2k) #Comment

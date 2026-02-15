@@ -1,0 +1,34 @@
+# wellview / surface_equipment / wvPumpingUnit
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvPumpingUnit: Pumping unit details. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Description
+  Typ(s100) #Type
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  CrankTyp(s100) #Crank Type
+  LoadPolishRodMax(dbl_N) #Max Rod Load
+  PitmanPosMax(int) #Pitman Arm Position
+  StrokeLengthMax(dbl_m) #Max Stroke Length
+  SzSheave(dbl_m) #Sheave Size
+  LengthBeam(dbl_m) #Beam Length
+  CrankPinHoleNo(int) #Crank Pin Holes Available
+  GearBoxDes(s100) #Gear Box Description
+  GearBoxSN(s20) #Gear Box Serial Number
+  GearBoxRatio(dbl) #Gear Box Ratio
+  GearBoxTorqueMaxIn(dbl_Nm) #Gear Box Max Input Torque
+  IDRecRod(s32) #Rod String
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  DtTmLastOverhaul(dt) #Last Overhaul Date
+  ConditionStart(s50) #Installed Condition
+  ConditionEnd(s50) #Removed Condition
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment
+  CodeAPI(s50) #API Designation
+  CodeNonAPI(s50) #Non API Designation
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  RefID(s50) #Reference ID

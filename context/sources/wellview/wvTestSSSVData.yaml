@@ -1,0 +1,6 @@
+# wellview / reservoir_tests / wvTestSSSVData
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestSSSVData: SSSV test - time and pressure data. +parent
+  Tm(dbl_days) #Time
+  Pres(dbl_kPa) #Pressure

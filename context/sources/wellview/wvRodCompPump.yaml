@@ -1,0 +1,25 @@
+# wellview / tubing_rods_equipment / wvRodCompPump
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvRodCompPump: Rod pump details including barrel, plunger, seat assembly, standing & traveling valve information. +extension
+  SzIDBore(dbl_m) #Pump Bore
+  PumpTyp(s2) #API Pump Type
+  BarrelTyp(s2) #API Barrel Type
+  AnchorTyp(s2) #API Anchor Type
+  SeatAssyTyp(s2) #Seating Assembly Type
+  BarrelLength(dbl_m) #Barrel Length
+  PlungerLengthNom(dbl_m) #Nominal Plunger Length
+  LengthUpperExt(dbl_m) #Upper Extension Length
+  LengthLowerExt(dbl_m) #Lower Extension Length
+  PlungerODClear(dbl_m) #Diametrical Plunger Clearance
+  SeatAssyDes(s100) #Seating Assembly Description
+  SeatAssySz(dbl_m) #Seating Assembly Size
+  BarrelMaterial(s50) #API Barrel Material
+  PlungerMaterial(s50) #API Plunger Material
+  TravValvBallMtl(s20) #Traveling Valve Ball Material
+  TravValvSeatMtl(s20) #Traveling Valve Seat Material
+  StandValveBallMtl(s20) #Standing Valve Ball Material
+  StandValveSeatMtl(s20) #Standing Valve Seat Material
+  GasAnchorSzOD(dbl_m) #Outside Diameter of Gas Anchor
+  GasAnchorLength(dbl_m) #Gas Anchor Length
+  LengthStrokeMax(dbl_m) #Max Stroke Length

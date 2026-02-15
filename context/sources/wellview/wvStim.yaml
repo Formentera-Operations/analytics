@@ -1,0 +1,98 @@
+# wellview / perfs_stims / wvStim
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStim: Stimulation and treatment data including fractures. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  IconName(s255) #Icon
+  Contractor(s50) #Stim/Treat Company
+  ContractSupt(s50) #Stim/Treat Supervisor
+  DiversionContractor(s50) #Diversion Company
+  DiversionMethod(s50) #Diversion Method
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecJob(s32) #Job
+  IntervalNoDesign(int) #Design Number of Treatment Intervals
+  IntervalNo(int) #Actual Total Stages
+  IntervalNoCalc(int_calc) #Calculated Stages
+  Category(s100) #Category
+  CategoryWellsNo(int) #Number of Wells
+  Com(txt2k) #Comment
+  RateTreatAvg(dbl_m3pd) #Treat Rate Avg
+  RateTreatMax(dbl_m3pd) #Treat Rate Max
+  RateCleanAvgCalc(dbl_m3pd_calc) #Clean Rate Avg
+  RateCleanMaxCalc(dbl_m3pd_calc) #Clean Rate Max
+  RateSlurryAvgCalc(dbl_m3pd_calc) #Slurry Rate Avg
+  RateSlurryMaxCalc(dbl_m3pd_calc) #Slurry Rate Max
+  PresTreatAvg(dbl_kPa) #Treat Pressure Avg
+  PresTreatAvgCalc(dbl_kPa_calc) #Treat Pressure Avg (all stages)
+  PresTreatMax(dbl_kPa) #Treat Pressure Max
+  PresTreatMaxCalc(dbl_kPa_calc) #Treat Pressure Max (all stages)
+  PresBreakdownAvgCalc(dbl_kPa_calc) #Breakdown Pressure Avg
+  PresClosureAvgCalc(dbl_kPa_calc) #Closure Pressure Avg
+  PresScreenOutAvgCalc(dbl_kPa_calc) #Screen Out Pressure Avg
+  VolCleanTotal(dbl_m3) #Volume Clean Total OR
+  VolCleanTotalCalc(dbl_m3_calc) #Volume Clean Total
+  VolSlurryTotal(dbl_m3) #Volume Slurry Total OR
+  VolSlurryTotalCalc(dbl_m3_calc) #Volume Slurry Total
+  VolRecoveredTotal(dbl_m3) #Volume Recovered Total OR
+  VolRecoveredTotalCalc(dbl_m3_calc) #Volume Recovered Total
+  VolNetCleanCalc(dbl_m3_calc) #Total Clean - Recovered Volume
+  VolNetSlurryCalc(dbl_m3_calc) #Total Slurry-Recovered Volume
+  VolCO2Total(dbl_m3) #Volume CO2 Total OR
+  VolCO2TotalCalc(dbl_m3_calc) #Volume CO2 Total
+  VolN2Total(dbl_m3) #Volume N2 Total OR
+  VolN2TotalCalc(dbl_m3_calc) #Volume N2 Total
+  MassPropTotal(dbl_kg) #Proppant Total OR
+  MassPropTotalCalc(dbl_kg_calc) #Proppant Total
+  ConcBHAvgCalc(dbl_kgpm3_calc) #BH Conc Avg (all stages)
+  ConcBHMaxCalc(dbl_kgpm3_calc) #BH Conc Max (all stages)
+  ConcBHMinCalc(dbl_kgpm3_calc) #BH Conc Min (all stages)
+  ConcSurfAvgCalc(dbl_kgpm3_calc) #Surf Conc Avg (all stages)
+  ConcSurfMaxCalc(dbl_kgpm3_calc) #Surf Conc Max (all stages)
+  ConcSurfMinCalc(dbl_kgpm3_calc) #Surf Conc Min (all stages)
+  ConcIntAvgCalc(dbl_kgpm3_calc) #Conc @ Zone Avg (all stages)
+  DurPump(dbl_days) #Total Pump Duration
+  DurPumpCalc(dbl_days_calc) #Total Pump Duration
+  FluidEfficiency(dbl_pct) #Fluid Efficiency
+  PowerTotal(dbl_W) #Pump Power Total
+  TempTreat(dbl_degC) #Treat Temperature
+  TempTreatAvgCalc(dbl_degC_calc) #Treat Temperature Avg
+  ClosureGradientAvgCalc(dbl_kPapm_calc) #Closure Gradient Average
+  FracGradientAvgCalc(dbl_kPapm_calc) #Frac Gradient Average
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  DepthTopMinCalc(dbl_m_calc) #Min Top Depth
+  DepthBtmMaxCalc(dbl_m_calc) #Max Btm Depth
+  LengthCalc(dbl_m_calc) #Length (Gross)
+  LengthSumCalc(dbl_m_calc) #Length (Net)
+  DtTmStartMinCalc(dt_calc) #Min Start Date
+  DtTmEndMaxCalc(dt_calc) #Max End Date
+  DurationGrossCalc(dbl_days_calc) #Total Duration (Gross)
+  DurationNetCalc(dbl_days_calc) #Total Duration (Net)
+  CostTotalCalc(dbl_cost_calc) #Total Cost
+  ClusterSumCalc(int_calc) ## Clusters
+  ClustersPerIntNoCalc(dbl_pu_calc) #Clusters/Stage
+  OtherInHoleSumCalc(int_calc) #Total # Plugs
+  CostPerClusterCalc(dbl_cpu_calc) #Cost/Cluster
+  CostPerIntNoCalc(dbl_cpu_calc) #Cost/Stage
+  CostPerLengthCalc(dbl_cpm_calc) #Cost/Length (Gross)
+  CostPerLengthSumCalc(dbl_cpm_calc) #Cost/Length (Net)
+  CostPerMassPropTotalCalc(dbl_cpkg_calc) #Cost/Mass Proppant
+  LengthPerDurNetCalc(dbl_mpd_calc) #Length (Gross)/hr
+  LengthSumPerDurNetCalc(dbl_mpd_calc) #Length (Net)/hr
+  DurPumpPerDurNetCalc(dbl_pct_calc) #Total Pumping Hours/Day
+  IntervalNoPerDurNetCalc(dbl_upd_calc) #Stages/Day
+  MassPropTotalPerDurNetCalc(dbl_kgpd_calc) #Mass Proppant/Day
+  MassPropTotalPerIntNoCalc(dbl_kgpu_calc) #Mass Proppant/Stage
+  MassPropTotalPerIntPerDurCalc(dbl_kgpupd_calc) #Mass Proppant/Stage/Day
+  MassPropTotalPerLengthCalc(dbl_kgpm_calc) #Mass Proppant/Gross Length
+  MassPropTotalPerLengthSumCalc(dbl_kgpm_calc) #Mass Proppant/Net Length
+  VolCleanTotalPerLengthCalc(dbl_m3pm_calc) #Volume/Length (Gross)
+  OtherInHolePerDurNetCalc(dbl_upd_calc) #Plugs/Day
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserTxt1(s50) #User Text 1

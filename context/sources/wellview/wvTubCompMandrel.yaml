@@ -1,0 +1,5 @@
+# wellview / tubing_rods_equipment / wvTubCompMandrel
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompMandrel: Mandrel station number. +extension
+  StationNo(int) #Station #

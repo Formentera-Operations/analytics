@@ -1,0 +1,27 @@
+# prodview / flow_network / pvFlowNetHeader
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvFlowNetHeader: Networks | Single entity grouping used to deliniate assets by certain flow patterns. All of the assets that flo
+  Name(s50) #Network Name
+  Typ(s50) #Type
+  Com(txt2k) #Comment
+  IDRecUnitPrimary(s32) #Primary Unit
+  IDRecFacilityPrimary(s32) #Primary Facility
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  RptGatheredCalcs(bool) #Report Gathered Calculations
+  RptAllocations(bool) #Report Allocations
+  RptDispositions(bool) #Report Dispositions
+  RptComponentDispositions(bool) #Report Component Dispositions
+  RptNodeCalculations(bool) #Report Node Calculations
+  TrackDownholeInventory(bool) #Track Downhole Inventory
+  DtTmAllocProcessBegan(dt) #Date/Time the current allocation process began
+  DtTmLastAllocProcess(dt) #Date of last allocation process
+  UserLastAllocProcess(s50) #User Initiating the last allocation process
+  DtTmStart(dt) #Start Using/Allocating Flow Network
+  DtTmEnd(dt) #End Using/Allocating Flow Network

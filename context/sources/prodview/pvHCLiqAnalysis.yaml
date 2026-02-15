@@ -1,0 +1,45 @@
+# prodview / fluid_analysis / pvHCLiqAnalysis
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvHCLiqAnalysis: Hydrocarbon Liquid Analyses +parent
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  Des(s255) #Sample Description
+  TestedBy(s50) #Sampler Company
+  DontUse(bool) #Don't Use
+  DepthTop(double, meter) #Top Depth
+  DepthBtm(double, meter) #Bottom Depth
+  LocSample(s255) #Sample Location Point
+  RefNoLaboratory(s50) #Lab Ref #
+  Analyst(s50) #Analyst
+  RefNoTest(s50) #Test Ref #
+  RefNoSample(s50) #Sample Container Ref #
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  PresSeparator(dbl_kPa) #Separator Pressure
+  TempSeparator(dbl_degC) #Separator Temperature
+  PresReservoir(dbl_kPa) #Reservoir Pressure
+  TempReservoir(dbl_degC) #Reservoir Temperature
+  PresGaugeSource(dbl_kPa) #Source Gauge Pressure
+  TempGaugeSource(dbl_degC) #Source Gauge Temperature
+  PresSample(dbl_kPa) #Sample Pressure
+  TempSample(dbl_degC) #Sample Temperature
+  PresSampleRec(dbl_kPa) #Received Sample Pressure
+  TempSampleRec(dbl_degC) #Received Sample Temperature
+  FractionTyp(s50) #Fraction Type
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  TempRefSample(dbl_degC) #Total Sample Ref Temp
+  APISample(dbl_kgpm3) #Total Sample API
+  DensityRelSample(dbl) #Total Sample Relative Density
+  MolecularMassSample(dbl) #Total Sample Relative Molecular Mass
+  TempRefAPISample(dbl_degC) #Total Sample API Ref Temp
+  DensityC7Plus(dbl_kgpm3) #C7+ Density
+  DensityRelC7Plus(dbl) #C7+ Relative Density
+  APIC7Plus(dbl_kgpm3) #C7+ API
+  MolecularMassRelC7Plus(dbl) #C7+ Relative Molecular Mass
+  TempRefC7Plus(dbl_degC) #C7+ Ref Temp
+  TempRefAPIC7Plus(dbl_degC) #C7+  API Ref Temp
+  FactorGasEquivOR(dbl_m3pm3) #Gas Equivalent Factor
+  FactorGasEquivCalc(double, cubic meters per cubic meter, calculated) #Gas Equivalent Factor Calc
+  Com(txt2k) #Comment

@@ -1,0 +1,8 @@
+# prodview / admin / pvApprovalStepRevAction
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvApprovalStepRevAction: Action Required +parent
+  IDRecIssue(s32) #Issue of Concern
+  ActionRequired(bool) #Action Required?
+  Reason(s100) #Reason
+  sysSeq(int) #Sequence

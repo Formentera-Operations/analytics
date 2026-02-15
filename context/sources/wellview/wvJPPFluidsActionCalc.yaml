@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJPPFluidsActionCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPFluidsActionCalc: Summary of <wvJobFluidsActionCalc> for the phase. +parent
+  FluidTyp(s100_calc) #Fluid Type
+  ActionTyp(s100_calc) #Fluid Sub Type
+  ToWell(dbl_m3_calc) #To well
+  FromWell(dbl_m3_calc) #From well
+  ToLease(dbl_m3_calc) #To lease
+  FromLease(dbl_m3_calc) #From lease
+  NonRecov(dbl_m3_calc) #Non-recoverable fluid
+  LeftToRecover(dbl_m3_calc) #Left to recover
+  InTanks(dbl_m3_calc) #Lease Balance
+  IDRecJob(s32_calc) #Job
+  PhaseCode(s100_calc) #Phase Type 1
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

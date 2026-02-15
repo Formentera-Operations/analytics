@@ -1,0 +1,21 @@
+# wellview / perfs_stims / wvStimIntFluidAdd
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntFluidAdd: Fluid additive details for the fluid system. +parent
+  Typ1(s100) #Additive Type
+  Typ2(s100) #Additive Subtype
+  Des(s100) #Additive Name
+  Purpose(s50) #Purpose
+  VendorAddName(s100) #Vendor Additive Name
+  RefNo(s50) #Reference #
+  AmountDesign(dbl) #Design Amount
+  Amount(dbl) #Amount
+  UnitLabel(s10) #Units
+  MassTotalCalc(dbl_kg_calc) #Total Mass of Additive
+  VolTotalCalc(dbl_m3_calc) #Total Volume of Additive
+  ConcMax(dbl_pct) #Concentration Max
+  ConcMin(dbl_pct) #Concentration Min
+  Density(dbl_kgpm3) #Additive Density
+  Com(txt2k) #Comment
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1

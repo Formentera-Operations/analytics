@@ -1,0 +1,11 @@
+# prodview / routes / pvRouteSetRoute
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvRouteSetRoute: Routes +parent | Routes are the series of stops on which measurements are made in the flow network, for example, on g
+  Name(s100) #Route Name
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  UserTxt1(s50) #Foreman
+  UserTxt2(s50) #Primary Lease Operator
+  UserTxt3(s50) #Backup Lease Operator
+  Com(txt255) #Note

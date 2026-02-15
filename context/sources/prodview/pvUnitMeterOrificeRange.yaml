@@ -1,0 +1,11 @@
+# prodview / meters / pvUnitMeterOrificeRange
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterOrificeRange: Spring Ranges +ext,parent
+  DtTmStart(dt) #Install Date
+  PresStatMin(dbl) #Static Range Minimum
+  PresStatMax(dbl) #Static Range Maximum
+  PresDiffMin(dbl) #Differential Range Minimum
+  PresDiffMax(dbl) #Differential Range Maximum
+  TempMin(dbl) #Temperature Range Minimum
+  TempMax(dbl) #Temperature Range Maximum

@@ -1,0 +1,10 @@
+# prodview / fluid_analysis / pvWaterAnalysisComp
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvWaterAnalysisComp: Water Composition +parent | Fraction of the water analysis broken out by component.
+  Ion(s20) #Component
+  CationAnion(s20) #Cation or Anion
+  Density(dbl_kgpm3) #Density
+  DensityEquiv(dbl) #Equivalent Density
+  MassFrac(double, kilograms per kilogram) #Mass Fraction
+  Com(txt255) #Note

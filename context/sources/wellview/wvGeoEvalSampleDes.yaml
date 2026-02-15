@@ -1,0 +1,15 @@
+# wellview / geological_evaluations / wvGeoEvalSampleDes
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalSampleDes: General sample descriptions. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  VolPercentCa(dbl_pct) #Volume Ca
+  VolPercentMg(dbl_pct) #Volume Mg
+  RefNo(s50) #Reference #
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment

@@ -1,0 +1,123 @@
+# wellview / operations_jobs / wvJobProgramMud
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramMud: General mud program with min and max values permitted by depth interval. +parent
+  Des(s100) #Description
+  IDRecWellbore(s32) #Wellbore
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  MudTyp(s100) #Mud Type
+  DensityMin(dbl_kgpm3) #Density Min
+  DensityMax(dbl_kgpm3) #Density Max
+  MudMixture(txt2k) #Mud Mixture
+  MBTMin(dbl_kgpm3) #MBT Min
+  MBTMax(dbl_kgpm3) #MBT Max
+  CECCuttingsMin(dbl) #CEC Cuttings Min
+  CECCuttingsMax(dbl) #CEC Cuttings Max
+  pHMin(dbl) #pH Min
+  pHMax(dbl) #pH Max
+  PmMin(dbl_m3pm3) #Pm Min
+  PmMax(dbl_m3pm3) #Pm Max
+  AlkalinityMin(dbl_m3pm3) #Alkalinity Min
+  AlkalinityMax(dbl_m3pm3) #Alkalinity Max
+  ElecStabilityMin(dbl_V) #Elec Stability Min
+  ElecStabilityMax(dbl_V) #Elec Stability Max
+  TempCrystalMin(dbl_degC) #Temp Crystal Min
+  TempCrystalMax(dbl_degC) #Temp Crystal Max
+  TempFlowLineMin(dbl_degC) #Temp Flow Line Min
+  TempFlowLineMax(dbl_degC) #Temp Flow Line Max
+  Com(txt2k) #Comment
+  FunnelViscosityMin(dbl_dpm3) #Funnel Viscosity Min
+  FunnelViscosityMax(dbl_dpm3) #Funnel Viscosity Max
+  PlasticVisMin(dbl_Pas) #Plastic Vis Min
+  PlasticVisMax(dbl_Pas) #Plastic Vis Max
+  YieldPtMin(dbl_kPa) #Yield Pt Min
+  YieldPtMax(dbl_kPa) #Yield Pt Max
+  gel10secMin(dbl_kPa) #Gel 10sec Min
+  gel10secMax(dbl_kPa) #Gel 10sec Max
+  gel10minMin(dbl_kPa) #Gel 10min Min
+  gel10minMax(dbl_kPa) #Gel 10min Max
+  gel30minMin(dbl_kPa) #Gel 30min Min
+  gel30minMax(dbl_kPa) #Gel 30min Max
+  NMin(dbl) #NMin
+  NMax(dbl) #N Max
+  KMin(dbl) #K Min
+  KMax(dbl) #K Max
+  ECDMin(dbl_kgpm3) #ECD Min
+  ECDMax(dbl_kgpm3) #ECD Max
+  Vis3rpmMin(dbl_kPa) #Vis 3rpm Min
+  Vis3rpmMax(dbl_kPa) #Vis 3rpm Max
+  Vis6rpmMin(dbl_kPa) #Vis 6rpm Min
+  Vis6rpmMax(dbl_kPa) #Vis 6rpm Max
+  Vis30rpmMin(dbl_kPa) #Vis 30rpm Min
+  Vis30rpmMax(dbl_kPa) #Vis 30rpm Max
+  Vis60rpmMin(dbl_kPa) #Vis 60rpm Min
+  Vis60rpmMax(dbl_kPa) #Vis 60rpm Max
+  Vis100rpmMin(dbl_kPa) #Vis 100rpm Min
+  Vis100rpmMax(dbl_kPa) #Vis 100rpm Max
+  Vis200rpmMin(dbl_kPa) #Vis 200rpm Min
+  Vis200rpmMax(dbl_kPa) #Vis 200rpm Max
+  Vis300rpmMin(dbl_kPa) #Vis 300rpm Min
+  Vis300rpmMax(dbl_kPa) #Vis 300rpm Max
+  Vis600rpmMin(dbl_kPa) #Vis 600rpm Min
+  Vis600rpmMax(dbl_kPa) #Vis 600rpm Max
+  WaterPercentMin(dbl_pct) #Water Percent Min
+  WaterPercentMax(dbl_pct) #Water Percent Max
+  OilPercentMin(dbl_pct) #Oil Percent Min
+  OilPercentMax(dbl_pct) #Oil Percent Max
+  SolidsMin(dbl_pct) #Solids Min
+  SolidsMax(dbl_pct) #Solids Max
+  SolidsLowGravMin(dbl_pct) #Solids Low Grav Min
+  SolidsLowGravMax(dbl_pct) #Solids Low Grav Max
+  SandsMin(dbl_pct) #Sands Min
+  SandsMax(dbl_pct) #Sands Max
+  CaClMin(dbl_pct) #CaCl Min
+  CaClMax(dbl_pct) #CaCl Max
+  BariteMin(dbl_kgpm3) #Barite Min
+  BariteMax(dbl_kgpm3) #Barite Max
+  ChloridesMin(dbl_kgpm3) #Chlorides Min
+  ChloridesMax(dbl_kgpm3) #Chlorides Max
+  CalciumMin(dbl_kgpm3) #Calcium Min
+  CalciumMax(dbl_kgpm3) #Calcium Max
+  MagnesiumMin(dbl_kgpm3) #Magnesium Min
+  MagnesiumMax(dbl_kgpm3) #Magnesium Max
+  PotassiumMin(dbl_kgpm3) #Potassium Min
+  PotassiumMax(dbl_kgpm3) #Potassium Max
+  BrineMin(dbl_kgpm3) #Brine Min
+  BrineMax(dbl_kgpm3) #Brine Max
+  LimeMin(dbl_kgpm3) #Lime Min
+  LimeMax(dbl_kgpm3) #Lime Max
+  LCMMin(s20) #LCM Min
+  LCMMax(s20) #LCM Max
+  FiltrationSzMin(dbl_m) #Filtration Size Min
+  FiltrationSzMax(dbl_m) #Filtration Size Max
+  NTUMax(int) #NTU Max
+  IronMax(dbl_kgpm3) #Iron Max
+  KClMin(dbl_kgpm3) #KCl Min
+  KClMax(dbl_kgpm3) #KCl Max
+  PolymerMin(dbl_pct) #Polymer Min
+  PolymerMax(dbl_pct) #Polymer Max
+  SulfideMin(dbl_kgpm3) #Sulfide Min
+  SulfideMax(dbl_kgpm3) #Sulfide Max
+  FiltrateMin(dbl_m3pd) #Filtrate Min
+  FiltrateMax(dbl_m3pd) #Filtrate Max
+  FilterCakeMin(dbl_m) #Filter Cake Min
+  FilterCakeMax(dbl_m) #Filter Cake Max
+  HTHPFiltrateMin(dbl_m3pd) #HTHP Filtrate Min
+  HTHPFiltrateMax(dbl_m3pd) #HTHP Filtrate Max
+  HTHPFilterCakeMin(dbl_m) #HTHP Filter Cake Min
+  HTHPFilterCakeMax(dbl_m) #HTHP Filter Cake Max
+  HTHPTempMin(dbl_degC) #HTHP Temp Min
+  HTHPTempMax(dbl_degC) #HTHP Temp Max
+  HTHPPresMin(dbl_kPa) #HTHP Pres Min
+  HTHPPresMax(dbl_kPa) #HTHP Pres Max
+  PfMin(dbl_m3pm3) #Pf Min
+  PfMax(dbl_m3pm3) #Pf Max
+  MfMin(dbl_m3pm3) #Mf Min
+  MfMax(dbl_m3pm3) #Mf Max
+  P1Min(dbl_m3pm3) #P1 Min
+  P1Max(dbl_m3pm3) #P1 Max
+  P2Min(dbl_m3pm3) #P2 Min
+  P2Max(dbl_m3pm3) #P2 Max

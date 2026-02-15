@@ -1,0 +1,21 @@
+# wellview / other / wvCurveInterp
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvCurveInterp: Interpretation of sensor data. +parent
+  Category(s100) #Category
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Typ3(s100) #Type3
+  Typ4(s100) #Type4
+  Mnemonic(s50) #Mnemonic
+  APICode(s50) #API Code
+  UnitLabel(s10) #Units
+  Des(s100) #Description
+  Source(s100) #Source
+  Analyst(s50) #Analyst
+  Contractor(s50) #Company
+  TypCurve(s100) #Curve Type
+  Com(txt2k) #Comment
+  UserTxt1(s100) #User Text1
+  UserTxt2(s100) #User Text2
+  UserTxt3(s100) #User Text3

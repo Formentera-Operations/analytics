@@ -1,0 +1,16 @@
+# wellview / casing_cement / wvCasCompLnrHngr
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCasCompLnrHngr: Additional liner hanger details for the casing component. +extension
+  Retrievable(bool) #Retrievable?
+  ElastomerTyp(s100) #Elastomer Type
+  SealTypAnnulus(s100) #Annulus Seal Type
+  SealTypNeck(s100) #Neck Seal Type
+  ElemCenter(dbl_m) #Element Center Depth
+  SzPolishBore(dbl_m) #Polish Bore Size
+  LenPolishBore(dbl_m) #Polish Bore Length
+  Slips(s100) #Slip Description
+  SetMech(s50) #Set Mechanics
+  SettingProcedure(txt2k) #Setting Procedure
+  UnsettingProcedure(txt2k) #Unsetting Procedure
+  Note(s100) #Note

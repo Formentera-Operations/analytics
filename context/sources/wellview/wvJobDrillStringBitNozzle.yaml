@@ -1,0 +1,6 @@
+# wellview / operations_jobs / wvJobDrillStringBitNozzle
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringBitNozzle: Bit nozzle details. +parent
+  Dia(dbl_m) #Size
+  Typ(s100) #Type

@@ -1,0 +1,19 @@
+# wellview / operations_jobs / wvJobSafetyIncidentVict
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSafetyIncidentVict: Details of safety incident victims. +parent
+  VictName(s100) #Victim Name
+  TypEmploy(s100) #Employment Type
+  Company(s100) #Company
+  Age(int) #Age
+  Sex(s20) #Sex
+  Occupation(s50) #Occupation
+  IncidentResult(s50) #Incident Result
+  DurationLostWork(dbl_days) #Duration Lost Work
+  DurationRestrictedWork(dbl_days) #Duration Restricted Work
+  PermanentDisability(bool) #Permanent Disability?
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  VictIDA(s50) #Vict IDA
+  VictIDB(s50) #Vict IDB

@@ -1,0 +1,8 @@
+# prodview / meters / pvUnitMeterPDGasECF
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterPDGasECF: Effluent Correction Factors +parent | Enter a date range to apply a correction factor to the meter.
+  DtTm(dt) #Effective Date
+  EffluentFactor(dbl_m3pm3) #Effluent Correction Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due

@@ -1,0 +1,7 @@
+# wellview / production_operations / wvFluidAnalysisOilDistill
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisOilDistill: Oil sample distilled volume vs. +parent
+  VolumeFrac(dbl_m3pm3) #Volume Fraction Distilled
+  Temperature(dbl_degC) #Temp
+  Note(s255) #Note

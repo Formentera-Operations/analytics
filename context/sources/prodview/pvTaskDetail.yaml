@@ -1,0 +1,16 @@
+# prodview / admin / pvTaskDetail
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvTaskDetail: Task Details +parent | Tasks including request, assign, complete details.
+  Des(s50) #Description
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Priority(s50) #Priority
+  IDRecItem(s32) #Link
+  AssignToName(s50) #Name Assigned To
+  DtTmActionRqd(dt) #Action Required Date
+  RequestCom(txt2k) #Request Comment
+  Status(s50) #Status
+  ActionComplete(bool) #Action Complete?
+  DtTmComplete(dt) #Completed Date
+  ActionCom(txt2k) #Action Comment

@@ -1,0 +1,15 @@
+# prodview / admin / pvUnitAgreemt
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvUnitAgreemt: Partnership Agreements +parent
+  Des(s50) #Agreement Description
+  Typ1(s50) #Agreement Type
+  SubTyp1(s50) #Agreement Sub Type 1
+  SubTyp2(s50) #Agreement Sub Type 2
+  DtTmStart(dt) #Agreement Start Date
+  DtTmEnd(dt) #Agreement End Date
+  IDRecAppliesTo(s32) #Applies To
+  RefIDA(s50) #WI Partner
+  RefIDB(s50) #Reference ID B
+  RefIDC(s50) #Reference ID C
+  Com(txt2k) #Comment

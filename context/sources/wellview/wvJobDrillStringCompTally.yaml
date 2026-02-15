@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJobDrillStringCompTally
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringCompTally: Individual joints run for the selected drill string component. +parent
+  Length(dbl_m) #Length
+  RefNo(int) #Reference #
+  JointRun(bool) #Run?
+  Note(s255) #Note
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  RunNoCalc(dbl_calc) #Run Number
+  RefID(s50) #Reference ID
+  CentralizersNo(int) ## Centralizers
+  CentralizersDes(s50) #Centralizer Note
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  VolumeInternalCumCalc(dbl_m3_calc) #Cum Internal Volume

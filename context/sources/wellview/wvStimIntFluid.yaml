@@ -1,0 +1,29 @@
+# wellview / perfs_stims / wvStimIntFluid
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntFluid: Fluid system details for the stimulation. This is a normalized list of all fluid systems designed and/or used during the stimulation. +parent
+  FluidName(s50) #Fluid Name
+  Typ1(s100) #Fluid Type
+  Typ2(s255) #Fluid Subtype
+  Des(s255) #Description
+  Purpose(s50) #Purpose
+  EnvironmentTyp(s100) #Environment Type
+  Source(s50) #Source
+  Com(txt2k) #Comment
+  VendorFluidName(s100) #Vendor Fluid Name
+  Vendor(s100) #Vendor
+  VendorCode(s100) #Vendor Code
+  VolumeDesign(dbl_m3) #Design Volume
+  Volume(dbl_m3) #Volume
+  VolumeCalc(dbl_m3_calc) #Calculated Amount
+  RatioVolumeDesignCalc(dbl_m3pm3_calc) #Actual/Design Fluid Volume
+  FilterSz(dbl_m) #Filter Size
+  FluidDensity(dbl_kgpm3) #Fluid Density
+  pH(dbl) #pH
+  PresVapor(dbl_kPa) #Vapor Pressure
+  TempRef(dbl_degC) #Reference Temperature
+  Viscosity(dbl_Pas) #Viscosity
+  EvalMethod(s50) #Evaluation Method
+  MassTotal(dbl_kg) #Fluid Total Mass
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1

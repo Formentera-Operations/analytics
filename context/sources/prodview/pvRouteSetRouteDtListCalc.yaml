@@ -1,0 +1,5 @@
+# prodview / routes / pvRouteSetRouteDtListCalc
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvRouteSetRouteDtListCalc: List of Visible Entry Dates +parent | List of dates that are visible with current date filters. Used to provide list of dates to anchor re
+  DtTm(dt_calc) #Date

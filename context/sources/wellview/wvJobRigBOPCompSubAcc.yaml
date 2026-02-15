@@ -1,0 +1,27 @@
+# wellview / operations_jobs / wvJobRigBOPCompSubAcc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigBOPCompSubAcc: Accessories related to this sub component. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  Sz(dbl_m) #Size
+  SzDes(s100) #Size Description
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  DistanceFromBtm(dbl_m) #Distance from Bottom
+  DtTmManufacture(dt) #Manufacture Date
+  HoursStart(dbl_days) #Starting Hours
+  Length(dbl_m) #Length
+  Make(s100) #Make
+  Model(s100) #Model
+  Material(s50) #Material
+  ModifyDes(s100) #Modification Description
+  SN(s50) #Serial Number
+  MaxPres(dbl_kPa) #Max Pres
+  ConditionRun(s50) #Condition Installed
+  ConditionPull(s50) #Condition Removed
+  RefID(s50) #Reference ID
+  Note(s255) #Note
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

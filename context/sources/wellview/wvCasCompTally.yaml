@@ -1,0 +1,23 @@
+# wellview / casing_cement / wvCasCompTally
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCasCompTally: Individual joints run for the selected casing component. +parent
+  Length(dbl_m) #Length
+  RefNo(int) #Reference #
+  JointRun(bool) #Run?
+  Centralized(bool) #Centralized?
+  CentralizersNo(int) ## Centralizers
+  CentralizersDes(s50) #Centralizer Note
+  ExtJewelry(s50) #External Jewelry
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  RunNoCalc(dbl_calc) #Run Number
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  VolumeInternalCumCalc(dbl_m3_calc) #Cum Internal Volume
+  RefID(s50) #Reference ID
+  HeatNo(dbl) #Heat Number

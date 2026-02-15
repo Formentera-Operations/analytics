@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJobRigSolidsCentCycChk
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigSolidsCentCycChk: Centrifuge/Cyclone checks. +parent
+  DtTm(dt) #Date
+  DensityOF(dbl_kgpm3) #Density Overflow
+  DensityUF(dbl_kgpm3) #Density Underflow
+  RateOF(dbl_m3pd) #Overflow Rate
+  RateUF(dbl_m3pd) #Underflow Rate
+  RunHours(dbl_days) #Hours
+  Oil(dbl_m3) #Oil
+  DischargePoint(s20) #Discharge Point
+  SuctionPoint(s20) #Suction Point
+  RateFeed(dbl_m3pd) #Feed Rate
+  DensityFeed(dbl_kgpm3) #Feed Density
+  RPM(int) #RPM
+  Note(s255) #Note

@@ -1,0 +1,6 @@
+# prodview / completions / pvUnitCompCmngl
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompCmngl: Commingled Contribution Tests +parent | Tests or estimates of individual zone contribution percentages for commingled completions.
+  DtTmStart(dt) #Effective Date
+  Method(s50) #Fluid Type

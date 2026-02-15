@@ -21,34 +21,8 @@
 #
 # Staged: none
 
-wvInspect: General inspection details. +parent
-  Typ1(s100) #Type
-  Typ2(s100) #Subtype
-  Des(s100) #Description
-  RequiredBy(s50) #Required By
-  IDRecItem(s32) #Link
-  Com(txt2k) #Comment
-  DtTmStartRecur(dt) #Recurring Start Date
-  DtTmEndRecur(dt) #Recurring End Date
-  RecurFrequency(dbl_days) #Recurrence Period
-  RecurNote(s255) #Recurring Note
-  DtTmLastInspectionCalc(dt_calc) #Last Inspection Date
-  DtTmNextInspectionCalc(dt_calc) #Next Inspection Date
 
-wvInspectDetail: Date, inspector, status of inspection. +parent
-  DtTm(dt) #Date
-  InspectedByName(s50) #Inspected By Name
-  InspectedByCompany(s100) #Inspected By Company
-  Status(s50) #Status
-  ActionReqdCom(txt2k) #Corrective Action Required
-  ActionTakenCom(txt2k) #Corrective Action Taken
-
-wvInspectDetailCheckList: Inspection check list +parent
-  Typ1(s100) #Type
-  Typ2(s100) #Subtype
-  Des(s255) #Description
-  Value(s50) #Value
-  ValueUnit(s50) #Value Unit
-  RefNo(s20) #Reference #
-  ActionRqd(bool) #Action Required?
-  Com(txt2k) #Comment
+# Tables in this domain (column details in tables/ directory):
+#   wvInspect: General inspection details. +parent
+#   wvInspectDetail: Date, inspector, status of inspection. +parent
+#   wvInspectDetailCheckList: Inspection check list +parent

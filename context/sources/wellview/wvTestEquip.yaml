@@ -1,0 +1,28 @@
+# wellview / reservoir_tests / wvTestEquip
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestEquip: Equipment tests - Packer Isolation, SCVF, Wellhead, etc. +parent
+  TestTyp(s100) #Test Type
+  TestSubTyp(s100) #Test Subtype
+  Typ(s100) #Category
+  Des(s100) #Description
+  DtTm(dt) #Date
+  DtTmNextTest(dt) #Next Test Date
+  IDRecTestItem(s32) #Item Tested
+  Operator(s50) #Operator
+  IDRecJob(s32) #Job
+  WellPresUsed(bool) #Well Pressure Used?
+  TestFluidTyp(s100) #Test Fluid Type
+  FailFlag(bool) #Failed?
+  VolPumped(dbl_m3) #Volume Pumped
+  VolLost(dbl_m3) #Volume Lost
+  FluidDensity(dbl_kgpm3) #Fluid Density
+  RefNoChart(s50) #Chart Ref #
+  PresRefMeasure(s50) #Measurement Location
+  PresMaxCalc(dbl_kPa_calc) #Max Pressure
+  PresMinCalc(dbl_kPa_calc) #Min Pressure
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

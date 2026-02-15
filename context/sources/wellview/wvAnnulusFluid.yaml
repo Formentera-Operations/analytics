@@ -1,0 +1,16 @@
+# wellview / production_operations / wvAnnulusFluid
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvAnnulusFluid: Annulus fluid. +parent
+  Typ1(s100) #Fluid Type
+  Typ2(s100) #Fluid Sub Type
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IconName(s255) #Icon
+  Density(dbl_kgpm3) #Fluid Density
+  Additives(s255) #Additives
+  Com(txt2k) #Comment

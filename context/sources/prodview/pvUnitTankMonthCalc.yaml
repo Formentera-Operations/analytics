@@ -1,0 +1,29 @@
+# prodview / tanks / pvUnitTankMonthCalc
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankMonthCalc: Tank Monthly Volumes +parent | Detailed monthly calculations for a tank.
+  DtTmStart(dt_calc) #Start of Period
+  DtTmEnd(dt_calc) #End of Period
+  Year(integer, calculated) #Year
+  Month(integer, calculated) #Month
+  VolStartTotal(dbl_m3_calc) #Opening Total Volume
+  VolStartHCLiq(dbl_m3_calc) #Opening Oil/Condensate Volume
+  VolStartHCLiqGasEq(dbl_m3_calc) #Opening Gas Equivalent of Oil/Condensate Volume
+  VolStartWater(dbl_m3_calc) #Opening Water Volume
+  VolStartSand(dbl_m3_calc) #Opening Sand Volume
+  BSWStart(dbl_pct_calc) #Opening BS&W Total
+  SandCutStart(dbl_pct_calc) #Opening Sand Cut Total
+  VolEndTotal(dbl_m3_calc) #Closing Total Volume
+  VolEndHCLiq(dbl_m3_calc) #Closing Oil/Condensate Volume
+  VolEndHCLiqGasEq(dbl_m3_calc) #Closing Gas Equivalent of Oil/Condensate Volume
+  VolEndWater(dbl_m3_calc) #Closing Water Volume
+  VolEndSand(dbl_m3_calc) #Closing Sand Volume
+  BSWEnd(dbl_pct_calc) #Closing BS&W Total
+  SandCutEnd(dbl_pct_calc) #Closing Sand Cut Total
+  VolChgTotal(dbl_m3_calc) #Change in Total Volume
+  VolChgHCLiq(dbl_m3_calc) #Change in Oil/Condensate Volume
+  VolChgHCLiqGasEq(dbl_m3_calc) #Change in Gas Equivalent of Oil/Cond Volume
+  VolChgWater(dbl_m3_calc) #Change in Water Volume
+  VolChgSand(dbl_m3_calc) #Change in Sand Volume
+  IDRecFacility(s32_calc) #Current Facility
+  IDRecHCLiqAnalysis(s32_calc) #HC Liquid  Analysis

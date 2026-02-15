@@ -1,0 +1,9 @@
+# prodview / tanks / pvUnitTankWaterAnaly
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankWaterAnaly: Water Analyses +parent | Link to water analysis for this 'Tank'.
+  DtTmStart(dt) #Effective Date
+  IDRecWaterAnaly(s32) #Water Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note

@@ -1,0 +1,50 @@
+# wellview / operations_jobs / wvJobIntervalProblem
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobIntervalProblem: Problems encountered during the 'Job'. +parent
+  Category(s100) #Major Category
+  Typ(s100) #Problem Type
+  TypDetail(s100) #Problem Subtype
+  DateORTyp(s100) #Continuous or Date Override
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  IDRecWellbore(s32) #Wellbore
+  ExcludeFromProblemTime(bool) #Exclude From Problem Time Calcs?
+  RefNo(s50) #Reference #
+  Severity(s50) #Severity
+  PotentialSeverity(s50) #Potential Severity
+  OpsCondition(s50) #Operative Condition
+  Status(s50) #Status
+  IDRecFailedItem(s32) #Failed Item
+  EstCostOverride(dbl_cost) #Estimated Cost
+  CostCalc(dbl_cost_calc) #Problem Cost
+  CostRecov(dbl_cost) #Cost Recovery
+  AccountablePty(s50) #Accountable Party
+  ActionTaken(s255) #Action Taken
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecJobServiceContract(s32) #Service Contract
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  Com(txt2k) #Comment
+  DtTmStartORCalc(dt_calc) #Earliest Start Date
+  DtTmEndORCalc(dt_calc) #Latest End Date
+  DurationGrossCalc(dbl_days_calc) #Problem Duration (Gross)
+  EstLostTime(dbl_days) #Estimated Lost Time
+  DurationNetCalc(dbl_days_calc) #Problem Duration (Net)
+  DurationFactorCalc(dbl_calc) #Duration Factor
+  ProblemSystem1(s100) #Problem System 1
+  ProblemSystem2(s100) #Problem System 2
+  ProblemSystem3(s100) #Problem System 3
+  FormationCalc(s255_calc) #Formation
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  ReportNoCalc(dbl_calc) #Report Number
+  ReportDayCalc(dbl_days_calc) #Job Day
+  DaysFromSpudCalc(dbl_days_calc) #Days From Spud
+  DurationTimeLogTotCumCalc(dbl_days_calc) #Cum Time Log Days
+  DurationTimeLogCumSpudCalc(dbl_days_calc) #Cum Time Log Days From Spud

@@ -1,0 +1,36 @@
+# wellview / reservoir_tests / wvWellTestTrans
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestTrans: Transient well test data. +parent
+  DtTm(dt) #Date
+  Typ(s100) #Type
+  SubTyp(s100) #Subtype
+  Des(s100) #Description
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecJob(s32) #Job
+  IDRecWellbore(s32) #Wellbore
+  DepthTop(dbl_m) #Top Depth
+  DepthBtm(dbl_m) #Bottom Depth
+  DisplayFlag(bool) #Display Flag
+  TestedBy(s50) #Tested By
+  ProducedTo(s50) #Produced To
+  Com(txt2k) #Comment
+  PhaseSepMethod(s50) #Phase Separation Method
+  SurfaceTestEquip(s255) #Surface Test Equip
+  VolumeMethod(s50) #Volume Method
+  Porosity(dbl_m3pm3) #Porosity
+  PorositySource(s50) #Porosity Source
+  LoadFluidTyp(s100) #Load Fluid Type
+  VolLoadFluid(dbl_m3) #Vol Load Fluid
+  VolLoadFluidUnrecov(dbl_m3) #Vol Load Fluid Unrecovered
+  VolumeCondTotalCalc(dbl_m3_calc) #Volume Cond Total
+  VolumeGasTotalCalc(dbl_m3_calc) #Volume Gas Total
+  VolumeOilTotalCalc(dbl_m3_calc) #Volume Oil Total
+  VolumeWaterTotalCalc(dbl_m3_calc) #Volume Water Total
+  VolLoadFluidRecovCalc(dbl_m3_calc) #Vol Load Fluid Recovered
+  VolPercentLoadFluidRecovCalc(dbl_pct_calc) #Load Fluid Recovered
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  ReservoirCalc(s255_calc) #Reservoir

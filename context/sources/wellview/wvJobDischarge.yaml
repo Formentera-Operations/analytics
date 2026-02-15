@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobDischarge
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDischarge: Discharge information during the job. +parent
+  DtTm(dt) #Date
+  Typ(s100) #Discharge Type
+  Material(s50) #Material
+  Volume(dbl_m3) #Volume
+  RateMax(dbl_m3pd) #Max Rate
+  OilSheen(bool) #Oil Sheen?
+  FloatingSolids(bool) #Floating Solids?
+  ResidChloride(dbl_pct) #Residual Chloride
+  Note(s255) #Note

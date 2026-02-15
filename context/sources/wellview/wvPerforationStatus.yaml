@@ -1,0 +1,14 @@
+# wellview / perfs_stims / wvPerforationStatus
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvPerforationStatus: Status of perforations by date and depth. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  StatusPrimary(s50) #Open or Closed
+  Status(s50) #Status
+  StatusColor(int) #Status Color
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1

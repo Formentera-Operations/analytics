@@ -1,0 +1,7 @@
+# prodview / equipment / pvUnitEquipServiceRec
+# Source: context/sources/prodview/domains/equipment.yaml
+#
+pvUnitEquipServiceRec: Service Records +parent | History of service performed on this equipment
+  DtTm(dt) #Date
+  ServicedBy(s50) #Serviced By
+  Com(txt2k) #Comment

@@ -1,0 +1,15 @@
+# wellview / operations_jobs / wvJCostSumAFECode3Calc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJCostSumAFECode3Calc: Summary of AFE costs grouped by 'AFE Cost Breakdown.AFE Category'. +parent
+  Code3(s100_calc) #Code 3
+  Cost(dbl_cost_calc) #AFE + Supp Amount
+  CostNorm(dbl_cost_calc) #Normalized AFE + Supp Amount
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE Supp Amount
+  CostNormAFE(dbl_cost_calc) #Normalized AFE Amount
+  CostNormAFESup(dbl_cost_calc) #Normalized AFE Supp Amount
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

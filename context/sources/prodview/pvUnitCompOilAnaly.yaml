@@ -1,0 +1,9 @@
+# prodview / fluid_analysis / pvUnitCompOilAnaly
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvUnitCompOilAnaly: Oil Analyses +parent | Link to oil analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecOilAnaly(s32) #Oil Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note

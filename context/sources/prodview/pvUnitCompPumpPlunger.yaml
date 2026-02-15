@@ -1,0 +1,5 @@
+# prodview / artificial_lift / pvUnitCompPumpPlunger
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpPlunger: Plunger Lift Details +ext,parent
+  Displacement(dbl) #Displacement Rate

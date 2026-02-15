@@ -1,0 +1,46 @@
+# wellview / reservoir_tests / wvWellTestTransFlowPer
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestTransFlowPer: Summary pressures, rates, volumes for each flow period of the 'Well Test'. +parent
+  IDRecGaugeUsed(s32) #Well Test Gauge  Used
+  Typ(s100) #Type
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurCalc(dbl_days_calc) #Duration
+  SzDiaChoke(dbl_m) #Choke Diameter Size
+  Efficiency(dbl_pct) #Efficiency
+  DepthFluidLevelEnd(dbl_m) #Fluid Level End Depth
+  DepthTVDFluidLevelEndCalc(dbl_m_calc) #Fluid Level End Depth (TVD)
+  Com(txt2k) #Comment
+  RateOilEnd(dbl_m3pd) #Rate Oil End
+  DensityOilEnd(dbl_kgpm3) #Oil Density End
+  VolumeOilTotal(dbl_m3) #Volume Oil Total
+  RateWaterEnd(dbl_m3pd) #Rate Water End
+  VolumeWaterTotal(dbl_m3) #Volume Water Total
+  SalinityWaterEnd(dbl_pct) #Salinity Water End
+  PhWaterEnd(dbl) #pH Water End
+  RateGasEnd(dbl_m3pd) #Rate Gas End
+  RateGasLiftGas(dbl_m3pd) #Rate Gas Lift Gas
+  VolumeGasTotal(dbl_m3) #Volume Gas Total
+  DensityGasEnd(dbl_kgpm3) #Gas Density End
+  H2SEnd(dbl_pct) #H2S
+  RateCondEnd(dbl_m3pd) #Rate Cond End
+  VolumeCondTotal(dbl_m3) #Volume Cond Total
+  TempBHInit(dbl_degC) #Temp BHInit
+  TempBHEnd(dbl_degC) #Temp BHEnd
+  TempCasInit(dbl_degC) #Temp Cas Init
+  TempCasEnd(dbl_degC) #Temp Cas End
+  TempTubInit(dbl_degC) #Temp Tub Init
+  TempTubEnd(dbl_degC) #Temp Tub End
+  TempSepInit(dbl_degC) #Temp Sep Init
+  TempSepEnd(dbl_degC) #Temp Sep End
+  PresBHInit(dbl_kPa) #Pressure BH Initial
+  PresBHEnd(dbl_kPa) #Pressure BH End
+  PresCasInit(dbl_kPa) #Pressure Casing Init
+  PresCasEnd(dbl_kPa) #Casing Pressure End
+  PresTubInit(dbl_kPa) #Pressure Tubing Initial
+  PresTubEnd(dbl_kPa) #Pressure Tubing End
+  PresSepInit(dbl_kPa) #Pressure Sep Initial
+  PresSepEnd(dbl_kPa) #Pressure Sep End
+  BSWEnd(dbl_pct) #Basic Sediments &  Water
+  SandCutEnd(dbl_pct) #Sand Cut

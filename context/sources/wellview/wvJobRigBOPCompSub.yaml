@@ -1,0 +1,30 @@
+# wellview / operations_jobs / wvJobRigBOPCompSub
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigBOPCompSub: BOP sub components. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  IconName(s255) #Icon
+  LatPosition(s20) #Lateral Position
+  LatOrder(int) #Lateral Order
+  VertPosition(s20) #Vertical Position
+  SzODNom(dbl_m) #OD Nominal
+  SzIDNom(dbl_m) #ID Nominal
+  Length(dbl_m) #Component Length (Height)
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Com(txt2k) #Comment
+  DtTmManufacture(dt) #Manufacture Date
+  DtTmOrig(dt) #Original In-Service Date
+  DtTmLastCert(dt) #Last Certification Date
+  WorkPres(dbl_kPa) #Outlet Working Pressure
+  MaxPres(dbl_kPa) #Outlet Max Pressure
+  OutletLocation(s10) #Outlet Location
+  OutletSz(dbl_m) #Outlet Size
+  Service(s20) #Service
+  RefID(s50) #Reference ID
+  Usertxt(s255) #User Text
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

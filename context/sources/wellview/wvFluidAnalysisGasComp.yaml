@@ -1,0 +1,9 @@
+# wellview / production_operations / wvFluidAnalysisGasComp
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisGasComp: Mole fraction composition of gas. +parent
+  Component(s20) #Component
+  MoleFracAirFree(dbl) #Mole Fraction - Air Free as Received
+  MoleFracAcidGasFree(dbl) #Mole Fraction - Acid Gas Free
+  PetroleumLiquid(dbl) #Petroleum Liquid
+  Note(s255) #Note

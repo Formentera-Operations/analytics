@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJobProgramPhaseRisk
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramPhaseRisk: Risks or planned NPT for the 'Phase'. +parent
+  Typ(s100) #Problem Type
+  TypDetail(s100) #Problem Subtype
+  Des(s100) #Description
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  DurationML(dbl_days) #Most Likely Duration
+  DurationMax(dbl_days) #Max Duration
+  DurationMin(dbl_days) #Min Duration
+  CostML(dbl_cost) #Most Likely Cost
+  CostMax(dbl_cost) #Max Cost
+  CostMin(dbl_cost) #Min Cost
+  Com(txt2k) #Comment

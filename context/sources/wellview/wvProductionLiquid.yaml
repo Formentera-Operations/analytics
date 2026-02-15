@@ -1,0 +1,9 @@
+# wellview / production_operations / wvProductionLiquid
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProductionLiquid: Liquid product type and volumes for time period defined in 'Production Volume'. +parent
+  ProductTyp(s50) #Production Type
+  Volume(dbl_m3) #Volume
+  VolumeMethod(s50) #Volume Method
+  ThermalQuality(dbl_J) #Thermal Quality
+  Note(s100) #Note

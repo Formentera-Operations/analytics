@@ -1,0 +1,13 @@
+# wellview / geological_evaluations / wvGeoEval
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEval: Geological evaluation of cores, cuttings, logs, etc. +parent
+  DtTm(dt) #Evaluation Date
+  EvalTyp(s100) #Evaluation Type
+  GeologistName(s50) #Geologist Name
+  GeologistCompany(s100) #Geologist Company
+  IDRecWellBore(s32) #Wellbore
+  Com(txt2k) #Comment
+  GeoEvalIDA(s50) #Eval ID A
+  GeoEvalIDB(s50) #Eval ID B
+  GeoEvalIDC(s50) #Eval ID C

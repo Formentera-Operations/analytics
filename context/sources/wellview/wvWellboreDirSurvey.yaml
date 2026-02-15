@@ -1,0 +1,28 @@
+# wellview / wellbore_surveys / wvWellboreDirSurvey
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreDirSurvey: Directional (deviation) survey data. Any number of Proposed and Actual surveys can be tracked. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  Des(s100) #Description
+  CalcFlag(bool) #Use for Calcs?
+  Definitive(bool) #Definitive?
+  IDRecJob(s32) #Job
+  AzimuthNorthTyp(s100) #Azimuth North Type
+  Declination(dbl_deg) #Declination
+  Convergence(dbl_deg) #Convergence
+  NoteCorrection(s255) #Note Correction
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version
+  MDTieIn(dbl_m) #MD Tie In
+  InclinationTieIn(dbl_deg) #Inclination Tie In
+  AzimuthTieIn(dbl_deg) #Azimuth Tie In
+  TVDTieIn(dbl_m) #TVDTie In
+  NSTieIn(dbl_m) #NSTie In
+  EWTieIn(dbl_m) #EWTie In
+  VSCalc(dbl_m_calc) #VS Tie In
+  ValidatedDtTm(dt) #Validated Date
+  ValidatedByName(s100) #Validated By Name
+  ValidatedByCompany(s100) #Validated By Company Name
+  DepthCorrection(s100) #Depth Correction Method
+  AzimuthCorrection(s100) #Azimuth Correction Method

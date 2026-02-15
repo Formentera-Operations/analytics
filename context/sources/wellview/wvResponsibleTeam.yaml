@@ -1,0 +1,22 @@
+# wellview / asset_management / wvResponsibleTeam
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvResponsibleTeam: Names, roles and contact information for personnel involved with the well. A start and end date allow you to track changes to the contact over time. +parent
+  Typ(s100) #Type
+  Company(s100) #Company
+  ContactName(s50) #Contact Name
+  Title(s100) #Title
+  Role(s50) #Role
+  Department(s50) #Department
+  Location(s50) #Location
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RptDist(s50) #Report Distribution
+  Com(txt2k) #Comment
+  PhoneOffice(s20) #Phone Office
+  PhoneMobile(s20) #Phone Mobile
+  PhoneHome(s20) #Phone Home
+  PhoneAlt(s20) #Phone Alternate #
+  PhonePager(s20) #Pager
+  Fax(s20) #Fax
+  Email(s255) #Email

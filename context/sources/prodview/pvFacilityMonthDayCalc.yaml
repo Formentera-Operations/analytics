@@ -1,0 +1,83 @@
+# prodview / facilities / pvFacilityMonthDayCalc
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityMonthDayCalc: Daily Production/Injection by Facility +parent | This calculated table shows the daily production, estimates, balance, ins, and outs for oil, gas, wa
+  IDRecFacility(s32_calc) #Current Facility
+  DtTm(dt_calc) #Date
+  Year(integer, calculated) #Year
+  Month(integer, calculated) #Month
+  DayOfMonth(integer, calculated) #Day
+  VolProdHCLiq(dbl_m3_calc) #Produced Oil/Condensate
+  VolProdGas(dbl_m3_calc) #Produced Gas
+  VolProdGasPlusGasEq(dbl_m3_calc) #Produced Gas + Gas Eq
+  VolProdWater(dbl_m3_calc) #Produced Water
+  VolProdSand(dbl_m3_calc) #Produced Sand
+  VolNewProdGathHCLiq(dbl_m3_calc) #Gathered Comp Oil/Condensate
+  VolNewProdGathGas(dbl_m3_calc) #Gathered Comp Gas
+  VolNewProdGathGasPlusGasEq(dbl_m3_calc) #Gathered Comp Gas Plus Gas Eq
+  VolNewProdGathWater(dbl_m3_calc) #Gathered Comp Water
+  VolNewProdGathSand(dbl_m3_calc) #Gathered Comp Sand
+  BalFactHCLiq(double, cubic meters per cubic meter, calculated) #Proration Factor Oil/Condensate
+  BalFactGas(double, cubic meters per cubic meter, calculated) #Proration Factor Gas
+  BalFactGasPlusGasEq(double, cubic meters per cubic meter, calculated) #Proration Factor Gas plus Gas Eq
+  BalFactWater(double, cubic meters per cubic meter, calculated) #Proration Factor Water
+  BalFactSand(double, cubic meters per cubic meter, calculated) #Proration Factor Sand
+  VolBalHCLiq(dbl_m3_calc) #Volume Balance Oil/Condensate
+  VolBalGas(dbl_m3_calc) #Volume Balance Gas
+  VolBalGasPlusGasEq(dbl_m3_calc) #Volume Balance Gas Plus Gas Eq
+  VolBalWater(dbl_m3_calc) #Volume Balance Water
+  VolBalSand(dbl_m3_calc) #Volume Balance Sand
+  Balanced(boolean, calculated) #All Products Balanced?
+  BalHCLiq(boolean, calculated) #Oil/Condensate Balanced?
+  BalGas(boolean, calculated) #Gas Balanced?
+  BalGasPlusGasEq(boolean, calculated) #Gas Plus Gas Eq Balanced?
+  BalWater(boolean, calculated) #Water Balanced?
+  BalSand(boolean, calculated) #Sand Balanced?
+  VolInRecovHCLiq(dbl_m3_calc) #Recovered Load Oil/Condensate
+  VolInRecovGas(dbl_m3_calc) #Recovered Lift Gas
+  VolInRecovGasPlusGasEq(dbl_m3_calc) #Recovered Lift Gas Plus Gas Eq
+  VolInRecovWater(dbl_m3_calc) #Recovered Load Water
+  VolInRecovSand(dbl_m3_calc) #Recovered Load Sand
+  VolInOtherHCLiq(dbl_m3_calc) #Receipts In Oil/Condensate
+  VolInOtherGas(dbl_m3_calc) #Receipts In Gas
+  VolInOtherGasPlusGasEq(dbl_m3_calc) #Receipts In Gas Plus Gas Eq
+  VolInOtherWater(dbl_m3_calc) #Receipts In Water
+  VolInOtherSand(dbl_m3_calc) #Receipts In Sand
+  VolOutConsumeHCLiq(dbl_m3_calc) #Consumed Oil/Condensate
+  VolOutConsumeGas(dbl_m3_calc) #Consumed Gas
+  VolOutConsumeGasPlusGasEq(dbl_m3_calc) #Consumed Gas Plus Gas Eq
+  VolOutConsumeWater(dbl_m3_calc) #Consume Water
+  VolOutConsumeSand(dbl_m3_calc) #Consume Sand
+  VolOutInjectRecovHCLiq(dbl_m3_calc) #Injected Load Oil/Condensate
+  VolOutInjectRecovGas(dbl_m3_calc) #Injected Lift Gas
+  VolOutInjectRecovGasPlusGasEq(dbl_m3_calc) #Injected Lift Gas Plus Gas Eq
+  VolOutInjectRecovWater(dbl_m3_calc) #Injected Load Water
+  VolOutInjectRecovSand(dbl_m3_calc) #Injected Sand
+  VolOutOtherHCLiq(dbl_m3_calc) #Dispositions Out Oil/Cond
+  VolOutOtherGas(dbl_m3_calc) #Dispositions Out Gas
+  VolOutOtherGasPlusGasEq(dbl_m3_calc) #Dispositions Out Gas Plus Gas Eq
+  VolOutOtherWater(dbl_m3_calc) #Dispositions Out Water
+  VolOutOtherSand(dbl_m3_calc) #Dispositions Out Sand
+  VolStartInvHCLiq(dbl_m3_calc) #Opening Inventory Oil/Condensate
+  VolStartInvHCLiqGasEq(dbl_m3_calc) #Opening Inventory Gas Equivalent of Oil/Cond
+  VolStartInvWater(dbl_m3_calc) #Opening Inventory Water
+  VolStartInvSand(dbl_m3_calc) #Opening Inventory Sand
+  VolEndInvHCLiq(dbl_m3_calc) #Closing Inventory Oil/Condensate
+  VolEndInvHCLiqGasEq(dbl_m3_calc) #Closing Inventory Gas Equiv of Oil/Condensate
+  VolEndInvWater(dbl_m3_calc) #Closing Inventory Water
+  VolEndInvSand(dbl_m3_calc) #Closing Inventory Sand
+  VolChgInvHCLiq(dbl_m3_calc) #Change in Inventory Oil/Condensate
+  VolChgInvHCLiqGasEq(dbl_m3_calc) #Change in Inventory Gas Equivalent of Oil/Cond
+  VolChgInvWater(dbl_m3_calc) #Change in Inventory Water
+  VolChgInvSand(dbl_m3_calc) #Change in Inventory Sand
+  VolStartRemainRecovHCLiq(dbl_m3_calc) #Opening Remaining Load Oil/Condensate
+  VolStartRemainRecovGas(dbl_m3_calc) #Opening Remaining Lift Gas
+  VolStartRemainRecovGasPlusGEq(dbl_m3_calc) #Opening Remaining Lift Gas Plus Gas Eq
+  VolStartRemainRecovWater(dbl_m3_calc) #Opening Remaining Load Water
+  VolStartRemainRecovSand(dbl_m3_calc) #Opening Remaining Sand
+  VolEndRemainRecovHCLiq(dbl_m3_calc) #Closing Remaining Load Oil/Condensate
+  VolEndRemainRecovGas(dbl_m3_calc) #Closing Remaining Lift Gas
+  VolEndRemainRecovGasPlusGEq(dbl_m3_calc) #Closing Remaining Lift Gas Plus Gas Eq
+  VolEndRemainRecovWater(dbl_m3_calc) #Closing Remaining Load Water
+  VolEndRemainRecovSand(dbl_m3_calc) #Closing Remaining Sand
+  VolSTVGas(dbl_m3_calc) #STV Gas

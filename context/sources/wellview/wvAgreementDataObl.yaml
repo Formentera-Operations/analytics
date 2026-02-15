@@ -1,0 +1,15 @@
+# wellview / asset_management / wvAgreementDataObl
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvAgreementDataObl: Partner data obligation and status, per agreement. +parent
+  Typ1(s100) #Data Type
+  Typ2(s100) #Data Subtype
+  Des(s100) #Description
+  CompanyName(s50) #Company Name
+  RefNo(s5) #Reference #
+  Source(s50) #Source
+  CopiesNo(int) #Number of Copies
+  DtTmRequired(dt) #Required Date
+  DtTmStatus(dt) #Status Date
+  Status(s50) #Status
+  Com(txt2k) #Comment

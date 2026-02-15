@@ -1,0 +1,13 @@
+# prodview / flow_network / pvUnitNodeFlowTo
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeFlowTo: Outlet Connections +parent | You can select the destination unit and the unit node that this node is connected to.
+  DtTmStart(dt) #Date Connected
+  DtTmEnd(dt) #Date Disconnected
+  IDRecInlet(s32) #Destination Node
+  IDRecInletUnitCalc(s32_calc) #Destination Unit
+  RecircFlow(bool) #Recirculation?
+  Com(stringlong 100) #Note
+  IDRecOutletCalc(s32_calc) #Source Node
+  IDRecOutletUnitCalc(s32_calc) #Source Unit
+  sysSeq(int) #Sequence

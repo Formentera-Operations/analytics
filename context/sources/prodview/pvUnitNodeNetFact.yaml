@@ -1,0 +1,8 @@
+# prodview / flow_network / pvUnitNodeNetFact
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeNetFact: Node Shrinkages +parent | Net Outlets and Inlet Calc from Downstream nodes, calculate the remaining non-zero product from the
+  DtTm(dt) #Effective Date
+  Shrinkage(dbl_m3pm3) #Shrinkage
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due

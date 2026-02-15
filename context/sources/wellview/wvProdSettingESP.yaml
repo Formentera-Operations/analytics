@@ -1,0 +1,8 @@
+# wellview / production_operations / wvProdSettingESP
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSettingESP: ESP operating parameters for the time interval defined in 'Production Setting'. +extension
+  ElectricFreq(dbl_Hz) #Electric Freq
+  RPM(dbl_rpm) #RPM
+  ElectricVoltage(dbl_V) #Electric Voltage
+  ElectricCurrent(dbl_A) #Electric Current

@@ -1,0 +1,6 @@
+# prodview / completions / pvUnitCompCmnglRatio
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompCmnglRatio: Commingled Zone Ratios +parent | Tests or estimates of individual zone contribution percentages for commingled completions.
+  IDRecZone(s32) #Reporting/Contact Interval
+  FractProd(dbl_pct) #Production Contribution

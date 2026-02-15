@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobRigSolidsShaker
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigSolidsShaker: Shaker specifications. +parent
+  Des(s100) #Description
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Com(txt2k) #Comment
+  RefID(s50) #Reference ID
+  DtTmManufacture(dt) #Manufacture Date

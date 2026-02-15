@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJPPTLOpsCatCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPTLOpsCatCalc: Calculated breakdown of 'Job Time Log.Ops Category' associated with the phase. +parent
+  OpsCategory(s50_calc) #Ops Category
+  Duration(dbl_days_calc) #Duration
+  FractionTotalTime(dbl_pct_calc) #% Total Time
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

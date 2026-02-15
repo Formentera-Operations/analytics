@@ -1,0 +1,8 @@
+# prodview / meters / pvUnitMeterOrificeECF
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterOrificeECF: Effluent Correction Factors +parent | Effluent correction factors stored for each meter, that may result in liquid dropout or gas shrinkag
+  DtTm(dt) #Effective Date
+  EffluentFactor(dbl_m3pm3) #Effluent Correction Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due

@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobRigPumpOp
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigPumpOp: Operational pump details. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  SzLiner(dbl_m) #Liner Size
+  PressureMax(dbl_kPa) #Max Pressure
+  VolPerStroke(dbl_m3pstk) #Volume Per Stroke Override
+  VolPerStrokeCalc(dbl_m3pstk_calc) #Optimum Vol Per Stroke
+  TmCircCalc(dbl_days_calc) #Circulating Time
+  TmDrillCalc(dbl_days_calc) #Drilling Time
+  VolEfficiencyCalc(dbl_pct_calc) #Volumetric Efficiency

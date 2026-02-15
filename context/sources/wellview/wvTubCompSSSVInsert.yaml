@@ -1,0 +1,23 @@
+# wellview / tubing_rods_equipment / wvTubCompSSSVInsert
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompSSSVInsert: SSSV insert details. +parent
+  ValveTyp(s100) #Valve Type
+  DtTmRun(dt) #Run Date
+  DtTmPull(dt) #Pull Date
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  WLRetrievable(bool) #Insert Wireline Retrievable?
+  ConditionRun(s20) #Condition Run
+  ConditionPull(s20) #Condition Pull
+  PullReason(s100) #Pull Reason
+  PresRating(dbl_kPa) #Pressure Rating
+  TempRating(dbl_degC) #Temperature Rating
+  PresCtrl(dbl_kPa) #Control Pressure
+  SeatTyp(s100) #Seat Type
+  SzODBean(dbl_m) #Bean OD
+  SpringRt(dbl_m) #Valve Spring Rate
+  SzIDBore(dbl_m) #Insert Bore ID
+  LengthSpacer(dbl_m) #Spacer Length
+  RefID(s50) #Reference ID

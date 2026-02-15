@@ -1,0 +1,17 @@
+# wellview / zones_completions / wvZoneProdTypCalc
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvZoneProdTypCalc: Distinct list of 'Production Volume.activyttyp' for this 'Zone'. +parent
+  ActivityTyp(s50_calc) #Activity Type
+  DurationProd(dbl_days_calc) #Total Producing Time
+  DurationDown(dbl_days_calc) #Total Downtime
+  RatioDurationProd(dbl_pct_calc) #% Producing Time
+  RatioDurationDown(dbl_pct_calc) #% Downtime
+  VolumeOil(dbl_m3_calc) #Volume Oil
+  VolumeCond(dbl_m3_calc) #Volume Condensate
+  VolumeResGas(dbl_m3_calc) #Volume Reservoir Gas
+  VolumeWater(dbl_m3_calc) #Volume Water
+  VolumeLiquidOther(dbl_m3_calc) #Volume Other Liquid
+  VolumeGasOther(dbl_m3_calc) #Volume Other Gas
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

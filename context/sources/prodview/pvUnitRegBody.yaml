@@ -1,0 +1,6 @@
+# prodview / reference / pvUnitRegBody
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitRegBody: Regulatory Bodies +parent | Regulatory agencies that are being reported to for this particular asset.
+  RegBodyName(s50) #Regulatory Body Name
+  Com(stringlong 100) #Note

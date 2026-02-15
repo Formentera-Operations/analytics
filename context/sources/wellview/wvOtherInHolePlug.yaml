@@ -1,0 +1,11 @@
+# wellview / tubing_rods_equipment / wvOtherInHolePlug
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherInHolePlug: Detailed 'Other In Hole' plug information. +extension
+  SetMech(s50) #Set Mechanics
+  SetProcedure(txt2k) #Setting Procedure
+  SetFluidTyp(s100) #Set Fluid Type
+  SetFluidDensity(dbl_kgpm3) #Set Fluid Density
+  UnsettingProcedure(txt2k) #Unsetting Procedure
+  Retrievable(bool) #Retrievable?
+  RetrieveMeth(s50) #Retrieval Method

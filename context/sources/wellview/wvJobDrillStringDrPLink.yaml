@@ -1,0 +1,6 @@
+# wellview / operations_jobs / wvJobDrillStringDrPLink
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringDrPLink: In Plug Drill Out ops, this table can be used to related the drilling parameter to the frac plug(s) that were drilled out. This table is not used f... +parent
+  IDRecItem(s32) #Other In Hole
+  Note(s255) #Note

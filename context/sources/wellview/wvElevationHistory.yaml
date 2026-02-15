@@ -1,0 +1,11 @@
+# wellview / general / wvElevationHistory
+# Source: context/sources/wellview/domains/general.yaml
+#
+wvElevationHistory: History of other reference elevations. Ex. KB Elv from a second rig, service rig, etc. Use 'Elevation History.Active Other/Work Elevation' to indic... +parent
+  ElvDtTmStart(dt) #Start Date
+  ElvDtTmEnd(dt) #End Date
+  ElvOther(dbl_m) #Other Elevation
+  ElvOtherLabel(s5) #Other Elevation Label
+  ActualFlag(bool) #Active Other/Work Elevation
+  ElvOtherNote(s255) #Other Elevation Note
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit

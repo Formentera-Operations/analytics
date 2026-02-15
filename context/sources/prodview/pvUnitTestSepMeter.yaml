@@ -1,0 +1,9 @@
+# prodview / completions / pvUnitTestSepMeter
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitTestSepMeter: Meters +parent
+  Typ(s50) #Type
+  DtTmStart(dt) #Install Date
+  IDRecMeterGas(s32) #Measurement Device Gas
+  IDRecMeterHCLiq(s32) #Measurement Device Oil/Cond
+  IDRecMeterWater(s32) #Measurement Device Water

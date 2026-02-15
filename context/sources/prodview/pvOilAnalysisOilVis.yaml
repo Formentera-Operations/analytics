@@ -1,0 +1,8 @@
+# prodview / fluid_analysis / pvOilAnalysisOilVis
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvOilAnalysisOilVis: Oil Viscosity +parent | Oil viscosity vs. temperature details.
+  Temperature(dbl_degC) #Temp
+  ViscDynamic(double, pascal seconds) #Dynamic Viscosity
+  ViscKinematic(double, square meters per day) #Kinematic Viscosity
+  Com(txt255) #Note

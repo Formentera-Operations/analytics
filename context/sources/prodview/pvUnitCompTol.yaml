@@ -1,0 +1,13 @@
+# prodview / completions / pvUnitCompTol
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompTol: Completion Tolerance Exceptions +parent | Overrides the default tolerance specified in 'Calculation Setting'. Entries in this table are handle
+  DtTm(dt) #Date
+  PctRateDayHCLiq(dbl_pct) #Oil/Condensate Rate Day Tolerance
+  PctRateDayGas(dbl_pct) #Gas Rate Day Tolerance
+  PctRateDayWater(dbl_pct) #Water Rate Day Tolerance
+  PctRateDaySand(dbl_pct) #Sand Rate Day Tolerance
+  PctRateMonthHCLiq(dbl_pct) #Oil/Condensate Rate Month Tolerance
+  PctRateMonthGas(dbl_pct) #Gas Rate Month Tolerance
+  PctRateMonthWater(dbl_pct) #Water Rate Month Tolerance
+  PctRateMonthSand(dbl_pct) #Sand Rate Month Tolerance

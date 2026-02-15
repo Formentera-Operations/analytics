@@ -1,0 +1,7 @@
+# prodview / admin / pvPartnerContact
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvPartnerContact: Partner Contacts +parent
+  IDRecResp1(s32) #Primary Responsible
+  IDRecResp2(s32) #Secondary Responsible
+  Com(txt2k) #Comment

@@ -1,0 +1,16 @@
+# wellview / tubing_rods_equipment / wvTubCompHanger
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompHanger: Additional tubing hanger details +extension
+  ElemCenter(dbl_m) #Element Center Depth
+  ElastomerTyp(s100) #Elastomer Type
+  SealTypNeck(s100) #Neck Seal Type
+  SealTypAnnulus(s100) #Annulus Seal Type
+  LenPolishBore(dbl_m) #Polish Bore Length
+  Retrievable(bool) #Retrievable?
+  SetMech(s50) #Set Mechanics
+  SettingProcedure(txt2k) #Setting Procedure
+  Slips(s100) #Slip Description
+  SzPolishBore(dbl_m) #Polish Bore Size
+  UnsettingProcedure(txt2k) #Unsetting Procedure
+  Note(s100) #Note

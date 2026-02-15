@@ -1,0 +1,14 @@
+# wellview / operations_jobs / wvJTLSumCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJTLSumCalc: Summary of 'Job Time Log' records during the job. +parent
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Duration(dbl_days_calc) #Duration
+  FractionTotalTime(dbl_pct_calc) #% Total Time
+  OpsCategory(s50_calc) #OpsCategory
+  UnschedTyp(s100_calc) #Unscheduled Type
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

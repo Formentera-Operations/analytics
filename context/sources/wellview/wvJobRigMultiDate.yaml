@@ -1,0 +1,8 @@
+# wellview / operations_jobs / wvJobRigMultiDate
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigMultiDate: If the rig is on location multiple times during the job/operation, use this table to track these date intervals. +extension
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurationCalc(dbl_days_calc) #Duration
+  Com(txt2k) #Comment

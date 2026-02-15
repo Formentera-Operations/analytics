@@ -1,0 +1,5 @@
+# prodview / reference / pvUnitChkList
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitChkList: Check Lists +parent
+  DtTm(dt) #Date

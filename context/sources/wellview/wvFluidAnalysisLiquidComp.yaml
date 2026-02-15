@@ -1,0 +1,9 @@
+# wellview / production_operations / wvFluidAnalysisLiquidComp
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisLiquidComp: Hydrocarbon liquid molecular, mass and volume fractions by component. +parent
+  Component(s20) #Component
+  MoleFrac(dbl) #Mole Fraction
+  MassFrac(dbl_kgpkg) #Mass Fraction
+  VolumeFrac(dbl_m3pm3) #Volume Fraction
+  Note(s255) #Note

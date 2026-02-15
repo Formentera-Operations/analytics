@@ -1,0 +1,99 @@
+# prodview / tanks / pvTicket
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvTicket: Tickets
+  DtTm(dt) #Effective Date
+  TypTicket(s20) #Ticket Type
+  TicketNo(s50) #Truck Ticket Number
+  TicketSubNo(s50) #Truck Ticket Sub-Number
+  TruckCo(s50) #Trucking Company
+  TruckCoCode(s50) #Trucking Company Code
+  TruckRefID(s50) #Truck Number
+  Exclude(bool) #LACT Ticket?
+  IDRecLocSend(s32) #Sending Location
+  LocSendDetail(s255) #Sending Location Detail
+  IDRecRouteSetRouteSendCalc(s32_calc) #Sending Route
+  IDRecLocRec(s32) #Receiving Location
+  LocRecDetail(s255) #Destination
+  IDRecRouteSetRouteRecCalc(s32_calc) #Receiving Route
+  RecircFlow(bool) #Recirculation?
+  Vol(dbl_m3) #Ticket Volume
+  BSW(dbl_pct) #Ticket BSW
+  SandCut(dbl_pct) #Sand Cut
+  VolFreeWater(dbl_m3) #Free Water Volume
+  IDRecTank(s32) #Tank Name
+  TankLevelStart(s50) #Opening Tank Level
+  TankStartVolCalc(dbl_m3_calc) #Opening Tank Volume
+  TankLevelEnd(s50) #Closing Tank Level
+  TankEndVolCalc(dbl_m3_calc) #Closing Tank Volume
+  IDRecSealEntry(s32) #Link to Seal Entry
+  ScaleTicketNo(s50) #Scale Ticket Number
+  WeightTruckFull(dbl_kg) #Full Weight
+  WeightTruckEmpty(dbl_kg) #Empty Weight
+  WeightFluidCalc(dbl_kg_calc) #Weight of Fluid
+  CompDensityHCLiq(dbl_kgpm3) #Oil Density
+  CompDensityWater(dbl_kgpm3) #Water Density
+  CompDensitySand(dbl_kgpm3) #Sand Density
+  VolUncorrTotalCalc(dbl_m3_calc) #Total Volume
+  VolUncorrHCLiqCalc(dbl_m3_calc) #Oil/Condensate Volume
+  VolUncorrWaterCalc(dbl_m3_calc) #Water Volume
+  TempSample(dbl_degC) #Observed Temperature
+  PresSample(dbl_kPa) #Pressure of Sample
+  DensitySample(dbl_kgpm3) #Observed Gravity
+  DensitySample60F(double, kilograms per cubic meter, calculated) #Observed Gravity at 60F
+  TempStart(dbl_degC) #Temperature of Opening Level
+  PresStart(dbl_kPa) #Pressure of Opening Level
+  TempEnd(dbl_degC) #Temperature of Closing Level
+  PresEnd(dbl_kPa) #Pressure of Closing Level
+  VolCorrTotalCalc(dbl_m3_calc) #Corrected Total Fluid Volume
+  VolCorrHCLiqCalc(dbl_m3_calc) #Corrected Oil/Condensate Volume
+  BSWCorrCalc(dbl_pct_calc) #Corrected BS&W
+  SandCutCorrCalc(dbl_pct_calc) #Corrected Sand Cut
+  RefID(s50) #Reference Number
+  OrigStatementID(s50) #Statement Id
+  Source(s50) #Source
+  TempOR(dbl_degC) #Override Temperature
+  PresOR(dbl_kPa) #Override Pressure
+  DensityOR(dbl_kgpm3) #Override Density
+  VolORHCLiq(dbl_m3) #Override Oil/Condensate Volume
+  VolORWater(dbl_m3) #Override Water Volume
+  VolORSand(dbl_m3) #Override Sand Volume
+  Verified(bool) #Verified
+  VolTotalCalc(dbl_m3_calc) #Final Total Volume
+  VolHCLiqCalc(dbl_m3_calc) #Final Oil Volume
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Final Gas Equivalent of Liquids Volume
+  VolWaterCalc(dbl_m3_calc) #Final Water Volume
+  VolSandCalc(dbl_m3_calc) #Final Sand Volume
+  BSWCalc(dbl_pct_calc) #Final BSW
+  SandCutCalc(dbl_pct_calc) #Final Sand Cut
+  IDRecHCLiqAnalysisCalc(s32_calc) #HC Liquid  Analysis
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5
+  Com(txt2k) #Comments
+  IDRecTicketLink(s32) #Linked Ticket in Other Network
+  IDFlowNetSend(s32) #IDFlowNet of Sending Network
+  IDRecUnitSend(s32) #IDRec of Sending Unit
+  IDRecOutletSend(s32) #IDRec of Sending Outlet
+  IDRecFacilitySend(s32) #Sending Facility
+  ExternalNetworkSend(bool) #From External Network?
+  IDFlowNetRec(s32) #IDFlowNet of Receiving Network
+  IDRecUnitRec(s32) #IDRec of Receiving Unit
+  IDRecInletRec(s32) #IDRec of Receiving Inlet
+  IDRecFacilityRec(s32) #Receiving Facility
+  ExternalNetworkRec(bool) #To External Network?
+  IDRecHCLiqAnalysisOR(s32) #Link to Overriding Originating HC Liquid Analysis
+  DtTmUTCLastTicketIntRun(dt) #Last Ticket Integrator Run (UTC)
+  NoteIntegrator(s255) #Ticket Integrator Notes

@@ -1,0 +1,17 @@
+# wellview / asset_management / wvSourceDest
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvSourceDest: Water sources. +parent
+  Typ1(s50) #Type
+  Typ2(s50) #Subtype
+  Des(s50) #Description
+  RefID(s50) #Ref ID
+  GeologicalDes(s50) #Geological Description
+  Com(txt2k) #Comment
+  DtTmLicenseStart(dt) #License Start Date
+  DtTmLicenseEnd(dt) #License End Date
+  LicenseNo(s50) #License #
+  DiversionTyp1(s50) #Diversion Type
+  DiversionTyp2(s50) #Diversion Subtype
+  DiversionAuth(s50) #Diversion Authority
+  RateDiversionMax(dbl_m3) #Max Diversion Rate

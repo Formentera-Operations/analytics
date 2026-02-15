@@ -1,0 +1,9 @@
+# wellview / zones_completions / wvZoneAlloc
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvZoneAlloc: This table allows you to allocate a product and fraction on a specified date. +parent
+  DtTm(dt) #Start Date
+  Product(s100) #Product
+  Allocation(dbl) #Allocation
+  Source(s50) #Source
+  Note(s255) #Comment

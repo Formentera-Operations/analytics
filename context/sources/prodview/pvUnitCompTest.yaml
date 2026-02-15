@@ -1,0 +1,123 @@
+# prodview / completions / pvUnitCompTest
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompTest: Production Tests +parent | Temperature and Pressure Correction
+  Typ(s50) #Type
+  DtTm(dt) #Effective Date
+  IDRecSep(s32) #Separator Vessel
+  DurTest(dbl_days) #Test Hours
+  DontUse(bool) #Invalid Test?
+  TestedBy(s50) #Tested By
+  Com(txt255) #Note
+  TrailerDuration(dbl_days) #Trailer Duration
+  Cprime(dbl) #C'
+  DurOnOR(dbl_days) #Hours On Override
+  PresGasStatic(dbl) #Orifice Static Pressure (gauge)
+  PresGasDiff(dbl) #Orifice Differential Pressure
+  TempGas(dbl) #Orifice Temperature
+  SzOrifice(dbl) #Orifice Size
+  VolEnterGas(dbl_m3) #Gas Volume Entry
+  VolGas(dbl_m3) #Gas Volume Override
+  VolGasCalc(dbl_m3_calc) #Test Gas Volume
+  VolLiftGasRecov(dbl_m3) #Recovered Lift Gas
+  RateTotalGasCalc(dbl_m3pd_calc) #Total Gas Rate
+  RateLiftGasCalc(dbl_m3pd_calc) #Lift Gas Rate
+  ReadingHCLiqStart(dbl) #Start Reading Oil/Emulsion
+  ReadingHCLiqEnd(dbl) #End Reading Oil/Emulsion
+  LevelTankStart(s50) #Tank Start Level
+  LevelTankEnd(s50) #Tank End Level
+  LevelTankFreeWaterStart(s50) #Tank Free Water Start Level
+  LevelTankFreeWaterEnd(s50) #Tank Free Water End Level
+  VolTankStartCalc(dbl_m3_calc) #Tank Start Volume
+  VolTankEndCalc(dbl_m3_calc) #Tank End Volume
+  BSW(dbl_pct) #Oil/Emul BS&W
+  SandCut(dbl_pct) #Oil/Emul Sand Cut
+  FactGasInSoln(dbl_m3pm3) #Gas In Solution Factor
+  VolEnterHCLiq(dbl_m3) #Oil/Emulsion Volume Entry
+  VolHCLiq(dbl_m3) #Oil/Emulsion Volume Override
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Gas Equivalent of Liquids Volume
+  VolFluidTotalCalc(dbl_m3_calc) #Test Total Fluid Volume
+  VolHCLiqCalc(dbl_m3_calc) #Test Oil/Condensate Volume
+  VolBeforeTPCorrHCLiqCalc(dbl_m3_calc) #Oil/Cond Vol before TP Correction
+  ReadingWaterStart(dbl) #Water Start Reading
+  ReadingWaterEnd(dbl) #Water End Reading
+  VolEnterWater(dbl_m3) #Water Volume Entry
+  VolWater(dbl_m3) #Water Volume Override
+  VolWaterCalc(dbl_m3_calc) #Test Water Volume
+  VolEnterSand(dbl_m3) #Sand Volume Entry
+  VolSand(dbl_m3) #Sand Volume Override
+  VolSandCalc(dbl_m3_calc) #Test Sand Volume
+  RateProdGasCalc(dbl_m3pd_calc) #Produced Gas Rate
+  RateFluidTotalCalc(dbl_m3pd_calc) #Total Fluid Rate
+  RateHCLiqCalc(dbl_m3pd_calc) #Oil/Cond Rate
+  RateHCLiqGasEqCalc(dbl_m3pd_calc) #Gas Equiv of Oil/Cond Rate
+  RateWaterCalc(dbl_m3pd_calc) #Water Rate
+  RateSandCalc(dbl_m3pd_calc) #Sand Rate
+  BSWTotalCalc(dbl_pct_calc) #Total BS&W
+  SandCutTotalCalc(dbl_pct_calc) #Total Sand Cut
+  GORCalc(double, cubic meters per cubic meter, calculated) #Gas Oil Ratio
+  CGRCalc(double, cubic meters per cubic meter, calculated) #Condensate Gas Ratio
+  WGRCalc(double, cubic meters per cubic meter, calculated) #Water Gas Ratio
+  SzChoke(double, meter) #Choke Size
+  PresBH(dbl_kPa) #Pressure BH
+  PresCas(dbl_kPa) #Casing Pressure
+  PresInjectGasLiftGas(dbl_kPa) #Pressure Inject Gas Lift Gas
+  PresProdSep(dbl_kPa) #Pressure Prod Sep
+  PresTestSep(dbl_kPa) #Pressure Test Separator
+  PresWH(dbl_kPa) #Pressure WellHead
+  TempBH(dbl_degC) #Temperature Bottom Hole
+  TempProdSep(dbl_degC) #Temperature Production Separator
+  TempTestSep(dbl_degC) #Temperature Test Separator
+  TempWH(dbl_degC) #Temperature Well Head
+  RateChgHCLiqCalc(dbl_m3pd_calc) #Change in Oil/Emulsion Rate
+  PctChgHCLiqCalc(dbl_pct_calc) #% Change in Oil/Emulsion Rate
+  RateChgGasCalc(dbl_m3pd_calc) #Change in Gas Rate
+  PctChgGasCalc(dbl_pct_calc) #% Change in Gas Rate
+  RateChgWaterCalc(dbl_m3pd_calc) #Change in Water Rate
+  PctChgWaterCalc(dbl_pct_calc) #% Change in Water Rate
+  RateChgSandCalc(dbl_m3pd_calc) #Change in Sand Rate
+  PctChgSandCalc(dbl_pct_calc) #% Change in Sand Rate
+  ChgGORCalc(double, cubic meters per cubic meter, calculated) #Change in GOR
+  PctChgGORCalc(dbl_pct_calc) #% Change in GOR
+  ChgCGRCalc(double, cubic meters per cubic meter, calculated) #Change in CGR
+  PctChgCGRCalc(dbl_pct_calc) #% Change in CGR
+  ChgWGRCalc(double, cubic meters per cubic meter, calculated) #Change in WGR
+  PctChgWGRCalc(dbl_pct_calc) #% Change in WGR
+  ChgBSWCalc(dbl_pct_calc) #Change in BS&W
+  PctChgBSWCalc(dbl_pct_calc) #% Change in BS&W
+  ChgSandCutCalc(dbl_pct_calc) #Change in Sand Cut
+  PctChgSandCutCalc(dbl_pct_calc) #% Change in Sand Cut
+  ReasonVariance(s100) #Reason For Variance
+  DataSource(s50) #Data Source
+  PurposeAlloc(bool) #Allocation?
+  PurposeDeliv(bool) #Deliverability?
+  PurposeReg(bool) #Regulatory?
+  TempStart(dbl_degC) #Temperature of Opening Level
+  PresStart(dbl_kPa) #Pressure of Opening Level
+  TempEnd(dbl_degC) #Temperature of Closing Level
+  PresEnd(dbl_kPa) #Pressure of Closing Level
+  TempSample(dbl_degC) #Temperature of Sample
+  PresSample(dbl_kPa) #Pressure of Sample
+  DensitySample(dbl_kgpm3) #Density of Sample
+  DensitySample60F(double, kilograms per cubic meter, calculated) #Density of Sample at 60F
+  PresWHSI(dbl_kPa) #Shut-In Wellhead Pressure
+  PresWHFlow(dbl_kPa) #Flowing Wellhead Pressure
+  PresBradenhead(dbl_kPa) #Bradenhead Pressure
+  ReasonBradenhead(s100) #Bradenhead Reason
+  DensityRelGas(dbl) #Gas Specific Gravity
+  DensityCond(dbl_kgpm3) #Condensate Gravity
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5

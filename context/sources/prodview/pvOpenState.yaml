@@ -1,0 +1,5 @@
+# prodview / reference / pvOpenState
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvOpenState: Opening States | Contains all inventories, recoverable volumes and cumulative production to date that allows allocati
+  DtTm(dt) #Date

@@ -1,0 +1,13 @@
+# wellview / other / wvLocLatLongUTM
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvLocLatLongUTM: Global location (latitude, longitude, UTMx, UTMy) table. The Surface location is defined in 'Well Header'. +parent
+  Des(s100) #Description
+  LatLongSource(s50) #Lat Long Data Source
+  Latitude(dbl_deg) #Latitude
+  Longitude(dbl_deg) #Longitude
+  UTMGridZone(int) #UTM Grid Zone
+  UTMSource(s50) #UTM Source
+  UTMx(dbl_m) #UTM Easting
+  UTMy(dbl_m) #UTM Northing
+  Com(txt2k) #Comment

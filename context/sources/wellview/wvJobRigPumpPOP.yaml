@@ -1,0 +1,7 @@
+# wellview / operations_jobs / wvJobRigPumpPOP
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigPumpPOP: Pop off valve pressure setting. +parent
+  DtTm(dt) #Date
+  Pres(dbl_kPa) #Pressure
+  Note(s255) #Note

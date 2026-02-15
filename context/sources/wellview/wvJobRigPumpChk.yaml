@@ -1,0 +1,15 @@
+# wellview / operations_jobs / wvJobRigPumpChk
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigPumpChk: Slow speed and strokes by date/time and depth. +parent
+  DtTm(dt) #Date
+  SlowSpeed(bool) #Slow Speed Check?
+  SPM(int) #Strokes
+  VolEfficiency(dbl_pct) #Volumetric Efficiency
+  Pres(dbl_kPa) #Pressure
+  FlowRateCalc(dbl_m3pd_calc) #Flow Rate
+  PumpingMode(s100) #Pumping Mode
+  PresCLF(dbl_kPa) #Choke Line Friction Pressure
+  PresKLF(dbl_kPa) #Kill Line Friction Pressure
+  Depth(dbl_m) #Depth
+  IDRecLastMudChkCalc(s32_calc) #Last Mud Check

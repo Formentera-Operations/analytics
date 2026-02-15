@@ -1,0 +1,20 @@
+# wellview / operations_jobs / wvJobResource
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobResource: Resources (equipment, personnel) required for the Job. +parent
+  Typ1(s50) #Type
+  Typ2(s50) #Sub Type
+  Des(s50) #Description
+  ResID(s50) #Resource Identifier
+  Status(s50) #Status
+  Source(s50) #Source
+  Qty(dbl) #Quantity
+  UnitLabel(s10) #Quantity Unit
+  IDRecJobServiceContract(s32) #Service Contract
+  Com(txt2k) #Comment
+  DtTmAvailable(dt) #Date Available
+  DayORStart(dbl_days) #Job Day Start
+  DtTmStartCalc(dt_calc) #Start
+  DayOREnd(dbl_days) #Job Day End
+  DtTmEndCalc(dt_calc) #End
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase

@@ -1,0 +1,38 @@
+# prodview / meters / pvUnitMeterVirtualEntry
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterVirtualEntry: Virtual Meter Readings +parent | Entry tables for virtual meter.
+  DtTm(dt) #Date
+  VolHCLiq(dbl) #Oil/Cond
+  VolGas(dbl) #Gas
+  VolWater(dbl) #Water
+  VolSand(dbl) #Sand
+  IDRecItem(s255) #Link
+  TempStart(dbl_degC) #Initial Temperature
+  TempEnd(dbl_degC) #End Temperature
+  PresStart(dbl_kPa) #Initial Pressure
+  PresEnd(dbl_kPa) #End Pressure
+  Com(txt255) #Note
+  ComFFV(txt255) #FFV Note
+  DtTmStart(dt) #Start of Event
+  DtTmEnd(dt) #End of Event
+  DurOnOR(dbl_days) #Event Hours Override
+  DurOnCalc(double, days, calculated) #Event Hours
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  PresUser1(dbl_kPa) #User Pressure 1
+  PresUser2(dbl_kPa) #User Pressure 2
+  PresUser3(dbl_kPa) #User Pressure 3
+  TempUser1(dbl_degC) #User Temperature 1
+  TempUser2(dbl_degC) #User Temperature 2
+  TempUser3(dbl_degC) #User Temperature 3

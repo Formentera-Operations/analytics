@@ -1,0 +1,77 @@
+# wellview / wellbore_surveys / wvWellbore
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellbore: Description for all wellbores in this well. +parent
+  Des(s100) #Wellbore Name
+  WellboreIDA(s50) #Wellbore API/UWI
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  Purpose(s50) #Purpose
+  ProfileTyp(s100) #Profile Type
+  VSDir(dbl_deg) #Vertical Section Direction
+  VSOriginNS(dbl_m) #Vertical Section North-South Origin
+  VSOriginEW(dbl_m) #Vertical Section East-West Origin
+  IDRecJob(s32) #Job
+  DepthTopActualCalc(dbl_m_calc) #Actual Top Depth
+  DepthTopPropCalc(dbl_m_calc) #Proposed Top Depth
+  TotalDepthCalc(dbl_m_calc) #Total Depth of Wellbore
+  TotalDepthTVDCalc(dbl_m_calc) #Total Depth (TVD) of Wellbore
+  DtTmStartCalc(dt_calc) #Start Drill Date
+  DtTmEndCalc(dt_calc) #End Drill Date
+  DurationCalc(dbl_days_calc) #Duration
+  Exclude(bool) #Exclude?
+  Com(txt2k) #Comment
+  LegalSurveyTyp(s100) #Legal Survey Type
+  LegalSurveySubTyp(s100) #Legal Survey Subtype
+  LocationNote(s255) #Location Note
+  LegalSurveyLoc(s50) #Bottom Hole Legal Location
+  NSDist(dbl_m) #North-South Distance
+  NSFlag(s5) #From N or S Line
+  EWDist(dbl_m) #East-West Distance
+  EWFlag(s5) #From E or W Line
+  TownName(s50) #Nearest Town
+  TownDist(dbl_m) #Distance to Nearest Town
+  TownFlag(s5) #Nearest Town Ref Direction
+  TownStateProv(s50) #Nearest Town State/Prov
+  LocationRef(s50) #Location Reference
+  County(s50) #County
+  StateProv(s50) #State/Province
+  FieldName(s50) #Field Name
+  FieldCode(s50) #Field Code
+  LatLongSource(s50) #Lat Long Data Source
+  LatLongDatum(s50) #Lat/Long Datum
+  Latitude(dbl_deg) #Latitude
+  Longitude(dbl_deg) #Longitude
+  UTMSource(s50) #UTM Source
+  UTMGridZone(int) #UTM Grid Zone
+  UTMx(dbl_m) #UTM Easting
+  UTMy(dbl_m) #UTM Northing
+  CloseDirCalc(dbl_deg_calc) #Closure Direction
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  TVDMinCalc(dbl_m_calc) #Min TVD
+  TVDMaxCalc(dbl_m_calc) #Max TVD
+  VSPlotMinCalc(dbl_m_calc) #Min VS for Wellbore
+  VSPlotMaxCalc(dbl_m_calc) #Max VS for Wellbore
+  DepartMaxCalc(dbl_m_calc) #Max Departure
+  DLSMaxCalc(dbl_degpm_calc) #Max DLS
+  NSMinCalc(dbl_m_calc) #Min NS for Wellbore
+  NSMaxCalc(dbl_m_calc) #Max NS for Wellbore
+  EWMinCalc(dbl_m_calc) #Min EW for Wellbore
+  EWMaxCalc(dbl_m_calc) #Max EW for Wellbore
+  DisplaceUnwrapCalc(dbl_m_calc) #Unwrapped Displace
+  DepthDraw(dbl_m) #Draw Depth
+  CurrentStatusCalc(s100_calc) #Current Status
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  DtTmKickOffMinCalc(dt_calc) #Min Kick Off Date
+  DepthKickOffMinCalc(dbl_m_calc) #Min Kick Off Depth
+  DepthTVDKickOffMinCalc(dbl_m_calc) #Min Kick Off Depth (TVD)
+  WellboreIDB(s50) #Wellbore ID B
+  WellboreIDC(s50) #Wellbore ID C
+  WellboreIDD(s50) #Wellbore ID D
+  WellboreIDE(s50) #Wellbore ID E
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

@@ -1,0 +1,9 @@
+# prodview / flow_network / pvUnitNodeAnaly
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeAnaly: Node's Fluid Analyses +parent | Enter the date any fluid analyses are effective for this node. You can link to Gas Analysis Groups o
+  DtTmStart(dt) #Effective Date
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note
+  IDRecFluidAnaly(s32) #Fluid Analysis Group

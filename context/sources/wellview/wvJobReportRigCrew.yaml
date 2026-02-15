@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJobReportRigCrew
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportRigCrew: Rig Crew employee hours for the reporting period. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  IDRecJobRigCrew(s32) #Rig Crew
+  ShiftTyp(s100) #Shift Type
+  OtherTyp(s100) #Shift Start Time
+  DtTmStart(dt) #Shift Start Date
+  DtTmEnd(dt) #Shift End Date
+  DurationWorkReg(dbl_days) #Regular Work Hours
+  DurationWorkOT(dbl_days) #OT Work Hours
+  DurationStandby(dbl_days) #Standby Hours
+  DurationOff(dbl_days) #Off Hours
+  DurationSick(dbl_days) #Sick Hours
+  DurationOther(dbl_days) #Other Hours
+  Com(txt2k) #Comment

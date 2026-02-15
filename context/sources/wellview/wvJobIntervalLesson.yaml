@@ -1,0 +1,30 @@
+# wellview / operations_jobs / wvJobIntervalLesson
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobIntervalLesson: Key lessons learned for time and depth intervals in the 'Job'. +parent
+  Category(s100) #Major Category
+  Typ(s100) #Lesson Type
+  TypDetail(s100) #Type Detail
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  IDRecWellbore(s32) #Wellbore
+  RefNo(s50) #Reference #
+  IDRecItem(s32) #Item
+  EstCostSaving(dbl_cost) #Estimated Cost Savings
+  EstTimeSaving(dbl_days) #Estimated Time Savings
+  LessonOwner(s50) #Lesson Owner
+  Status(s50) #Status
+  ExcludeFromLessonTime(bool) #Exclude From Lesson Time Calcs?
+  Com(txt2k) #Comment
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  ReportNoCalc(dbl_calc) #Report Number
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  FormationCalc(s255_calc) #Formation
+  LessonSystem1(s100) #Lesson System 1
+  LessonSystem2(s100) #Lesson System 2
+  LessonSystem3(s100) #Lesson System 3

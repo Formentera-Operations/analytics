@@ -1,0 +1,20 @@
+# wellview / operations_jobs / wvJobSupplyAmt
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSupplyAmt: Details of the 'Job Supply' amount received, consumed, and returned by date. +parent
+  DtTm(dt) #Date
+  Received(dbl) #Received
+  Consumed(dbl) #Consumed
+  Returned(dbl) #Returned
+  CostOR(dbl_cost) #Cost Override
+  Note(s255) #Note
+  ReceivedCumCalc(dbl_calc) #Cum Received
+  ConsumedCumCalc(dbl_calc) #Cum Consumed
+  ReturnedCumCalc(dbl_calc) #Cum Returned
+  InventoryCumCalc(dbl_calc) #Cum On Location
+  CostCalc(dbl_cost_calc) #Field Est
+  CostCumCalc(dbl_cost_calc) #Cum Field Est
+  ReportNoCalc(dbl_calc) #Report Number
+  IDRecJobSupportVessel(s32) #Support Vessel
+  IDRecItem(s32) #Link
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit

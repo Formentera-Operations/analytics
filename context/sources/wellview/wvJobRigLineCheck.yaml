@@ -1,0 +1,8 @@
+# wellview / operations_jobs / wvJobRigLineCheck
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigLineCheck: Rig line length and Load-Distance measurements. +parent
+  DtTm(dt) #Date of Check
+  LengthSlipCut(dbl_m) #Length Slip Cut
+  LineLoadDist(dbl) #Load-Distance
+  Note(s255) #Note

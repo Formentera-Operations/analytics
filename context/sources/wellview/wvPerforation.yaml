@@ -1,0 +1,90 @@
+# wellview / perfs_stims / wvPerforation
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvPerforation: Perforation details. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  Typ(s100) #Type
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IDRecWellBore(s32) #Wellbore
+  ShotDensity(dbl_shotpm) #Shot Density
+  ShotPlan(int) ## Shots Planned
+  ShotTotal(int) #Entered Shot Total
+  ShotsTotalCalc(int_calc) #Calculated Shot Total
+  ShotsTotalAltCalc(int_calc) #Calculated Shot Total (alt)
+  ShotsMisfireCalc(int_calc) ## Shots Misfired
+  DepthTopToBtmCalc(dbl_m_calc) #Depth Bottom - Depth Top
+  DepthMPPCalc(dbl_m_calc) #Depth MPP
+  IntNo(dbl) #Stage Number
+  CluserRefNo(dbl) #Cluster Reference #
+  Com(txt2k) #Comment
+  IDRecZoneOR(s32) #Zone
+  IDRecZoneCalc(s32_calc) #Linked Zone
+  FormationCalc(s255_calc) #Formation
+  ReservoirCalc(s255_calc) #Reservoir
+  IDRecLastCompletionCalc(s32_calc) #Last Completion
+  IDRecString(s32) #String Perforated
+  IDRecJob(s32) #Job
+  IDRecLog(s32) #Reference Log
+  Contractor(s50) #Perforation Company
+  SzHoleAct(dbl_m) #Estimated Actual Hole Diameter
+  SzHoleNom(dbl_m) #Nominal Hole Diameter
+  PenetrationNom(dbl_m) #Nominal Penetration
+  DepthCsngCollarRef(dbl_m) #Collar Ref Depth
+  DepthTVDCsngCollarRefCalc(dbl_m_calc) #Collar Ref Depth (TVD)
+  DistanceRefToTopCalc(dbl_m_calc) #Collar Ref - Top Depth
+  IconDrawShort(bool) #Draw Short?
+  GunDes(s100) #Gun Description
+  SzGun(dbl_m) #Gun Size
+  GunMetallurgy(s100) #Gun Metallurgy
+  GunCentralize(s50) #Gun Centralize
+  GunLeftInHole(bool) #Gun Left In Hole?
+  ConveyMeth(s20) #Conveyance Method
+  CarrierDes(s100) #Carrier Description
+  CarrierMake(s100) #Carrier Make
+  ChargeTyp(s100) #Charge Type
+  ChargeSz(dbl_kg) #Charge Size
+  ChargeMake(s100) #Charge Make
+  ExplosiveTyp(s100) #Explosive Type
+  Phasing(dbl_deg) #Phasing
+  Orientation(s20) #Orientation
+  OrientMethod(s20) #Orientation Method
+  Balance(s20) #Over/Under Balanced
+  BalancePres(dbl_kPa) #Over/Under Pressure
+  PresDesignBH(dbl_kPa) #Design BH Pressure
+  PresInitSurf(dbl_kPa) #Initial Surface Pressure
+  PresFinalSurf(dbl_kPa) #Final Surface Pressure
+  FluidTyp(s100) #Fluid Type
+  FluidDensity(dbl_kgpm3) #Fluid Density
+  DepthFluidBefore(dbl_m) #Fluid Depth Before Shot
+  DepthTVDFluidBeforeCalc(dbl_m_calc) #Fluid Depth Before (TVD)
+  DepthFluidAfter(dbl_m) #Fluid Depth After Shot
+  DepthTVDFluidAfterCalc(dbl_m_calc) #Fluid Depth After (TVD)
+  RateFluidBefore(dbl_mpd) #Fluid Rate Before Shot
+  RateFluidAfter(dbl_mpd) #Fluid Rate After Shot
+  DepthGauge(dbl_m) #Gauge Depth
+  DepthTVDGaugeCalc(dbl_m_calc) #Gauge Depth (TVD)
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  StatusPrimaryCalc(s100_calc) #Open or Closed
+  CurrentStatusCalc(s100_calc) #Current Status
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  PresBHTyp(s100) #BH Pressure Type
+  PresBH(dbl_kPa) #Bottom Hole Pressure
+  PresDatum(dbl_kPa) #Datum Pressure
+  PresMPP(dbl_kPa) #MPP Pressure
+  PresDuringPerf(dbl_kPa) #Pressure During Perforation
+  PresBHToDatumCalc(dbl_kPa_calc) #Pressure BH to Datum
+  PresBHToMPPCalc(dbl_kPa_calc) #Pressure BH to MPP
+  PresHHSurfToMPP(dbl_kPa) #Estimated HH from Surface to MPP
+  PresGradientGaugeToMPP(dbl_kPapm) #Pressure Gradient Gauge to MPP
+  PresBHSITPHHCalc(dbl_kPa_calc) #BH Pressure for SITP and HH
+  ShotsTotalAltPerDensityCalc(dbl_pm_calc) #Total Shots/Shot Density
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  IDRecOtherInHoleCalc(s32_calc) #Other In Hole
+  UserNum1(dbl_m3) #Vol Fluid

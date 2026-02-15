@@ -1,0 +1,17 @@
+# wellview / tubing_rods_equipment / wvTubCompSensor
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompSensor: Sensor details. +extension
+  Typ(s100) #Type
+  Purpose(s50) #Monitoring Purpose
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  LengthWire(dbl_m) #Length Wire
+  ConnectTyp(s100) #Connect Type
+  TempMax(dbl_degC) #Max Temp
+  TempAccuracy(dbl_degC) #Temp Accuracy
+  PresMax(dbl_kPa) #Max Pressure
+  PresAccuracy(dbl_kPa) #Pressure Accuracy
+  DtTmLastCal(dt) #Last Cal Date
+  RefID(s50) #Reference ID

@@ -1,0 +1,15 @@
+# wellview / geological_evaluations / wvWellTestRFTDataFluid
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvWellTestRFTDataFluid: Description of RFT fluids collected. +parent
+  RefNo(s10) #Sample Reference #
+  DurSample(dbl_days) #Sampling Duration
+  VolFluid(dbl_m3) #Volume Collected
+  FluidTyp(s100) #Fluid Type
+  DensityFluid(dbl_kgpm3) #Fluid Density
+  pH(dbl) #pH
+  NaCl(dbl) #NaCl
+  RefNoSampleChamber(s50) #Sample Chamber Ref #
+  PresChamberSurf(dbl_kPa) #Surface Chamber Pressure
+  PresChamberEnd(dbl_kPa) #Final Chamber Pressure
+  Com(txt2k) #Comment

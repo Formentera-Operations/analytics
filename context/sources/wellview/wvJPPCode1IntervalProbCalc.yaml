@@ -1,0 +1,10 @@
+# wellview / operations_jobs / wvJPPCode1IntervalProbCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPCode1IntervalProbCalc: Summary of 'Interval Problem (NPT)' grouped by 'Phase.Phase Type 1'. +parent
+  IDRecIntervalProblem(s32_calc) #Problems During Report Period
+  ProblemDuration(dbl_days_calc) #Problem Duration
+  ProblemDurationCum(dbl_days_calc) #Cum Problem Duration
+  ExcludeFromProblemTime(bool_calc) #Exclude From Problem Time Calcs?
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema
