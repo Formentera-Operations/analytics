@@ -1,0 +1,19 @@
+# wellview / operations_jobs / wvJobRigOtherEquip
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigOtherEquip: Other rig equipment details  Ex. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Make(s100) #Make
+  Model(s100) #Model
+  RefID(s50) #Reference ID
+  SN(s50) #Serial Number
+  DtTmManufacture(dt) #Manufacture Date
+  Com(txt2k) #Comment
+  TmDrillCalc(dbl_days_calc) #Drilling Time
+  TmCircCalc(dbl_days_calc) #Circulating Time
+  TmTripCalc(dbl_days_calc) #Trip Time
+  TmOtherCalc(dbl_days_calc) #Other Time

@@ -1,0 +1,8 @@
+# wellview / tubing_rods_equipment / wvOtherInHoleStatus
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherInHoleStatus: Status by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  IconName(s255) #Icon Override
+  Note(s255) #Note

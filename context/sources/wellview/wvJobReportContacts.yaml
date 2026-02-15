@@ -1,0 +1,7 @@
+# wellview / operations_jobs / wvJobReportContacts
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportContacts: Choose contacts for this day from the 'Job Contact' list. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  IDRecJobContact(s32) #Job Contact
+  Pos(s50) #Position

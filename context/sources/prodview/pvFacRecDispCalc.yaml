@@ -1,0 +1,21 @@
+# prodview / facilities / pvFacRecDispCalc
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacRecDispCalc: Daily Facility Receipts/Dispositions | This calculated table gives a summary of receipts and dispositions for all facilities in the network
+  DtTm(dt_calc) #Date
+  Year(integer, calculated) #Year
+  Month(integer, calculated) #Month
+  DayOfMonth(integer, calculated) #Day
+  IDRecUnitSend(s32_calc) #Sending Unit
+  IDRecUnitNodeSend(s32_calc) #Sending Node
+  IDRecFacilitySend(s32_calc) #Sending Facility
+  IDFlowNetSend(s32_calc) #Sending Network
+  IDRecUnitRec(s32_calc) #Receiving Unit
+  IDRecUnitNodeRec(s32_calc) #Receiving Node
+  IDRecFacilityRec(s32_calc) #Receiving Facility
+  IDFlowNetRec(s32_calc) #Receiving Network
+  VolHCLiq(dbl_m3_calc) #Oil/Condensate Volume
+  VolGas(dbl_m3_calc) #Gas Volume
+  VolGasPlusGasEq(dbl_m3_calc) #Gas Plus Gas Equivalent Volume
+  VolWater(dbl_m3_calc) #Water Volume
+  VolSand(dbl_m3_calc) #Sand Volume

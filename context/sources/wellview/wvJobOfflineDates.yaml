@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobOfflineDates
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOfflineDates: The reporting period for these other activities, and associated comments. +parent
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RptTmActOps(s100) #Operations at Report Time
+  SummaryOps(txt2k) #Operations Summary
+  PlanNextRptOps(txt2k) #Operations Next Report Period
+  Com(txt2k) #Comment

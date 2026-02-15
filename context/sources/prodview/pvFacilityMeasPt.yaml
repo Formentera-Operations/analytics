@@ -1,0 +1,13 @@
+# prodview / facilities / pvFacilityMeasPt
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityMeasPt: Facility Other Meas Points +parent | If you have a separate measurement point required for this facility, you can link to the equipment, 
+  Name(s50) #Measurement Name
+  IDRecLoc(s32) #Measurement Location
+  RefIDA(s50) #Reference ID
+  UOMReading(s10) #Reading Unit of Measure
+  EntryReqPeriod(s50) #Entry Requirement Period
+  Com(txt2k) #Comment
+  KeyMigrationSource(s100) #Carry Forward Type
+  TypMigrationSource(s100) #Migration Source Type
+  sysSeq(int) #Sequence

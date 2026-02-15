@@ -1,0 +1,12 @@
+# wellview / operations_jobs / wvJRSafetyIncCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRSafetyIncCalc: Summary of 'Safety Incident'  records during the job. +parent
+  Typ1(s100_calc) #Type 1
+  Typ2(s100_calc) #Type 2
+  LastDtTm(dt_calc) #Last Date
+  DurationSinceLastInc(dbl_days_calc) #Days Since Last Check
+  Frequency(dbl_calc) #Number of Occurrences
+  FrequencyRate(dbl_calc) #Occurrence Rate
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

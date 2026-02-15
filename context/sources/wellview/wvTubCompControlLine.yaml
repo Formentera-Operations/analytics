@@ -1,0 +1,17 @@
+# wellview / tubing_rods_equipment / wvTubCompControlLine
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompControlLine: Line details relating to the 'Tubing Component'. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Material(s50) #Material
+  LineColor(int) #Color
+  SzOD(dbl_m) #OD
+  SzID(dbl_m) #ID
+  Encapsulated(bool) #Encapsulated?
+  EncapsulatedTyp(s100) #Encapsulation Type
+  TempRating(dbl_degC) #Temperature Rating
+  PresRating(dbl_kPa) #Pressure Rating
+  ControlFluidTyp(s100) #Set Fluid Type
+  RefNo(s20) #Reference #
+  IDRecWellheadCompSub(s32) #Link to Outlet or Component

@@ -1,0 +1,23 @@
+# wellview / other / wvTimeCurve
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvTimeCurve: Time based logs. +parent
+  Category(s100) #Category
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  UnitLabel(s20) #Units
+  DisplayFlag(bool) #Display?
+  DtTmStartRef(dt) #Reference Start Date
+  DtTmEndRef(dt) #Reference End Date
+  Contractor(s50) #Company
+  Analyst(s50) #Analyst
+  IDRecItem(s32) #Link
+  IDRecJob(s32) #Job
+  IDRecWellBore(s32) #Wellbore
+  ExcludeFromExport(bool) #Exclude From Export?
+  Source(s100) #Source
+  Com(txt2k) #Comment
+  UserTxt1(s100) #User Text1
+  UserTxt2(s100) #User Text2
+  UserTxt3(s100) #User Text3

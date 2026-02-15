@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobOffline
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOffline: Activities that are not tracked in the operator's 'Job Time Log' can be tracked in this model. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  IDRecJobServiceContract(s32) #Service Contract
+  DtTmStartCalc(dt_calc) #Start Date
+  DtTmEndCalc(dt_calc) #End Date
+  Com(txt2k) #Comment

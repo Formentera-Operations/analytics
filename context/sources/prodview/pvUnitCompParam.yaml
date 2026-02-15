@@ -1,0 +1,47 @@
+# prodview / completions / pvUnitCompParam
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompParam: Completion Parameters +parent
+  DtTm(dt) #Date
+  SzChoke(double, meter) #Choke Size
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  TempUser5(dbl_degC) #Fluid Level Tbg P (psi)
+  TempUser4(dbl_degC) #Fluid Level Csg P (psi)
+  PresUser2(dbl_kPa) #Intermediate Casing Pressure
+  PresUser1(dbl_kPa) #Surface Casing Pressure
+  PresLine(dbl_kPa) #Line Pressure
+  PresBH(dbl_kPa) #Bottomhole Pressure
+  PresUser5(dbl_kPa) #Annulus Pressure
+  Salinity(dbl_pct) #H2S Daily Reading
+  pH(dbl_pct) #Hertz
+  UserTxt1(s50) #SPCC Inspection Complete?
+  TempWH(dbl_degC) #Wellhead Temperature
+  PresInj(dbl_kPa) #Injection Pressure
+  PresWH(dbl_kPa) #Wellhead Pressure
+  TempBH(dbl_degC) #Bottomhole Temperature
+  PresTubSI(dbl_kPa) #Shut-In Tubing Pressure
+  PresCasSI(dbl_kPa) #Shut-In Casing Pressure
+  ViscKinematic(double, square meters per day) #Kinematic Viscosity
+  PresAnnulus(dbl_kPa) #Annulus Pressure
+  PresUser4(dbl_kPa) #User Pressure 4
+  TempUser1(dbl_degC) #Treater Temperature
+  TempUser2(dbl_degC) #Surface Casing Temp
+  TempUser3(dbl_degC) #User Temperature 3
+  UserTxt5(s50) #Operational Work
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5
+  UserTxt3(s50) #Plunger Make
+  UserTxt2(s50) #Plunger Model
+  UserTxt4(s50) #Plunger Size
+  ViscDynamic(double, pascal seconds) #Dynamic Viscosity
+  UserNum1(dbl) #Cycles
+  UserNum2(dbl) #Arrivals
+  UserNum3(dbl_days) #Travel Time
+  UserNum4(dbl_days) #After Flow
+  UserNum5(dbl_days) #Shut In Time
+  UserDtTm1(dt) #Plunger Inspection Date
+  UserDtTm2(dt) #Plunger Replace Date
+  PresUser3(dbl_kPa) #Plunger OnPressure
+  Com(txt255) #Note

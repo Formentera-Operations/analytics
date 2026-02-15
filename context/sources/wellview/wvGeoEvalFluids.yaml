@@ -1,0 +1,16 @@
+# wellview / geological_evaluations / wvGeoEvalFluids
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalFluids: Interpretation of formation fluids. +parent
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DtTm(dt) #Date
+  FluidTyp(s100) #Fluid Type
+  FluidName(s50) #Fluid Name
+  IconName(s255) #Icon
+  StratName(s50) #Stratigraphic Name
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment

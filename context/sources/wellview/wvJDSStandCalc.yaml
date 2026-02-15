@@ -1,0 +1,61 @@
+# wellview / operations_jobs / wvJDSStandCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJDSStandCalc: Summary of Stand KPIs. +parent
+  DurStand(dbl_days_calc) #Dur Stand Avg
+  DurStandMin(dbl_days_calc) #Dur Stand Min
+  DurStandMax(dbl_days_calc) #Dur Stand Max
+  DurStandMed(dbl_days_calc) #Dur Stand Med
+  DurStandStdDev(dbl_days_calc) #Dur Stand Std Dev
+  DurConnect(dbl_days_calc) #Connection Avg
+  DurConnectMin(dbl_days_calc) #Connection Min
+  DurConnectMax(dbl_days_calc) #Connection Max
+  DurConnectMed(dbl_days_calc) #Connection Med
+  DurConnectStdDev(dbl_days_calc) #Connection Std Dev
+  DurOnBtm(dbl_days_calc) #On Bottom Avg
+  DurOnBtmMin(dbl_days_calc) #On Bottom Min
+  DurOnBtmMax(dbl_days_calc) #On Bottom Max
+  DurOnBtmMed(dbl_days_calc) #On Bottom Med
+  DurOnBtmStdDev(dbl_days_calc) #On Bottom Std Dev
+  DurOffBtm(dbl_days_calc) #Off Bottom Avg
+  DurOffBtmMin(dbl_days_calc) #Off Bottom Min
+  DurOffBtmMax(dbl_days_calc) #Off Bottom Max
+  DurOffBtmMed(dbl_days_calc) #Off Bottom Med
+  DurOffBtmStdDev(dbl_days_calc) #Off Bottom Std Dev
+  DurPipeMoving(dbl_days_calc) #Pipe Moving Avg
+  DurPipeMovingMin(dbl_days_calc) #Pipe Moving Min
+  DurPipeMovingMax(dbl_days_calc) #Pipe Moving Max
+  DurPipeMovingMed(dbl_days_calc) #Pipe Moving Med
+  DurPipeMovingStdDev(dbl_days_calc) #Pipe Moving Std Dev
+  DurSlipToSlip(dbl_days_calc) #Slip to Slip Avg
+  DurSlipToSlipMin(dbl_days_calc) #Slip to Slip Min
+  DurSlipToSlipMax(dbl_days_calc) #Slip to Slip Max
+  DurSlipToSlipMed(dbl_days_calc) #Slip to Slip Med
+  DurSlipToSlipStdDev(dbl_days_calc) #Slip to Slip Std Dev
+  DurSlipToWt(dbl_days_calc) #Slip to Weight Avg
+  DurSlipToWtMin(dbl_days_calc) #Slip to Weight Min
+  DurSlipToWtMax(dbl_days_calc) #Slip to Weight Max
+  DurSlipToWtMed(dbl_days_calc) #Slip to Weight Med
+  DurSlipToWtStdDev(dbl_days_calc) #Slip to Weight Std Dev
+  DurWtToSlip(dbl_days_calc) #Weight to Slip Avg
+  DurWtToSlipMin(dbl_days_calc) #Weight to Slip Min
+  DurWtToSlipMax(dbl_days_calc) #Weight to Slip Max
+  DurWtToSlipMed(dbl_days_calc) #Weight to Slip Med
+  DurWtToSlipStdDev(dbl_days_calc) #Weight to Slip Std Dev
+  DurWtToWt(dbl_days_calc) #Weight to Weight Avg
+  DurWtToWtMin(dbl_days_calc) #Weight to Weight Min
+  DurWtToWtMax(dbl_days_calc) #Weight to Weight Max
+  DurWtToWtMed(dbl_days_calc) #Weight to Weight Med
+  DurWtToWtStdDev(dbl_days_calc) #Weight to Weight Std Dev
+  ROPStand(dbl_mpd_calc) #ROP Stand Avg
+  ROPStandMax(dbl_mpd_calc) #ROP Stand Max
+  ROPStandMin(dbl_mpd_calc) #ROP Stand Min
+  ROPStandMed(dbl_mpd_calc) #ROP Stand Med
+  ROPStandStdDev(dbl_mpd_calc) #ROP Stand Std Dev
+  ROPOnBtm(dbl_mpd_calc) #ROP On Btm Avg (Net)
+  ROPOnBtmMax(dbl_mpd_calc) #ROP On Btm Max (Net)
+  ROPOnBtmMin(dbl_mpd_calc) #ROP On Btm Min (Net)
+  ROPOnBtmMed(dbl_mpd_calc) #ROP On Btm Med (Net)
+  ROPOnBtmStdDev(dbl_mpd_calc) #ROP On Btm Std Dev (Net)
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

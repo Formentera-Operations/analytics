@@ -1,0 +1,10 @@
+# wellview / surface_equipment / wvPumpingUnitCounterWt
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvPumpingUnitCounterWt: Counter weight details for associated 'Pumping Unit'. +parent
+  Location(s20) #Weight Location
+  Model(s100) #Model
+  Pos(dbl_m) #Weight Position
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  RefID(s50) #Reference ID

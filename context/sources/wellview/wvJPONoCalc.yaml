@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJPONoCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPONoCalc: Summary of Field estimates from 'Daily Cost' and 'Daily Recurring Cost' grouped by PONo and Vendor. +parent
+  PONo(s50_calc) #Purchase Order Number
+  Vendor(s100_calc) #Vendor
+  VendorCode(s100_calc) #Vendor Code
+  VendorSubCode(s100_calc) #Vendor Sub Code
+  POAmt(dbl_cost_calc) #Purchase Order Amount
+  Cost(dbl_cost_calc) #Field Est
+  VarPOAmtCost(dbl_cost_calc) #Purchase Order Amount - Field Est
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

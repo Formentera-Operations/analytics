@@ -1,0 +1,10 @@
+# wellview / operations_jobs / wvJRMudVolCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRMudVolCalc: Summary of additions and losses of <wvJobReportMudVol> for the reporting period, grouped by <wvJobReportMudVol.Typ1>, <wvJobReportMudVol.Typ2> Calc... +parent
+  VolTyp(s100_calc) #Addition/Loss
+  Typ1(s100_calc) #Type
+  Typ2(s100_calc) #Subtype
+  Volume(dbl_m3_calc) #Volume
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

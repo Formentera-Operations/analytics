@@ -1,0 +1,10 @@
+# prodview / reference / pvUnitAssignOrig
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitAssignOrig: Custom Origin Assignment +parent | Assign a custom originating 'Unit' for products.
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Reason(s50) #Assignment Reason
+  TypFluidBaseIn(s20) #Allocate Against Fluid Type
+  IDRecNode(s32) #Outlet
+  Com(txt2k) #Comment

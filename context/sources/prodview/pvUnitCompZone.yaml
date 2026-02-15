@@ -1,0 +1,48 @@
+# prodview / completions / pvUnitCompZone
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompZone: Reporting/Contact Intervals +parent | Finest granularity that production (or injection) can be attributed to.  A completion can have one o
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  ZoneName(s50) #Zone Name
+  ZoneIDRegulatory(s50) #Regulatory Identifier of Zone
+  ZoneIDPA(s50) #Production Accounting Identifier of Zone
+  ZoneIDA(s50) #Zone ID A
+  ZoneIDB(s50) #Zone ID B
+  ZoneIDC(s50) #Zone ID C
+  ZoneIDD(s50) #Zone ID D
+  ZoneIDE(s50) #Zone ID E
+  ZoneCode(s50) #Zone Code
+  ZoneLicensee(s50) #Zone Licensee
+  ZoneLicenseNo(s50) #Zone License Number
+  DtTmZoneLic(dt) #Zone License Date
+  DtTmZoneOnProd(dt) #First Production Date
+  DtTmZoneFirstSale(dt) #First Sale Date
+  DtTmZoneAbandon(dt) #Abandon Date
+  FieldName(s50) #Field Name
+  FieldIDA(s50) #Field Identifier
+  UnitCode(s50) #Unit Code
+  UnitName(s50) #Unit Name
+  UnitIDA(s50) #Unit Identifier
+  WellboreName(s50) #Wellbore Name
+  WellboreIDRegulatory(s50) #Wellbore Regulatory ID
+  WellboreIDPA(s50) #Wellbore PA ID
+  WellboreIDA(s50) #Wellbore ID A
+  WellboreIDB(s50) #Wellbore ID B
+  ResName(s50) #Reservoir Name
+  ResIDA(s50) #Reservoir IDA
+  ResIDB(s50) #Reservoir IDB
+  ResIDC(s50) #Reservoir IDC
+  Basin(s50) #Basin
+  Play(s50) #Play
+  Prospect(s50) #Prospect
+  DepthTop(double, meter) #Top Depth
+  DepthTVDTop(double, meter) #Top Depth (TVD)
+  DepthBtm(double, meter) #Bottom Depth
+  DepthTVDBtm(double, meter) #Depth Btm (TVD)
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserTxt6(s50) #User Text 6

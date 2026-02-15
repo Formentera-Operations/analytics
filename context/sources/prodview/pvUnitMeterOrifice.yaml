@@ -1,0 +1,46 @@
+# prodview / meters / pvUnitMeterOrifice
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterOrifice: Gas Meters +parent | Orifice meters can track gas volume or derive a volume through pressure and temperature properties c
+  Name(s50) #Meter Name
+  EntrySource(s50) #Entry Source
+  TypReading(s50) #Chart Reading Type
+  TypRecording(s50) #Recording Type
+  UOMGasStat(s20) #Static Pressure Units
+  UOMGasDiff(s20) #Differential Pressure Units
+  UOMTemp(s20) #Temperature Units
+  UOMSzOrifice(s20) #Orifice Size Units
+  SzRun(double, meter) #Run Size
+  MetalTypePipe(s50) #Pipe Material
+  MetalTypePlate(s50) #Plate Material
+  ChartPeriod(s50) #Chart Period
+  TypTap(s50) #Tap Type
+  LocStaticTap(s50) #Static Tap Location
+  LocProvTap(s50) #Proving Tap Location
+  EstMissingDay(bool) #Estimate Missing Days?
+  IDRecDurOpSource(s32) #Source of Operating Hours
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #Historical Name
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #MPHID
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence

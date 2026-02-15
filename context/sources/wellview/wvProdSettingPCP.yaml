@@ -1,0 +1,7 @@
+# wellview / production_operations / wvProdSettingPCP
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSettingPCP: RPM, Rod torque and electric current for the time interval defined in 'Production Setting'. +extension
+  RPM(int) #RPM
+  RodTorque(dbl_Nm) #Rod Torque
+  ElectricCurrent(dbl_A) #Electric Current

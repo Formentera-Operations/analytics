@@ -1,0 +1,15 @@
+# wellview / perfs_stims / wvStimIntPresDtl
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntPresDtl: Pressure vs. time for tests related to the 'Stim/Frac Stage'. +parent
+  Tm(dbl_days) #Time
+  Pres(dbl_kPa) #Pressure
+  PresBH(dbl_kPa) #Bottom Hole Pressure
+  Conc(dbl_kgpm3) #Avg Surf Concentration
+  RateSlurry(dbl_m3pd) #Avg Slurry Rate
+  PresRef(s50) #Pressure Reference
+  DepthGauge(dbl_m) #Gauge Depth
+  DepthTVDGaugeCalc(dbl_m_calc) #Gauge Depth (TVD)
+  Note(s255) #Note
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

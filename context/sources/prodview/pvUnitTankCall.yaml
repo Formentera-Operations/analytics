@@ -1,0 +1,21 @@
+# prodview / tanks / pvUnitTankCall
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankCall: Call-Ins +parent | Call-ins for each tank allowing tracking peformance from call in to truck pickup
+  DtTmStart(datetime 8) #Start Date
+  DtTmEnd(datetime 8) #End Date
+  RefID(s50) #Reference ID
+  Status(s50) #Status
+  Company(s50) #Company
+  Priority(s50) #Priority
+  Com(txt2k) #Note
+  IDRecTicketCalc(s32_calc) #Associated Ticket
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

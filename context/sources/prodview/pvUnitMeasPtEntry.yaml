@@ -1,0 +1,7 @@
+# prodview / meters / pvUnitMeasPtEntry
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeasPtEntry: Other MP Entries +parent | Miscalleneous entries recorded per type of measurement.
+  DtTm(dt) #Date
+  Value(dbl) #Reading for Variable
+  Com(stringlong 100) #Note

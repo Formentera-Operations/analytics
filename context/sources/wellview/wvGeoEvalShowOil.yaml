@@ -1,0 +1,41 @@
+# wellview / geological_evaluations / wvGeoEvalShowOil
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalShowOil: Detailed oil shows. +parent
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DtTm(dt) #Date
+  ShowQuality(s20) #Show Quality
+  ShowOrigin(s50) #Show Origin
+  ShowTyp(s100) #Show Type
+  IconName(s255) #Icon
+  RefNo(s50) #Reference #
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment
+  DensityQFT(dbl_kgpm3) #QFT API
+  VisibleStainColor(s20) #Visible Stain Color
+  VisibleStainDist(s20) #Visible Stain Distribution
+  VisibleStainPercent(dbl_pct) #Visible Stain
+  VisibleStainDegree(s20) #Visible Stain Degree
+  NaturalFluorColor(s20) #Natural Fluorescence Color
+  NaturalFluorPercent(dbl_pct) #Natural Fluorescence
+  NaturalFluorLevel(s20) #Natural Fluorescence Level
+  NaturalFluorQFT(dbl) #Natural Fluor QF Value
+  NaturalFluorDes(s100) #Natural Fluorescence Des
+  NaturalFluorDist(s20) #Natural Fluorescence Stain Distribution
+  CutColor(s20) #Cut Color
+  CutSpeed(s20) #Cut Speed
+  CutStrength(s20) #Cut Strength
+  CutFormulation(s50) #Cut Formulation
+  CutLevel(s20) #Cut Level
+  CutFluorColor(s20) #Cut Fluorescence Color
+  CutFluorSpeed(s20) #Cut Fluorescence Speed
+  CutFluorStrength(s20) #Cut Fluorescence Strength
+  CutFluorQFT(dbl) #Cut Fluor QF Value
+  CutFluorForm(s20) #Cut Fluorescence Form
+  CutFluorLevel(s20) #Cut Fluorescence Level
+  ResidueColor(s20) #Residue Color
+  Odor(s50) #Odor

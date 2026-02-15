@@ -1,0 +1,18 @@
+# wellview / production_operations / wvFluidAnalysisLiquid
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisLiquid: Observed and calculated hydrocarbon liquid properties. +extension
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  DensityRelSample(dbl) #Total Sample Relative Density
+  MolecularMassSample(dbl) #Total Sample Relative Molecular Mass
+  TempRefSample(dbl_degC) #Total Sample Ref Temp
+  APISample(dbl_kgpm3) #Total Sample API
+  TempRefAPISample(dbl_degC) #Total Sample API Ref Temp
+  DensityC7(dbl_kgpm3) #C7+ Density
+  DensityRelC7(dbl) #C7+ Relative Density
+  MolecularMassRel(dbl) #C7+ Relative Molecular Mass
+  TempRefC7(dbl_degC) #C7+ Ref Temp
+  APIC7(dbl_kgpm3) #C7+ API
+  TempRefAPIC7(dbl_degC) #C7+  API Ref Temp
+  FactorGasEquiv(dbl) #Gas Equivalent Factor
+  Com(txt2k) #Comment

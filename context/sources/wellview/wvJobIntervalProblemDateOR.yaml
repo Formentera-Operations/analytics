@@ -1,0 +1,10 @@
+# wellview / operations_jobs / wvJobIntervalProblemDateOR
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobIntervalProblemDateOR: This table allows you to track intermittent date intervals for the problem. For example, if you had an intermittent equipment problem, you could en... +extension
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  EstLostTime(dbl_days) #Estimated Lost time
+  DurationGrossCalc(dbl_days_calc) #Problem Duration (Gross)
+  DurationFactorCalc(dbl_calc) #Duration Factor
+  Com(txt2k) #Comment

@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJPPDrillStringCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPDrillStringCalc: Summary of 'Drill String' that occur during this phase. +parent
+  IDRecJobDrillString(s32_calc) #Drill String
+  DepthDrilled(dbl_m_calc) #Depth Drilled During Phase
+  ROPMax(dbl_mpd_calc) #Interval ROP During Phase
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

@@ -1,0 +1,12 @@
+# prodview / reference / pvUnitChkListItem
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitChkListItem: Daily Checklist Items +parent | Daily checklist of recurring activities.
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Value(s50) #Value
+  ActionRqd(bool) #Action Required?
+  IDRecItem(s32) #Link
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence

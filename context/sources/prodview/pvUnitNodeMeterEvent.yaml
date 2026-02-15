@@ -1,0 +1,6 @@
+# prodview / flow_network / pvUnitNodeMeterEvent
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeMeterEvent: Meters or Events on Node +parent | Specify the install date and link to a meter that you set up in the Gas PD Meters, Rate Meters, or O
+  DtTmStart(dt) #Install Date
+  IDRecMeterEvent(s32) #Meter

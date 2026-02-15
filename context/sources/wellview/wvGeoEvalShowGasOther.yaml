@@ -1,0 +1,10 @@
+# wellview / geological_evaluations / wvGeoEvalShowGasOther
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalShowGasOther: Additional gas component types and associated average, max, min values. +parent
+  DtTm(dt) #Date
+  ComponentTyp(s50) #Component Type
+  ComponentAvg(dbl_pct) #Component Average
+  ComponentMax(dbl_pct) #Component Maximum
+  ComponentMin(dbl_pct) #Component Minimum
+  Com(txt2k) #Comment

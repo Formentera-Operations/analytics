@@ -1,0 +1,16 @@
+# wellview / operations_jobs / wvJobReportPersonnelCount
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportPersonnelCount: Count of personnel on location and working hours for this reporting period. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  EmployeeName(s50) #Employee Name
+  EmployeeTyp(s100) #Employee Type
+  CompanyTyp(s100) #Type
+  Company(s100) #Company
+  RefDerrick(s50) #Derrick Reference
+  Note(s255) #Note
+  Exclude(bool) #Exclude from Calcs?
+  HeadCount(int) #Head Count
+  DurationWorkReg(dbl_days) #Regular Working Time
+  DurationWorkOT(dbl_days) #Sum of Over-Time
+  DurationWorkTotCalc(dbl_days_calc) #Total Working Time

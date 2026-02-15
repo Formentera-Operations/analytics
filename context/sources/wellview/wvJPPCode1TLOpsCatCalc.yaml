@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJPPCode1TLOpsCatCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPCode1TLOpsCatCalc: Sum of 'Phase Ops Category Time Log Summary'  grouped by 'Phase.Phase Type 1'. +parent
+  OpsCategory(s50_calc) #Ops Category
+  Duration(dbl_days_calc) #Duration
+  FractionTotalTime(dbl_pct_calc) #% Total Time
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

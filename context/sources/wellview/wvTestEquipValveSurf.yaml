@@ -1,0 +1,25 @@
+# wellview / reservoir_tests / wvTestEquipValveSurf
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestEquipValveSurf: Equipment test data details including time, pressure, and volume. +parent
+  RefNo(s10) #Test Ref #
+  DtTm(dt) #Date
+  Duration(dbl_days) #Duration
+  DurActuatorClose(dbl_days) #Actuator Closing Time
+  FailFlag(bool) #Failed?
+  PresWellFlag(bool) #Well Pressure Used?
+  GreasedFlag(bool) #Greased?
+  PresInit(dbl_kPa) #Initial Pressure
+  PresDelta(dbl_kPa) #Pressure Drop
+  PresStart(dbl_kPa) #Start Pressure
+  PresEnd(dbl_kPa) #End Pressure
+  RateLeak(dbl_m3pd) #Rate of Pumping
+  TempStart(dbl_degC) #Start Temperature
+  TempEnd(dbl_degC) #End Temperature
+  VolReturn(dbl_m3) #Returns Volume
+  VolGrease(dbl_m3) #Grease Volume
+  State(s50) #State
+  TypReturn(s100) #Type of Returns
+  NoTurnsOpen(int) ## Turns to Open
+  NoTurnsClose(int) ## Turns to Close
+  Com(txt2k) #Comment

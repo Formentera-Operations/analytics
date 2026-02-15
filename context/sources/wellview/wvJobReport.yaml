@@ -1,0 +1,229 @@
+# wellview / operations_jobs / wvJobReport
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReport: General information for the reporting period. +parent
+  DtTmStart(dt) #Report Start Date
+  DtTmEnd(dt) #Report End Date
+  RptTmActOps(s100) #Operations at Report Time
+  StatusEnd(s50) #Status at Reporting Time
+  SummaryOps(txt2k) #Operations Summary
+  Remarks(txt2k) #Remarks
+  PlanNextRptOps(txt2k) #Operations Next Report Period
+  RigTime(dbl_days) #Rig Time
+  DurationSinceLTInc(dbl_days) #Days Since Lost Time Incident
+  DurationSinceRptInc(dbl_days) #Days Since Reportable Incident
+  IDRecNextCas(s32) #Next Casing String
+  DepthTVDEndProjMethod(s20) #Projected TVD Calc Method
+  GasBackgroundAvg(dbl_pct) #Avg Background Gas
+  GasBackgroundMax(dbl_pct) #Max Background Gas
+  GasConnectionAvg(dbl_pct) #Avg Connection Gas
+  GasConnectionMax(dbl_pct) #Max Connection Gas
+  GasTripAvg(dbl_pct) #Avg Trip Gas
+  GasTripMax(dbl_pct) #Max Trip Gas
+  GasDrillAvg(dbl_pct) #Avg Drill Gas
+  GasDrillMax(dbl_pct) #Max Drill Gas
+  H2SMax(dbl_pct) #Max H2S
+  CondHole(s50) #Hole Condition
+  CondWeather(s50) #Weather
+  CondTemp(dbl_degC) #Temperature
+  CondLease(s50) #Lease Condition
+  CondRoad(s50) #Road Condition
+  CondWind(s50) #Wind
+  CondWave(s50) #Wave Conditions
+  ReportDayCalc(dbl_days_calc) #Job Day
+  ReportNoCalc(dbl_calc) #Report Number
+  DaysFromSpudCalc(dbl_days_calc) #Days From Spud
+  DaysFromSpudtoRRCalc(dbl_days_calc) #Days From Spud to RR
+  DepthStartDPCalc(dbl_m_calc) #Start Depth
+  DepthStartDPNullCalc(dbl_m_calc) #Start Depth Alt
+  DepthTVDStartDPCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEndDPCalc(dbl_m_calc) #End Depth
+  DepthEndDPNullCalc(dbl_m_calc) #End Depth Alt
+  DepthTVDEndDPCalc(dbl_m_calc) #End Depth (TVD)
+  DepthEndDPCumCalc(dbl_m_calc) #Cum End Depth
+  DepthProgressDPCalc(dbl_m_calc) #Depth Progress
+  DepthNetProgressDPCalc(dbl_m_calc) #Net Depth Progress
+  RigTimeCumCalc(dbl_days_calc) #Cum Rig Time
+  DurationTimeLogTotalCalc(dbl_days_calc) #Time Log Total Hours
+  DurationTimeLogTotCumCalc(dbl_days_calc) #Cum Time Log Days
+  DurationTimeLogCumSpudCalc(dbl_days_calc) #Cum Time Log Days From Spud
+  DurationTimeLogCumSpudRRCalc(dbl_days_calc) #Cum Time Log Days Spud to RR
+  ROPCalc(dbl_mpd_calc) #Avg ROP
+  IDRecWellBoreCalc(s32_calc) #Wellbore
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  RigsCalc(s255_calc) #Rig (Names)
+  IDRecLastCasCalc(s32_calc) #Last Casing String
+  RigDaysCalc(dbl_days_calc) #Number of Rig Days
+  RigDaysCumCalc(dbl_days_calc) #Total Rig Days
+  LastMudDensityCalc(dbl_kgpm3_calc) #Last Mud Check Density
+  WeightMetalRecovTotalCalc(dbl_kg_calc) #Weight Metal Recovered
+  ContactCalc(txt2k_calc) #Daily Contacts
+  HazardIDNoRptCalc(int_calc) #Number of Hazard IDs
+  HazardIDNoRptCumCalc(int_calc) #Cum Number of Hazard IDs
+  DurationTimeLogCum12HrCalc(dbl_days_calc) #Cum Time Log Days (12 Hr Shift)
+  DurStartToEndCalc(dbl_days_calc) #End Date - Start Date
+  CostTotalCalc(dbl_cost_calc) #Daily Field Est Total
+  CostToDateCalc(dbl_cost_calc) #Cum Field Est To Date
+  CostPerDepthCalc(dbl_cpm_calc) #Cost Per Depth Drilled
+  CostMudAddCalc(dbl_cost_calc) #Daily Mud Field Est
+  CostMudAddToDateCalc(dbl_cost_calc) #Mud Additive Field Est To Date
+  CostJobSupplyAmtCalc(dbl_cost_calc) #Daily Job Supply Field Est
+  CostJobSupplyAmtToDateCalc(dbl_cost_calc) #Job Supply Field Est To Date
+  CostPerTLDurCalc(dbl_cpd_calc) #Cost Per Hour
+  CostPerDepthVarCalc(dbl_cpm_calc) #Cost Per Depth Plan - Actual Variance
+  CostPerDepthCumCalc(dbl_cpm_calc) #Cum Cost/Cum Depth
+  MudCostPerDepthCalc(dbl_cpm_calc) #Mud Cost/Depth Drilled
+  MudCostPerDepthCumCalc(dbl_cpm_calc) #Cum Mud Cost/Cum Depth
+  PercentFieldAFECalc(dbl_pct_calc) #Field / AFE %
+  CostForecastFieldVarCalc(dbl_cost_calc) #Forecast - Field Est
+  CostNormForecastFieldVarCalc(dbl_cost_calc) #Normalized Forecast - Field
+  CostTotalNormCalc(dbl_cost_calc) #Normalized Daily Field Est Total
+  CostToDateNormCalc(dbl_cost_calc) #Normalized Cum Field Est To Date
+  CostPerDepthNormCalc(dbl_cpm_calc) #Normalized Cost Per Depth Drilled
+  CostMudAddNormCalc(dbl_cost_calc) #Normalized Daily Mud Field Est
+  CostMudAddToDateNormCalc(dbl_cost_calc) #Normalized Mud Add Field Est To Date
+  CostJobSupplyAmtNormCalc(dbl_cost_calc) #Normalized Daily Job Supply Field Est
+  CostJobSupplyAmtToDtNCalc(dbl_cost_calc) #Normalized Job Supply Field Est To Date
+  CostPerTLDurNormCalc(dbl_cpd_calc) #Normalized Cost Per Hour
+  MudCostPerDepthNormCalc(dbl_cpm_calc) #Normalized Mud Cost/Depth Drilled
+  MudCostPerDepthCumNormCalc(dbl_cpm_calc) #Normalized Cum Mud Cost/Cum Depth
+  DurationProblemTimeCalc(dbl_days_calc) #Problem Time Hours
+  DurationProblemTimeCumCalc(dbl_days_calc) #Cum Problem Time Hours
+  DurProblemTimeCumDaysCalc(dbl_days_calc) #Cum Problem Time Days
+  PctProblemTimeCalc(dbl_pct_calc) #Percent Problem Time
+  PctProblemTimeCumCalc(dbl_pct_calc) #Cum Percent Problem Time
+  DurationNoProbTimeCalc(dbl_days_calc) #Time Log - Problem Hours
+  DurationNoProbTimeCumCalc(dbl_days_calc) #Cum Time Log - Problem Hours
+  DurNoProbTimeCumDaysCalc(dbl_days_calc) #Cum Time Log - Problem
+  IntProblemCalc(int_calc) ## of Interval Problems
+  HeadCountCalc(dbl_calc) #Head Count
+  DurationPersonnelRegCalc(dbl_days_calc) #Personnel Regular Hours
+  DurPersonnelRegCumCalc(dbl_days_calc) #Cum Personnel Regular Hours
+  DurationPersonnelOTCalc(dbl_days_calc) #Personnel OT Hours
+  DurPersonnelOTCumCalc(dbl_days_calc) #Cum Personnel OT hours
+  DurationPersonnelTotCalc(dbl_days_calc) #Personnel Total Hours
+  DurPersonnelTotCumCalc(dbl_days_calc) #Cum Personnel Total Hours
+  IDRecJobProgramPhaseCalc(s32_calc) #Last Phase
+  DurProjectedMLPhaseCalc(dbl_days_calc) #Projected Phase Duration
+  TimeAheadMLPhaseCalc(dbl_days_calc) #Phase Days Ahead (ML)
+  DtTmProjEndMLPhaseCalc(dt_calc) #Projected Phase End Date (ML)
+  PercentCompleteMLPhaseCalc(dbl_pct_calc) #Phase % Complete (ML)
+  DurProjectedMLJobCalc(dbl_days_calc) #Projected Job Duration
+  TimeAheadMLJobCalc(dbl_days_calc) #Job Days Ahead (ML)
+  DtTmProjEndMLJobCalc(dt_calc) #Projected Job End Date (ML)
+  PercentCompleteMLJobCalc(dbl_pct_calc) #Job % Complete (ML)
+  RatioDurProjMLPlanCalc(dbl_pct_calc) #Projected Job Dur/Plan ML Dur
+  CostProjectedMLPhaseCalc(dbl_cost_calc) #Projected Phase Cost (ML)
+  CostProjectedMLPhaseNormCalc(dbl_cost_calc) #Normalized Projected Phase Cost (ML)
+  CostProjectedMLJobCalc(dbl_cost_calc) #Projected Job Cost (ML)
+  CostProjectedMLJobNormCalc(dbl_cost_calc) #Normalized Projected Job Cost (ML)
+  TmDrillCalc(dbl_days_calc) #Drilling Hours
+  TmDrillCumCalc(dbl_days_calc) #Cum Drilling Hours
+  TmCircCalc(dbl_days_calc) #Circulating Hours
+  TmCircCumCalc(dbl_days_calc) #Cum Circulating Hours
+  TmOtherCalc(dbl_days_calc) #Other Hours
+  TmOtherCumCalc(dbl_days_calc) #Cum Other Hours
+  TmTripCalc(dbl_days_calc) #Tripping Hours
+  TmTripCumCalc(dbl_days_calc) #Cum Tripping Hours
+  TmCircTripOtherCalc(dbl_days_calc) #Circ+Other+Trip
+  TmCircTripOtherCumCalc(dbl_days_calc) #Cum Circ+Other+Trip
+  TmDrillNoExcCalc(dbl_days_calc) #Drilling Hours (no excluded params)
+  TmDrillCumNoExcCalc(dbl_days_calc) #Cum Drilling Hours (no excluded params)
+  BitRevsCalc(dbl_calc) #Bit Revs
+  TmRotatingCalc(dbl_days_calc) #Rotating Hours
+  TmSlidingCalc(dbl_days_calc) #Sliding Hours
+  PercentTmRotatingCalc(dbl_pct_calc) #% Rotating Time
+  PercentTmSlidingCalc(dbl_pct_calc) #% Sliding Time
+  DepthRotatingCalc(dbl_m_calc) #Depth Rotating
+  DepthSlidingCalc(dbl_m_calc) #Depth Sliding
+  PercentDepthRotatingCalc(dbl_pct_calc) #% Rotating Depth
+  PercentDepthSlidingCalc(dbl_pct_calc) #% Sliding Depth
+  ROPRotatingCalc(dbl_mpd_calc) #Rotating ROP
+  ROPSlidingCalc(dbl_mpd_calc) #Sliding ROP
+  DepthPerDurCalc(dbl_mpd_calc) #Depth / Duration
+  DepthPerDurVarCalc(dbl_mpd_calc) #Depth / Duration Plan - Actual Variance
+  BHATotalRunCalc(dbl_calc) #BHA Runs
+  VolMudActiveCalc(dbl_m3_calc) #Active Volume
+  VolMudActiveVarCalc(dbl_m3_calc) #Var Active Volume
+  VolMudBalanceCalc(dbl_m3_calc) #Balance
+  VolMudTankCalc(dbl_m3_calc) #Tank Volume
+  VolMudAddedCalc(dbl_m3_calc) #Additions
+  VolMudAddedCumCalc(dbl_m3_calc) #Cum Additions
+  VolMudLossCalc(dbl_m3_calc) #Losses
+  VolMudLossCumCalc(dbl_m3_calc) #Cum Losses
+  VolMudAddedLossVarCalc(dbl_m3_calc) #Additions - Losses
+  VolMudAddedLossVarCumCalc(dbl_m3_calc) #Cum Additions - Losses
+  VolHoleCalc(dbl_m3_calc) #Hole Volume
+  VolHoleVarCalc(dbl_m3_calc) #Var Hole Volume
+  VolPumpToBitCalc(dbl_m3_calc) #Drill String Volume
+  VolBitToShoeCalc(dbl_m3_calc) #Bit to Shoe Volume
+  VolShoeToCasTopCalc(dbl_m3_calc) #Shoe to Top of Casing Volume
+  VolCasTopToRiserTopCalc(dbl_m3_calc) #Top of Casing to Top of Riser Volume
+  SafetyIncCalc(bool_calc) #Safety Incident?
+  SafetyIncReportCalc(bool_calc) #Reportable Safety Incident?
+  SafetyIncNoCalc(int_calc) ## of Safety Incidents
+  SafetyIncNoCumCalc(int_calc) #Cum # of Safety Incidents
+  SafetyIncReportNoCalc(int_calc) ## of Reportable Safety Incidents
+  SafetyIncReportNoCumCalc(int_calc) #Cum # of Reportable Safety Incidents
+  SafetyIncRateCalc(dbl_calc) #Total Incident Rate
+  SafetyIncReportRateCalc(dbl_calc) #Total Reportable Incident Rate
+  DurLastSIncCalc(dbl_days_calc) #Days Since Last Safety Incident
+  DurLastSIncRptDayCalc(dbl_days_calc) ## Job Days Since Last Safety Incident
+  DurLastSIncReportCalc(dbl_days_calc) #Days Since Last Reportable Safety Incident
+  DurLastSIncReportRptDayCalc(dbl_days_calc) ## Job Days Since Last Reportable Safety Incident
+  DurProjectedMinPhaseCalc(dbl_days_calc) #Projected Phase Duration (Min)
+  DurProjectedMaxPhaseCalc(dbl_days_calc) #Projected Phase Duration (Max)
+  DurProjectedTLPhaseCalc(dbl_days_calc) #Projected Phase Duration (TL)
+  DurProjectedMinJobCalc(dbl_days_calc) #Projected Job Duration (Min)
+  DurProjectedMaxJobCalc(dbl_days_calc) #Projected Job Duration (Max)
+  DurProjectedTLJobCalc(dbl_days_calc) #Projected Job Duration (TL)
+  TimeAheadMinPhaseCalc(dbl_days_calc) #Phase Days Ahead (Min)
+  TimeAheadMaxPhaseCalc(dbl_days_calc) #Phase Days Ahead (Max)
+  TimeAheadTLPhaseCalc(dbl_days_calc) #Phase Days Ahead (TL)
+  TimeAheadMinJobCalc(dbl_days_calc) #Job Days Ahead (Min)
+  TimeAheadMaxJobCalc(dbl_days_calc) #Job Days Ahead (Max)
+  TimeAheadTLJobCalc(dbl_days_calc) #Job Days Ahead (TL)
+  CostProjectedMinJobCalc(dbl_cost_calc) #Projected Job Cost (Min)
+  CostProjectedMaxJobCalc(dbl_cost_calc) #Projected Job Cost (Max)
+  CostProjectedTLJobCalc(dbl_cost_calc) #Projected Job Cost (TL)
+  CostProjectedMinJobNormCalc(dbl_cost_calc) #Normalized Projected Job Cost (Min)
+  CostProjectedMaxJobNormCalc(dbl_cost_calc) #Normalized Projected Job Cost (Max)
+  CostProjectedTLJobNormCalc(dbl_cost_calc) #Normalized Projected Job Cost (TL)
+  CostProjectedMinPhaseCalc(dbl_cost_calc) #Projected Phase Cost (Min)
+  CostProjectedMaxPhaseCalc(dbl_cost_calc) #Projected Phase Cost (Max)
+  CostProjectedTLPhaseCalc(dbl_cost_calc) #Projected Phase Cost (TL)
+  CostProjectedMinPhaseNormCalc(dbl_cost_calc) #Normalized Projected Phase Cost (Min)
+  CostProjectedMaxPhaseNormCalc(dbl_cost_calc) #Normalized Projected Phase Cost (Max)
+  CostProjectedTLPhaseNormCalc(dbl_cost_calc) #Normalized Projected Phase Cost (TL)
+  DtTmProjEndMinJobCalc(dt_calc) #Projected Job End Date (Min)
+  DtTmProjEndMaxJobCalc(dt_calc) #Projected Job End Date (Max)
+  DtTmProjEndTLJobCalc(dt_calc) #Projected Job End Date (TL)
+  DtTmProjEndMinPhaseCalc(dt_calc) #Projected Phase End Date (Min)
+  DtTmProjEndMaxPhaseCalc(dt_calc) #Projected Phase End Date (Max)
+  DtTmProjEndTLPhaseCalc(dt_calc) #Projected Phase End Date (TL)
+  PercentCompleteMinJobCalc(dbl_pct_calc) #Job % Complete (Min)
+  PercentCompleteMaxJobCalc(dbl_pct_calc) #Job % Complete (Max)
+  PercentCompleteTLJobCalc(dbl_pct_calc) #Job % Complete (TL)
+  PercentCompleteMinPhaseCalc(dbl_pct_calc) #Phase % Complete (Min)
+  PercentCompleteMaxPhaseCalc(dbl_pct_calc) #Phase % Complete (Max)
+  PercentCompleteTLPhaseCalc(dbl_pct_calc) #Phase % Complete (TL)
+  RatioDurProjMinPlanCalc(dbl_pct_calc) #Projected Job Dur/Plan Min Dur
+  RatioDurProjMaxPlanCalc(dbl_pct_calc) #Projected Job Dur/Plan Max Dur
+  RatioDurProjTLPlanCalc(dbl_pct_calc) #Projected Job Dur/Plan TL Dur
+  TimeLogCode1Calc(txt2k_calc) #Time Log Code 1 Summary
+  TimeLogCode2Calc(txt2k_calc) #Time Log Code 2 Summary
+  TimeLogCode3Calc(txt2k_calc) #Time Log Code 3 Summary
+  TimeLogCode4Calc(txt2k_calc) #Time Log Code 4 Summary
+  IntLessonCalc(int_calc) ## of Interval Lessons
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserBoolean1(bool) #User Boolean 1
+  UserBoolean2(bool) #User Boolean 2

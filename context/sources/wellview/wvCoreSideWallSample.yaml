@@ -1,0 +1,12 @@
+# wellview / geological_evaluations / wvCoreSideWallSample
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvCoreSideWallSample: Description of sidewall core samples. +parent
+  RefNo(s10) #Reference #
+  DepthSample(dbl_m) #Sample Depth
+  LengthSample(dbl_m) #Sample Length
+  Result(s20) #Result
+  DepthTVDSampleCalc(dbl_m_calc) #Sample Depth (TVD)
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment

@@ -1,0 +1,7 @@
+# prodview / tanks / pvUnitTankStrap
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankStrap: Tank Straps +ext,parent | Effective Date of Strapping Table
+  DtTm(dt) #Date
+  Name(s50) #Name
+  UOMIncrement(s50) #Increment Height

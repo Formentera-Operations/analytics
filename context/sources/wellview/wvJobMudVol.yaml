@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJobMudVol
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobMudVol: Mud volumes - tank/pits, additions, losses and hole. +parent
+  DtTm(dt) #Date
+  VolTyp(s100) #Tank/Addition/Loss
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  System(s100) #System
+  IDRecWellbore(s32) #Wellbore
+  Volume(dbl_m3) #Volume
+  DepthRef(dbl_m) #Reference Depth
+  ExcludeActive(bool) #Exclude?
+  Com(txt2k) #Comment
+  DensityTankRef(dbl_kgpm3) #Tank Fluid Density (Reference)
+  FluidTyp(s100) #Primary Fluid
+  IDRecJobRigTank(s32) #Rig Tank

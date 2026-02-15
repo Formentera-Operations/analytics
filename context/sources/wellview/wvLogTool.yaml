@@ -1,0 +1,9 @@
+# wellview / geological_evaluations / wvLogTool
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvLogTool: Logging tool details and last calibration date. +parent
+  ToolTyp1(s100) #Tool Type
+  ToolTyp2(s100) #Tool Sub Type
+  SN(s50) #Serial No
+  DtTmCalibrate(dt) #Last Calibration Date
+  Com(txt2k) #Comment

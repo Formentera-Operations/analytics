@@ -1,0 +1,30 @@
+# prodview / equipment / pvUnitEquipDownTm
+# Source: context/sources/prodview/domains/equipment.yaml
+#
+pvUnitEquipDownTm: Equipment Downtimes +parent
+  TypDownTm(s20) #Type of Downtime Entry
+  DtTmStart(dt) #First Day
+  DurDownStartDay(dbl_days) #Hours Down
+  CodeDownTm1(s50) #Downtime Code
+  CodeDownTm2(s50) #Downtime Code 2
+  CodeDownTm3(s50) #Downtime Code 3
+  DtTmEnd(dt) #Last Day
+  DurDownEndDay(dbl_days) #Downtime on Last Day
+  DurOpCalc(double, days, calculated) #Operating Days Since Last DT
+  DurDownCalc(double, days, calculated) #Downtime
+  Com(txt2k) #Comments
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5

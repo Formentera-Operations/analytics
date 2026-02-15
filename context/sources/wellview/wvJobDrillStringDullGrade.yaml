@@ -1,0 +1,16 @@
+# wellview / operations_jobs / wvJobDrillStringDullGrade
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringDullGrade: Additional dull grading details. +parent
+  Typ(s100) #Dull Grading Type
+  IDRecDrillStringComp(s32) #Drill String Component
+  WearInner(int) #Dull-Tooth-Inner
+  WearOuter(int) #Dull-Tooth-Outer
+  WearDull(s10) #Dull-Tooth-Dull Char
+  WearLoc(s10) #Dull-Tooth-Loc
+  WearBearing(s10) #Dull-Bearing
+  WearGauge(s10) #Dull-Gauge
+  WearOther(s10) #Dull-Other
+  WearPulled(s10) #Dull-Reason Pulled
+  BitWearCalc(s50_calc) #IADC Dull
+  Note(s255) #Note

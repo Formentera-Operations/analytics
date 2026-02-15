@@ -1,0 +1,9 @@
+# prodview / meters / pvUnitMeterOrificeHeatFact
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterOrificeHeatFact: Meter Heat Factors +parent | Heating factor that is carried forward.
+  DtTm(dt) #Effective Date
+  Factor(double, joule per cubic meter) #Factor
+  DurValid(dbl) #Duration Between Data Points
+  DtTmNextCalc(dt_calc) #Next Factor Due
+  Com(txt255) #Note

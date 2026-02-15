@@ -1,0 +1,20 @@
+# wellview / operations_jobs / wvJobFluidsWell
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobFluidsWell: Fluid volumes to and from the well including tank storage, during this job. +parent
+  DtTm(dt) #Date
+  FluidTyp(s100) #Fluid Type
+  ActionTyp(s100) #Fluid Sub Type
+  IDRecZoneCompletion(s32) #Completion/Zone
+  ToWell(dbl_m3) #Volume to Well
+  FromWell(dbl_m3) #Volume from Well
+  NonRecov(dbl_m3) #Non-Recoverable Fluid
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  Density(dbl_kgpm3) #Density
+  Purpose(s100) #Purpose
+  Exclude(bool) #Exclude From Calcs?
+  Note(s255) #Note
+  IDRecItem(s32) #Link
+  VolBSWToWellCalc(dbl_m3_calc) #BSW Amount to Well
+  VolBSWFromWellCalc(dbl_m3_calc) #BSW Amount from Well

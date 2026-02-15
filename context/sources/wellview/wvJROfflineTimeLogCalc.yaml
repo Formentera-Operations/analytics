@@ -1,0 +1,28 @@
+# wellview / operations_jobs / wvJROfflineTimeLogCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJROfflineTimeLogCalc: Summary <wvJobOffLineDatesTimeLog> that occurred during this 'Daily Operation'. +parent
+  Typ1(s100_calc) #Type
+  Typ2(s100_calc) #Subtype
+  Des(s100_calc) #Description
+  IDRecJobOffline(s32_calc) #Offline Time Log
+  DtTmStart(dt_calc) #Start Date
+  Duration(dbl_days_calc) #Duration
+  SumOfDuration(dbl_days_calc) #Cum Duration
+  DtTmEnd(dt_calc) #End Date
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  OpsCategory(s50_calc) #Ops Category
+  UnschedTyp(s100_calc) #Unscheduled Type
+  AffectOnline(s50_calc) #Affected Online Operation
+  DepthStart(dbl_m_calc) #Start Depth
+  DepthTVDStart(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m_calc) #End Depth
+  DepthTVDEnd(dbl_m_calc) #End Depth (TVD)
+  IDRecWellbore(s32_calc) #Wellbore
+  Com(txt2k_calc) #Comment
+  UserTxt1(s50_calc) #User Text 1
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

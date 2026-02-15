@@ -1,0 +1,41 @@
+# wellview / other / wvCurveInterpDtl
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvCurveInterpDtl: Interpretation of sensor data - details. +parent
+  Typ1(s100) #Type1
+  Typ2(s100) #Type2
+  Typ3(s100) #Type3
+  Typ4(s100) #Type4
+  Typ1234ColorCalc(int_calc) #Type 1234 Color
+  Des(s100) #Description
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurationCalc(dbl_days_calc) #Duration
+  DurationCumCalc(dbl_days_calc) #Cum Duration
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth(TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  DepthBtmToTopCalc(dbl_m_calc) #Bit Depth Progress
+  ValueAvg(dbl) #Value Avg
+  ValueMax(dbl) #Value Max
+  ValueMed(dbl) #Value Median
+  ValueMin(dbl) #Value Min
+  ValueStdDev(dbl) #Value Std Dev
+  IDRecWellBoreCalc(s32_calc) #Wellbore
+  IDRecStringCalc(s32_calc) #Drill String
+  IDRecJobCalc(s32_calc) #Job
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecJobRigCalc(s32_calc) #Rig/Service Unit
+  InclEndCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  InclStartCalc(dbl_deg_calc) #Top Inclination
+  DaysFromSpudCalc(dbl_days_calc) #Days From Spud
+  UserTxt1(s100) #User Text1
+  UserTxt2(s100) #User Text2
+  UserTxt3(s100) #User Text3
+  DisplayFlag(bool) #Display?
+  Exclude(bool) #Exclude?
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

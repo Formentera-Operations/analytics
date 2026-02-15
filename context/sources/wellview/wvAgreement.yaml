@@ -1,0 +1,14 @@
+# wellview / asset_management / wvAgreement
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvAgreement: Agreement details - working interest, acquisition, divestiture. +parent
+  Typ1(s100) #Agreement Type
+  Typ2(s100) #Agreement Subtype
+  Des(s100) #Agreement Description
+  RefNo(s50) #Reference #
+  ContractNo(s50) #Contract #
+  DtTmStart(dt) #Agreement Start Date
+  DtTmEnd(dt) #Agreement End Date
+  Com(txt2k) #Comment
+  DtTmStatus(dt) #Status Date
+  Status(s50) #Status

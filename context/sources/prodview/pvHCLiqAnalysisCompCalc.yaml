@@ -1,0 +1,8 @@
+# prodview / fluid_analysis / pvHCLiqAnalysisCompCalc
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvHCLiqAnalysisCompCalc: Hydrocarbon Liquid Composition Calcs +parent
+  Component(string 20, calculated) #Component
+  MoleFrac(double, mol/mol, calculated) #Mole Fraction
+  MassFrac(double, kilograms per kilogram, calculated) #Mass Fraction
+  VolFrac(double, cubic meters per cubic meter, calculated) #Volume Fraction

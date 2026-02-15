@@ -1,0 +1,12 @@
+# wellview / general / wvWellAlias
+# Source: context/sources/wellview/domains/general.yaml
+#
+wvWellAlias: History or Well ID changes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #Alias Type
+  Typ2(s100) #Alias Subtype
+  ChangeTyp(s100) #Change Type
+  Value(s50) #Value
+  Source(s50) #Source
+  Com(txt2k) #Comment

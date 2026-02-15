@@ -1,0 +1,27 @@
+# prodview / fluid_analysis / pvWaterAnalysis
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvWaterAnalysis: Water Properties +parent | Water property details. Dissolved solids, pH, density, etc.
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  Des(s255) #Sample Description
+  TestedBy(s50) #Sampler Company
+  DontUse(bool) #Don't Use
+  DepthTop(double, meter) #Top Depth
+  DepthBtm(double, meter) #Bottom Depth
+  LocSample(s255) #Sample Location Point
+  SolidsTotalEvap(dbl_kgpm3) #Total Dissolved Solids by Evap
+  TempRefSolidsTotalEvap(dbl_degC) #Evaporation Ref Temp
+  SolidsTotallIgnition(dbl_kgpm3) #Total Dissolved Solids at Ignition
+  pH(dbl) #pH
+  TempRefpH(dbl_degC) #pH Ref Temp
+  H2S(dbl_pct) #H2S
+  TempRefH2S(dbl_degC) #H2S Ref Temp
+  DensityRel(dbl_kgpm3) #Relative Density
+  TempRefDensityRel(dbl_degC) #Relative Density Ref Temp
+  Resistivity(double, ohm) #Resistivity
+  TempRefResistivity(dbl_degC) #Resistivity Ref Temp
+  Salinity(dbl_pct) #Salinity
+  RefractiveIndex(dbl) #Refractive Index
+  TempRefRefractiveIndex(dbl_degC) #Refractive Index Ref Temp

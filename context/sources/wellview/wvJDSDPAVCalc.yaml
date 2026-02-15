@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJDSDPAVCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJDSDPAVCalc: Calculated annular velocities and bottom hole pressures. +parent
+  DepthTop(dbl_m_calc) #Top Depth
+  DepthBtm(dbl_m_calc) #Bottom Depth
+  AnnularVelocity(dbl_mpd_calc) #Annular Velocity
+  BoundIn(s50_calc) #Inner Boundary
+  BoundOut(s50_calc) #Outer Boundary
+  FlowRegime(s20_calc) #Flow Regime
+  FrictionFactor(dbl_calc) #Friction Factor
+  PressureDrop(dbl_kPa_calc) #Section Pressure Drop
+  SzBoundIn(dbl_m_calc) #Size Inner Boundary
+  SzBoundOut(dbl_m_calc) #Size Outer Boundary
+  ReynoldsNo(dbl_calc) #Reynolds Number
+  ViscosityEff(dbl_Pas_calc) #Effective Viscosity
+  VolumeAnnulus(dbl_m3_calc) #Annulus Volume
+  CalcError(s255_calc) #Error

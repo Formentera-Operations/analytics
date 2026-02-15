@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobOffshoreLeg
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOffshoreLeg: Offshore jack-up leg load, penetration, length. +extension
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  LegDes(s100) #Description
+  Load(dbl_N) #Load
+  LoadMax(dbl_N) #Max Load
+  LegPenetration(dbl_m) #Leg Penetration
+  Length(dbl_m) #Length
+  Note(s255) #Note

@@ -1,0 +1,36 @@
+# wellview / operations_jobs / wvJRRCCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRRCCalc: Distinct list of Rig Crew for this reporting period, based on 'Rig Crew.Crew Name'. +parent
+  RigCrewName(s50_calc) #Rig Crew Name
+  DtTmStart(dt_calc) #Start Date
+  DtTmEnd(dt_calc) #End Date
+  BHATotalRun(dbl_calc) #BHA Runs
+  DepthStartDP(dbl_m_calc) #Start Depth
+  DepthEndDP(dbl_m_calc) #End Depth
+  DepthProgressDP(dbl_m_calc) #Depth Progress
+  DepthNetProgressDP(dbl_m_calc) #Net Depth Progress
+  DepthRotating(dbl_m_calc) #Depth Rotating
+  DepthSliding(dbl_m_calc) #Depth Sliding
+  ROPRotating(dbl_mpd_calc) #Rotating ROP
+  ROPSliding(dbl_mpd_calc) #Sliding ROP
+  ROP(dbl_mpd_calc) #Avg ROP
+  TmCirc(dbl_days_calc) #Circulating Hours
+  TmCircCum(dbl_days_calc) #Cum Circulating Hours
+  TmCircTripOtherCum(dbl_days_calc) #Cum Circ+Other+Trip
+  TmCircTripOther(dbl_days_calc) #Circ+Other+Trip
+  TmDrill(dbl_days_calc) #Drilling Hours
+  TmDrillCum(dbl_days_calc) #Cum Drilling Hours
+  TmDrillCumNoExc(dbl_days_calc) #Cum Drilling Hours (no excluded params)
+  TmDrillNoExc(dbl_days_calc) #Drilling Hours (no excluded params)
+  TmOther(dbl_days_calc) #Other Hours
+  TmOtherCum(dbl_days_calc) #Cum Other Hours
+  TmRotating(dbl_days_calc) #Rotating Hours
+  TmSliding(dbl_days_calc) #Sliding Hours
+  TmTrip(dbl_days_calc) #Tripping Hours
+  TmTripCum(dbl_days_calc) #Cum Tripping Hours
+  DurOnBtm(dbl_days_calc) #On Bottom
+  DurOffBtm(dbl_days_calc) #Off Bottom
+  DurPipeMoving(dbl_days_calc) #Pipe Moving
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

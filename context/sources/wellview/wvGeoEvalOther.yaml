@@ -1,0 +1,16 @@
+# wellview / geological_evaluations / wvGeoEvalOther
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalOther: Other annotations to be associated with this geological evaluation that cannot be characterized in other areas. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Typ(s100) #Annotation Type
+  IconName(s255) #Icon
+  ValueCode(s50) #Code Value
+  IDRecItem(s32) #Associated Item
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment

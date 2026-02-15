@@ -1,0 +1,17 @@
+# wellview / production_operations / wvTestDyno
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvTestDyno: Dynamometer tests. +parent
+  DtTm(dt) #Test Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  TestedBy(s50) #Tested By
+  IDRecJob(s32) #Job
+  IDRecPumpingUnit(s32) #Pumping Unit Tested
+  Com(txt2k) #Comment
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  EPT(dbl_m) #Effective Plunger Travel
+  MPT(dbl_m) #Max Plunger Travel
+  FluidLoad(dbl_N) #Fluid Load

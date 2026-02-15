@@ -1,0 +1,42 @@
+# wellview / reservoir_tests / wvWellTestPresTrav
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestPresTrav: Pressure survey test details. +parent
+  DtTm(dt) #Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecWellbore(s32) #Wellbore
+  Typ(s100) #Type
+  SubTyp(s100) #Subtype
+  Des(s255) #Description
+  TestedBy(s50) #Tested By
+  DisplayFlag(bool) #Display Flag
+  DurationShutIn(dbl_days) #Duration Shut In
+  RateGas(dbl_m3pd) #Rate Gas
+  RateLiquid(dbl_m3pd) #Rate Liquid
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  PresTub(dbl_kPa) #Pressure Tubing
+  PresCas(dbl_kPa) #Casing Pressure
+  Com(txt2k) #Comment
+  IDRecJob(s32) #Job
+  DepthResMPP(dbl_m) #MPP Depth
+  DepthTVDResMPPCalc(dbl_m_calc) #MPP Depth (TVD)
+  DepthResDatum(dbl_m) #Datum Depth
+  DepthSSResDatum(dbl_m) #Datum Depth (TVD SS) Override
+  DepthTVDResDatumCalc(dbl_m_calc) #Datum Depth (TVD)
+  DepthGasOil(dbl_m) #Depth Gas Oil
+  DepthTVDGasOilCalc(dbl_m_calc) #Depth Gas Oil (TVD)
+  DepthGasWater(dbl_m) #Depth Gas Water
+  DepthTVDGasWaterCalc(dbl_m_calc) #Depth Gas Water (TVD)
+  DepthOilWater(dbl_m) #Depth Oil Water
+  DepthTVDOilWaterCalc(dbl_m_calc) #Depth Oil Water (TVD)
+  TempRes(dbl_degC) #Reservoir Temperature
+  PresGradientDatumCalc(dbl_kPapm_calc) #Pressure Gradient @ Datum
+  PresGradientDatumOR(dbl_kPapm) #Pressure Gradient @ Datum Override
+  PresResMPP(dbl_kPa) #MPP Pressure
+  PresResDatumCalc(dbl_kPa_calc) #Datum Pressure
+  PresResDatum(dbl_kPa) #Datum Pressure Override
+  TempGradientCalc(dbl_degCpm_calc) #Temperature Gradient
+  TempGradientOR(dbl_degCpm) #Temperature Gradient Override
+  Analyst(s50) #Analyst
+  AnalysisCom(txt2k) #Analysis Comment

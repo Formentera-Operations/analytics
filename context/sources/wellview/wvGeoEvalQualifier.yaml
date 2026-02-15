@@ -1,0 +1,16 @@
+# wellview / geological_evaluations / wvGeoEvalQualifier
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalQualifier: Sample qualifiers. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Typ(s100) #Qualifier Type
+  AbundancePercent(dbl_pct) #Percent Abundance
+  AbundanceCode(s50) #Abundance Code
+  IDRecItem(s32) #Associated Item
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Note(s255) #Note

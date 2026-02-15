@@ -1,0 +1,30 @@
+# wellview / other / wvAFECalc
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvAFECalc: Summary of AFE and associated costs for the well (across jobs). +parent
+  AFENumber(s100_calc) #AFE Number
+  AFENumberSupp(s100_calc) #Supplemental AFE Number
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostNormAFE(dbl_cost_calc) #Normalized AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE  Supplemental Amount
+  CostNormAFESup(dbl_cost_calc) #Normalized AFE Supplemental Amt
+  CostAFETotal(dbl_cost_calc) #AFE + Supp Amount
+  CostNormAFETotal(dbl_cost_calc) #Normalized AFE + Supp Amt
+  CostFieldEst(dbl_cost_calc) #Field Est
+  CostNormFieldEst(dbl_cost_calc) #Normalized Field Est
+  CostVar(dbl_cost_calc) #AFE - Field Estimate
+  CostNormVar(dbl_cost_calc) #Normalized AFE - Field Estimate
+  CostFinalInvoice(dbl_cost_calc) #Final Invoice
+  CostNormFinalInvoice(dbl_cost_calc) #Normalized Final Invoice
+  CostAFEFinalVar(dbl_cost_calc) #AFE - Final Invoice
+  CostNormAFEFinalVar(dbl_cost_calc) #Normalized AFE - Final Invoice
+  CostFieldFinalVar(dbl_cost_calc) #Field - Final Invoice
+  CostNormFieldFinalVar(dbl_cost_calc) #Normalized Field - Final Invoice
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+  CostAFEForecastVar(dbl_cost_calc) #AFE - Forecast
+  CostForecastFieldVar(dbl_cost_calc) #Forecast - Field Est
+  CostNormAFEForecastVar(dbl_cost_calc) #Normalized AFE - Forecast
+  CostNormForecastFieldVar(dbl_cost_calc) #Normalized Forecast - Field
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

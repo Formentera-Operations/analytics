@@ -1,0 +1,20 @@
+# wellview / operations_jobs / wvJRMudAddCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRMudAddCalc: Summary of 'Mud Additive'  records during the reporting period. +parent
+  Des(s100_calc) #Description
+  Typ(s100_calc) #Type
+  UnitLabel(s10_calc) #Unit Label
+  UnitSz(dbl_calc) #Unit Size
+  Vendor(s100_calc) #Vendor
+  Received(dbl_calc) #Received
+  ReceivedCum(dbl_calc) #Cum Received
+  Consumed(dbl_calc) #Consumed
+  ConsumedCum(dbl_calc) #Cum Consumed
+  Returned(dbl_calc) #Returned
+  ReturnedCum(dbl_calc) #Cum Returned
+  InventoryCum(dbl_calc) #Cum On Location
+  Cost(dbl_cost_calc) #Daily Field Est
+  CostCum(dbl_cost_calc) #Cum Field Est
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

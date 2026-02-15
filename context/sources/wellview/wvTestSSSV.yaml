@@ -1,0 +1,20 @@
+# wellview / reservoir_tests / wvTestSSSV
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestSSSV: SSSV test details. +parent
+  IDRecItem(s32) #SSSV Tested
+  DtTm(dt) #Test Date
+  PresCtrlLn(dbl_kPa) #Control Line Pressure
+  IDRecJob(s32) #Job
+  TmCtrlLnBldUp(dbl_days) #Time for Control Line Pressure to Build Up
+  PresCtrlLnBldUp(dbl_kPa) #Control Line Pressure Build Up
+  PresCtrlLnBleedDwn(dbl_kPa) #Control Line Pressure Bleed Down
+  TmTubingBldUp(dbl_days) #Time for Tubing Pressure to Build Up
+  PresTubingBldUp(dbl_kPa) #Tubing Pressure Build-up
+  PresTubingBleedDwn(dbl_kPa) #Tubing Bleed Down Pressure
+  PresMaxDiff(dbl_kPa) #Max Pressure Differential
+  PresWHSensorTrip(dbl_kPa) #Wellhead Sensor Trip Pressure
+  RateLeakOff(dbl_m3pd) #Leak Off Rate
+  VolVoid(dbl_m3) #Void Volume
+  CorrectActRqd(bool) #Corrective Action Required?
+  Com(txt2k) #Comment

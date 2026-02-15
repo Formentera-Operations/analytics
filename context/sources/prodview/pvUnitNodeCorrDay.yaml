@@ -1,0 +1,10 @@
+# prodview / flow_network / pvUnitNodeCorrDay
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeCorrDay: Day Node Corrections +parent | This read-only table takes its information from the Meter Corrections tool.
+  DtTm(dt) #Date
+  VolHCLiq(dbl_m3) #Final Oil/Condensate
+  VolGas(dbl_m3) #Final Gas
+  VolWater(dbl_m3) #Final Water
+  VolSand(dbl_m3) #Final Sand
+  Heat(double, joule) #Final Heat

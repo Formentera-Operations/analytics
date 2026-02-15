@@ -1,0 +1,24 @@
+# wellview / casing_cement / wvRiserComp
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvRiserComp: Component details including OD, weight, grade. +parent
+  Des(s100) #Description
+  IconName(s255) #Icon
+  SzODNom(dbl_m) #Nominal OD Size
+  SzIDNom(dbl_m) #Nominal ID Size
+  WtPerLength(dbl_kgpm) #Wt Per Length
+  Grade(s20) #Grade
+  Length(dbl_m) #Length
+  Joints(int) #Joints
+  ConnTyp(s100) #Connect Type
+  Com(txt2k) #Comment
+  SzDrift(dbl_m) #Drift
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  Make(s100) #Make
+  CoatingInner(s20) #Inner Coating
+  CoatingOuter(s20) #Outer Coating
+  ItemNoCalc(s10_calc) #Item Number
+  RefID(s50) #Reference ID
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

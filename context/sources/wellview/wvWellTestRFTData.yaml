@@ -1,0 +1,31 @@
+# wellview / geological_evaluations / wvWellTestRFTData
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvWellTestRFTData: Repeat formation test data. +parent
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  RefNo(s50) #Station Ref #
+  Use(bool) #Use?
+  TypAcquisition(s100) #Acquisition Type
+  Quality(s50) #Quality
+  DurTest(dbl_days) #Test Duration
+  DurBuildUp(dbl_days) #Build Up Duration
+  PresHydStart(dbl_kPa) #Initial Hydrostatic Pressure
+  PresHydEnd(dbl_kPa) #Final Hydrostatic Pressure
+  Sample(bool) #Sample?
+  FluidTyp(s100) #Fluid Type
+  VolFluid(dbl_m3) #Vol Fluid
+  DensityFluid(dbl_kgpm3) #Fluid Density
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  ReservoirCalc(s255_calc) #Reservoir
+  ZoneCalc(s255_calc) #Zone
+  PresEnd(dbl_kPa) #Final Pressure
+  StabilizedPres(bool) #Did Pressure Stabilize?
+  PresForm(dbl_kPa) #Formation Pressure (Extrapolated)
+  MobilityDrawDown(dbl) #Draw Down Mobility
+  DensityMudHPE(dbl_kgpm3) #HPEMW
+  DensityMudFPE(dbl_kgpm3) #FPEMW
+  Temp(dbl_degC) #Temperature
+  ResultTechnical(s50) #Technical Result
+  Com(txt2k) #Comment

@@ -1,0 +1,50 @@
+# wellview / wellbore_surveys / wvWellboreDirSurveyData
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreDirSurveyData: Detailed directional (deviation) survey data including measured depth, inclination, azimuth. +parent
+  MD(dbl_m) #Measured Depth
+  Inclination(dbl_deg) #Inclination
+  Azimuth(dbl_deg) #Azimuth
+  SurveyMethod(s10) #Survey Method
+  DtTm(dt) #Date
+  SurveyedBy(s50) #Survey Company
+  DontUse(bool) #Bad Survey Data?
+  DontUseReason(s100) #Bad Survey Data Reason
+  Annotation(s10) #Annotation
+  Note(s255) #Note
+  TVDCalc(dbl_m_calc) #TVD
+  VSCalc(dbl_m_calc) #VS
+  DepartCalc(dbl_m_calc) #Departure
+  NSCalc(dbl_m_calc) #NS
+  EWCalc(dbl_m_calc) #EW
+  DLSCalc(dbl_degpm_calc) #DLS
+  BuildRateCalc(dbl_degpm_calc) #Build Rate
+  TurnRateCalc(dbl_degpm_calc) #Turn Rate
+  DisplaceUnwrapCalc(dbl_m_calc) #Unwrapped Displace
+  TVDSSCalc(dbl_m_calc) #TVD SS
+  CalcOverride(bool) #Override Calculations?
+  TVDOverride(dbl_m) #TVD Override
+  NSOverride(dbl_m) #NS Override
+  EWOverride(dbl_m) #EW Override
+  DLSOverride(dbl_degpm) #DLS Override
+  VSOverride(dbl_m) #VS Override
+  GravAxialRaw(dbl_mps2) #Raw Axial Gravity
+  GravTran1Raw(dbl_mps2) #Raw 1st Transverse Gravity
+  GravTran2Raw(dbl_mps2) #Raw 2nd Transverse Gravity
+  MagAxialRaw(dbl_T) #Raw Magnetic Axial Reading
+  MagTran1Raw(dbl_T) #Raw 1st Transverse Magnetic Reading
+  MagTran2Raw(dbl_T) #Raw 2nd Transverse Magnetic Reading
+  TFOGrav(dbl_deg) #Tool Face Orientation from Gravity
+  TFOMag(dbl_deg) #Tool Face Orientation from True North
+  ToolTyp1(s100) #Tool Type
+  ToolTyp2(s100) #Tool Sub Type
+  Source(s100) #Source
+  Correction(s100) #Correction
+  Model(s100) #Model
+  Latitude(dbl_deg) #Latitude
+  Longitude(dbl_deg) #Longitude
+  LatLongSource(s50) #Lat Long Data Source
+  UTMx(dbl_m) #UTM Easting
+  UTMy(dbl_m) #UTM Northing
+  UTMGridZone(int) #UTM Grid Zone
+  UTMSource(s50) #UTM Source

@@ -1,0 +1,36 @@
+# wellview / casing_cement / wvCement
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCement: Description of the overall cement activity. +parent
+  ProposedOrActual(s100) #Proposed/Actual Run
+  Des(s100) #Description
+  CementTyp(s100) #Type
+  CementSubTyp(s100) #Subtype
+  IDRecString(s32) #String
+  DtTmStart(dt) #Cementing Start Date
+  DtTmEnd(dt) #Cementing End Date
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  Contractor(s50) #Cementing Company
+  ContractSupt(s50) #Cementing Supervisor
+  Objective(s50) #Cement Objective
+  EvalMethod(s100) #Evaluation Method
+  DesEval(txt2k) #Cement Evaluation Results
+  Com(txt2k) #Comment
+  ResultTechnical(s50) #Technical Result
+  ResultTechnicalDetail(s50) #Tech Result Details
+  ResultTechnicalNote(s255) #Tech Result Note
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DurCalc(dbl_days_calc) #Duration
+  AmtCementTotalCalc(dbl_kg_calc) #Amount
+  VolPumpedTotalCalc(dbl_m3_calc) #Volume Pumped
+  DtTmCutPull(dt) #Cut Date
+  DepthCutPull(dbl_m) #Depth Cut
+  ReasonCutPull(s100) #Reason Cut
+  NoteCutPull(s255) #Cut/Pull Note
+  DtTmPropCutPull(dt) #Proposed Cut Date

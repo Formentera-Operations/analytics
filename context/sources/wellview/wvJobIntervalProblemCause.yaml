@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobIntervalProblemCause
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobIntervalProblemCause: Analysis of the cause of the 'Interval Problem (NPT)'. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s255) #Description
+  RefNo(s20) #Reference #
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  Com(txt2k) #Comment
+  ActionRqd(bool) #Action Required?

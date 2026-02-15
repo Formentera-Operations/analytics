@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJCostSumDailyDesCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJCostSumDailyDesCalc: Summary of Field costs from 'Daily Cost' and 'Daily Recurring Cost' grouped by Des. +parent
+  Des(s100_calc) #Cost Description
+  Cost(dbl_cost_calc) #Field Est
+  CostNorm(dbl_cost_calc) #Normalized Field Est
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

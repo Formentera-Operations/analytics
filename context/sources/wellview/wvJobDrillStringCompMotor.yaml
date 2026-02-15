@@ -1,0 +1,32 @@
+# wellview / operations_jobs / wvJobDrillStringCompMotor
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringCompMotor: Mud motor details. +extension
+  DeflnTypLower(s100) #Lower Deflection Type
+  DeflnMagnLower(dbl) #Lower Deflection Amount
+  DeflnTypUpper(s100) #Upper Deflection Type
+  DeflnMagnUpper(dbl) #Upper Deflection Amount
+  LengthToLowerDefln(dbl_m) #Bit Sub to First Deflection
+  LengthToUpperDefln(dbl_m) #Bit Sub to Second Deflection
+  LengthPlayBitSubAxialBearing(dbl_m) #Bit Sub Bearing Play
+  BearingTyp(s100) #Bearing Type
+  Note(s255) #Note
+  ElastomerTyp(s100) #Elastomer Type
+  ElastomerModel(s100) #Elastomer Model
+  StageNo(s10) #Number of Stages
+  LobeConfig(s10) #Lobe Configuration
+  LengthStage(dbl_m) #Stage Length
+  RotorCoating(s50) #Rotor Coating
+  RotorNozDia(dbl_m) #Rotor Nozzle Diameter
+  RotorBoredJet(bool) #Rotor Bored for Jet?
+  StatorMaterial(s50) #Stator Material
+  StatorEvenWall(bool) #Stator Even Wall?
+  StatorRotorInterference(dbl_m) #Stator Rotor Interference
+  StatorRotorInterferenceMin(dbl_m) #Stator Rotor Interference Min
+  DesignFlowRateMax(dbl_m3pd) #Design Flow Rate Max
+  DesignFlowRateMin(dbl_m3pd) #Design Flow Rate Min
+  DesignRPMMax(dbl_rpm) #Design RPM Max
+  DesignRPMMin(dbl_rpm) #Design RPM Min
+  RatioRPMToFlow(dbl) #RPM to Flow Ratio
+  PresDiffMax(dbl_kPa) #Pressure Differential Max
+  TorqueMax(dbl_Nm) #Max Torque

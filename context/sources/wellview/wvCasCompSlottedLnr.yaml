@@ -1,0 +1,17 @@
+# wellview / casing_cement / wvCasCompSlottedLnr
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCasCompSlottedLnr: Additional slotted liner details for the casing component. +extension
+  PercentOpenArea(dbl_pct) #% Open Area
+  OpeningMinDimension(dbl_m) #Perforation Min Dimension
+  OpeningMaxDimension(dbl_m) #Perforation Max Dimension
+  CentersLengthwise(dbl_m) #Axial Perf Spacing
+  PerfRows(int) #Perf Rows
+  BlankTop(dbl_m) #Blank Top Length
+  BlankBottom(dbl_m) #Blank Bottom Length
+  SlotDes(s100) #Slot Description
+  SlotPattern(s50) #Slot Pattern
+  SlotLength(dbl_m) #Slot Length
+  SlotWidth(dbl_m) #Slot Width
+  SlotFrequency(dbl) #Slot Frequency
+  ScreenGauge(dbl_gauge) #Screen Gauge

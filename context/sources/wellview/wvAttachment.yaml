@@ -1,0 +1,17 @@
+# wellview / other / wvAttachment
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvAttachment: Attach relevant files. +parent
+  Des(s100) #Description
+  AttachIDA(s50) #Ref #
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Com(txt2k) #Comment
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  AttachURL(txt2k) #File Name

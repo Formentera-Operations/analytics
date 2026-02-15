@@ -1,0 +1,41 @@
+# wellview / geological_evaluations / wvGeoEvalLith
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalLith: Interpretation of lithology. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Des(s100) #Description
+  VolPercent(dbl_pct) #Volume
+  VolPercentMax(dbl_pct) #Volume Max
+  VolPercentMin(dbl_pct) #Volume Min
+  Typ(s100) #Type
+  CodeTyp(s100) #Type Code
+  IconName(s255) #Icon
+  RefNo(s50) #Reference #
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment
+  Class(s50) #Class
+  GrainTyp(s100) #Grain Type
+  DunhamClass(s50) #Dunham Class
+  Color(s50) #Color
+  Texture(s50) #Texture
+  Hardness(s50) #Hardness
+  GrainSizeNote(s255) #Grain Size Note
+  Roundness(s50) #Roundness
+  Sorting(s50) #Sorting
+  MatrixCement(s50) #Matrix Cement
+  PorosityTyp(s100) #Porosity Type
+  Porosity(dbl_m3pm3) #Porosity
+  PermCat(s50) #Permeability Category
+  PermNote(s255) #Permeability Note
+  PermHzntl(dbl_m2) #Permeability Horizontal
+  PermVert(dbl_m2) #Permeability Vertical
+  VolPercentCa(dbl_pct) #Volume Ca
+  ShaleDes(s100) #Shale Description
+  VolPercentMg(dbl_pct) #Volume Mg
+  ROPCalc(dbl_mpd_calc) #Drilled ROP
+  ROPInterpreted(dbl_mpd) #Interpreted ROP

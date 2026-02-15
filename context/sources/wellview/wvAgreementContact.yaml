@@ -1,0 +1,19 @@
+# wellview / asset_management / wvAgreementContact
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvAgreementContact: Names, roles and contact information for personnel involved with the agreement. +parent
+  ContactName(s50) #Contact Name
+  Title(s20) #Title
+  Role(s50) #Role
+  Department(s50) #Department
+  CompanyName(s50) #Company Name
+  Location(s50) #Location
+  PhoneOffice(s20) #Phone Office
+  PhoneMobile(s20) #Phone Mobile
+  PhoneHome(s20) #Phone Home
+  PhoneAlt(s20) #Phone Alternate #
+  PhonePager(s20) #Pager
+  Fax(s20) #Fax
+  Email(s255) #Email
+  RptDist(s50) #Report Distribution
+  Com(txt2k) #Comment

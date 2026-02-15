@@ -1,0 +1,159 @@
+# wellview / operations_jobs / wvJobDrillString
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillString: Drill string information including dates and depths run. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Drill String Name
+  StringNo(int) #BHA #
+  IDRecBit(s32) #Drill Bit
+  BitNo(s10) #Bit Run
+  BitNozzleCalc(s100_calc) #Nozzles
+  BitTFA(dbl_m2) #Bit Total Fluid Area
+  StringObjective(s100) #BHA Objective
+  DirControlMethod(s50) #Directional Control Method
+  ComplexityIndex(s50) #Complexity Index
+  StringResult(s100) #BHA Result
+  StringResultDetail(s50) #BHA Result Details
+  StringResultNote(s255) #BHA Result Notes
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version
+  DtTmInProp(dt) #Proposed Date In
+  DtTmOutProp(dt) #Proposed Date Out
+  DepthInProp(dbl_m) #Proposed Depth In
+  DepthOutProp(dbl_m) #Proposed Depth Out
+  DtTmPickup(dt) #Date Pick Up
+  TripRateInMax(dbl_mpd) #Max Trip Rate In
+  TripRateOutAvg(dbl_mpd) #Avg Trip Rate Out
+  TripRateInAvg(dbl_mpd) #Avg Trip Rate In
+  TripRateOutMax(dbl_mpd) #Max Trip Rate Out
+  TripOverPullMax(dbl_N) #Max Trip Over Pull
+  TripHookLoadMax(dbl_N) #Max Trip Hook Load
+  TravelEquipWt(dbl_N) #Travelling Equipment Weight
+  DtTmOutOfHole(dt) #Date Out of Hole
+  DurOutofHoleToPickUpCalc(dbl_days_calc) #Out of Hole - Pick Up Duration
+  TripNote(s255) #Trip Note
+  WearInner(int) #Bit Dull-Tooth-Inner
+  WearOuter(int) #Bit Dull-Tooth-Outer
+  WearDull(s10) #Bit Dull-Tooth-Dull Char
+  WearLoc(s10) #Bit Dull-Tooth-Loc
+  WearBearing(s10) #Bit Dull-Bearing
+  WearGauge(s10) #Bit Dull-Gauge
+  WearOther(s10) #Bit Dull-Other
+  WearPulled(s10) #Bit Dull-Reason Pulled
+  BitWearCalc(s50_calc) #IADC Bit Dull
+  DepthInCalc(dbl_m_calc) #Depth In
+  DepthOutCalc(dbl_m_calc) #Depth Out
+  DepthDrilledCalc(dbl_m_calc) #Depth Drilled
+  CumDepthOnBitStartCalc(dbl_m_calc) #Bit Depth Drilled In
+  CumDepthOnBitEndCalc(dbl_m_calc) #Bit Depth Drilled Out
+  DtTmInCalc(dt_calc) #Date In
+  DtTmOutCalc(dt_calc) #Date Out
+  CumTmOnBitStartCalc(dbl_days_calc) #Bit Hours In
+  CumTmOnBitEndCalc(dbl_days_calc) #Bit Hours Out
+  TmDrilledCalc(dbl_days_calc) #Drilling Time
+  TmCircCalc(dbl_days_calc) #Circulating Time
+  TmTripCalc(dbl_days_calc) #Tripping Time
+  TmOtherCalc(dbl_days_calc) #Other Time
+  TmCircTripOtherCalc(dbl_days_calc) #Circ+Other+Trip
+  ROPCalc(dbl_mpd_calc) #BHA ROP
+  BitRevsCalc(dbl_calc) #Bit Revs
+  TmRotatingCalc(dbl_days_calc) #Rotating Time
+  TmSlidingCalc(dbl_days_calc) #Sliding Time
+  PercentTmSlidingCalc(dbl_pct_calc) #% Sliding Time
+  PercentTmRotatingCalc(dbl_pct_calc) #% Rotating Time
+  DepthRotatingCalc(dbl_m_calc) #Depth Rotating
+  DepthSlidingCalc(dbl_m_calc) #Depth Sliding
+  PercentDepthRotatingCalc(dbl_pct_calc) #% Rotating Depth
+  PercentDepthSlidingCalc(dbl_pct_calc) #% Sliding Depth
+  ROPRotatingCalc(dbl_mpd_calc) #Rotating ROP
+  ROPSlidingCalc(dbl_mpd_calc) #Sliding ROP
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DtTmInNoExcludeCalc(dt_calc) #Date In (no excluded params)
+  DtTmOutNoExcludeCalc(dt_calc) #Date Out (no excluded params)
+  DepthInNoExcludeCalc(dbl_m_calc) #Depth In (no excluded params)
+  DepthOutNoExcludeCalc(dbl_m_calc) #Depth Out (no excluded params)
+  MudDensityMaxCalc(dbl_kgpm3_calc) #Max Mud Density
+  MudDensityMinCalc(dbl_kgpm3_calc) #Min Mud Density
+  WOBAvgCalc(dbl_N_calc) #Avg Weight on Bit
+  WOBMinCalc(dbl_N_calc) #Min Weight on Bit
+  WOBMaxCalc(dbl_N_calc) #Max Weight on Bit
+  RPMAvgCalc(dbl_rpm_calc) #Avg RPM
+  RPMMinCalc(dbl_rpm_calc) #Min RPM
+  RPMMaxCalc(dbl_rpm_calc) #Max RPM
+  LiquidInjRateAvgCalc(dbl_m3pd_calc) #Avg Flow Rate
+  LiquidInjRateMinCalc(dbl_m3pd_calc) #Min Flow Rate
+  LiquidInjRateMaxCalc(dbl_m3pd_calc) #Max Flow Rate
+  SPPDrillAvgCalc(dbl_kPa_calc) #Avg Stand Pipe Pressure
+  SPPDrillMinCalc(dbl_kPa_calc) #Min Stand Pipe Pressure
+  SPPDrillMaxCalc(dbl_kPa_calc) #Max Stand Pipe Pressure
+  HookLoadRotatingMinCalc(dbl_N_calc) #Min Rotating Hook Load
+  HookLoadRotatingMaxCalc(dbl_N_calc) #Max Rotating Hook Load
+  HookLoadOffBottomMinCalc(dbl_N_calc) #Min Off Bottom Hook Load
+  HookLoadOffBottomMaxCalc(dbl_N_calc) #Max Off Bottom Hook Load
+  HookLoadPickUpMinCalc(dbl_N_calc) #Min Pick-Up Hook Load
+  HookLoadPickUpMaxCalc(dbl_N_calc) #Max Pick-Up Hook Load
+  HookLoadSlackOffMinCalc(dbl_N_calc) #Min Slack-Off Hook Load
+  HookLoadSlackOffMaxCalc(dbl_N_calc) #Max Slack-Off Hook Load
+  TorqueDrillAvgCalc(dbl_calc) #Avg Drilling Torque
+  TorqueDrillMinCalc(dbl_calc) #Min Drilling Torque
+  TorqueDrillMaxCalc(dbl_calc) #Max Drilling Torque
+  LiquidInjRateRiserAvgCalc(dbl_m3pd_calc) #Avg Riser Boost
+  LiquidInjRateRiserMinCalc(dbl_m3pd_calc) #Min Riser Boost
+  LiquidInjRateRiserMaxCalc(dbl_m3pd_calc) #Max Riser Boost
+  ROPInstAvgCalc(dbl_mpd_calc) #Avg ROP Instantaneous
+  DensityLastMudChkAvgCalc(dbl_kgpm3_calc) #Avg Last Mud Density
+  DensityLastMudChkMinCalc(dbl_kgpm3_calc) #Min Last Mud Density
+  DensityLastMudChkMaxCalc(dbl_kgpm3_calc) #Max Last Mud Density
+  ECDEndAvgCalc(dbl_kgpm3_calc) #Avg ECD End
+  ECDEndMinCalc(dbl_kgpm3_calc) #Min ECD End
+  ECDEndMaxCalc(dbl_kgpm3_calc) #Max ECD End
+  HydPwrPerAreaAvgCalc(dbl_Wpm2_calc) #Avg Bit Hydraulic Power Per Hole Area
+  HydPwrPerAreaMinCalc(dbl_Wpm2_calc) #Min Bit Hydraulic Power Per Hole Area
+  HydPwrPerAreaMaxCalc(dbl_Wpm2_calc) #Max Bit Hydraulic Power Per Hole Area
+  IDRecWellBoreCalc(s32_calc) #Wellbore
+  QtyPlugCalc(dbl_calc) #Qty Plugs Drilled
+  BitTFACalc(dbl_m2_calc) #Bit Total Fluid Area (nozzles)
+  LengthCalc(dbl_m_calc) #String Length
+  WeightAirCalc(dbl_N_calc) #Weight of String in Air
+  WeightAirNoDPCalc(dbl_N_calc) #Weight of String in Air (no drill pipe)
+  VolumeDispCalc(dbl_m3_calc) #Volume Displaced (Open End)
+  VolumeInternalCalc(dbl_m3_calc) #String Internal Volume
+  SzDriftMinCalc(dbl_m_calc) #Min Drift
+  SzODMaxCalc(dbl_m_calc) #Max Nominal OD
+  ComponentsCalc(txt2k_calc) #String Components
+  ComponentsDimCalc(txt2k_calc) #String Comp Dimension
+  ComponentsAltDimCalc(txt2k_calc) #String Comp Dimension (Alt Format)
+  LengthBitToHOCalc(dbl_m_calc) #Length Bit to Hole Opener
+  SzODHOCalc(dbl_m_calc) #Hole Opener OD
+  BitNozzleAltCalc(s100_calc) #Nozzles (Alternate Format)
+  CentralizersNoTallyCalc(int_calc) ## Centralizers (Tally)
+  MudMotorCalc(bool_calc) #Mud Motor
+  VGSCalc(bool_calc) #VGS
+  InclStringTopCalc(dbl_deg_calc) #Top Inclination
+  InclStringBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclStringMaxCalc(dbl_deg_calc) #Max Inclination
+  DepthDrilledNoExcCalc(dbl_m_calc) #Depth Drilled (no excluded params)
+  TmDrillNoExcCalc(dbl_days_calc) #Drilling Time (no excluded params)
+  CumDepthOnBitStartNoExcCalc(dbl_m_calc) #Bit Depth Drilled In (no excluded params)
+  CumDepthOnBitEndNoExcCalc(dbl_m_calc) #Bit Depth Drilled Out (no excluded params)
+  CumTmOnBitStartNoExcCalc(dbl_days_calc) #Bit Hours In (no excluded params)
+  CumTmOnBitEndNoExcCalc(dbl_days_calc) #Bit Hours Out (no excluded params)
+  ROPNoExcCalc(dbl_mpd_calc) #BHA ROP (no excluded params)
+  BitRevsNoExcCalc(dbl_calc) #Bit Revs (no excluded params)
+  HookLoadOffBottomMaxNoExcCalc(dbl_N_calc) #Max Off Bottom Hook Load (no excluded params)
+  HookLoadOffBottomMinNoExcCalc(dbl_N_calc) #Min Off Bottom Hook Load (no excluded params)
+  HookLoadPickUpMaxNoExcCalc(dbl_N_calc) #Max Pick-Up Hook Load (no excluded params)
+  HookLoadPickUpMinNoExcCalc(dbl_N_calc) #Min Pick-Up Hook Load (no excluded params)
+  HookLoadRotatingMaxNoExcCalc(dbl_N_calc) #Max Rotating Hook Load (no excluded params)
+  HookLoadRotatingMinNoExcCalc(dbl_N_calc) #Min Rotating Hook Load (no excluded params)
+  HookLoadSlackOffMaxNoExcCalc(dbl_N_calc) #Max Slack-Off Hook Load (no excluded params)
+  HookLoadSlackOffMinNoExcCalc(dbl_N_calc) #Min Slack-Off Hook Load (no excluded params)
+  RPMAvgNoExcCalc(dbl_rpm_calc) #Avg RPM (no excluded params)
+  RPMMaxNoExcCalc(dbl_rpm_calc) #Max RPM (no excluded params)
+  RPMMinNoExcCalc(dbl_rpm_calc) #Min RPM (no excluded params)
+  SPPDrillAvgNoExcCalc(dbl_kPa_calc) #Avg Stand Pipe Pressure (no excluded params)
+  SPPDrillMaxNoExcCalc(dbl_kPa_calc) #Max Stand Pipe Pressure (no excluded params)
+  SPPDrillMinNoExcCalc(dbl_kPa_calc) #Min Stand Pipe Pressure (no excluded params)
+  WOBAvgNoExcCalc(dbl_N_calc) #Avg Weight on Bit (no excluded params)
+  WOBMaxNoExcCalc(dbl_N_calc) #Max Weight on Bit (no excluded params)
+  WOBMinNoExcCalc(dbl_N_calc) #Min Weight on Bit (no excluded params)

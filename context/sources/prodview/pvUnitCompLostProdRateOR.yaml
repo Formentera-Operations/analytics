@@ -1,0 +1,11 @@
+# prodview / completions / pvUnitCompLostProdRateOR
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompLostProdRateOR: Lost Prod Rate OR +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RateHCLiq(dbl_m3pd) #Rate Oil/Condensate
+  RateGas(dbl_m3pd) #Gas Rate
+  RateWater(dbl_m3pd) #Water Rate
+  RateSand(dbl_m3pd) #Sand Rate
+  Com(txt2k) #Note

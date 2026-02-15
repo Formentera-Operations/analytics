@@ -1,0 +1,8 @@
+# wellview / operations_jobs / wvJobRigDate
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigDate: Additional dates of importance related to this rig. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Note(s255) #Note

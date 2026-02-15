@@ -1,0 +1,20 @@
+# wellview / tubing_rods_equipment / wvTubCompGravelPk
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompGravelPk: Gravel pack details. +extension
+  Typ(s100) #Type
+  ScreenGauge(dbl_gauge) #Screen Gauge
+  SandAmount(dbl_kg) #Sand Amount
+  SandSz(s20) #Sand Size
+  SlurryDensity(dbl_kgpm3) #Slurry Density
+  SlurryRate(dbl_m3pd) #Slurry Rate
+  SlurryVolume(dbl_m3) #Slurry Volume
+  CarrierFluid(s50) #Carrier Fluid
+  CarrierDensity(dbl_kgpm3) #Carrier Density
+  CarrierViscosity(dbl_Pas) #Carrier Viscosity
+  CarrierVolume(dbl_m3) #Carrier Volume
+  Contractor(s50) #Gravel Pack Company
+  ShroudTyp(s100) #Shroud Type
+  ICDNozzleNo(int) #ICD Nozzle #
+  ICDNozzleSz(dbl_m) #ICD Nozzle Size
+  ICDNozzleMake(s50) #ICD Nozzle Make

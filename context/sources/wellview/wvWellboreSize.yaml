@@ -1,0 +1,23 @@
+# wellview / wellbore_surveys / wvWellboreSize
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreSize: Intervals within the wellbore that are defined by changes in hole diameter. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Section Description
+  Sz(dbl_m) #Hole Size
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  LengthCalc(dbl_m_calc) #Length
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurCalc(dbl_days_calc) #Duration
+  Com(txt2k) #Comment
+  MudDensityMaxCalc(dbl_kgpm3_calc) #Max Mud Density
+  MudDensityMinCalc(dbl_kgpm3_calc) #Min Mud Density
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  PropVersionNo(int) #Proposed Version #
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

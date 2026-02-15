@@ -1,0 +1,6 @@
+# wellview / casing_cement / wvCementStageFluidVisc
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCementStageFluidVisc: Viscometer readings for the fluid. +parent
+  ViscRPM(dbl_rpm) #Viscometer RPM
+  ViscValue(dbl_kPa) #Viscometer Reading

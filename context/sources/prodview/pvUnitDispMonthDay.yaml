@@ -1,0 +1,61 @@
+# prodview / allocations / pvUnitDispMonthDay
+# Source: context/sources/prodview/domains/allocations.yaml
+#
+pvUnitDispMonthDay: Daily Dispositions +parent
+  DtTm(dt) #Date
+  Year(int) #Year
+  Month(int) #Month
+  DayOfMonth(int) #Day
+  IDRecUnit(s32) #Originating Unit
+  IDRecComp(s32) #Originating Completion
+  IDRecCompZone(s32) #Link to Originating Zone
+  IDRecOutletSend(s32) #Link to Outlet Node
+  IDRecDispUnitNode(s32) #Disposition Node
+  IDRecDispUnit(s32) #Disposition Unit
+  VolHCLiq(dbl_m3) #Hydrocarbon Liquid Volume
+  VolHCLiqGasEq(dbl_m3) #Gas Equivalent of Oil/Cond Volume
+  VolGas(dbl_m3) #Gas Volume
+  VolWater(dbl_m3) #Water Volume
+  VolSand(dbl_m3) #Sand Volume
+  VolC1Liq(dbl_m3) #C1 Liq Volume
+  VolC1GasEq(dbl_m3) #Gas Equivalent C1 Liquid Volume
+  VolC1Gas(dbl_m3) #C1 Gas Volume
+  VolC2Liq(dbl_m3) #C2 Liq Volume
+  VolC2GasEq(dbl_m3) #Gas Equivalent C2 Liquid Volume
+  VolC2Gas(dbl_m3) #C2 Gas Volume
+  VolC3Liq(dbl_m3) #C3 Liq Volume
+  VolC3GasEq(dbl_m3) #Gas Equivalent C3 Liquid Volume
+  VolC3Gas(dbl_m3) #C3 Gas Volume
+  VoliC4Liq(dbl_m3) #iC4 Liq Volume
+  VoliC4GasEq(dbl_m3) #Gas Equivalent iC4 Liquid Volume
+  VoliC4Gas(dbl_m3) #iC4 Gas Volume
+  VolnC4Liq(dbl_m3) #nC4 Liq Volume
+  VolnC4GasEq(dbl_m3) #Gas Equivalent nC4 Liquid Volume
+  VolnC4Gas(dbl_m3) #nC4 Gas Volume
+  VoliC5Liq(dbl_m3) #iC5 Liq Volume
+  VoliC5GasEq(dbl_m3) #Gas Equivalent iC5 Liquid Volume
+  VoliC5Gas(dbl_m3) #iC5 Gas Volume
+  VolnC5Liq(dbl_m3) #nC5 Liq Volume
+  VolnC5GasEq(dbl_m3) #Gas Equivalent nC5 Liquid Volume
+  VolnC5Gas(dbl_m3) #nC5 Gas Volume
+  VolC6Liq(dbl_m3) #C6 Liq Volume
+  VolC6GasEq(dbl_m3) #Gas Equivalent C6 Liquid Volume
+  VolC6Gas(dbl_m3) #C6 Gas Volume
+  VolC7Liq(dbl_m3) #C7 Liq Volume
+  VolC7GasEq(dbl_m3) #Gas Equivalent C7 Liquid Volume
+  VolC7Gas(dbl_m3) #C7 Gas Volume
+  VolN2Liq(dbl_m3) #N2 Liq Volume
+  VolN2GasEq(dbl_m3) #Gas Equivalent N2 Liquid Volume
+  VolN2Gas(dbl_m3) #N2 Gas Volume
+  VolCO2Liq(dbl_m3) #CO2 Liq Volume
+  VolCO2GasEq(dbl_m3) #Gas Equivalent CO2 Liquid Volume
+  VolCO2Gas(dbl_m3) #CO2 Gas Volume
+  VolH2SLiq(dbl_m3) #H2S Liq Volume
+  VolH2SGasEq(dbl_m3) #Gas Equivalent H2S Liquid Volume
+  VolH2SGas(dbl_m3) #H2S Gas Volume
+  VolOtherCompLiq(dbl_m3) #Other Component Liq Volume
+  VolOtherCompGasEq(dbl_m3) #Gas Equivalent Other Component Liquid Volume
+  VolOtherCompGas(dbl_m3) #Other Component Gas Volume
+  Heat(double, joule) #Heat
+  Density(dbl_kgpm3) #Density
+  IDRecCalcSet(s32) #Calc Settings

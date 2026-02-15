@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJRFluidsZoneCompCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRFluidsZoneCompCalc: 'Well Fluid' summary by zone/completion, up to and including the end of this report. +parent
+  IDRecZoneCompletion(s32_calc) #Completion
+  FluidTyp(s100_calc) #Fluid Type
+  DtTmStart(dt_calc) #Report Start Date
+  DtTmEnd(dt_calc) #Report End Date
+  ToWell(dbl_m3_calc) #To well
+  CumToWell(dbl_m3_calc) #Cum to Well
+  FromWell(dbl_m3_calc) #From well
+  CumFromWell(dbl_m3_calc) #Cum from Well
+  NonRecov(dbl_m3_calc) #Non-recoverable fluid
+  CumNonRecov(dbl_m3_calc) #Cum Non-recoverable fluid
+  LeftToRecover(dbl_m3_calc) #Left to recover
+  IDRecJob(s32_calc) #Job
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

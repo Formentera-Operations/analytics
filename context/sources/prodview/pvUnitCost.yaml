@@ -1,0 +1,14 @@
+# prodview / reference / pvUnitCost
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitCost: Costs +parent
+  DtTm(dt) #Effective Date
+  CodeDes(s100) #Description
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  Cost(double, cost) #Cost
+  IDRecItem(s32) #Link

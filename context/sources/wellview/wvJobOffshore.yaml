@@ -1,0 +1,58 @@
+# wellview / operations_jobs / wvJobOffshore
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOffshore: Offshore details. +parent
+  DtTm(dt) #Date
+  TempHigh(dbl_degC) #Temperature - High
+  TempLow(dbl_degC) #Temperature - Low
+  PresBar(dbl_kPa) #Barometric Pressure
+  PrecipTyp(s100) #Precipitation Type
+  PrecipAmt(dbl_m) #Precipitation Amount
+  Visibility(dbl_m) #Visibility
+  VisCeiling(dbl_m) #Ceiling
+  CloudCover(s50) #Cloud Cover
+  WindSpd(dbl_mpd) #Wind Speed
+  WindDir(s10) #Wind Direction
+  Com(txt2k) #Comment
+  WaterTemp(dbl_degC) #Water Temperature
+  WaveHeight(dbl_m) #Wave Height
+  WaveDir(dbl_deg) #Wave Direction
+  WavePeriod(dbl_days) #Wave Period
+  SwellHeight(dbl_m) #Swell Height
+  SwellDir(dbl_deg) #Swell Direction
+  SwellPeriod(dbl_days) #Swell Period
+  CurrentSurfSpd(dbl_mpd) #Current Speed
+  CurrentSurfDir(dbl_deg) #Current Direction
+  CurrentSubSurfSpd(dbl_mpd) #Current Sub Surf Spd
+  CurrentSubSurfDir(dbl_deg) #Current Sub Surf Dir
+  CurrentSubSurfDepth(dbl_m) #Current Sub Surf Depth
+  PositionTyp(s100) #Positioning System Type
+  VesselOffset(dbl_m) #Vessel Offset
+  VesselOffsetDir(dbl_deg) #Vessel Offset Direction
+  VesselHeading(dbl_deg) #Vessel Heading
+  ThrusterPower(dbl_W) #Thruster Power
+  ThrusterBias(bool) #Thruster Bias?
+  AirGap(dbl_m) #Air Gap
+  VesselDraft(dbl_m) #Vessel Draft
+  VesselFreeboard(dbl_m) #Vessel Freeboard
+  Heave(dbl_m) #Heave
+  HeaveMax(dbl_m) #Max Heave
+  Pitch(dbl_deg) #Pitch
+  PitchMax(dbl_deg) #Max Pitch
+  Roll(dbl_deg) #Roll
+  RollMax(dbl_deg) #Max Roll
+  VariableLoad(dbl_N) #Current Variable Load
+  MaxVariableLoad(dbl_N) #Max Variable Load
+  MaxDeckArea(dbl_m2) #Max Deck Area
+  RiserAngleTop(dbl_deg) #Riser Angle, Top
+  RiserAngleDirTop(dbl_deg) #Riser Angle Direction (top)
+  RiserAngleDirMid(dbl_deg) #Riser Angle Dir Mid
+  RiserAngleMid(dbl_deg) #Riser Angle Mid
+  RiserMidDepth(dbl_m) #Riser Mid Depth
+  RiserAngleBtm(dbl_deg) #Riser Angle (bottom)
+  RiserAngleDirBtm(dbl_deg) #Riser Angle Direction, Bottom
+  RiserTension(dbl_N) #Riser Tension
+  SlipJtExtAvg(dbl_m) #Avg Slip Jt Ext
+  SlipJtExtMax(dbl_m) #Max Slip Jt Ext
+  DurEvacuate(dbl_days) #Time to Evacuate
+  MarginCenterGravity(dbl_m) #Center of Gravity Margin

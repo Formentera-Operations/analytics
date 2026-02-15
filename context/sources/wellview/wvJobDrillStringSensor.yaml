@@ -1,0 +1,7 @@
+# wellview / operations_jobs / wvJobDrillStringSensor
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringSensor: Drill string sensor details, such as survey sensors. +parent
+  SensorTyp(s100) #Sensor Type
+  DistanceSensorToBit(dbl_m) #Distance from Sensor to Bit
+  Note(s255) #Note

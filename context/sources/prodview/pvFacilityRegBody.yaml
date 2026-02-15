@@ -1,0 +1,7 @@
+# prodview / facilities / pvFacilityRegBody
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityRegBody: Facility Regulatory Bodies +parent | The Facility Regulatory Bodies table holds information for any regulatory reports that are required 
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  RegBodyName(s50) #Regulatory Body Name
+  Com(stringlong 100) #Note

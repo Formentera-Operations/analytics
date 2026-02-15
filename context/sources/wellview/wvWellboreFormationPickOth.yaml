@@ -1,0 +1,10 @@
+# wellview / wellbore_surveys / wvWellboreFormationPickOth
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreFormationPickOth: Other formation top and bottom picks that cannot be classified as Prog, Drilling or Final. +parent
+  Source(s50) #Source
+  DepthTop(dbl_m) #Top Depth
+  DepthBtm(dbl_m) #Bottom Depth
+  Com(txt2k) #Comment
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

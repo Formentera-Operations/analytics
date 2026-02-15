@@ -1,0 +1,12 @@
+# prodview / completions / pvUnitCompTargetDay
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompTargetDay: Production Target Details +parent | Completion Production Target Rates.
+  DtTm(dt) #Date
+  RateHCLiq(dbl_m3pd) #Rate HCliq
+  RateOil(dbl_m3pd) #Rate Oil
+  RateCond(dbl_m3pd) #Rate Condensate
+  RateNGL(dbl_m3pd) #Rate NGL
+  RateGas(dbl_m3pd) #Rate Gas
+  RateWater(dbl_m3pd) #Rate Water
+  RateSand(dbl_m3pd) #Rate Sand

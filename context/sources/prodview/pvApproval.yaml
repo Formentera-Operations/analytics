@@ -1,0 +1,14 @@
+# prodview / admin / pvApproval
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvApproval: Approval Processes
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  IDRecItem(s32) #Related Item
+  Des(s100) #Description
+  Status(s50) #Status
+  IntegrationTyp(s100) #Integration
+  DtTmStart(dt) #Start Date
+  DtTmRequired(dt) #Required By Date
+  DtTmLatestPlanStartCalc(dt_calc) #Latest Start Date
+  Com(txt2k) #Comment

@@ -1,0 +1,30 @@
+# prodview / meters / pvUnitMeterPDGasEntry
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterPDGasEntry: Gas PD Meter Readings +parent | In the Gas PD Meter Readings table, you record the readings from every gas PD meter anywhere in the 
+  DtTm(dt) #Date
+  ReadingEnd(dbl) #Reading
+  Temp(dbl_degC) #Temperature
+  Pres(dbl_kPa) #Pressure
+  Com(txt255) #Note
+  ComFFV(txt255) #FFV Note
+  ReadingEndOR(dbl) #Reading Override
+  ReadingEndORReason(s255) #Reading Override Reason
+  ReadingStartOR(dbl) #Start Reading Override
+  ReasonOR(s100) #Start Override Reason
+  VolGasCalc(dbl_m3_calc) #Calculated Gas Volume
+  Heat(double, joule) #Heat
+  FactHeat(double, joule per cubic meter) #Heat Factor
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  IDRecGasAnalysisCalc(s32_calc) #Gas Analysis
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

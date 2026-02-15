@@ -1,0 +1,10 @@
+# prodview / reference / pvUnitRemark
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitRemark: Remarks +parent | General location to store all types of remarks, comments or anything else of note.
+  DtTm(dt) #Entry Date
+  Typ(s50) #Type
+  IDRecItem(s32) #Link
+  ExplainedImbalance(bool) #Explains Imbalance?
+  Com(txt2k) #Comments
+  ActionRqd(bool) #Action Required?

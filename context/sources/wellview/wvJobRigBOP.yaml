@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJobRigBOP
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigBOP: Description of the BOPs. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Des(s100) #Description
+  PresRating(dbl_kPa) #Pressure Rating
+  SzIDNom(dbl_m) #Nominal ID
+  Class(s50) #Class
+  Service(s50) #Service
+  DtTmLastCert(dt) #Last Certification Date
+  SzHeight(dbl_m) #Height
+  SzClear(dbl_m) #Top Clearance
+  Weight(dbl_kg) #Weight of Stack
+  DepthBtm(dbl_m) #Set Depth
+  Com(txt2k) #Comment

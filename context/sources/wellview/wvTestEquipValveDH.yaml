@@ -1,0 +1,21 @@
+# wellview / reservoir_tests / wvTestEquipValveDH
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvTestEquipValveDH: wvTestEquipValveDH +parent
+  RefNo(s10) #Test Ref #
+  DtTm(dt) #Date
+  Duration(dbl_days) #Duration
+  FailFlag(bool) #Failed?
+  PresInit(dbl_kPa) #Initial Pressure
+  PresStart(dbl_kPa) #Start Pressure
+  PresDelta(dbl_kPa) #Pressure Drop
+  PresShutInTub(dbl_kPa) #Closed in Tubing Pressure
+  PresCtrlLine(dbl_kPa) #Control Line Pressure
+  PresEnd(dbl_kPa) #End Pressure
+  PresEqual(dbl_kPa) #Equalize Pressure
+  RateLeak(dbl_m3pd) #Rate of Pumping
+  TempStart(dbl_degC) #Start Temperature
+  TempEnd(dbl_degC) #End Temperature
+  Z1(dbl) #Z1
+  Z2(dbl) #Z2
+  Com(txt2k) #Comment

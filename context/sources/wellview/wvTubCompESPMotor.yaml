@@ -1,0 +1,31 @@
+# wellview / tubing_rods_equipment / wvTubCompESPMotor
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompESPMotor: ESP motor and cables detail information. +extension
+  MtrTyp(s100) #Motor Type
+  MtrFreqRating(dbl_Hz) #Motor Frequency Rating
+  MtrCurrentRating(dbl_A) #Motor Current Rating
+  MtrPowerRating(dbl_W) #Motor Power Rating
+  MtrVoltageRating(dbl_V) #Motor Voltage Rating
+  MtrLubr(s20) #Motor Lubrication
+  PenetratorTyp(s100) #Penetrator Type
+  HousingMetallurgy(s100) #Housing Metallurgy
+  ShaftMetallurgy(s100) #Shaft Metallurgy
+  MtrCableTyp(s100) #Motor Cable Type
+  MtrCableMake(s100) #Motor Cable Make
+  MtrCableLength(dbl_m) #Motor Cable Length
+  MtrCableShape(s10) #Motor Cable Shape
+  MtrCableGa(dbl) #Motor Cable Gauge
+  MtrCableInsul(s20) #Motor Cable Insulation
+  MtrCableSheath(s20) #Motor Cable Sheath
+  MtrCableArmor(s20) #Motor Cable Armor
+  MtrCableSN(s50) #Motor Cable Serial Number
+  MtrCableVolt(dbl_V) #Motor Cable Volt
+  MtrCableConditionRun(s50) #Motor Cable Condition Run
+  MtrCableConditionPull(s50) #Motor Cable Condition Pull
+  MtrCableProtectTyp(s100) #Motor Lead Extension Protectolizer
+  MtrCableProtectQty(s10) #Motor Lead Extension Protectolizer Quantity
+  PwrCableBandTyp(s100) #Power Cable Bands, Clamps or Protectolizers
+  PwrCableBandQty(s10) #Power Cable Bands Quantity
+  PwrCableGuardTyp(s100) #Power Cable Guard
+  PwrCableGuardQty(s10) #Power Cable Guard Quantity

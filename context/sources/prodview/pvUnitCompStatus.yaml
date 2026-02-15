@@ -1,0 +1,21 @@
+# prodview / completions / pvUnitCompStatus
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompStatus: Status +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  PrimaryFluidTyp(s50) #Primary Fluid Type
+  FlowDirection(s20) #Flow Direction
+  Commingled(s50) #Commingled
+  TypFluidProd(s50) #Oil or Condensate
+  TypCompletion(s20) #Completion Type
+  MethodProd(s50) #Production Method
+  CalcLostProd(bool) #Calculate Lost Production
+  WellCountIncl(bool) #Include in Well Count
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  Com(txt2k) #Comment

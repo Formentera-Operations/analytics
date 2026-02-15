@@ -1,0 +1,29 @@
+# wellview / operations_jobs / wvJobOfflineTimeLog
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOfflineTimeLog: Detailed breakdown of the other activities, categorized by code. Dates should not overlap. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurationCalc(dbl_days_calc) #Duration
+  SumOfDurationCalc(dbl_days_calc) #Cum Duration
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  OpsCategory(s50) #Ops Category
+  Inactive(bool) #Inactive Time?
+  UnschedTyp(s100) #Unscheduled Type
+  AffectOnline(s50) #Affected Online Operation
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  IDRecWellbore(s32) #Wellbore
+  Com(txt2k) #Comment
+  IDRecJobReportCalc(s32_calc) #Daily Operation
+  ReportNoCalc(dbl_calc) #Report Number
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  FormationCalc(s255_calc) #Formation
+  RefDerrick(s50) #Derrick Reference
+  UserTxt1(s50) #User Text 1
+  Code1234Calc(s200_calc) #Code 1 - 2 - 3 - 4

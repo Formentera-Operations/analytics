@@ -1,0 +1,16 @@
+# prodview / reference / pvUnitEventVol
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitEventVol: Event Volumes +parent
+  DtTm(dt) #Effective Date
+  VolPerEvent(dbl) #Volume Discharged Per Event
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due
+  EventHeat(double, joule) #Heat per Event
+  FactHeat(double, joule per cubic meter) #Heat Factor
+  Com(txt2k) #Comment
+  Typ1(s50) #Event Type
+  Typ2(s50) #Event Sub Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3

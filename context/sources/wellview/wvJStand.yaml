@@ -1,0 +1,34 @@
+# wellview / operations_jobs / wvJStand
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJStand: Summary of KPIs by stand of drilling. +parent
+  RefNo(int) #Stand Ref #
+  Typ(s100) #Stand Type
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthStart(dbl_m) #Start Depth
+  DepthEnd(dbl_m) #End Depth
+  DepthProgressCalc(dbl_m_calc) #Depth Progress
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth(TVD)
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  InclEndCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  InclStartCalc(dbl_deg_calc) #Top Inclination
+  DurStand(dbl_days) #Duration of Stand
+  DurSlipToSlip(dbl_days) #Slip to Slip
+  DurSlipToWt(dbl_days) #Slip to Weight
+  DurWtToSlip(dbl_days) #Weight to Slip
+  DurWtToWt(dbl_days) #Weight to Weight
+  DurWtToWtDS(dbl_days) #Weight to Weight (Drill String Change)
+  DurOnBtm(dbl_days) #On Bottom
+  DurOffBtm(dbl_days) #Off Bottom
+  DurPipeMoving(dbl_days) #Pipe Moving
+  ROPOnBtm(dbl_mpd) #ROP On Btm (Net)
+  ROPStand(dbl_mpd) #ROP Stand (Gross)
+  IDRecJobDrillStringCalc(s32_calc) #Drill String
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecJobReportCalc(s32_calc) #Daily Operation
+  IDRecRigCalc(s32_calc) #Rig
+  IDRecWellBoreCalc(s32_calc) #Wellbore
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

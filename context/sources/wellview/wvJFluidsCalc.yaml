@@ -1,0 +1,14 @@
+# wellview / operations_jobs / wvJFluidsCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJFluidsCalc: Summary of 'Lease Fluid' and 'Well Fluid' for the job, grouped by FluidTyp. +parent
+  FluidTyp(s100_calc) #Fluid Type
+  ToWell(dbl_m3_calc) #To well
+  FromWell(dbl_m3_calc) #From well
+  ToLease(dbl_m3_calc) #To lease
+  FromLease(dbl_m3_calc) #From lease
+  NonRecov(dbl_m3_calc) #Non-recoverable fluid
+  LeftToRecover(dbl_m3_calc) #Left to recover
+  InTanks(dbl_m3_calc) #Lease Balance
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

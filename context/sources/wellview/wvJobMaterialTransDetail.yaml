@@ -1,0 +1,24 @@
+# wellview / operations_jobs / wvJobMaterialTransDetail
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobMaterialTransDetail: Transferred material details. +parent
+  MaterialTyp1(s100) #Material Type
+  MaterialTyp2(s100) #Material Subtype
+  MaterialDes(s100) #Material Description
+  MaterialRefNo(s50) #Material Ref #
+  EnvironmentTyp(s100) #Environmental Consideration
+  SN(s50) #Serial Number
+  Rental(bool) #Rental?
+  Qty(dbl) #Qty
+  QtyUnitLabel(s10) #Qty Unit Label
+  Length(dbl_m) #Length
+  Cond(s50) #Condition
+  Reason(s100) #Reason for Transfer
+  Cost(dbl_cost) #Item Cost
+  CostUsed(dbl_cost) #Depreciated Item Cost
+  DurEquipInService(dbl_days) #Duration Equipment in Service
+  Note(s255) #Note
+  UserTxt1(s50) #User Text 1
+  MatTransDetailIDA(s50) #Mat Trans Detail IDA
+  MatTransDetailIDB(s50) #Mat Trans Detail IDB
+  UserNum1(dbl) #User Num 1

@@ -1,0 +1,6 @@
+# wellview / integrity_barriers / wvIntegrityItemLink
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvIntegrityItemLink: Link the relevant equipment for this integrity item. +parent
+  IDRecItem(s32) #Associated Items
+  Com(txt2k) #Comment

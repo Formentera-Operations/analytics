@@ -1,0 +1,17 @@
+# prodview / reference / pvUnitRegBodyKey
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitRegBodyKey: Regulatory Reporting Keys +parent | Keys used for regulatory reporting.
+  KeyName(s50) #Key
+  IDRecItem(s32) #Applies To
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  KeyValue1(s50) #Value 1
+  KeyValue2(s50) #Value 2
+  KeyValue3(s50) #Value 3
+  KeyNum1(dbl) #Value Number 1
+  KeyNum2(dbl) #Value Number 2
+  KeyNum3(dbl) #Value Number 3
+  Com(txt255) #Note

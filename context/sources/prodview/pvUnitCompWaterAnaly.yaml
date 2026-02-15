@@ -1,0 +1,9 @@
+# prodview / fluid_analysis / pvUnitCompWaterAnaly
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvUnitCompWaterAnaly: Water Analyses +parent | Link to water analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecWaterAnaly(s32) #Water Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note

@@ -1,0 +1,38 @@
+# wellview / reservoir_tests / wvWellTestFlowback
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestFlowback: Initial flowback recorded during the completion of the well, prior to handover to production. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Des(s100) #Des
+  DurCalc(dbl_days_calc) #Duration
+  DurFlowbackCalc(dbl_days_calc) #Flowback Duration
+  DurShutInCalc(dbl_days_calc) #Shut In Duration
+  IDRecJob(s32) #Job
+  IDRecWellbore(s32) #Wellbore
+  IDRecZoneCompletion(s32) #Completion/Zone
+  TestedBy(s50) #Tested By
+  Com(txt2k) #Comment
+  RateHCLiq(dbl_m3pd) #Daily Oil/Cond Rate
+  VolHCLiqTotalCalc(dbl_m3_calc) #Vol Total Oil
+  VolLoadHCLiq(dbl_m3) #Vol Load Oil
+  VolLoadHCLiqUnrecovCalc(dbl_m3_calc) #Vol Load Oil Unrecovered
+  VolPctLoadHCLiqRecovCalc(dbl_pct_calc) #Load Oil Recovered
+  RateWater(dbl_m3pd) #Daily Water Rate
+  VolWaterTotalCalc(dbl_m3_calc) #Vol Total Water
+  VolLoadWater(dbl_m3) #Vol Load Water
+  VolLoadWaterUnrecovCalc(dbl_m3_calc) #Vol Load Water Unrecovered
+  VolPctLoadWaterRecovCalc(dbl_pct_calc) #Load Water Recovered
+  RateSand(dbl_m3pd) #Daily Sand Rate
+  VolSandTotalCalc(dbl_m3_calc) #Vol Total Sand
+  VolLoadSand(dbl_m3) #Vol Load Sand
+  VolLoadSandUnrecovCalc(dbl_m3_calc) #Vol Load Sand Unrecovered
+  VolPctLoadSandRecovCalc(dbl_pct_calc) #Load Sand Recovered
+  RateGas(dbl_m3pd) #Daily Gas Rate
+  VolGasTotalCalc(dbl_m3_calc) #Vol Total Gas
+  VolGasFlareTotalCalc(dbl_m3_calc) #Vol Total Flare Gas
+  VolGasSalesTotalCalc(dbl_m3_calc) #Vol Total Sales Gas
+  VolLoadGas(dbl_m3) #Vol Load Gas
+  VolLoadGasUnrecovCalc(dbl_m3_calc) #Vol Load Gas Unrecovered
+  VolPctLoadGasRecovCalc(dbl_pct_calc) #Load Gas Recovered
+  VolTotalFluidTotalCalc(dbl_m3_calc) #Vol Total Fluid

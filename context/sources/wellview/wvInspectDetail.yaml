@@ -1,0 +1,10 @@
+# wellview / operations_inspections / wvInspectDetail
+# Source: context/sources/wellview/domains/operations_inspections.yaml
+#
+wvInspectDetail: Date, inspector, status of inspection. +parent
+  DtTm(dt) #Date
+  InspectedByName(s50) #Inspected By Name
+  InspectedByCompany(s100) #Inspected By Company
+  Status(s50) #Status
+  ActionReqdCom(txt2k) #Corrective Action Required
+  ActionTakenCom(txt2k) #Corrective Action Taken

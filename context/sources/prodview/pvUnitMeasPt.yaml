@@ -1,0 +1,30 @@
+# prodview / meters / pvUnitMeasPt
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeasPt: Other Measurement Points +parent | Other readings required for reference only, not used in volume calculations.
+  Name(s50) #Measurement Name
+  IDRecLoc(s32) #Measurement Location
+  RefIDA(s50) #Reference ID
+  UOMReading(s10) #Reading Unit of Measure
+  EntryReqPeriod(s50) #Entry Requirement Period
+  Com(txt2k) #Comment
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  GroupKey(s50) #Group Key
+  GroupName(s50) #Group Name
+  KeyMigrationSource(s100) #Carry Forward Type
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence

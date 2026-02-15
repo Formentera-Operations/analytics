@@ -1,0 +1,7 @@
+# prodview / facilities / pvFacilityMeasPtEntry
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityMeasPtEntry: Facility Other MP Entries +parent | In the child table, enter the date and the reading for the linked item.
+  DtTm(dt) #Date
+  Value(dbl) #Reading for Variable
+  Com(stringlong 100) #Note

@@ -1,0 +1,23 @@
+# wellview / production_operations / wvChemicalInjection
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvChemicalInjection: Details of chemical treatments for the well. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ(s100) #Type
+  InjectionLoc(s100) #Injection  Location
+  ProductName(s50) #Product Name
+  Purpose(s50) #Purpose
+  Vendor(s100) #Vendor
+  AmountDesign(dbl) #Design Amount
+  Amount(dbl) #Amount
+  UnitLabel(s10) #Units
+  RateDesign(dbl_m3pd) #Design Rate
+  RateAvg(dbl_m3pd) #Avg Rate
+  Cost(dbl_cpu) #Item Cost
+  IDRecString(s32) #String
+  IDRecWellbore(s32) #Wellbore
+  Com(txt2k) #Comment
+  RecurFrequency(dbl_days) #Recurrence Period
+  RecurNote(s255) #Recurring Note

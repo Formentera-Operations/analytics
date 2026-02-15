@@ -1,0 +1,7 @@
+# prodview / equipment / pvUnitEquipUnit
+# Source: context/sources/prodview/domains/equipment.yaml
+#
+pvUnitEquipUnit: Related Units or Nodes +parent
+  IDRecUnit(s32) #Unit or Node
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date

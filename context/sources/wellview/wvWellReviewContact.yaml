@@ -1,0 +1,8 @@
+# wellview / production_operations / wvWellReviewContact
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvWellReviewContact: Contact names of participants in the well review. +parent
+  ContactName(s50) #Contact Name
+  Title(s20) #Title
+  Typ(s100) #Type
+  Note(s255) #Note

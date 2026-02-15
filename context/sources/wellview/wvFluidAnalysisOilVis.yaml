@@ -1,0 +1,8 @@
+# wellview / production_operations / wvFluidAnalysisOilVis
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisOilVis: Oil viscosity vs. +parent
+  Temperature(dbl_degC) #Temp
+  ViscDynamic(dbl_Pas) #Dynamic Viscosity
+  ViscKinematic(dbl_m2pd) #Kinematic Viscosity
+  Note(s255) #Note

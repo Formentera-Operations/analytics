@@ -1,0 +1,8 @@
+# prodview / allocations / pvUnitAllocWarn
+# Source: context/sources/prodview/domains/allocations.yaml
+#
+pvUnitAllocWarn: Calculation Warnings +parent | Warnings or errors identified while calculating this days values.
+  DtTm(dt) #Date
+  IDRecItem(s32) #Location
+  Typ(s50) #Type
+  Com(txt2k) #Comment

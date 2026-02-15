@@ -1,0 +1,25 @@
+# wellview / tubing_rods_equipment / wvTubCompESPMotorPwrCable
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompESPMotorPwrCable: ESP power cable details. +parent
+  PwrCableProfile(s10) #Power Cable Profile
+  PwrCableTyp(s100) #Power Cable Type
+  PwrCableSN(s50) #Serial Number
+  PwrCableModel(s100) #Model
+  PwrCableMake(s100) #Cable Make
+  PwrCableTempRating(dbl_degC) #Power Cable - Temperature Rating
+  PwrCableTensileMax(dbl_N) #Power Cable Tensile Max
+  PwrCableWtPerLength(dbl_kgpm) #Power Cable Weight/Length
+  PwrCableLength(dbl_m) #Power Cable Length
+  PwrCableShape(s10) #Power Cable Shape
+  PwrCableGa(dbl) #Power Cable Gauge
+  PwrCableInsul(s20) #Power Cable Insulation
+  PwrCableSheath(s20) #Power Cable Sheath
+  PwrCableArmor(s20) #Power Cable Armor
+  PwrCableNoSplice(int) #Power Cable - Number of Splices
+  PwrCableVolt(dbl_V) #Power Cable Volt
+  HoursStart(dbl_days) #Starting Hours
+  ConditionRun(s50) #Condition Run
+  ConditionPull(s50) #Condition Pull
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

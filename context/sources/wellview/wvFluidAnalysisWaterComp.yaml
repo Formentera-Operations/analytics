@@ -1,0 +1,10 @@
+# wellview / production_operations / wvFluidAnalysisWaterComp
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisWaterComp: Mass fraction by component. +parent
+  Ion(s20) #Component
+  CationAnion(s20) #Cation or Anion
+  Density(dbl_kgpm3) #Density
+  DensityEquiv(dbl) #Equivalent Density
+  MassFrac(dbl_kgpkg) #Mass Fraction
+  Note(s255) #Note

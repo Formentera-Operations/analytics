@@ -1,0 +1,23 @@
+# wellview / operations_jobs / wvJobServiceContract
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobServiceContract: Service contractors related to this 'Job'. +parent
+  ServiceCompanyParent(s100) #Service Company Parent
+  ServiceCompany(s100) #Service Company
+  ServiceContractTyp(s100) #Contract Type
+  ServiceTyp(s100) #Service Type
+  Des(s255) #Service Description
+  ContractRef(s50) #Reference #
+  DtTmStartContract(dt) #Contract Start Date
+  DtTmEndContract(dt) #Contract End Date
+  DtTmEval(dt) #Evaluation Date
+  EvalPerformedBy(s50) #Evaluator
+  EvalStatus(s50) #Evaluation Status
+  OpsCondition(s50) #Operative Condition
+  DtTmApproved(dt) #Evaluation Approval Date
+  ApprovedBy(s50) #Approved By
+  ScoreCalc(dbl_calc) #Total Score
+  ScoreMaxCalc(dbl_calc) #Max Possible Score
+  PercentScoreCalc(dbl_pct_calc) #Score/Max
+  OperatorCom(txt2k) #Operator Comment
+  ServiceCompanyCom(txt2k) #Service Company Comment

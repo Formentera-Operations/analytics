@@ -1,0 +1,8 @@
+# wellview / perfs_stims / wvStimPropTypSumCalc
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimPropTypSumCalc: Proppant mass 'Stim/Frac Sub Stage Treatment Details.Proppant Mass' summarized and grouped by 'Stim/Frac Proppant.Type'. +parent
+  Typ1(s100_calc) #Type
+  Typ2(s100_calc) #Subtype
+  Sz(s20_calc) #Sand Size
+  MassPropTotal(dbl_kg_calc) #Proppant Total

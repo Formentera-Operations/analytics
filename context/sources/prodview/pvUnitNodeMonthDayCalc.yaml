@@ -1,0 +1,17 @@
+# prodview / flow_network / pvUnitNodeMonthDayCalc
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeMonthDayCalc: Node Daily Volumes +parent | Detailed daily calculations for a node which aggregate to the monthly table.
+  IDRecNode(s32_calc) #Node
+  DtTm(dt_calc) #Date
+  Year(integer, calculated) #Year
+  Month(integer, calculated) #Month
+  DayOfMonth(integer, calculated) #Day
+  VolHCLiq(dbl_m3_calc) #Gathered Oil/Condensate
+  VolHCLiqGasEq(dbl_m3_calc) #Gathered Gas Equivalent of Oil/Condensate Volume
+  VolGas(dbl_m3_calc) #Gathered Gas
+  VolWater(dbl_m3_calc) #Gathered Water
+  VolSand(dbl_m3_calc) #Gathered Sand
+  Heat(double, joule, calculated) #Gathered Heat
+  FactHeat(double, joule per cubic meter, calculated) #Gathered Heat Factor
+  IDRecFacility(s32_calc) #Current Facility

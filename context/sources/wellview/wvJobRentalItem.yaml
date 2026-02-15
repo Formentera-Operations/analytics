@@ -1,0 +1,26 @@
+# wellview / operations_jobs / wvJobRentalItem
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRentalItem: Enter a list of repeating costs such as equipment rentals to be used in daily reports. Days rate, Depth rate, Standby rate, etc can be defined. +parent
+  Des(s100) #Item Description
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  Note(s255) #Note
+  RateDay(dbl_cpd) #Day Use Rate
+  RateStandby(dbl_cpd) #Daily Standby Rate
+  RateHour(dbl_cpd) #Hourly Rate
+  RateDepth(dbl_cpm) #Depth Rate
+  RateOther(dbl_cpu) #Other Rate 1
+  RateOtherDes(s100) #Other Rate 1 Description
+  Vendor(s100) #Vendor
+  VendorCode(s100) #Vendor Code
+  VendorSubCode(s100) #Vendor Subcode
+  TicketNo(s50) #Ticket Number
+  POLineNo(s50) #Purchase Order Line Number
+  PONo(s50) #Purchase Order Number
+  POAmt(dbl_cost) #Purchase Order Amount
+  UserBoolean1(bool) #User Boolean 1

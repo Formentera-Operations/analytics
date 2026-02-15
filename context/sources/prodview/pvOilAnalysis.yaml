@@ -1,0 +1,47 @@
+# prodview / fluid_analysis / pvOilAnalysis
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvOilAnalysis: Oil Properties +parent | Oil sample properties and distillation parameters.
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  Des(s255) #Sample Description
+  TestedBy(s50) #Sampler Company
+  DontUse(bool) #Don't Use
+  DepthTop(double, meter) #Top Depth
+  DepthBtm(double, meter) #Bottom Depth
+  LocSample(s255) #Sample Location Point
+  Color(s50) #Color
+  BSW(dbl_pct) #Basic Sediments &  Water
+  VolFracWater(dbl_m3pm3) #Water Fraction
+  VolFracSediment(dbl_m3pm3) #Sediment Fraction
+  DensityRelAsReceived(dbl) #Relative Density as Received
+  DensityRelAfterClean(dbl) #Relative Density after Cleaning
+  DensityAsReceived(dbl_kgpm3) #Density as Received
+  DensityAfterClean(dbl_kgpm3) #Density after Cleaning
+  DensityRefTemp(dbl_degC) #Density Ref Temp
+  APIGravityAsReceived(dbl_kgpm3) #API Gravity as Received
+  APIGravityAfterClean(dbl_kgpm3) #API Gravity after Cleaning
+  TempRefAPIGravity(dbl_degC) #API Ref Temp
+  Sulphur(dbl_kgpm3) #Sulphur
+  Salt(dbl_kgpm3) #Salt
+  PresVapour(dbl_kPa) #Reid Vapour Pressure
+  TempPourPoint(dbl_degC) #Temp Pour Point
+  WaxPercent(dbl_pct) #Percent Wax
+  Asphaltene(dbl_pct) #Percent Asphaltene
+  TempFlashPointCC(dbl_degC) #Temp Flash Point Closed Cup
+  TempFlashPointOC(dbl_degC) #Temp Flash Point Open Cup
+  Com(txt2k) #Comment
+  DistillMethod(s50) #Distillation Method
+  PresBarometric(dbl_kPa) #Barometric Pressure
+  TempRoom(dbl_degC) #Room Temperature
+  TempBoilInit(dbl_degC) #Temp Initial Boil Pt
+  VolFracNaptha(dbl_m3pm3) #Naptha Volume Fraction
+  TempRefNaptha(dbl_degC) #Naptha Temp Ref
+  VolFracKerosene(dbl_m3pm3) #Kerosene Volume Fraction
+  TempRefKerosene(dbl_degC) #Kerosene Temp Ref
+  VolFracLtGasOil(dbl_m3pm3) #Light Gas Oil Volume Fraction
+  TempRefLtGasOil(dbl_degC) #Light Gas Oil Temp Ref
+  VolFracRecovered(dbl_m3pm3) #Recovered Volume Fraction
+  VolFracResidue(dbl_m3pm3) #Residue Volume Fraction
+  VolFracDistillLoss(dbl_m3pm3) #Distillation Loss Volume Fraction

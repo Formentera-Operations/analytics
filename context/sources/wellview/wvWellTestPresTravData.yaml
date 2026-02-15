@@ -1,0 +1,19 @@
+# wellview / reservoir_tests / wvWellTestPresTravData
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestPresTravData: Depth, pressure and temperature details for the 'Pressure Survey Test'. +parent
+  DtTm(dt) #Date
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  DurationStop(dbl_days) #Duration Stop
+  IDRecGauge(s32) #Pressure Survey Gauge Used
+  Pres(dbl_kPa) #Pressure
+  PresGradientOR(dbl_kPapm) #Pressure Gradient Override
+  PresGradientCalc(dbl_kPapm_calc) #Pressure Gradient
+  Temp(dbl_degC) #Temp
+  TempGradientOR(dbl_degCpm) #Temperature Gradient Override
+  TempGradientCalc(dbl_degCpm_calc) #Temperature Gradient
+  Note(s255) #Note
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  ReservoirCalc(s255_calc) #Reservoir

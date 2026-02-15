@@ -1,0 +1,66 @@
+# wellview / casing_cement / wvCasComp
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCasComp: Casing component details including OD, weight, grade. +parent
+  Des(s100) #Item Description
+  IconName(s255) #Icon
+  SzODNom(dbl_m) #OD Nominal
+  SzIDNom(dbl_m) #ID
+  WtPerLength(dbl_kgpm) #Weight/Length
+  Grade(s20) #Grade
+  Length(dbl_m) #Length
+  Joints(int) #Joints
+  CompSubTyp(s100) #Equipment Type
+  ConnTypTop(s20) #Top Connection Type
+  ConnThrdTop(s20) #Top Connection Thread
+  ConnSzTop(dbl_m) #Top Connection Size
+  UpsetTop(s20) #Top Upset
+  ConnTgtPerfTop(s50) #Top Connection Target Performance
+  ConnTypBtm(s20) #Bottom Connection Type
+  ConnThrdBtm(s20) #Bottom Connection Thread
+  ConnSzBtm(dbl_m) #Bottom Connection Size
+  UpsetBtm(s20) #Bottom Upset
+  ConnTgtPerfBtm(s50) #Bottom Connection Target Performance
+  TorqueMin(dbl_Nm) #Make-up Torque
+  ConnectCalc(s50_calc) #Connections
+  ConnectAltCalc(s50_calc) #Connections (Alt)
+  SzDrift(dbl_m) #Drift
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  LengthTallyCalc(dbl_m_calc) #Tally Length
+  JointsTallyCalc(int_calc) #Joints in Tally
+  WeightCalc(dbl_N_calc) #Weight
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  VolumeDispCalc(dbl_m3_calc) #Volume Displaced (Open End)
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced (Open End)
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  SzODMax(dbl_m) #Max OD
+  DepthTopCorrected(dbl_m) #Corrected Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s20) #Material
+  UsedClass(s10) #Class
+  Com(txt2k) #Comment
+  ItemNoCalc(s10_calc) #Item Number
+  DesJtCalc(s100_calc) #Description-#Jts
+  RefID(s50) #Reference ID
+  CentralizersNoTallyCalc(int_calc) ## Centralizers (Tally)
+  CurrentStatusCalc(s100_calc) #Current Status
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  TorqueMax(dbl_Nm) #Max Torque
+  TensileMax(dbl_N) #Max Tensile Strength
+  PresCollapse(dbl_kPa) #Collapse Pressure
+  PresBurst(dbl_kPa) #Burst Pressure
+  PresAxialInner(dbl_kPa) #Axial Inner Pressure
+  PresAxialOuter(dbl_kPa) #Axial Outer Pressure
+  HeatRating(s20) #Heat Rating
+  DtTmManufacture(dt) #Manufacture Date
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

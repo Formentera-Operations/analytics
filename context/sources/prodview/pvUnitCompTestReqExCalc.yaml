@@ -1,0 +1,8 @@
+# prodview / completions / pvUnitCompTestReqExCalc
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompTestReqExCalc: Required Tests Remaining +parent | How many tests are left to be done for the period.
+  DtTmStart(dt_calc) #Start of Period
+  DtTmEnd(dt_calc) #End of Period
+  DtTmLastTest(dt_calc) #Last Test
+  NoTestRemain(integer, calculated) #Required Tests Remaining

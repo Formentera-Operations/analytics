@@ -1,0 +1,27 @@
+# wellview / operations_jobs / wvJobEmission
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobEmission: Emissions - disposition of gas (flaring, sales, venting); equipment on location. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #EmissionType
+  Typ2(s100) #Emission Subtype
+  Des(s100) #Description
+  Reason(s100) #Reason
+  MethodMeasured(s50) #Method Measured
+  Dur(dbl_days) #Duration
+  Amount(dbl) #Amount
+  AmountUnitLabel(s10) #Units
+  RatioDisposed(dbl_pct) #Percent Disposed
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecItem(s32) #Link
+  Com(txt2k) #Comment
+  PresCas(dbl_kPa) #Casing Ref Pressure
+  PresTub(dbl_kPa) #Tubing Ref Pressure
+  PresUpstream(dbl_kPa) #Upstream Ref Pressure
+  PresDownstream(dbl_kPa) #Downstream Ref Pressure
+  Temp(dbl_degC) #Ref Temperature
+  SzDiaChoke(dbl_m) #Choke Size
+  SzDiaOrifice(dbl_m) #Orifice Size
+  MethodCalculated(s50) #Calculation Method
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

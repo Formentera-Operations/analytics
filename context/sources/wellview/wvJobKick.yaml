@@ -1,0 +1,30 @@
+# wellview / operations_jobs / wvJobKick
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobKick: Kick summary and detailed pressure information. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  FluidDes(s100) #Fluid Description
+  KickIndicator(s50) #Kick Indicator
+  DtTmStart(dt) #Kick Date
+  DepthStart(dbl_m) #Kick Depth
+  DepthTVDStartCalc(dbl_m_calc) #Kick Depth (TVD)
+  IDRecWellBore(s32) #Wellbore
+  PresSIDP(dbl_kPa) #SIDP Pressure
+  PresSIC(dbl_kPa) #SIC Pressure
+  OpsInProg(s50) #Operation In Progress
+  KillProcedure(txt2k) #Kill Notes
+  KickClass(s20) #Kick Class
+  VolKick(dbl_m3) #Kick Volume
+  IniKickHeight(dbl_m) #Initial Kick Height
+  RatePump(dbl_m3pd) #Pump Rate
+  PresPump(dbl_kPa) #Pump Pressure
+  DtTmEnd(dt) #Control Date
+  DtTmOpsResume(dt) #Operation Resume Date
+  DepthEnd(dbl_m) #Control Depth
+  DepthTVDEndCalc(dbl_m_calc) #Control Depth (TVD)
+  DurationCalc(dbl_days_calc) #Duration
+  ReportNoCalc(dbl_calc) #Report Number
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  MudDensityBeforeCalc(dbl_kgpm3_calc) #Mud Density Before Kick
+  MudDensityAfterCalc(dbl_kgpm3_calc) #Mud Density After Kick

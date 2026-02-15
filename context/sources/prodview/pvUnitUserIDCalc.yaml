@@ -1,0 +1,6 @@
+# prodview / routes / pvUnitUserIDCalc
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvUnitUserIDCalc: Unit Route Security User IDs +parent | List of User ID's that have edit rights to this 'Unit' today.  Based on definition in <pvRouteNameUs
+  UserID(string 50, calculated) #User ID
+  Typ(string 50, calculated) #Type

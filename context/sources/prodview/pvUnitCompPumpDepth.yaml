@@ -1,0 +1,8 @@
+# prodview / artificial_lift / pvUnitCompPumpDepth
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpDepth: Artificial Lift Depths +parent
+  DtTm(dt) #Date
+  Depth(double, meter) #Depth
+  GasFreeDepth(double, meter) #Gas Free Depth
+  Com(txt255) #Note

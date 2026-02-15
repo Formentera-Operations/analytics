@@ -1,0 +1,24 @@
+# prodview / reference / pvUnitChemInt
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitChemInt: Chemicals - Intermittent +parent | Intermittent entry of chemicals.
+  DtTm(dt) #Date
+  IDRecLoc(s32) #Applied To
+  ProductName(s50) #Chemical Name
+  Typ(s50) #Type
+  Purpose(s50) #Purpose
+  Vendor(s50) #Vendor
+  AmtConsumed(dbl) #Amount Consumed
+  UOMAmount(s10) #Amount Unit
+  Com(stringlong 100) #Note
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

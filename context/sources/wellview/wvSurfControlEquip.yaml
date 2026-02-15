@@ -1,0 +1,14 @@
+# wellview / surface_equipment / wvSurfControlEquip
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvSurfControlEquip: Surface control equipment details for variable speed drive, pump off controller, plunger lift and gas lift. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ(s100) #Control Type
+  TypDetail(s100) #Type Detail
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  SzDes(s100) #Size Description
+  Com(txt2k) #Comment
+  RefID(s50) #Reference ID

@@ -1,0 +1,9 @@
+# prodview / tanks / pvUnitTankOilAnaly
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankOilAnaly: Oil Analyses +parent | Link to oil analysis for this 'Tank'.
+  DtTmStart(dt) #Effective Date
+  IDRecOilAnaly(s32) #Oil Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note

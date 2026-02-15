@@ -1,0 +1,8 @@
+# wellview / wellbore_surveys / wvWellboreStatus
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreStatus: Status of the 'Wellbore' by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Wellbore Status
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1

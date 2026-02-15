@@ -1,0 +1,14 @@
+# wellview / operations_jobs / wvJobRigLine
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigLine: The drilling rig line which is used to facilitate the lowering and lifting of the drill string into and out of the wellbore. +parent
+  Typ(s100) #Type
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Remove Date
+  SzOD(dbl_m) #OD of Line
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Length(dbl_m) #Length of Line
+  LengthReel(dbl_m) #Length of Reel
+  Com(txt2k) #Comment

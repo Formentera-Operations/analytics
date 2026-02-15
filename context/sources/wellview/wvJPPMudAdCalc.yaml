@@ -1,0 +1,15 @@
+# wellview / operations_jobs / wvJPPMudAdCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPMudAdCalc: Summary of the 'Mud Additive' consumed during the phase. +parent
+  Des(s100_calc) #Description
+  Typ(s100_calc) #Type
+  UnitLabel(s10_calc) #Units
+  UnitSz(dbl_calc) #Unit Size
+  Vendor(s100_calc) #Vendor
+  CostUnit(dbl_cpu_calc) #Unit Cost
+  Note(s255_calc) #Note
+  Consumed(dbl_calc) #Total Consumed
+  CostTotal(dbl_cost_calc) #Total Field Est
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

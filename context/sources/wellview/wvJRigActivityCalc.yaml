@@ -1,0 +1,54 @@
+# wellview / operations_jobs / wvJRigActivityCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRigActivityCalc: Interpretation of derived time codes from sensor data grouped by 'Rig Activity by Job.Type 1' EQN: This table summarizes the durations between 'Job... +parent
+  Typ1(s100_calc) #Type 1
+  Duration(dbl_days_calc) #Duration Total
+  FractionTotalDur(dbl_pct_calc) #% Total Time
+  DurOnBtm(dbl_days_calc) #On Bottom
+  DurOffBtm(dbl_days_calc) #Off Bottom
+  DurPipeMoving(dbl_days_calc) #Pipe Moving
+  DepthStart(dbl_m_calc) #Start Depth
+  DepthEnd(dbl_m_calc) #End Depth
+  DepthStartEnd(dbl_m_calc) #Depth End - Depth Start
+  ROPStartEnd(dbl_mpd_calc) #ROP Start - End
+  Count(int_calc) #Count
+  DurMean(dbl_days_calc) #Duration Avg
+  DurMax(dbl_days_calc) #Duration Max
+  DurMin(dbl_days_calc) #Duration Min
+  DurStdDev(dbl_days_calc) #Duration Std Dev
+  WOB(dbl_N_calc) #WOB Mean
+  WOBMax(dbl_N_calc) #WOB Max
+  WOBMin(dbl_N_calc) #WOB Min
+  WOBStdDev(dbl_N_calc) #WOB Std Dev
+  RPM(dbl_rpm_calc) #RPM Mean
+  RPMMax(dbl_rpm_calc) #RPM Max
+  RPMMin(dbl_rpm_calc) #RPM Min
+  RPMStdDev(dbl_rpm_calc) #RPM Std Dev
+  LiquidInjRate(dbl_m3pd_calc) #Flow Rate Mean
+  LiquidInjRateMax(dbl_m3pd_calc) #Flow Rate Max
+  LiquidInjRateMin(dbl_m3pd_calc) #Flow Rate Min
+  LiquidInjRateStdDev(dbl_m3pd_calc) #Flow Rate Std Dev
+  SPP(dbl_kPa_calc) #SPP Mean
+  SPPMax(dbl_kPa_calc) #SPP Max
+  SPPMin(dbl_kPa_calc) #SPP Min
+  SPPStdDev(dbl_kPa_calc) #SPP Std Dev
+  SPPDiff(dbl_kPa_calc) #SPP Diff Mean
+  SPPDiffMax(dbl_kPa_calc) #SPP Diff Max
+  SPPDiffMin(dbl_kPa_calc) #SPP Diff Min
+  SPPDiffStdDev(dbl_kPa_calc) #SPP Diff Std Dev
+  ROP(dbl_mpd_calc) #ROP Mean
+  ROPMax(dbl_mpd_calc) #ROP Max
+  ROPMin(dbl_mpd_calc) #ROP Min
+  ROPStdDev(dbl_mpd_calc) #ROP Std Dev
+  Torque(dbl_calc) #Torque Mean
+  TorqueMax(dbl_calc) #Torque Max
+  TorqueMin(dbl_calc) #Torque Min
+  TorqueStdDev(dbl_calc) #Torque Std Dev
+  HookLoad(dbl_N_calc) #Hook Load Mean
+  HookLoadMax(dbl_N_calc) #Hook Load Max
+  HookLoadMin(dbl_N_calc) #Hook Load Min
+  HookLoadStdDev(dbl_N_calc) #Hook Load Std Dev
+  TripSpeed(dbl_mpd_calc) #Trip Speed Mean
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

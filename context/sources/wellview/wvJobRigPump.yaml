@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJobRigPump
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigPump: Mud pump specifications. Make, model, action type, etc. +parent
+  Des(s100) #Pump Number
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Make(s100) #Make
+  Model(s100) #Model
+  PowerRating(dbl_W) #Pump Rating
+  SN(s50) #Serial Number
+  ActionCategory(s100) #Category
+  ActionTyp(s100) #Action Type
+  StrokeLength(dbl_m) #Stroke  Length
+  SzODRod(dbl_m) #Rod Diameter
+  RefID(s50) #Reference ID
+  DtTmManufacture(dt) #Manufacture Date

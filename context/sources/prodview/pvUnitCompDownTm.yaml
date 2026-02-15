@@ -1,0 +1,34 @@
+# prodview / completions / pvUnitCompDownTm
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompDownTm: Completion Downtimes +parent
+  TypDownTm(s20) #Type of Downtime Entry
+  Product(s50) #Product
+  DtTmStart(dt) #First Day
+  DurDownStartDay(dbl_days) #Hours Down
+  CodeDownTm1(s50) #Downtime Code
+  CodeDownTm2(s50) #Downtime Code 2
+  CodeDownTm3(s50) #Downtime Code 3
+  DtTmEnd(dt) #Last Day
+  DurDownEndDay(dbl_days) #Downtime on Last Day
+  Location(s50) #Location
+  FailFlag(bool) #Failure
+  DurDownCalc(double, days, calculated) #Total Downtime
+  Com(txt255) #Comments
+  DtTmPlanEnd(dt) #Planned End Date
+  DurDownPlanEnd(dbl_days) #Planned Downtime Duration
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5

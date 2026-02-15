@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobLostCircAction
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobLostCircAction: Details of the actions taken after the lost circulation incident. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s255) #Description
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  RefNo(s20) #Reference #
+  ActionRqd(bool) #Action Required?
+  Com(txt2k) #Comment

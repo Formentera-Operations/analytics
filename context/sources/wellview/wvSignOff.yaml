@@ -1,0 +1,11 @@
+# wellview / other / wvSignOff
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvSignOff: Sign off the well or specific tables. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  DtTm(dt) #Date
+  Name(s50) #Name
+  Role(s50) #Role
+  Verified(bool) #Verified?
+  Com(txt2k) #Comment

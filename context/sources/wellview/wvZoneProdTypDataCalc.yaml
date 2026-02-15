@@ -1,0 +1,35 @@
+# wellview / zones_completions / wvZoneProdTypDataCalc
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvZoneProdTypDataCalc: Summarized production data by 'Production Volume.Activity Type'. +parent
+  DtTmStart(dt_calc) #Start Date
+  DtTmEnd(dt_calc) #End Date
+  DurationProd(dbl_days_calc) #Producing Time
+  DurationProdCum(dbl_days_calc) #Cumulative Producing Time
+  DurationDown(dbl_days_calc) #Downtime
+  DurationDownCum(dbl_days_calc) #Cumulative Downtime
+  RatioDurationProd(dbl_pct_calc) #% Producing Time
+  RatioDurationCumProd(dbl_pct_calc) #Cumulative % Producing Time
+  RatioDurationDown(dbl_pct_calc) #% Downtime
+  RatioDurationCumDown(dbl_pct_calc) #Cumulative % Downtime
+  VolumeOil(dbl_m3_calc) #Volume Oil
+  VolumeCumOil(dbl_m3_calc) #Cumulative Volume Oil
+  VolumeCond(dbl_m3_calc) #Volume Condensate
+  VolumeCumCond(dbl_m3_calc) #Cumulative Volume Condensate
+  VolumeResGas(dbl_m3_calc) #Volume Reservoir Gas
+  VolumeCumResGas(dbl_m3_calc) #Cumulative Volume Reservoir Gas
+  VolumeWater(dbl_m3_calc) #Volume Water
+  VolumeCumWater(dbl_m3_calc) #Cumulative Volume Water
+  VolumeLiquidOther(dbl_m3_calc) #Volume Other Liquid
+  VolumeCumLiquidOther(dbl_m3_calc) #Cumulative Volume Other Liquid
+  VolumeGasOther(dbl_m3_calc) #Volume Other Gas
+  VolumeCumGasOther(dbl_m3_calc) #Cumulative Volume Other Gas
+  RateOil(dbl_m3pd_calc) #Rate Oil
+  RateCondensate(dbl_m3pd_calc) #Rate Condensate
+  RateResGas(dbl_m3pd_calc) #Rate Reservoir Gas
+  RateWater(dbl_m3pd_calc) #Rate Water
+  RateLiquidOther(dbl_m3pd_calc) #Rate Other Liquid
+  RateGasOther(dbl_m3pd_calc) #Rate Other Gas
+  RatioResGasOil(dbl_m3pm3_calc) #Gas Oil Ratio
+  RatioWaterOil(dbl_m3pm3_calc) #Water Cut
+  RatioWaterResGas(dbl_m3pm3_calc) #Water Gas Ratio

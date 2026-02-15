@@ -1,0 +1,20 @@
+# prodview / completions / pvUnitCompCycleTm
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompCycleTm: Cycle Times +parent | Cyclic flowing times for this 'Completion'. Used to correct flowing times for 'Gas Meters' and 'Rate
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurOn(dbl_days) #Minutes On
+  DurOff(dbl_days) #Minutes Off
+  NoCyclePerDayCalc(dbl_calc) #Number of Cycles Per Day
+  PctOnCalc(dbl_pct_calc) #Percent On of Total
+  Com(txt255) #Note
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

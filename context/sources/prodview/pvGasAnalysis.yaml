@@ -1,0 +1,51 @@
+# prodview / fluid_analysis / pvGasAnalysis
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvGasAnalysis: Gas Analyses +parent
+  DtTmSample(dt) #Effective Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  LocSample(s50) #Sample Location Point
+  Des(s255) #Sample Description
+  DontUse(bool) #Don't Use
+  DepthBtm(double, meter) #Bottom Depth
+  DepthTop(double, meter) #Top Depth
+  TestedBy(s50) #Sampler Company
+  RefNoLaboratory(s50) #Lab Ref #
+  RefNoTest(s50) #Test Ref #
+  Analyst(s50) #Analyst
+  RefNoSample(s50) #Sample Container Ref #
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  PresSeparator(dbl_kPa) #Separator Pressure
+  TempSample(dbl_degC) #Sample Temperature
+  TempReservoir(dbl_degC) #Reservoir Temperature
+  TempSampleRec(dbl_degC) #Received Sample Temperature
+  TempSeparator(dbl_degC) #Separator Temperature
+  PresSampleRec(dbl_kPa) #Received Sample Pressure
+  TempGaugeSource(dbl_degC) #Source Gauge Temperature
+  PresReservoir(dbl_kPa) #Reservoir Pressure
+  PresSample(dbl_kPa) #Sample Pressure
+  PresGaugeSource(dbl_kPa) #Source Gauge Pressure
+  GrossHeatMoistFree(double, joule per cubic meter) #Gross Heating Value Moisture Free
+  GrossHeatMoistAcidFree(double, joule per cubic meter) #Gross Heating Value Moisture+Acid Free
+  TempRefGrossHeat(dbl_degC) #Gross Heating Value Ref Temp
+  PresGrossHeatRef(dbl_kPa) #Gross Heating Value Ref Pres
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  TempRefTotalSample(dbl_degC) #Total Sample Ref Temp
+  MolecularMassTotalSampl(dbl) #Total Sample Molecular Mass
+  PresRefTotalSample(dbl_kPa) #Total Sample Ref Pres
+  DensityRelSample(dbl) #Total Sample Relative Density
+  DensityC7Plus(dbl_kgpm3) #C7+ Density
+  DensityRelC7Plus(dbl) #C7+ Relative Density
+  TempRefC7Plus(dbl_degC) #C7+ Ref Temp
+  PresRefC7Plus(dbl_kPa) #C7+ Ref Pressure
+  MolecularMassC7Plus(dbl) #C7+ Molecular Mass
+  PresPCSample(dbl_kPa) #Sample Pseudo Critical Pressure
+  PresPCAcidGasFree(dbl_kPa) #Acid Gas Free Pseudo Critical Pressure
+  TempPCSample(dbl_degC) #Sample Pseudo Critical Temp
+  TempPCAcidGasFree(dbl_degC) #Acid Gas Free Pseudo Critical Temp
+  H2S(dbl_pct) #H2S
+  H2SMethod(s50) #H2S Method
+  Com(txt2k) #Comment
+  PresVapourPentane(dbl_kPa) #Pentanes Plus Vapour Pressure

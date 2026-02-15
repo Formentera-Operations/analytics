@@ -1,0 +1,13 @@
+# prodview / reference / pvUnitJob
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitJob: Unit Jobs +parent | Jobs performed and planned on this unit. Can be populated with information from SiteView and WellVie
+  ProjectName(s100) #Project Name
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  DtTmStart(datetime 8) #Start Date
+  DtTmEnd(datetime 8) #End Date
+  Status1(s50) #Primary Status
+  Status2(s50) #Secondary Status
+  AFENumber(s255) #AFE Reference Number
+  Contact(s50) #Job Contact

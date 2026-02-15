@@ -1,0 +1,12 @@
+# wellview / tubing_rods_equipment / wvOtherStrCompWireHead
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherStrCompWireHead: wvOtherStrCompWireHead +extension
+  DtTmRopeSocket(dt) #Rope Socket Build Date
+  RunNoRopeSocketMax(s10) #Rope Socket Run # Max
+  RunNoRopeSocketStart(s10) #Rope Socket Run # Start
+  RunNoRopeSocketEndCalc(s10_calc) #Rope Socket Run # End
+  WiresBreakStrength(dbl_N) #Wires Break Strength
+  WiresTiedNo(int) ## Wires Tied Back
+  TensionWeakPointMax(dbl_N) #80% Weak Point Tension
+  SzWireLine(dbl_m) #Wire Diameter

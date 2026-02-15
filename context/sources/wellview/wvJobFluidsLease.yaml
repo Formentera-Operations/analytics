@@ -1,0 +1,25 @@
+# wellview / operations_jobs / wvJobFluidsLease
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobFluidsLease: Fluid volumes to and from the lease during this job. +parent
+  DtTm(dt) #Date
+  FluidTyp(s100) #Fluid Type
+  ActionTyp(s100) #Fluid Sub Type
+  ToLease(dbl_m3) #Volume to Lease
+  Source(s100) #Source
+  IDRecSource(s32) #Source Link
+  FromLease(dbl_m3) #Volume from Lease
+  Dest(s100) #Destination
+  IDRecDest(s32) #Destination Link
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  Density(dbl_kgpm3) #Density
+  Carrier(s50) #Carrier
+  RefNoCarrier(s50) #Transport Reference #
+  EnvironmentTyp(s100) #Environmental Consideration
+  RateDiversionRef(dbl_m3pd) #Diversion Reference Rate
+  Purpose(s100) #Purpose
+  Exclude(bool) #Exclude From Calcs?
+  Note(s255) #Note
+  VolBSWToLeaseCalc(dbl_m3_calc) #BSW Amount to Lease
+  VolBSWFromLeaseCalc(dbl_m3_calc) #BSW Amount from Lease

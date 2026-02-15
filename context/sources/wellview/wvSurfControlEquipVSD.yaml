@@ -1,0 +1,20 @@
+# wellview / surface_equipment / wvSurfControlEquipVSD
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvSurfControlEquipVSD: Variable speed drive or Fixed speed drive details. +extension
+  KVARating(dbl_V) #KVA Rating
+  CurrentRating(dbl_A) #Amp Rating
+  HarmonicFilterOutput(bool) #Output Harmonic Filters?
+  HarmonicFilterInput(bool) #Input Harmonic Filters?
+  TVSSInstalled(bool) #TVSS Installed?
+  VoltageOutput(dbl_V) #Output Voltage
+  VoltageInput(dbl_V) #Input Voltage
+  InputFreq(dbl_Hz) #Input Frequency
+  LowerFreq(dbl_Hz) #Lower Freq
+  UpperFreq(dbl_Hz) #Upper Frequency
+  TVSSDes(s100) #TVSS Description
+  MtrControllerDes(s100) #Motor Controller Des
+  FuseSz(s20) #Fuse Size/Circuit Breaker
+  RatioCTInitial(s20) #Initial Current Transformer Ratio
+  RatioCTFinal(s20) #Final Current Transformer Ratio
+  Note(s255) #Note

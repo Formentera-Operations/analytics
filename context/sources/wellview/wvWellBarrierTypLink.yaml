@@ -1,0 +1,19 @@
+# wellview / integrity_barriers / wvWellBarrierTypLink
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvWellBarrierTypLink: Link the 'Well Barrier Type' to associated equipment by date. +parent
+  IDRecItem(s32) #Associated Items
+  Des(s255) #Draw Style
+  DesStringCalc(s100_calc) #Linked String Description
+  DepthTopCalc(dbl_m_calc) #Linked Component Top Depth
+  DepthBtmCalc(dbl_m_calc) #Linked Component Bottom Depth
+  ItemNoCalc(s10_calc) #Item Number
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Com(txt2k) #Comment
+  Qualifier(txt2k) #Qualifier
+  IDRecLastTestCalc(s32_calc) #Most Recent Test
+  IDRecLastStatusCalc(s32_calc) #Most Recent Status
+  IDRecProblemCalc(s32_calc) #Most Recent Failure

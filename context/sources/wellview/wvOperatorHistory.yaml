@@ -1,0 +1,12 @@
+# wellview / asset_management / wvOperatorHistory
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvOperatorHistory: History of operators of this well. +parent
+  Operator(s50) #Operator Name
+  OperatorCode(s50) #Operator Code
+  ChangeTyp1(s100) #Change Type
+  ChangeTyp2(s100) #Change Subtype
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Source(s50) #Source
+  Com(txt2k) #Comment

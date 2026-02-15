@@ -1,0 +1,73 @@
+# wellview / operations_jobs / wvJobProgramDrillParam
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramDrillParam: Planned drilling parameter min & max for this 'Job'. +parent
+  Typ1(s100) #Parameter Type
+  Typ2(s100) #Parameter Subtype
+  DepthTop(dbl_m) #Interval Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Interval Top Depth (TVD)
+  DepthBtm(dbl_m) #Interval Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Interval Bottom Depth (TVD)
+  IDRecWellbore(s32) #Wellbore
+  IDRecItem(s32) #Proposed Bit/Drill String
+  DrillConsid(s100) #Drilling Considerations
+  FormationProgCalc(s100_calc) #Prog Formation
+  DtTmStartPlanMLCalc(dt_calc) #Planned Likely Start Date
+  DtTmEndPlanMLCalc(dt_calc) #Planned Likely End Date
+  DtTmStartActualCalc(dt_calc) #Actual Start Date
+  DtTmEndActualCalc(dt_calc) #Actual End Date
+  Com(txt2k) #Comment
+  WOBMax(dbl_N) #Weight on Bit Max
+  WOBMin(dbl_N) #Weight on Bit Min
+  RPMStringMax(dbl_rpm) #RPM Max
+  RPMStringMin(dbl_rpm) #RPM Min
+  LiquidInjRateMax(dbl_m3pd) #Flow Rate Max
+  LiquidInjRateMin(dbl_m3pd) #Flow Rate Min
+  LiquidInjRateRiserMax(dbl_m3pd) #Riser Boost Max
+  LiquidInjRateRiserMin(dbl_m3pd) #Riser Boost Min
+  ROPMax(dbl_mpd) #ROP Max
+  ROPMin(dbl_mpd) #ROP Min
+  SPPDrillMax(dbl_kPa) #Stand Pipe Pressure Max
+  SPPDrillMin(dbl_kPa) #Stand Pipe Pressure Min
+  ROPInstMax(dbl_mpd) #ROP Instantaneous Max
+  ROPInstMin(dbl_mpd) #ROP Instantaneous Min
+  ECDMax(dbl_kgpm3) #ECD Max
+  ECDMin(dbl_kgpm3) #ECD Min
+  SzODVGStabMax(dbl_m) #VG Stabilizer OD Max
+  SzODVGStabMin(dbl_m) #VG Stabilizer OD min
+  HookLoadRotatingMax(dbl_N) #Drilling String Weight Max
+  HookLoadRotatingMin(dbl_N) #Drilling String Weight Min
+  HookLoadPickUpMax(dbl_N) #Pick-Up String Weight Max
+  HookLoadPickUpMin(dbl_N) #Pick-Up String Weight Min
+  HookLoadSlackOffMax(dbl_N) #Slack-Off String Weight Max
+  HookLoadSlackOffMin(dbl_N) #Slack-Off String Weight Min
+  HookLoadOffBottomMax(dbl_N) #Off-Bottom String Weight Max
+  HookLoadOffBottomMin(dbl_N) #Off-Bottom String Weight Min
+  TorqueDrillMax(dbl) #Drilling Torque Max
+  TorqueDrillMin(dbl) #Drilling Torque Min
+  TorqueOffBtmMax(dbl) #Off Bottom Torque Max
+  TorqueOffBtmMin(dbl) #Off Bottom Torque Min
+  TorqueUnits(s10) #Torque Units
+  RPMMotorMax(dbl_rpm) #Motor RPM Max
+  RPMMotorMin(dbl_rpm) #Motor RPM Min
+  TFORef(s10) #TFO Reference
+  TFOMax(dbl_deg) #Tool Face Orientation Max
+  TFOMin(dbl_deg) #Tool Face Orientation Min
+  SPPDiffMax(dbl_kPa) #SPP Differential Pressure Max
+  SPPDiffMin(dbl_kPa) #SPP Differential Pressure Min
+  GasInjRateMax(dbl_m3pd) #Gas Injection Rate Max
+  GasInjRateMin(dbl_m3pd) #Gas Injection Rate Min
+  InjTempMax(dbl_degC) #Injection Temperature Max
+  InjTempMin(dbl_degC) #Injection Temperature Min
+  BHAAnPresMax(dbl_kPa) #Bottom Hole Annulus Pressure Max
+  BHAAnPresMin(dbl_kPa) #Bottom Hole Annulus Pressure Min
+  BHTempMax(dbl_degC) #BH Temperature Max
+  BHTempMin(dbl_degC) #BH Temperature Min
+  SurfAnnPresMax(dbl_kPa) #Surface Annulus Pressure Max
+  SurfAnnPresMin(dbl_kPa) #Surface Annulus Pressure Min
+  SurfAnnTempMax(dbl_degC) #Surface Annulus Temperature Max
+  SurfAnnTempMin(dbl_degC) #Surface Annulus Temperature Min
+  LiquidReturnRateMax(dbl_m3pd) #Liquid Return Rate Max
+  LiquidReturnRateMin(dbl_m3pd) #Liquid Return Rate Min
+  GasReturnRateMax(dbl_m3pd) #Gas Return Rate Max
+  GasReturnRateMin(dbl_m3pd) #Gas Return Rate Min

@@ -1,0 +1,7 @@
+# wellview / operations_jobs / wvJobProgramPhaseZoneAlloc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramPhaseZoneAlloc: For phases that involve multiple 'Zone', you can enter the 'Zone' and a % allocation to costs and time for the phase. +parent
+  IDRecZoneCompletion(s32) #Completion/Zone
+  Allocation(dbl_pct) #Allocation
+  Note(s255) #Note

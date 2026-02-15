@@ -1,0 +1,36 @@
+# wellview / operations_jobs / wvJCostCumCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJCostCumCalc: Cumulative costs for the job. Costs broken down by cost codes and description. +parent
+  Des(s100_calc) #Cost Description
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Code5(s100_calc) #Code 5
+  Code6(s100_calc) #Code 6
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostNormAFE(dbl_cost_calc) #Normalized AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE Supp Amount
+  CostNormAFESup(dbl_cost_calc) #Normalized AFE Supp Amount
+  CostAFETotal(dbl_cost_calc) #AFE + Supp Amount
+  CostNormAFETotal(dbl_cost_calc) #Normalized AFE + Supp Amount
+  CostFieldEst(dbl_cost_calc) #Field Est
+  CostNormFieldEst(dbl_cost_calc) #Normalized Field Est
+  CostVar(dbl_cost_calc) #AFE-Field Est
+  CostNormVar(dbl_cost_calc) #Normalized AFE-Field Est
+  CostFinalInvoice(dbl_cost_calc) #Final Invoice
+  CostNormFinalInvoice(dbl_cost_calc) #Normalized Final Invoice
+  CostAFEFinalVar(dbl_cost_calc) #AFE - Final Invoice
+  CostNormAFEFinalVar(dbl_cost_calc) #Normalized AFE - Final Invoice
+  CostFieldFinalVar(dbl_cost_calc) #Field - Final Invoice
+  CostNormFieldFinalVar(dbl_cost_calc) #Normalized Field - Final Invoice
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+  CostAFEForecastVar(dbl_cost_calc) #AFE - Forecast
+  CostForecastFieldVar(dbl_cost_calc) #Forecast - Field Est
+  CostNormAFEForecastVar(dbl_cost_calc) #Normalized AFE - Forecast
+  CostNormForecastFieldVar(dbl_cost_calc) #Normalized Forecast - Field
+  IsAFERecord(bool_calc) #AFE Record?
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

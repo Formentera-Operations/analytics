@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJRTLCumCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRTLCumCalc: Cum of 'Job Time Log' records to the end of the reporting period. +parent
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Duration(dbl_days_calc) #Duration
+  DurCum(dbl_days_calc) #Cum Duration
+  OpsCategory(s50_calc) #Ops Category
+  UnschedTyp(s100_calc) #Unscheduled Type
+  IDRecJob(s32_calc) #Job
+  FractionTotalTime(dbl_pct_calc) #% Total Time
+  FractionCumTotalTime(dbl_pct_calc) #Cum % Total Time
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

@@ -1,0 +1,12 @@
+# wellview / general / wvWellStatusHistory
+# Source: context/sources/wellview/domains/general.yaml
+#
+wvWellStatusHistory: Well status history. +parent
+  DtTm(dt) #Date
+  WellStatus1(s50) #Well Status
+  WellStatus2(s50) #Well Sub-Status
+  WellTyp1(s100) #Well Type
+  WellTyp2(s100) #Well Subtype
+  Source(s50) #Source
+  PrimaryFluidDes(s100) #Fluid Type
+  Com(txt2k) #Comment

@@ -1,0 +1,18 @@
+# prodview / reference / pvUnitChemRecurEntry
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitChemRecurEntry: Recurring Chemical Entries +parent | In the Recurring Chemical Entries table, show the amount of chemical that is consumed. You enter the
+  DtTm(dt) #Date
+  Reading(dbl) #Reading
+  AmtInventoryAdd(dbl) #Inventory Added
+  AmtConsumedCalc(dbl_calc) #Amount Consumed
+  AmtInventoryCloseCalc(dbl_calc) #Closing Inventory
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

@@ -1,0 +1,14 @@
+# wellview / operations_jobs / wvJobSafetyChk
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSafetyChk: Safety checks, meetings and tests that occurred during the 'Job'. +parent
+  DtTm(dt) #Date
+  Typ(s100) #Type
+  TypFrequency(dbl_days) #Days to Next Check
+  Tour(s50) #Tour
+  Inspector(s50) #Inspected By
+  Des(s100) #Description
+  Result(s50) #Result
+  NextDtTmCalc(dt_calc) #Next Date
+  ReportNoCalc(dbl_calc) #Report Number
+  Com(txt2k) #Comment

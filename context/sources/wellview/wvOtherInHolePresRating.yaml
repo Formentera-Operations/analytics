@@ -1,0 +1,9 @@
+# wellview / tubing_rods_equipment / wvOtherInHolePresRating
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherInHolePresRating: Burst and collapse pressure changes over time. +parent
+  DtTm(dt) #Date
+  PresBurst(dbl_kPa) #Burst Pressure
+  PresCollapse(dbl_kPa) #Collapse Pressure
+  Reason(s100) #Reason for Change
+  Note(s255) #Note

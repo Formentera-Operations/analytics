@@ -1,0 +1,26 @@
+# wellview / production_operations / wvFluidAnalysisGas
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisGas: Detailed gas properties. +extension
+  ValMoistFreeGrossHeat(dbl_Jpm3) #Gross Heating Value Moisture Free
+  ValMoistAcidFreeGrossHeat(dbl_Jpm3) #Gross Heating Value Moisture+Acid Free
+  PresGrossHeatRef(dbl_kPa) #Gross Heating Value Ref Pres
+  TempRefGrossHeat(dbl_degC) #Gross Heating Value Ref Temp
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  DensitySampleRel(dbl) #Total Sample Relative Density
+  MolecularMassTotalSample(dbl) #Total Sample Molecular Mass
+  PresRefTotalSample(dbl_kPa) #Total Sample Ref Pres
+  TempRefTotalSample(dbl_degC) #Total Sample Ref Temp
+  DensityC7(dbl_kgpm3) #C7+ Density
+  DensityC7Rel(dbl) #C7+ Relative Density
+  MolecularMassC7(dbl) #C7+ Molecular Mass
+  PresRefC7(dbl_kPa) #C7+ Ref Pressure
+  TempRefC7(dbl_degC) #C7+ Ref Temp
+  PresPCSample(dbl_kPa) #Sample Pseudo Critical Pressure
+  TempPCSample(dbl_degC) #Sample Pseudo Critical Temp
+  PresPCAcidGasFree(dbl_kPa) #Acid Gas Free Pseudo Critical Pressure
+  TempPCAcidGasFree(dbl_degC) #Acid Gas Free Pseudo Critical Temp
+  H2S(dbl_pct) #H2S
+  H2SMethod(s50) #H2S Method
+  PresVapourPentane(dbl_kPa) #Pentanes Plus Vapour Pressure
+  Com(txt2k) #Comment

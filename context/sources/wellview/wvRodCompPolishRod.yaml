@@ -1,0 +1,9 @@
+# wellview / tubing_rods_equipment / wvRodCompPolishRod
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvRodCompPolishRod: Polish rod details. +extension
+  PolishRodLnr(bool) #Liner?
+  SzODPolishRodLnr(dbl_m) #OD (Liner)
+  LengthPolishRodLnr(dbl_m) #Liner Length
+  MaterialPolishRodLnr(s20) #Liner Material
+  Com(txt2k) #Comment

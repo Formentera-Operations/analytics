@@ -1,0 +1,12 @@
+# wellview / geological_evaluations / wvLogCurve
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvLogCurve: Individual log curve details. +parent
+  Des(s100) #Description
+  Mnemonic(s50) #Mnemonic
+  APICode(s50) #API Code
+  DepthTop(dbl_m) #Reference Depth Top
+  DepthBtm(dbl_m) #Reference Depth Bottom
+  UnitLabel(s20) #Units
+  DisplayFlag(bool) #Display?
+  ExcludeFromExport(bool) #Exclude From Export?

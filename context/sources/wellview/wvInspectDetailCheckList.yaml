@@ -1,0 +1,12 @@
+# wellview / operations_inspections / wvInspectDetailCheckList
+# Source: context/sources/wellview/domains/operations_inspections.yaml
+#
+wvInspectDetailCheckList: Inspection check list +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s255) #Description
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  RefNo(s20) #Reference #
+  ActionRqd(bool) #Action Required?
+  Com(txt2k) #Comment

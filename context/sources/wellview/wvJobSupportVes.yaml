@@ -1,0 +1,19 @@
+# wellview / operations_jobs / wvJobSupportVes
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSupportVes: Support vessel details. +parent
+  Typ1(s100) #Vessel Type
+  Typ2(s100) #Vessel Subtype
+  Des(s100) #Description
+  VesselName(s50) #Vessel Name
+  Supplier(s50) #Supplier
+  DtTmArrive(dt) #Arrival Date
+  LocOrigin(s50) #Location Origin
+  DtTmDepart(dt) #Departure Date
+  LocDest(s100) #Location Destination
+  PassengerCapacity(int) #Passenger Capacity
+  Qty(int) #Quantity
+  RefNoVessel(s50) #Vessel Reference #
+  Note(s255) #Note
+  DtTmArrivePlan(dt) #Planned Arrival Date
+  DtTmDepartPlan(dt) #Planned Departure Date

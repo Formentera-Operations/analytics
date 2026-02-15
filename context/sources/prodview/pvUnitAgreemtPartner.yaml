@@ -1,0 +1,9 @@
+# prodview / admin / pvUnitAgreemtPartner
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvUnitAgreemtPartner: Agreement Partners +parent
+  IDRecPartner(s32) #Partner
+  TypFluidProd(s50) #Product Type
+  SubTypFluidProd(s50) #Sub Product Type
+  Interest(dbl_pct) #Interest
+  Com(txt2k) #Comment

@@ -1,0 +1,11 @@
+# wellview / other / wvComment
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvComment: Additional comments. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  CommentBy(s50) #Comment By
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1

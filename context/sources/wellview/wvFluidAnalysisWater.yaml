@@ -1,0 +1,19 @@
+# wellview / production_operations / wvFluidAnalysisWater
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysisWater: Water property details. +extension
+  SolidsTotalEvap(dbl_kgpm3) #Total Dissolved Solids by Evap
+  TempRefSolidsTotalEvap(dbl_degC) #Evaporation Ref Temp
+  SolidsTotallIgnition(dbl_kgpm3) #Total Dissolved Solids at Ignition
+  pH(dbl) #pH
+  TempRefpH(dbl_degC) #pH Ref Temp
+  H2S(dbl_pct) #H2S
+  TempRefH2S(dbl_degC) #H2S Ref Temp
+  DensityRel(dbl_kgpm3) #Relative Density
+  TempRefDensityRel(dbl_degC) #Relative Density Ref Temp
+  Resistivity(dbl_ohm) #Resistivity
+  TempRefResistivity(dbl_degC) #Resistivity Ref Temp
+  Salinity(dbl_pct) #Salinity
+  RefractiveIndex(dbl) #Refractive Index
+  TempRefRefractiveIndex(dbl_degC) #Refractive Index Ref Temp
+  Com(txt2k) #Comment

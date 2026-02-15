@@ -1,0 +1,47 @@
+# wellview / tubing_rods_equipment / wvOtherStrParam
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherStrParam: Operating parameters by time and depth or the work string. +parent
+  Typ1(s100) #Parameter Type
+  Typ2(s100) #Parameter Subtype
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurCalc(dbl_days_calc) #Duration Total
+  DurRIH(dbl_days) #Duration Running in Hole
+  DurPOOH(dbl_days) #Duration Pulling out of Hole
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  DepthRef(dbl_m) #Reference Depth
+  RunNo(s10) #Run #
+  RunNoRopeSocket(s10) #Rope Socket Run #
+  MisRun(bool) #Mis Run?
+  VolPumped(dbl_m3) #Vol Pumped
+  IDRecWellbore(s32) #Wellbore
+  Com(txt2k) #Comment
+  PresStart(dbl_kPa) #Pressure Start
+  PresEnd(dbl_kPa) #Pressure End
+  PresAvg(dbl_kPa) #Pressure Avg
+  PresMax(dbl_kPa) #Pressure Max
+  PresMin(dbl_kPa) #Pressure Min
+  RateAvg(dbl_m3pd) #Rate Avg
+  RateMax(dbl_m3pd) #Rate Max
+  RateMin(dbl_m3pd) #Rate Min
+  SpeedAvg(dbl_mpd) #Speed Avg
+  SpeedMax(dbl_mpd) #Speed Max
+  SpeedMin(dbl_mpd) #Speed Min
+  TensionOffBtm(dbl_N) #Tension Off Bottom
+  TensionAvg(dbl_N) #Tension Avg
+  TensionMax(dbl_N) #Tension Max
+  TensionMin(dbl_N) #Tension Min
+  VoltageAvg(dbl_V) #Voltage Avg
+  VoltageMax(dbl_V) #Voltage Max
+  VoltageMin(dbl_V) #Voltage Min
+  CurrentAvg(dbl_A) #Current Avg
+  CurrentMax(dbl_A) #Current Max
+  CurrentMin(dbl_A) #Current Min
+  ReportNoCalc(dbl_calc) #Report Number
+  InclStartCalc(dbl_deg_calc) #Top Inclination
+  InclEndCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination

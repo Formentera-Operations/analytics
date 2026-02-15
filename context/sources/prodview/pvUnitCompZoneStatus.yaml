@@ -1,0 +1,16 @@
+# prodview / completions / pvUnitCompZoneStatus
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompZoneStatus: Zone Status +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  PrimaryFluidTyp(s50) #Primary Fluid Type
+  TypFluidProd(s50) #Oil or Condensate
+  MethodProd(s50) #Production Method
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  Com(txt2k) #Comment

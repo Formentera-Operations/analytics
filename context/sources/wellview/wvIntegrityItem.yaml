@@ -1,0 +1,41 @@
+# wellview / integrity_barriers / wvIntegrityItem
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvIntegrityItem: The items and details that make up the integrity program. The combination of 'Integrity Item.Type 1' - 'Integrity Item.Type 2' - 'Integrity Item.Ty... +parent
+  Typ1(s100) #Type 1
+  Typ2(s100) #Type 2
+  Typ3(s100) #Type 3
+  Typ4(s100) #Type 4
+  ActionTyp(s100) #Category
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  ResponsiblePerson(s50) #Responsible Person
+  RequiredBy(s50) #Required By
+  RequiredByReg(bool) #Regulatory Requirement?
+  Com(txt2k) #Comment
+  RiskTyp1(s100) #Primary Risk
+  RiskTyp2(s100) #Primary Risk Cause
+  RiskLevel(s50) #Risk Level
+  RiskDes(s100) #Other Risk Description
+  RiskMitigationCom(txt2k) #Risk Mitigation Comments
+  ValueName(s50) #Value Name
+  ValueUnitLabel(s10) #Value Unit
+  SensorIDA(s50) #SensorIDA
+  SensorIDB(s50) #SensorIDB
+  DtTmCurrentStateCalc(dt_calc) #Current State Date
+  CurrentStateCalc(s50_calc) #Current Integrity State
+  CurrentStateColorCalc(int_calc) #Current Integrity State Color
+  CurrentStateNoteCalc(txt2k_calc) #Current Explanation of State
+  DtTmNextCalc(dt_calc) #Next Value Date
+  LastValueStateCalc(s50_calc) #Last Value Integrity State
+  LastValueStateColorCalc(int_calc) #Last Value Integrity State Color
+  LastValueStateNoteCalc(txt2k_calc) #Last Value Explanation of State
+  StateGreenMinCalc(dbl_calc) #Green Min Calc
+  StateGreenMaxCalc(dbl_calc) #Green Max Calc
+  StateYellowMinCalc(dbl_calc) #Yellow Min Calc
+  StateYellowMaxCalc(dbl_calc) #Yellow Max Calc
+  StateOrangeMinCalc(dbl_calc) #Orange Min Calc
+  StateOrangeMaxCalc(dbl_calc) #Orange Max Calc
+  StateRedMinCalc(dbl_calc) #Red Min Calc
+  StateRedMaxCalc(dbl_calc) #Red Max Calc

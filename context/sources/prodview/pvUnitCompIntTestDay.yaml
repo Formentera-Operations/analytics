@@ -1,0 +1,68 @@
+# prodview / completions / pvUnitCompIntTestDay
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompIntTestDay: Flowback Test Days +parent
+  DtTm(dt) #Date
+  DurCumTest(dbl_days) #Test Hours
+  Com(txt255) #Note
+  VolTotLiquid(dbl_m3) #Vol Total Liquid
+  VolHCLiq(dbl_m3) #Vol HCLiq
+  VolGas(dbl_m3) #Vol Gas
+  VolWater(dbl_m3) #Vol Water
+  VolSand(dbl_m3) #Vol Sand
+  BSW(dbl_pct) #Oil/Emul BS&W
+  GOR(dbl_m3pm3) #Gas Oil Ratio
+  CGR(dbl_m3pm3) #Condensate Gas Ratio
+  WGR(dbl_m3pm3) #Water Gas Ratio
+  VolRecovHCLiq(dbl_m3) #Recovered Load Oil/Condensate
+  VolRecovGas(dbl_m3) #Recovered Lift Gas
+  VolRecovWater(dbl_m3) #Recovered Load Water
+  VolRecovSand(dbl_m3) #Recovered Sand
+  VolInjectRecovGas(dbl_m3) #Injected Lift Gas
+  VolInjectRecovHCLiq(dbl_m3) #Injected Load Oil/Condensate
+  VolInjectRecovWater(dbl_m3) #Injected Load Water
+  VolInjectRecovSand(dbl_m3) #Injected Sand
+  VolRemainRecovHCLiq(dbl_m3) #Remaining Load Oil/Condensate
+  VolRemainRecovGas(dbl_m3) #Remaining Lift Gas
+  VolRemainRecovWater(dbl_m3) #Remaining Load Water
+  VolRemainRecovSand(dbl_m3) #Remaining Sand
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  PresLine(dbl_kPa) #Line Pressure
+  TempWH(dbl_degC) #Wellhead Temperature
+  SzChoke(double, meter) #Choke Size
+  PresWH(dbl_kPa) #Wellhead Pressure
+  PresBH(dbl_kPa) #Bottomhole Pressure
+  TempBH(dbl_degC) #Bottomhole Temperature
+  SzRun(double, meter) #Run Size
+  PresStatic(dbl) #Static Pressure (gauge)
+  PresDiff(dbl) #Differential Pressure
+  MeterTemp(dbl) #Meter Temperature
+  SzOrifice(dbl) #Orifice Size
+  DensitySample(dbl_kgpm3) #Total Sample Density
+  TempRefSample(dbl_degC) #Total Sample Ref Temp
+  APISample(dbl_kgpm3) #Total Sample API
+  H2S(dbl_pct) #H2S
+  pH(dbl) #pH
+  Salinity(dbl_pct) #Salinity
+  PresUser1(dbl_kPa) #User Pressure 1
+  PresUser2(dbl_kPa) #User Pressure 2
+  PresUser3(dbl_kPa) #User Pressure 3
+  TempUser1(dbl_degC) #User Temperature 1
+  TempUser2(dbl_degC) #User Temperature 2
+  TempUser3(dbl_degC) #User Temperature 3
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #% of Remaining Recoverable Water
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5

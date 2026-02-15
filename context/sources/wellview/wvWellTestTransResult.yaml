@@ -1,0 +1,26 @@
+# wellview / reservoir_tests / wvWellTestTransResult
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestTransResult: Results of the 'Well Test'. +parent
+  AnalysisMethod(s50) #Analysis Method
+  AnalysisSoftware(s50) #Analysis Software
+  Analyst(s50) #Analyst
+  AnalysisCom(txt2k) #Comment
+  Definitive(bool) #Definitive Test?
+  PresResMPP(dbl_kPa) #MPP Pressure
+  DepthMPP(dbl_m) #MPP Depth
+  DepthTVDMPPCalc(dbl_m_calc) #MPP Depth (TVD)
+  PresResDatum(dbl_kPa) #Datum Pressure
+  Skin(dbl) #Skin
+  ResPermHor(dbl_m2) #Res Perm Hor
+  TempRes(dbl_degC) #Res Temp
+  ProductivityIndex(dbl_m3pdkPa) #Productivity Index
+  SPICalc(dbl_m2pdkPa_calc) #Specific Productivity Index
+  ProductivityCoef(dbl) #Productivity Coef
+  AOF(dbl_m3pd) #AOF
+  ResPermRatio(dbl) #Res Perm Ratio
+  ProductivityExp(dbl) #Productivity Exp
+  ResBoundTyp(s100) #Res Bound Type
+  ResBoundNote(s255) #Res Bound Note
+  MobilityRatio(dbl) #Mobility Ratio
+  InvestRadius(dbl_m) #Invest Radius

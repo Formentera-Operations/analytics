@@ -1,0 +1,13 @@
+# wellview / asset_management / wvExtReportDetailCheckList
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvExtReportDetailCheckList: Define the detailed elements for the regulatory or external submission. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtyp
+  Des(s255) #Description
+  RefNo(s20) #Reference #
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  IDRecItem(s32) #Link
+  ActionRqd(bool) #Action Required?
+  Com(txt2k) #Comment
