@@ -9,3 +9,5 @@ sources:
     tables:
       - name: WVT_WVPROBLEM
         description: "Production failures — equipment failure records with diagnosis, repair, and cost tracking"
+      - name: WVT_WVPRODSETTING
+        description: "Production settings — production method type/detail by time period, canonical artificial lift type source (sparsely populated)"

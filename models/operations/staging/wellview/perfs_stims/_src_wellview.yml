@@ -19,6 +19,8 @@ sources:
         description: "Stimulation fluid additives — chemical additives per fluid system"
       - name: WVT_WVSTIMINTPROP
         description: "Stimulation proppant — proppant details per treatment interval"
+      - name: WVT_WVSTIMINTSTG
+        description: "Stimulation interval stages — individual pump stages within a treatment interval (pump down, acid, slurry, flush)"
       - name: WVT_WVSWAB
         description: "Swabs — swab operation headers with dates, depths, and results"
       - name: WVT_WVSWABDETAILS

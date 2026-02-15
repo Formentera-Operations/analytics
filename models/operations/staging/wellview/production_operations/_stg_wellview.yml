@@ -196,3 +196,104 @@ models:
         description: "Fivetran sync timestamp (TZ)"
       - name: _loaded_at
         description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__production_settings
+  # ==========================================================================
+  - name: stg_wellview__production_settings
+    description: >
+      Production settings staging from WellView. One row per production setting period.
+      Tracks the production method type (artificial lift type), operating objective,
+      and tubing/casing pressures over date-bounded periods. The canonical source for
+      artificial lift classification (PRODMETHTYP) but sparsely populated — only ~649
+      of ~19,767 records have a non-null production_method_type. The setting_objective
+      field (19,222 populated) provides a useful secondary signal.
+      Source: WVT_WVPRODSETTING (CALC schema). 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: production_setting_sk
+        description: "Surrogate key (MD5 hash of production_setting_id)"
+
+      # -- identifiers
+      - name: production_setting_id
+        description: "WellView production setting GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: zone_completion_id
+        description: "Associated zone/completion record ID. WellView: IDRECZONECOMPLETION"
+      - name: zone_completion_table_key
+        description: "Zone/completion table key. WellView: IDRECZONECOMPLETIONTK"
+
+      # -- production method
+      - name: production_method_type
+        description: >
+          Canonical artificial lift type. Sparsely populated (~3% of records).
+          Values: wvprodsettingrodpump, wvProdSettingESP, wvprodsettinggaslift,
+          wvprodsettingplunger, wvprodsettingflow. WellView: PRODMETHTYP
+      - name: production_method_detail
+        description: >
+          Production method sub-category detail. Examples: PU-ELC-AUTO (rod pump electric auto),
+          VSD (ESP variable speed drive), GL (gas lift), PL (plunger), FL (flowing).
+          WellView: PRODMETHDETAIL
+
+      # -- setting details
+      - name: setting_objective
+        description: >
+          Operating objective for this setting period. Often contains lift type info
+          even when production_method_type is NULL (e.g., 'ESP pump').
+          WellView: SETTINGOBJECTIVE
+      - name: setting_result
+        description: "Result or outcome of this production setting period. WellView: SETTINGRESULT"
+      - name: comment
+        description: "Free-text comments. WellView: COM"
+
+      # -- pressures
+      - name: tubing_pressure_psi
+        description: "Tubing pressure converted from kPa to PSI. WellView: PRESTUB"
+      - name: casing_pressure_psi
+        description: "Casing pressure converted from kPa to PSI. WellView: PRESCAS"
+
+      # -- dates
+      - name: setting_start_date
+        description: "Start date for this production setting period (NTZ). WellView: DTTMSTART"
+      - name: setting_end_date
+        description: "End date for this production setting period (NTZ). WellView: DTTMEND"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

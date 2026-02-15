@@ -209,6 +209,17 @@ Tables with `*Link` suffix (e.g., `wvCompletionLink`, `wvIntegrityItemLink`, `wv
 
 See [`calc_table_blueprint.md`](calc_table_blueprint.md) for the full analytics abstraction — entity hierarchies, metric catalog, grain map, semantic layer roadmap, and staging priorities.
 
+## Entity Model
+
+WellView data organizes into two business-centric entity models:
+
+- **Physical Well** — the well as a constructed asset (well → wellbore → zone → completion → equipment)
+- **Well Work** — operational activities performed on the well (job → daily report → cost/time/NPT/safety)
+
+These models define the business entities, their relationships, cross-system resolution patterns (WellView ↔ ProdView ↔ ODA ↔ Combo Curve ↔ Enverus), and the mart roadmap. They also stub out the broader enterprise entity model chapters: Production (ProdView), Finance (ODA), Land/Mineral/Ownership, and Economics (Combo Curve).
+
+See [`entity_model.md`](entity_model.md) for the full entity catalog, relationship maps, attribute authority rules, and mart roadmap.
+
 ## Schema Reference
 
 Detailed column-level schemas are in `context/sources/wellview/`.

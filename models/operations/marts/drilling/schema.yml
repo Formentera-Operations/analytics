@@ -110,3 +110,448 @@ models:
           - not_null:
               config:
                 severity: warn
+
+  - name: fct_daily_drilling_cost
+    description: >
+      Daily drilling cost fact table. One row per cost line item from WellView
+      daily reports. Enriched with job classification, well EID, and report date.
+      Incremental merge on cost_line_id with _loaded_at watermark. ~1.9M rows.
+    columns:
+      - name: daily_cost_sk
+        description: Surrogate key (MD5 hash of cost_line_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: cost_line_id
+        description: WellView cost line item natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+      - name: job_report_id
+        description: FK to the daily report containing this cost line
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: WellView job GUID
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: report_date
+        description: Date the cost was incurred
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_category
+        description: Job classification from WellView (e.g., Drilling, Completion, Facilities, Well Servicing, LWO, Capital WO)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_type_primary
+        description: Primary job type (e.g., New Drill, Workover, Recompletion)
+      - name: field_estimate_cost
+        description: Cost amount for this line item (field estimate, base currency)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: cumulative_field_estimate_cost
+        description: Running cumulative field estimate cost
+      - name: main_account_id
+        description: Level 1 account code
+      - name: sub_account_id
+        description: Level 2 account code
+      - name: spend_category
+        description: Level 3 account code (spend category)
+      - name: expense_type
+        description: Level 4 account code (expense type)
+      - name: tangible_intangible
+        description: Level 5 account code (tangible vs intangible)
+      - name: afe_category
+        description: Level 6 account code (AFE category)
+      - name: account_name
+        description: Human-readable account description
+      - name: vendor_name
+        description: Vendor or supplier name
+      - name: vendor_code
+        description: Vendor identifier code
+      - name: ops_category
+        description: Operational category classification
+      - name: status
+        description: Cost line item status
+      - name: purchase_order_number
+        description: Associated purchase order number
+      - name: work_order_number
+        description: Associated work order number
+      - name: ticket_number
+        description: Associated ticket number
+      - name: _loaded_at
+        description: Timestamp when the record was loaded by dbt
+
+  - name: fct_drilling_time
+    description: >
+      Drilling time fact table. One row per time log entry from WellView daily
+      reports. Includes activity duration, classification codes, depth, ROP,
+      and NPT flag. Enriched with job SK, phase SK, and well EID.
+      Clustered by job_id and report_date. ~762K rows.
+    columns:
+      - name: job_time_log_sk
+        description: Surrogate key (MD5 hash of time_log_id)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: time_log_id
+        description: WellView time log entry natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: job_id
+        description: WellView job GUID (natural FK to dim_job)
+        data_tests:
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: phase_sk
+        description: FK to dim_phase surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_phase')
+                field: phase_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: report_date
+        description: Date of the daily report (with fallback to activity start date)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: is_report_date_inferred
+        description: True when report_date fell back to start_datetime (no matching job report)
+
+      - name: duration_hours
+        description: Total elapsed time for this activity (hours)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              config:
+                severity: warn
+
+      - name: is_problem_time
+        description: Whether this activity is non-productive time (NPT)
+
+  - name: fct_npt_events
+    description: >
+      Non-productive time (NPT) event fact table. One row per interval problem
+      from WellView. Includes event duration (gross/net), cost, severity, and
+      categorization hierarchy. Enriched with job SK and well EID. ~14K rows.
+    columns:
+      - name: job_interval_problem_sk
+        description: Surrogate key (MD5 hash of record_id)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: record_id
+        description: WellView interval problem natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: parent_record_id
+        description: WellView job GUID (IDRECPARENT — natural FK to dim_job)
+        data_tests:
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: event_date
+        description: Date the NPT event began (start_date cast to date)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: problem_duration_gross_hours
+        description: Total event duration from start to end (hours)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              config:
+                severity: warn
+
+      - name: problem_duration_net_hours
+        description: Event duration after adjustments (hours)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+              config:
+                severity: warn
+
+      - name: major_category
+        description: High-level problem grouping (e.g., rig equip, formation)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: is_countable_npt
+        description: >
+          Whether this event should be included in NPT aggregations.
+          Inverse of exclude_from_problem_time_calculations (NULL treated as countable).
+
+  - name: fct_stimulation
+    description: >
+      Stimulation fact table. One row per actual stimulation job from WellView.
+      Contains pre-aggregated metrics from WellView calc rollups: stage counts,
+      proppant mass, fluid volumes, treatment rates, pressures, and costs.
+      Enriched with job SK and well EID. Filtered to actual (not proposed) stims.
+      Table materialization. ~3,842 rows.
+    columns:
+      - name: stimulation_sk
+        description: Surrogate key (MD5 hash of record_id)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: record_id
+        description: WellView stimulation natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key (NULL when stim has no job link)
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: stimulation_type
+        description: Stimulation type (e.g., Hydraulic Frac, Acid)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: stim_start_date
+        description: Date the stimulation began (start_date cast to date)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: actual_total_stages
+        description: Total number of stages (WellView calc rollup)
+
+      - name: total_number_of_clusters
+        description: Total cluster count across all stages (WellView calc)
+
+      - name: proppant_total_calc_lb
+        description: Total proppant mass in pounds (WellView calc)
+
+      - name: volume_clean_total_calc_bbl
+        description: Total clean fluid volume in barrels (WellView calc)
+
+      - name: total_cost
+        description: Total stimulation cost
+
+      - name: has_job_link
+        description: Whether this stim record has a linked WellView job
+
+  - name: fct_safety_events
+    description: >
+      Safety event fact table. UNION of safety checks (~57,856 rows) and
+      safety incidents (~4,711 rows) from WellView. Discriminated by
+      event_type ('check' or 'incident'). Enriched with job SK (via
+      parent_record_id → job) and well EID. Table materialization. ~62,567 rows.
+    columns:
+      - name: safety_event_sk
+        description: Surrogate key (from source staging model)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: record_id
+        description: WellView safety record natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null
+
+      - name: job_id
+        description: WellView job GUID (parent_record_id from safety records)
+        data_tests:
+          - not_null
+
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: event_type
+        description: Event discriminator — 'check' or 'incident'
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['check', 'incident']
+
+      - name: event_date
+        description: Date of the safety event
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: type_primary
+        description: Primary classification (check type or incident type)
+
+      - name: is_reportable
+        description: Whether the event is OSHA/regulatory reportable (incidents only)
+
+      - name: is_lost_time_incident
+        description: Whether the event resulted in lost work time (incidents only)
+
+      - name: lost_time_hours
+        description: Hours of lost work time (incidents only, NULL for checks)
+
+      - name: estimated_cost
+        description: Estimated cost of the event (incidents only, NULL for checks)

@@ -328,10 +328,6 @@ models:
       - name: comment
         description: "General comments. WellView: COM"
 
-      # -- sequence
-      - name: sequence_number
-        description: "Sequence number for ordering. WellView: SYSSEQ"
-
       # -- system locking
       - name: system_lock_me_ui
         description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
@@ -455,10 +451,6 @@ models:
       # -- comments
       - name: comment
         description: "General comments. WellView: COM"
-
-      # -- sequence
-      - name: sequence_number
-        description: "Sequence number for ordering. WellView: SYSSEQ"
 
       # -- system locking
       - name: system_lock_me_ui
@@ -633,10 +625,6 @@ models:
         description: "UTM grid zone designator. WellView: UTMGRIDZONE"
       - name: utm_data_source
         description: "Source of the UTM data. WellView: UTMSOURCE"
-
-      # -- sequence
-      - name: sequence_number
-        description: "Sequence number for ordering. WellView: SYSSEQ"
 
       # -- system locking
       - name: system_lock_me_ui

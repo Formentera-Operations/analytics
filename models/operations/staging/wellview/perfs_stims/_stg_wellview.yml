@@ -26,8 +26,6 @@ models:
           - not_null:
               config:
                 severity: warn
-      - name: parent_record_id
-        description: "Parent record GUID. WellView: IDRECPARENT"
       - name: wellbore_id
         description: "Wellbore GUID FK. WellView: IDRECWELLBORE"
       - name: wellbore_table_key
@@ -948,6 +946,288 @@ models:
         description: "System lock on this record. WellView: SYSLOCKME"
       - name: system_lock_children
         description: "System lock on child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__stimulation_interval_stages
+  # ==========================================================================
+  - name: stg_wellview__stimulation_interval_stages
+    description: >
+      Stimulation interval stage staging from WellView. One row per pump stage
+      within a treatment interval. Captures the step-by-step treatment sequence
+      (pump down, acid, pad, PLF at increasing concentrations, flush). 123K records
+      across 1,640 wells. Child of stg_wellview__stimulation_intervals via
+      stimulation_interval_id. Source: WVT_WVSTIMINTSTG (CALC schema). 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: stim_stage_sk
+        description: "Surrogate key (MD5 hash of stage_id)"
+
+      # -- identifiers
+      - name: stage_id
+        description: "WellView stim stage GUID — natural key. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: stimulation_interval_id
+        description: "Parent stimulation interval record ID. WellView: IDRECPARENT"
+      - name: fluid_id
+        description: "Reference to fluid system record. WellView: IDRECFLUID"
+      - name: fluid_table_key
+        description: "Fluid system table key. WellView: IDRECFLUIDTK"
+      - name: proppant_id
+        description: "Reference to proppant record. WellView: IDRECPROP"
+      - name: proppant_table_key
+        description: "Proppant table key. WellView: IDRECPROPTK"
+
+      # -- descriptive fields
+      - name: stage_number
+        description: "Stage sequence number within the treatment interval. WellView: STAGENUM"
+      - name: stage_type
+        description: "Stage type (Pump Down, Acid, Pad, PLF, Flush, Shut Down, Breakdown). WellView: STAGETYP1"
+      - name: stage_sub_type
+        description: "Stage sub-type for further classification. WellView: STAGETYP2"
+      - name: description
+        description: "Stage description (e.g., 'Pump Down - Fresh Water', '100 Mesh Brown @ 1.5'). WellView: DES"
+      - name: gas_description
+        description: "Gas description for energized treatments. WellView: GASDES"
+      - name: comment
+        description: "Free-text comments. WellView: COM"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      - name: balls_used
+        description: "Number of balls dropped during this stage. WellView: BALLSNOUSED"
+      - name: exclude_from_calculations
+        description: "Whether this stage is excluded from rollup calculations. WellView: EXCLUDE"
+
+      # -- duration
+      - name: pump_duration_minutes
+        description: "Total pump duration converted from days to minutes. WellView: DURPUMPTOTAL"
+
+      # -- treatment rates — surface pump
+      - name: pump_rate_surf_start_bbl_per_min
+        description: "Surface pump rate at start converted from m3/s to bbl/min. WellView: RATEPUMPSURFSTART"
+      - name: pump_rate_surf_avg_bbl_per_min
+        description: "Average surface pump rate converted from m3/s to bbl/min. WellView: RATEPUMPSURFAVG"
+      - name: pump_rate_surf_end_bbl_per_min
+        description: "Surface pump rate at end converted from m3/s to bbl/min. WellView: RATEPUMPSURFEND"
+
+      # -- treatment rates — bottom hole pump
+      - name: pump_rate_bh_start_bbl_per_min
+        description: "Bottom hole pump rate at start converted from m3/s to bbl/min. WellView: RATEPUMPBHSTART"
+      - name: pump_rate_bh_avg_bbl_per_min
+        description: "Average bottom hole pump rate converted from m3/s to bbl/min. WellView: RATEPUMPBHAVG"
+      - name: pump_rate_bh_end_bbl_per_min
+        description: "Bottom hole pump rate at end converted from m3/s to bbl/min. WellView: RATEPUMPBHEND"
+
+      # -- treatment rates — clean fluid
+      - name: clean_rate_start_bbl_per_min
+        description: "Clean fluid rate at start converted from m3/s to bbl/min. WellView: RATECLEANSTART"
+      - name: clean_rate_max_bbl_per_min
+        description: "Maximum clean fluid rate converted from m3/s to bbl/min. WellView: RATECLEANMAX"
+      - name: clean_rate_min_bbl_per_min
+        description: "Minimum clean fluid rate converted from m3/s to bbl/min. WellView: RATECLEANMIN"
+
+      # -- treatment rates — slurry
+      - name: slurry_rate_start_bbl_per_min
+        description: "Slurry rate at start converted from m3/s to bbl/min. WellView: RATESLURRYSTART"
+      - name: slurry_rate_avg_bbl_per_min
+        description: "Average slurry rate converted from m3/s to bbl/min. WellView: RATESLURRYAVG"
+      - name: slurry_rate_max_bbl_per_min
+        description: "Maximum slurry rate converted from m3/s to bbl/min. WellView: RATESLURRYMAX"
+      - name: slurry_rate_min_bbl_per_min
+        description: "Minimum slurry rate converted from m3/s to bbl/min. WellView: RATESLURRYMIN"
+      - name: slurry_rate_end_bbl_per_min
+        description: "Slurry rate at end converted from m3/s to bbl/min. WellView: RATESLURRYEND"
+
+      # -- treatment rates — CO2
+      - name: co2_rate_surf_start_bbl_per_min
+        description: "CO2 surface rate at start converted from m3/s to bbl/min. WellView: RATECO2SURFSTART"
+      - name: co2_rate_surf_avg_bbl_per_min
+        description: "Average CO2 surface rate converted from m3/s to bbl/min. WellView: RATECO2SURFAVG"
+      - name: co2_rate_surf_end_bbl_per_min
+        description: "CO2 surface rate at end converted from m3/s to bbl/min. WellView: RATECO2SURFEND"
+      - name: co2_rate_max_bbl_per_min
+        description: "Maximum CO2 rate converted from m3/s to bbl/min. WellView: RATECO2MAX"
+      - name: co2_rate_min_bbl_per_min
+        description: "Minimum CO2 rate converted from m3/s to bbl/min. WellView: RATECO2MIN"
+      - name: co2_foam_rate_start_bbl_per_min
+        description: "CO2 foam rate at start converted from m3/s to bbl/min. WellView: RATECO2FOAMSTART"
+      - name: co2_foam_rate_end_bbl_per_min
+        description: "CO2 foam rate at end converted from m3/s to bbl/min. WellView: RATECO2FOAMEND"
+
+      # -- treatment rates — N2
+      - name: n2_rate_surf_start_bbl_per_min
+        description: "N2 surface rate at start converted from m3/s to bbl/min. WellView: RATEN2SURFSTART"
+      - name: n2_rate_surf_avg_bbl_per_min
+        description: "Average N2 surface rate converted from m3/s to bbl/min. WellView: RATEN2SURFAVG"
+      - name: n2_rate_surf_end_bbl_per_min
+        description: "N2 surface rate at end converted from m3/s to bbl/min. WellView: RATEN2SURFEND"
+      - name: n2_rate_max_bbl_per_min
+        description: "Maximum N2 rate converted from m3/s to bbl/min. WellView: RATEN2MAX"
+      - name: n2_foam_rate_start_bbl_per_min
+        description: "N2 foam rate at start converted from m3/s to bbl/min. WellView: RATEN2FOAMSTART"
+      - name: n2_foam_rate_end_bbl_per_min
+        description: "N2 foam rate at end converted from m3/s to bbl/min. WellView: RATEN2FOAMEND"
+
+      # -- surface pressures
+      - name: surface_pressure_start_psi
+        description: "Surface pressure at start converted from kPa to PSI. WellView: PRESSURFSTART"
+      - name: surface_pressure_avg_psi
+        description: "Average surface pressure converted from kPa to PSI. WellView: PRESSURFAVG"
+      - name: surface_pressure_max_psi
+        description: "Maximum surface pressure converted from kPa to PSI. WellView: PRESSURFMAX"
+      - name: surface_pressure_min_psi
+        description: "Minimum surface pressure converted from kPa to PSI. WellView: PRESSURFMIN"
+      - name: surface_pressure_end_psi
+        description: "Surface pressure at end converted from kPa to PSI. WellView: PRESSURFEND"
+      - name: surface_pressure_max_minus_min_psi
+        description: "Surface pressure range (max - min) in PSI (calculated). WellView: PRESSURFMAXMINCALC"
+
+      # -- bottom hole pressures
+      - name: bh_pressure_start_psi
+        description: "Bottom hole pressure at start converted from kPa to PSI. WellView: PRESBHSTART"
+      - name: bh_pressure_avg_psi
+        description: "Average bottom hole pressure converted from kPa to PSI. WellView: PRESBHAVG"
+      - name: bh_pressure_end_psi
+        description: "Bottom hole pressure at end converted from kPa to PSI. WellView: PRESBHEND"
+      - name: bh_pressure_min_psi
+        description: "Minimum bottom hole pressure converted from kPa to PSI. WellView: PRESBHMIN"
+      - name: bh_pressure_max_minus_min_psi
+        description: "Bottom hole pressure range (max - min) in PSI (calculated). WellView: PRESBHMAXMINCALC"
+
+      # -- zone and pumping pressures
+      - name: zone_pressure_max_psi
+        description: "Maximum zone pressure converted from kPa to PSI. WellView: PRESZONEMAX"
+      - name: pumping_pressure_max_psi
+        description: "Maximum pumping pressure converted from kPa to PSI. WellView: PRESPUMPINGMAX"
+
+      # -- surface concentrations
+      - name: surf_conc_start_lb_per_gal
+        description: "Surface proppant concentration at start converted from kg/m3 to lb/gal. WellView: CONCSURFSTART"
+      - name: surf_conc_max_lb_per_gal
+        description: "Maximum surface concentration converted from kg/m3 to lb/gal. WellView: CONCSURFMAX"
+      - name: surf_conc_min_lb_per_gal
+        description: "Minimum surface concentration converted from kg/m3 to lb/gal. WellView: CONCSURFMIN"
+      - name: surf_conc_end_lb_per_gal
+        description: "Surface concentration at end converted from kg/m3 to lb/gal. WellView: CONCSURFEND"
+
+      # -- bottom hole concentrations
+      - name: bh_conc_start_lb_per_gal
+        description: "Bottom hole concentration at start converted from kg/m3 to lb/gal. WellView: CONCBHSTART"
+      - name: bh_conc_avg_lb_per_gal
+        description: "Average bottom hole concentration converted from kg/m3 to lb/gal. WellView: CONCBHAVG"
+      - name: bh_conc_max_lb_per_gal
+        description: "Maximum bottom hole concentration converted from kg/m3 to lb/gal. WellView: CONCBHMAX"
+      - name: bh_conc_min_lb_per_gal
+        description: "Minimum bottom hole concentration converted from kg/m3 to lb/gal. WellView: CONCBHMIN"
+      - name: bh_conc_end_lb_per_gal
+        description: "Bottom hole concentration at end converted from kg/m3 to lb/gal. WellView: CONCBHEND"
+
+      # -- volumes
+      - name: volume_slurry_bbl
+        description: "Slurry volume for this stage converted from m3 to bbl. WellView: VOLSLURRY"
+      - name: volume_slurry_cumulative_bbl
+        description: "Cumulative slurry volume converted from m3 to bbl (calculated). WellView: VOLSLURRYCUMCALC"
+      - name: volume_clean_bbl
+        description: "Clean fluid volume for this stage converted from m3 to bbl. WellView: VOLCLEAN"
+      - name: volume_clean_cumulative_bbl
+        description: "Cumulative clean volume converted from m3 to bbl (calculated). WellView: VOLCLEANCUMCALC"
+      - name: volume_net_clean_bbl
+        description: "Net clean volume (clean minus recovered) in bbl (calculated). WellView: VOLNETCLEANCALC"
+      - name: volume_net_slurry_bbl
+        description: "Net slurry volume (slurry minus recovered) in bbl (calculated). WellView: VOLNETSLURRYCALC"
+      - name: volume_recovered_cumulative_bbl
+        description: "Cumulative recovered volume in bbl (calculated). WellView: VOLRECOVEREDCUMCALC"
+      - name: volume_co2_bbl
+        description: "CO2 volume for this stage converted from m3 to bbl. WellView: VOLCO2"
+      - name: volume_co2_cumulative_bbl
+        description: "Cumulative CO2 volume in bbl (calculated). WellView: VOLCO2CUMCALC"
+      - name: volume_n2_bbl
+        description: "N2 volume for this stage converted from m3 to bbl. WellView: VOLN2"
+      - name: volume_n2_cumulative_bbl
+        description: "Cumulative N2 volume in bbl (calculated). WellView: VOLN2CUMCALC"
+
+      # -- proppant mass
+      - name: proppant_mass_lb
+        description: "Proppant mass for this stage converted from kg to lb. WellView: MASSPROP"
+      - name: proppant_mass_at_wellhead_lb
+        description: "Proppant mass at wellhead converted from kg to lb. WellView: MASSPROPWH"
+      - name: proppant_mass_cumulative_lb
+        description: "Cumulative proppant mass converted from kg to lb (calculated). WellView: MASSPROPCUMCALC"
+
+      # -- pump power
+      - name: pump_power_avg_hp
+        description: "Average pump power converted from watts to HP. WellView: PUMPPOWERAVG"
+
+      # -- temperatures
+      - name: treat_temperature_avg_fahrenheit
+        description: "Average treatment temperature converted from Celsius to Fahrenheit. WellView: TEMPTREATAVG"
+
+      # -- foam quality and friction
+      - name: foam_co2_quality_percent
+        description: "CO2 foam quality percentage (converted from fraction). WellView: FOAMCO2QUALITY"
+      - name: foam_n2_quality_percent
+        description: "N2 foam quality percentage (converted from fraction). WellView: FOAMN2QUALITY"
+      - name: friction_factor
+        description: "Friction factor (dimensionless). WellView: FRICTIONFACTOR"
+      - name: space_factor
+        description: "Space factor (dimensionless). WellView: SPACEFACTOR"
+
+      # -- user numeric fields
+      - name: user_number_1
+        description: "User-defined numeric field 1. WellView: USERNUM1"
+      - name: user_number_2
+        description: "User-defined numeric field 2. WellView: USERNUM2"
+      - name: user_number_3
+        description: "User-defined numeric field 3. WellView: USERNUM3"
+      - name: user_number_4
+        description: "User-defined numeric field 4. WellView: USERNUM4"
+      - name: user_number_5
+        description: "User-defined numeric field 5. WellView: USERNUM5"
+
+      # -- dates
+      - name: start_date
+        description: "Stage start date/time (NTZ). WellView: DTTMSTART"
+      - name: end_date
+        description: "Stage end date/time (NTZ). WellView: DTTMEND"
+
+      # -- system locking
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
       - name: system_lock_date
         description: "System lock date (NTZ). WellView: SYSLOCKDATE"
 

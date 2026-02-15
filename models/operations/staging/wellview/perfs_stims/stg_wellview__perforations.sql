@@ -22,7 +22,6 @@ renamed as (
         -- identifiers
         trim(idrec)::varchar as record_id,
         trim(idwell)::varchar as well_id,
-        trim(idrecparent)::varchar as parent_record_id,
         trim(idrecwellbore)::varchar as wellbore_id,
         trim(idrecwellboretk)::varchar as wellbore_table_key,
         trim(idreczoneor)::varchar as zone_id,
@@ -193,7 +192,6 @@ final as (
         -- identifiers
         record_id,
         well_id,
-        parent_record_id,
         wellbore_id,
         wellbore_table_key,
         zone_id,
