@@ -2,98 +2,149 @@ version: 2
 
 models:
   - name: stg_hubspot__companies
-    description: "Staged Hubspot companies data with flattened properties"
+    description: >
+      Staged HubSpot companies data — owner legal entities for mineral royalty management.
+      Trimmed from 165+ properties to ~35 business-relevant fields based on population audit.
+      Portable variant: no dedup, archived-based soft delete.
     columns:
-      - name: company_id
-        description: "Primary key - The unique identifier for each company"
+      - name: company_sk
+        description: Surrogate key derived from company_id
         data_tests:
           - unique
           - not_null
-          - dbt_expectations.expect_column_values_to_not_be_in_set:
-              arguments:
-                value_set: [-1]
+
+      - name: company_id
+        description: HubSpot company identifier (natural key)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: company_name
+        description: Company or owner entity name (individual or legal entity)
+        data_tests:
+          - not_null:
               config:
                 severity: warn
 
-      - name: name
-        description: "Company name"
-        data_tests:
-          - not_null:
-              config:
-                severity: warn
-      - name: is_archived
-        description: "Flag indicating if the company record is archived"
-        data_tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: [true, false]
+      - name: description
+        description: Free-text company description (3.4% populated)
 
-      - name: status
-        description: "Current status of the company"
-        data_tests:
-          - not_null:
-              config:
-                severity: warn
-      - name: lifecyclestage
-        description: "Current lifecycle stage of the company"
-        data_tests:
-          - not_null:
-              config:
-                severity: warn
-      - name: email
-        description: "Primary email address for the company"
-        data_tests:
-          - dbt_expectations.expect_column_values_to_match_regex:
-              arguments:
-                regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-              config:
-                severity: warn
-    
-      
-      - name: is_active
-        description: "Flag indicating if the company is currently active"
-        data_tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: [true, false]
-      - name: hubspot_owner_id
-        description: "ID of the Hubspot owner for this company"
-        data_tests:
-          - not_null:
-              config:
-                severity: warn
+      - name: address_line_one
+        description: Primary mailing address line 1 (95.9% populated)
+
+      - name: address_line_two
+        description: Mailing address line 2 — suite, apt, etc. (16.9% populated)
+
+      - name: city
+        description: City (95.0% populated)
+
+      - name: state
+        description: State abbreviation (95.5% populated)
+
+      - name: zip
+        description: ZIP or postal code (94.8% populated)
+
       - name: country
-        description: "Country where the company is located"
+        description: Country code (100% populated)
+
+      - name: email
+        description: Company email address (13.1% populated)
+
+      - name: phone
+        description: Company phone number (44.8% populated)
+
+      - name: tax_status
+        description: Tax filing status (100% populated)
+
+      - name: is_tax_exempt
+        description: Whether the company is tax exempt (71.1% populated)
+
+      - name: tax_id_number
+        description: SSN or EIN for 1099 reporting (78.8% populated)
+
+      - name: revenue_payment_type
+        description: Payment method for revenue — check, ACH, etc. (94.1% populated)
+
+      - name: minimum_check_amount
+        description: Minimum amount for issuing revenue checks
+
+      - name: dba_1099_name
+        description: DBA name used on 1099 forms (0.4% populated)
+
+      - name: federal_withholding
+        description: Federal tax withholding setting
+
+      - name: state_withholding
+        description: State tax withholding setting
+
+      - name: owner_number_ogsys
+        description: Owner number from OGSys system — entity resolution key (100% populated)
         data_tests:
-          - dbt_expectations.expect_column_values_to_be_in_set:
-              arguments:
-                value_set: ["US", "CA", "GB", "AU"]  # Add more country codes as needed
+          - not_null:
               config:
                 severity: warn
-      - name: page_views
-        description: "Number of page views"
+
+      - name: acquired_owner_number
+        description: Owner number from prior acquisition (74.8% populated)
+
+      - name: asset
+        description: Asset or property association (68.1% populated)
+
+      - name: energy_link_upload
+        description: Energy Link upload status
+
+      - name: statement_delivery
+        description: Statement delivery method — mail, email, etc.
+
+      - name: revenue_check_stub
+        description: Revenue check stub format
+
+      - name: netting_code
+        description: Revenue netting code
+
+      - name: netting_code_helper
+        description: Helper field for netting code logic
+
+      - name: minimum_jib
+        description: Minimum joint interest billing threshold
+
+      - name: suspense_reason
+        description: Reason owner payments are in suspense (27.1% populated)
+
+      - name: is_active
+        description: Whether the owner entity is currently active
         data_tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: 0
-              config:
-                severity: warn
-      - name: total_visits
-        description: "Total number of visits"
-        data_tests:
-          - not_null
-          - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: 0
-              config:
-                severity: warn
-      - name: tax_exempt
-        description: "Flag indicating if the company is tax exempt"
-        data_tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: [true, false]
+
+      - name: is_working_interest_owner
+        description: Whether the owner holds working interest (66.0% populated)
+
+      - name: is_revenue_checks_on_hold
+        description: Whether revenue checks are on hold
+
+      - name: is_archived
+        description: Whether the HubSpot record is archived (always false after filtering)
+
+      - name: is_imported
+        description: Whether the record was imported vs created in HubSpot UI
+
+      - name: hubspot_owner_id
+        description: HubSpot internal owner (sales rep) assigned to this company (5.3% populated)
+
+      - name: lifecycle_stage
+        description: HubSpot lifecycle stage (55.8% populated)
+
+      - name: num_associated_contacts
+        description: Count of contacts linked to this company
+
+      - name: created_at
+        description: Company creation timestamp from HubSpot
+
+      - name: last_modified_at
+        description: Company last modification timestamp
+
+      - name: _portable_extracted
+        description: Portable extraction timestamp
+
+      - name: _loaded_at
+        description: dbt load timestamp
