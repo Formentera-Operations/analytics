@@ -58,6 +58,8 @@ final as (
         daily_on_bottom_minutes,
         daily_off_bottom_minutes,
         daily_pipe_moving_minutes,
+        time_join_used_report_number_fallback,
+        time_join_used_date_fallback,
         npt_event_count,
         daily_npt_gross_hours,
         daily_npt_net_hours,

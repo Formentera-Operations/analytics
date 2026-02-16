@@ -104,6 +104,16 @@ models:
         description: Sum of time log NPT/problem hours for this report
       - name: daily_time_no_problem_hours
         description: Sum of time log non-problem hours for this report
+      - name: daily_on_bottom_minutes
+        description: Sum of on-bottom minutes for this report
+      - name: daily_off_bottom_minutes
+        description: Sum of off-bottom minutes for this report
+      - name: daily_pipe_moving_minutes
+        description: Sum of pipe-moving minutes for this report
+      - name: time_join_used_report_number_fallback
+        description: True when time-log rows were attributed via (job_id, report_number) because job_report_id was null
+      - name: time_join_used_date_fallback
+        description: True when time-log rows were attributed via canonical (job_id, report_date) fallback because job_report_id and report_number were null
       - name: npt_event_count
         description: Count of NPT interval problem records attributed to this report
       - name: daily_npt_gross_hours
@@ -113,7 +123,7 @@ models:
       - name: daily_npt_cost
         description: Sum of NPT problem cost for this report
       - name: npt_join_used_date_fallback
-        description: True when NPT was joined via (job_id, report_date) fallback because report_number was null
+        description: True when NPT rows with null report_number were attributed via canonical (job_id, report_date)
       - name: safety_event_count
         description: Count of safety checks and incidents attributed to this report
       - name: safety_check_count
@@ -125,7 +135,7 @@ models:
       - name: safety_estimated_cost
         description: Sum of estimated safety incident cost for this report
       - name: safety_join_used_date_fallback
-        description: True when safety was joined via (job_id, report_date) fallback because report_number was null
+        description: True when safety rows with null report_number were attributed via canonical (job_id, report_date)
       - name: source_synced_at
         description: Stable source freshness watermark across all joined source sets
       - name: _loaded_at

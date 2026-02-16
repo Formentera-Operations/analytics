@@ -307,14 +307,18 @@ models:
         description: Sum of field estimate cost line amounts attached to the report
       - name: daily_time_duration_hours
         description: Sum of time log duration hours attached to the report
+      - name: time_join_used_report_number_fallback
+        description: True when time-log attribution used (job_id, report_number) because job_report_id was null
+      - name: time_join_used_date_fallback
+        description: True when time-log attribution used canonical (job_id, report_date) because job_report_id and report_number were null
       - name: daily_npt_gross_hours
         description: Sum of NPT gross duration hours attributed to the report
       - name: safety_event_count
         description: Count of safety checks and incidents attributed to the report
       - name: npt_join_used_date_fallback
-        description: True when NPT attribution used report_date fallback (report_number was null)
+        description: True when NPT rows with null report_number were attributed via canonical report_date fallback
       - name: safety_join_used_date_fallback
-        description: True when safety attribution used report_date fallback (report_number was null)
+        description: True when safety rows with null report_number were attributed via canonical report_date fallback
       - name: source_synced_at
         description: Stable source freshness watermark across all joined source sets
       - name: _loaded_at

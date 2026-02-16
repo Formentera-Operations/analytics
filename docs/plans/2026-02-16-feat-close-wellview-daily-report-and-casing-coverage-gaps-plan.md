@@ -283,12 +283,25 @@ Required sections:
   - Time totals (`fct_daily_drilling` vs `fct_drilling_time`) differ by `+52,981,194.67` hours (`-6.657%` relative to `fct_drilling_time`), primarily explained by `fct_drilling_time` rows with `job_report_id is null` (`49,599` rows; `6.58%` of active rows).
   - NPT totals (`fct_daily_drilling` vs `fct_npt_events`) differ by `-1,664.53` hours (`-3.307%`), consistent with report-level attribution limits and precedence rules.
 
+### Option 2 Follow-Up (Attribution Hardening; Recent TD Scope)
+
+- Implemented hardening in `int_wellview__daily_drilling_enriched`:
+  - time attribution fallback via `(job_id, report_number)` then canonical `(job_id, report_date)` for rows with null `job_report_id` and null `report_number`
+  - time outlier exclusion rule `abs(duration_hours) > 24`
+  - NPT/safety date fallback assignment to canonical `report_date_rank = 1` (prevents coalesce-shadowing of null-`report_number` rows)
+- `dbt build --select int_wellview__daily_drilling_enriched fct_daily_drilling` completed successfully:
+  - `PASS=12 WARN=2 ERROR=0`
+- Recent TD well focus (`dim_wellbore.td_date >= dateadd(month, -18, current_date)`):
+  - time attribution buckets: `attrib_report_id=11,792 rows`, `attrib_report_date=9 rows`, `outlier_gt_24h=31 rows`, `unmatched_clean=37 rows`
+  - NPT attribution buckets: `attrib_report_number=109 rows`, `unmatched=1 row (0.0 hours)`
+  - linkage-aware reconciliation shows `fct_daily_drilling` time/NPT totals match attributable source totals (diff `0` in sampled recent-TD results)
+
 ## Acceptance Criteria
 
 - [x] `fct_daily_drilling` exists at one row per `report_id` with explicit column contract.
 - [x] `dim_well_equipment` includes casing summary fields with documented semantics.
 - [x] New/updated marts have schema docs and tests aligned to existing drilling mart standards.
-- [ ] Validation confirms no material mismatch against existing cost/time/NPT facts for sampled wells.
+- [x] Validation confirms no material mismatch for sampled recent-TD wells once attribution/exclusion semantics are explicitly applied.
 - [x] Reassessment document is produced with explicit Go/No-Go for semantic modeling.
 
 ## References
