@@ -101,6 +101,26 @@ perforation_summary as (
     group by well_id
 ),
 
+casing_actual as (
+    select *
+    from {{ ref('stg_wellview__casing_strings') }}
+    where lower(coalesce(proposed_or_actual, 'actual')) = 'actual'
+),
+
+casing_summary as (
+    select
+        well_id,
+        count(*) as casing_string_count_actual,
+        count_if(pull_datetime is null) as casing_strings_in_hole,
+        max(run_datetime) as latest_casing_run_date,
+        max(pull_datetime) as latest_casing_pull_date,
+        max(set_depth_ft) as max_casing_set_depth_ft,
+        max(max_nominal_od_in) as max_casing_nominal_od_in,
+        max(iff(coalesce(is_tapered, false), 1, 0)) = 1 as has_tapered_casing
+    from casing_actual
+    group by well_id
+),
+
 classified as (
     select
         {{ dbt_utils.generate_surrogate_key(['ws.well_id']) }} as well_equipment_sk,
@@ -121,6 +141,9 @@ classified as (
         coalesce(rs.rod_string_count_actual, 0) as rod_string_count_actual,
         coalesce(rs.rod_strings_in_hole, 0) as rod_strings_in_hole,
         coalesce(ts.has_esp_tubing, false) as has_esp_tubing,
+        coalesce(cs.casing_string_count_actual, 0) as casing_string_count_actual,
+        coalesce(cs.casing_strings_in_hole, 0) as casing_strings_in_hole,
+        coalesce(cs.has_tapered_casing, false) as has_tapered_casing,
 
         -- timing/depth snapshots
         ts.latest_tubing_run_date,
@@ -129,6 +152,10 @@ classified as (
         rs.latest_rod_run_date,
         rs.latest_rod_pull_date,
         rs.max_rod_set_depth_ft,
+        cs.latest_casing_run_date,
+        cs.latest_casing_pull_date,
+        cs.max_casing_set_depth_ft,
+        cs.max_casing_nominal_od_in,
 
         -- perforation snapshot
         coalesce(pf.perforation_count, 0) as perforation_count,
@@ -170,6 +197,8 @@ classified as (
         on ws.well_id = rs.well_id
     left join perforation_summary as pf
         on ws.well_id = pf.well_id
+    left join casing_summary as cs
+        on ws.well_id = cs.well_id
 ),
 
 final as (
@@ -188,12 +217,19 @@ final as (
         rod_string_count_actual,
         rod_strings_in_hole,
         has_esp_tubing,
+        casing_string_count_actual,
+        casing_strings_in_hole,
+        has_tapered_casing,
         latest_tubing_run_date,
         latest_tubing_pull_date,
         max_tubing_set_depth_ft,
         latest_rod_run_date,
         latest_rod_pull_date,
         max_rod_set_depth_ft,
+        latest_casing_run_date,
+        latest_casing_pull_date,
+        max_casing_set_depth_ft,
+        max_casing_nominal_od_in,
         perforation_count,
         perforation_shot_count,
         perforation_top_depth_ft,
