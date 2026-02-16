@@ -63,3 +63,80 @@ models:
         description: Stable source freshness watermark across daily costs, reports, and jobs
       - name: _loaded_at
         description: Timestamp when the record was loaded by dbt
+
+  - name: int_wellview__daily_drilling_enriched
+    description: >
+      Enriches WellView daily reports with rolled-up cost, time log, NPT, and safety
+      metrics at report grain. Ephemeral — compiles as CTE into fct_daily_drilling.
+      Grain: one row per daily report (report_id).
+    columns:
+      - name: daily_drilling_sk
+        description: Surrogate key (MD5 hash of report_id)
+      - name: job_sk
+        description: FK to dim_job surrogate key (MD5 hash of job_id)
+      - name: wellbore_sk
+        description: FK to dim_wellbore surrogate key (nullable when report has no wellbore_id)
+      - name: eid
+        description: Well entity identifier — FK to well_360
+      - name: report_id
+        description: WellView daily report natural key (IDRec)
+      - name: job_id
+        description: WellView job GUID
+      - name: well_id
+        description: WellView well GUID
+      - name: wellbore_id
+        description: WellView wellbore GUID associated with the report
+      - name: report_date
+        description: Daily report date (cast from report_start_datetime)
+      - name: report_number
+        description: WellView report number used for deterministic NPT/safety joins
+      - name: days_from_spud
+        description: Days elapsed from spud at report date
+      - name: cost_line_count
+        description: Number of cost line items attached to this report
+      - name: daily_field_estimate_cost
+        description: Sum of field estimate cost line amounts for this report
+      - name: time_log_entry_count
+        description: Number of active time log entries attached to this report
+      - name: daily_time_duration_hours
+        description: Sum of time log duration hours for this report
+      - name: daily_time_problem_hours
+        description: Sum of time log NPT/problem hours for this report
+      - name: daily_time_no_problem_hours
+        description: Sum of time log non-problem hours for this report
+      - name: daily_on_bottom_minutes
+        description: Sum of on-bottom minutes for this report
+      - name: daily_off_bottom_minutes
+        description: Sum of off-bottom minutes for this report
+      - name: daily_pipe_moving_minutes
+        description: Sum of pipe-moving minutes for this report
+      - name: time_join_used_report_number_fallback
+        description: True when time-log rows were attributed via (job_id, report_number) because job_report_id was null
+      - name: time_join_used_date_fallback
+        description: True when time-log rows were attributed via canonical (job_id, report_date) fallback because job_report_id and report_number were null
+      - name: npt_event_count
+        description: Count of NPT interval problem records attributed to this report
+      - name: daily_npt_gross_hours
+        description: Sum of NPT gross duration hours for this report
+      - name: daily_npt_net_hours
+        description: Sum of NPT net duration hours for this report
+      - name: daily_npt_cost
+        description: Sum of NPT problem cost for this report
+      - name: npt_join_used_date_fallback
+        description: True when NPT rows with null report_number were attributed via canonical (job_id, report_date)
+      - name: safety_event_count
+        description: Count of safety checks and incidents attributed to this report
+      - name: safety_check_count
+        description: Count of safety checks attributed to this report
+      - name: safety_incident_count
+        description: Count of safety incidents attributed to this report
+      - name: safety_lost_time_hours
+        description: Sum of lost time hours from safety incidents for this report
+      - name: safety_estimated_cost
+        description: Sum of estimated safety incident cost for this report
+      - name: safety_join_used_date_fallback
+        description: True when safety rows with null report_number were attributed via canonical (job_id, report_date)
+      - name: source_synced_at
+        description: Stable source freshness watermark across all joined source sets
+      - name: _loaded_at
+        description: Timestamp when the report row was loaded by dbt in staging

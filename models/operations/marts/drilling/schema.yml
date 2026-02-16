@@ -130,9 +130,9 @@ models:
 
   - name: dim_well_equipment
     description: >
-      Well equipment snapshot dimension sourced from tubing strings, rod strings,
-      perforations, and production settings. One row per well with inferred
-      artificial lift type and current equipment counts.
+      Well equipment snapshot dimension sourced from casing strings, tubing strings,
+      rod strings, perforations, and production settings. One row per well with
+      inferred artificial lift type and current equipment counts.
     columns:
       - name: well_equipment_sk
         description: Surrogate key for well equipment snapshot (MD5 hash of well_id)
@@ -163,6 +163,24 @@ models:
                 severity: warn
       - name: lift_type_source
         description: Source used for inferred_lift_type (production_method_type, equipment_inference, setting_objective, none)
+      - name: casing_string_count_actual
+        description: Count of actual casing strings recorded for the well
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: casing_strings_in_hole
+        description: Count of casing strings with no pull_datetime (assumed currently in hole)
+      - name: latest_casing_run_date
+        description: Latest run_datetime across actual casing strings
+      - name: latest_casing_pull_date
+        description: Latest pull_datetime across actual casing strings
+      - name: max_casing_set_depth_ft
+        description: Maximum casing set depth in feet across actual strings
+      - name: max_casing_nominal_od_in
+        description: Maximum nominal casing OD in inches across actual strings
+      - name: has_tapered_casing
+        description: True when any actual casing string is flagged as tapered
 
   - name: dim_phase
     description: >
@@ -221,6 +239,90 @@ models:
           - not_null:
               config:
                 severity: warn
+
+  - name: fct_daily_drilling
+    description: >
+      Canonical daily drilling report fact table. One row per WellView daily
+      report (report_id) with report-level drilling metrics plus rolled-up
+      child measures from costs, time logs, NPT events, and safety events.
+      Enriched with job, wellbore, and well (EID) dimensional keys.
+      Clustered by job_id and report_date.
+    columns:
+      - name: daily_drilling_sk
+        description: Surrogate key (MD5 hash of report_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: report_id
+        description: WellView daily report natural key (IDRec)
+        data_tests:
+          - unique
+          - not_null
+      - name: job_sk
+        description: FK to dim_job surrogate key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_job')
+                field: job_sk
+              config:
+                severity: warn
+      - name: wellbore_sk
+        description: FK to dim_wellbore surrogate key (nullable when report has no wellbore)
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_wellbore')
+                field: wellbore_sk
+              config:
+                severity: warn
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+      - name: job_id
+        description: WellView job GUID
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: report_date
+        description: Date of the daily report
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: daily_field_estimate_cost
+        description: Sum of field estimate cost line amounts attached to the report
+      - name: daily_time_duration_hours
+        description: Sum of time log duration hours attached to the report
+      - name: time_join_used_report_number_fallback
+        description: True when time-log attribution used (job_id, report_number) because job_report_id was null
+      - name: time_join_used_date_fallback
+        description: True when time-log attribution used canonical (job_id, report_date) because job_report_id and report_number were null
+      - name: daily_npt_gross_hours
+        description: Sum of NPT gross duration hours attributed to the report
+      - name: safety_event_count
+        description: Count of safety checks and incidents attributed to the report
+      - name: npt_join_used_date_fallback
+        description: True when NPT rows with null report_number were attributed via canonical report_date fallback
+      - name: safety_join_used_date_fallback
+        description: True when safety rows with null report_number were attributed via canonical report_date fallback
+      - name: source_synced_at
+        description: Stable source freshness watermark across all joined source sets
+      - name: _loaded_at
+        description: Timestamp when the source report row was loaded by dbt in staging
 
   - name: fct_daily_drilling_cost
     description: >
