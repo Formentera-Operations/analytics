@@ -1,0 +1,236 @@
+version: 2
+
+models:
+  - name: stg_cc__forecasts
+    description: >
+      Forecast definitions from ComboCurve. One row per forecast within a project.
+      Source: CC_RAW.FORECASTS (2,043 rows, 10 columns). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: forecast_sk
+        description: "Surrogate key (MD5 hash of forecast_id)"
+
+      # -- identifiers
+      - name: forecast_id
+        description: "ComboCurve forecast GUID (24-char hex) -- natural key. Source: FORECASTS.ID"
+        data_tests:
+          - unique
+          - not_null
+
+      - name: project_id
+        description: "Parent project GUID (FK to PROJECTS.ID). Source: FORECASTS.PROJECT"
+        data_tests:
+          - not_null
+
+      # -- descriptive fields
+      - name: forecast_name
+        description: "User-assigned forecast name. Source: FORECASTS.NAME"
+
+      - name: forecast_type
+        description: "Forecast methodology type (e.g., deterministic, probabilistic). Source: FORECASTS.TYPE"
+
+      # -- variant / json fields
+      - name: forecast_tags
+        description: "Array of tag IDs associated with the forecast (VARIANT). Source: FORECASTS.TAGS"
+
+      # -- dates
+      - name: run_date
+        description: "Date the forecast was executed. Source: FORECASTS.RUNDATE"
+
+      - name: created_at
+        description: "Record creation timestamp in ComboCurve. Source: FORECASTS.CREATEDAT"
+
+      - name: updated_at
+        description: "Last update timestamp in ComboCurve. Source: FORECASTS.UPDATEDAT"
+
+      # -- ingestion metadata
+      - name: _portable_extracted
+        description: "Portable extraction timestamp (when data was pulled from ComboCurve API)"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: "Timestamp when dbt processed this record"
+
+  - name: stg_cc__forecast_outputs
+    description: >
+      Forecast output decline curves from ComboCurve. One row per well-phase forecast output.
+      Source: CC_RAW.FORECAST_OUTPUTS (2,083,923 rows, 23 columns). Refactored to 5-CTE pattern.
+      VARIANT columns (best_forecast_params, ratio_params, type_curve_apply_settings, type_curve_data)
+      kept as-is for downstream parsing.
+    columns:
+      # -- surrogate key
+      - name: forecast_output_sk
+        description: "Surrogate key (MD5 hash of forecast_output_id)"
+
+      # -- identifiers
+      - name: forecast_output_id
+        description: "ComboCurve forecast output GUID (24-char hex) -- natural key. Source: FORECAST_OUTPUTS.ID"
+        data_tests:
+          - unique
+          - not_null
+
+      - name: well_id
+        description: "Well GUID (FK to WELLS.ID). Source: FORECAST_OUTPUTS.WELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: project_id
+        description: "Parent project GUID (FK to PROJECTS.ID). Source: FORECAST_OUTPUTS.PROJECT"
+        data_tests:
+          - not_null
+
+      - name: forecast_id
+        description: "Parent forecast GUID (FK to FORECASTS.ID). Source: FORECAST_OUTPUTS.FORECAST"
+        data_tests:
+          - not_null
+
+      - name: type_curve_id
+        description: "Type curve GUID if forecast derived from type curve. Source: FORECAST_OUTPUTS.TYPECURVE"
+
+      # -- forecast attributes
+      - name: forecast_type
+        description: "Forecast type (e.g., auto, manual, typeCurve, rate, ratio). Source: FORECAST_OUTPUTS.FORECASTTYPE"
+
+      - name: forecast_subtype
+        description: "Forecast subtype (e.g., rate, ratio). Source: FORECAST_OUTPUTS.FORECASTSUBTYPE"
+
+      - name: product_phase
+        description: "Production phase (oil, gas, water). Source: FORECAST_OUTPUTS.PHASE"
+
+      - name: forecast_status
+        description: "Forecast review status (e.g., in_progress, reviewed, approved). Source: FORECAST_OUTPUTS.STATUS"
+
+      - name: data_frequency
+        description: "Data frequency for the forecast (daily, monthly). Source: FORECAST_OUTPUTS.DATA_FREQ"
+
+      # -- flags
+      - name: is_forecasted
+        description: "Whether this output has been forecasted (boolean). Source: FORECAST_OUTPUTS.FORECASTED"
+
+      - name: is_approved
+        description: "Computed flag: true when forecast_status = 'approved'. Derived in enhanced CTE."
+
+      # -- descriptive fields
+      - name: forecasted_by_user
+        description: "User who generated the forecast. Source: FORECAST_OUTPUTS.FORECASTEDBY"
+
+      - name: reviewed_by_user
+        description: "User who reviewed the forecast. Source: FORECAST_OUTPUTS.REVIEWEDBY"
+
+      # -- dates
+      - name: forecasted_at
+        description: "When the forecast was generated. Source: FORECAST_OUTPUTS.FORECASTEDAT"
+
+      - name: reviewed_at
+        description: "When the forecast was reviewed. Source: FORECAST_OUTPUTS.REVIEWEDAT"
+
+      - name: created_at
+        description: "Record creation timestamp in ComboCurve. Source: FORECAST_OUTPUTS.CREATEDAT"
+
+      - name: updated_at
+        description: "Last update timestamp in ComboCurve. Source: FORECAST_OUTPUTS.UPDATEDAT"
+
+      # -- variant / json fields
+      - name: best_forecast_params
+        description: >
+          Best-fit decline curve parameters (VARIANT). Contains segments array with qi, b, di,
+          EUR, and optionally P10/P50/P90 probabilistic scenarios. Parse downstream.
+          Source: FORECAST_OUTPUTS.BEST
+
+      - name: ratio_params
+        description: >
+          Ratio decline curve parameters (VARIANT). Used for GOR/WOR ratio forecasts with
+          similar structure to best_forecast_params. Source: FORECAST_OUTPUTS.RATIO
+
+      - name: type_curve_apply_settings
+        description: >
+          Settings for how the type curve was applied (VARIANT). Contains method,
+          confidence level, and scale factor. Source: FORECAST_OUTPUTS.TYPECURVEAPPLYSETTINGS
+
+      - name: type_curve_data
+        description: >
+          Raw type curve data points (VARIANT). Contains name, type, and curve data.
+          Source: FORECAST_OUTPUTS.TYPECURVEDATA
+
+      # -- ingestion metadata
+      - name: _portable_extracted
+        description: "Portable extraction timestamp (when data was pulled from ComboCurve API)"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: "Timestamp when dbt processed this record"
+
+  - name: stg_cc__daily_forecasts
+    description: >
+      Daily forecasted volumes from ComboCurve, exploded from nested JSON via LATERAL FLATTEN.
+      Source: CC_RAW.FORECASTED_DAILY_VOLUMES_BY_PROJECT (13,130 rows -> ~553M after FLATTEN).
+      Grain: one row per well x forecast x phase x series_type x volume_date.
+      Filtered to corporate reserve scenario projects only via ref('corporate_reserve_scenarios').
+      Refactored to 5-CTE pattern with extra CTEs for FLATTEN logic.
+    columns:
+      # -- surrogate key
+      - name: daily_forecast_sk
+        description: "Surrogate key (MD5 hash of well_id + forecast_id + phase + series_type + volume_date)"
+
+      # -- identifiers
+      - name: well_id
+        description: "Well GUID (FK to WELLS.ID). Source: FORECASTED_DAILY_VOLUMES_BY_PROJECT.WELL"
+        data_tests:
+          - not_null
+
+      - name: project_id
+        description: "Parent project GUID (FK to PROJECTS.ID). Source: FORECASTED_DAILY_VOLUMES_BY_PROJECT.PROJECT"
+        data_tests:
+          - not_null
+
+      - name: forecast_id
+        description: "Parent forecast GUID (FK to FORECASTS.ID). Source: FORECASTED_DAILY_VOLUMES_BY_PROJECT.FORECAST"
+        data_tests:
+          - not_null
+
+      - name: forecast_output_id
+        description: "Forecast output GUID extracted from PHASES variant (FK to FORECAST_OUTPUTS.ID)"
+
+      # -- forecast attributes
+      - name: forecast_type
+        description: "Forecast type (e.g., deterministic). Source: FORECASTED_DAILY_VOLUMES_BY_PROJECT.FORECASTTYPE"
+
+      - name: series_type
+        description: "Series classification extracted from PHASES variant (e.g., best, P10, P50, P90)"
+
+      - name: resolution
+        description: "Time resolution of the forecast (e.g., daily). Source: FORECASTED_DAILY_VOLUMES_BY_PROJECT.RESOLUTION"
+
+      - name: phase
+        description: "Production phase extracted from PHASES variant (gas, oil, water)"
+
+      # -- measures
+      - name: volume_date
+        description: "Calculated date for this volume record (series_start_date + day_index)"
+
+      - name: volume
+        description: "Daily forecasted production volume for this phase (float). Null volumes filtered out."
+
+      - name: day_index
+        description: "Zero-based day offset from series_start_date (from FLATTEN index)"
+
+      # -- date range
+      - name: series_start_date
+        description: "Start date of the forecast series, extracted from PHASES variant"
+
+      - name: series_end_date
+        description: "End date of the forecast series, extracted from PHASES variant"
+
+      # -- system / audit
+      - name: raw_id
+        description: "Source record identifier. Source: FORECASTED_DAILY_VOLUMES_BY_PROJECT._ID"
+
+      # -- ingestion metadata
+      - name: _portable_extracted
+        description: "Portable extraction timestamp (when data was pulled from ComboCurve API)"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: "Timestamp when dbt processed this record"

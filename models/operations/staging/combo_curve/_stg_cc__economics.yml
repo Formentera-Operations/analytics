@@ -1,0 +1,856 @@
+version: 2
+
+models:
+  - name: stg_cc__scenarios
+    description: >
+      Economic and forecast scenarios from ComboCurve. One row per scenario within a project.
+      Source: CC_RAW.PROJECT_SCENARIOS (956 rows, 7 columns). Refactored to 5-CTE pattern.
+    columns:
+      - name: scenario_sk
+        description: "Surrogate key (MD5 hash of scenario_id)"
+      - name: scenario_id
+        description: "ComboCurve scenario GUID -- natural key. ComboCurve: ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: project_id
+        description: "ComboCurve project GUID that this scenario belongs to. ComboCurve: PROJECT"
+        data_tests:
+          - not_null
+      - name: scenario_name
+        description: "User-defined name for the scenario. ComboCurve: NAME"
+      - name: created_at
+        description: "Timestamp when the scenario was created in ComboCurve. ComboCurve: CREATEDAT"
+      - name: updated_at
+        description: "Timestamp when the scenario was last updated in ComboCurve. ComboCurve: UPDATEDAT"
+      - name: _portable_extracted
+        description: "Timestamp when Portable extracted this record from ComboCurve API"
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record"
+
+  - name: stg_cc__economic_run_parameters
+    description: >
+      Economic run execution records from ComboCurve. One row per econ run within a scenario.
+      Source: CC_RAW.ECON_RUNS (953 rows, 9 columns). Refactored to 5-CTE pattern.
+      Note: Despite the model name, this reads from the ECON_RUNS table (run metadata),
+      not the ECON_RUN_MONTHLY_EXPORT_RESULTS table.
+    columns:
+      - name: econ_run_sk
+        description: "Surrogate key (MD5 hash of econ_run_id)"
+      - name: econ_run_id
+        description: "ComboCurve economic run GUID -- natural key. ComboCurve: ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: project_id
+        description: "ComboCurve project GUID. ComboCurve: PROJECT"
+        data_tests:
+          - not_null
+      - name: scenario_id
+        description: "ComboCurve scenario GUID. ComboCurve: SCENARIO"
+        data_tests:
+          - not_null
+      - name: status
+        description: "Current status of the economic run (e.g., completed, running). ComboCurve: STATUS"
+      - name: econ_run_date
+        description: "Date/time when the economic run was executed. ComboCurve: RUNDATE"
+      - name: tags
+        description: "User-defined tags for the economic run, stored as VARIANT. ComboCurve: TAGS"
+      - name: _portable_extracted
+        description: "Timestamp when Portable extracted this record from ComboCurve API"
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record"
+
+  - name: stg_cc__economic_runs
+    description: >
+      Monthly economic results from ComboCurve econ runs. One row per well x month x econ run.
+      Source: CC_RAW.ECON_RUN_MONTHLY_EXPORT_RESULTS (262M rows, 217 columns). Refactored to 5-CTE pattern.
+      Note: Despite the model name, this reads from ECON_RUN_MONTHLY_EXPORT_RESULTS (monthly cash flow),
+      not the ECON_RUNS table. Most source columns are TEXT requiring try_to_decimal casting.
+    columns:
+      - name: economic_run_monthly_sk
+        description: "Surrogate key (MD5 hash of id)"
+      - name: economic_run_well_id
+        description: "Composite surrogate key (MD5 hash of econ_run_id, well_id, project_id, scenario_id, combo_name) for joining to one-liners"
+      - name: id
+        description: "ComboCurve record GUID -- natural key. ComboCurve: _ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: econ_run_id
+        description: "Economic run GUID. ComboCurve: ECONRUN"
+        data_tests:
+          - not_null
+      - name: well_id
+        description: "Well GUID. ComboCurve: WELL"
+      - name: project_id
+        description: "Project GUID. ComboCurve: PROJECT"
+      - name: scenario_id
+        description: "Scenario GUID. ComboCurve: SCENARIO"
+      - name: combo_name
+        description: "Name of the economic scenario combination. ComboCurve: COMBONAME"
+      - name: econ_run_date
+        description: "Date when the economic run was performed. ComboCurve: ECON_RUN_DATE"
+      - name: date
+        description: "Calendar month for this economic result row. ComboCurve: DATE"
+      - name: before_income_tax_cash_flow
+        description: "Cash flow before income tax for the month"
+      - name: after_income_tax_cash_flow
+        description: "Cash flow after income tax for the month"
+      - name: first_discount_cash_flow
+        description: "Cash flow discounted at the first discount rate"
+      - name: second_discount_cash_flow
+        description: "Cash flow discounted at the second discount rate"
+      - name: first_discount_net_income
+        description: "Net income discounted at the first discount rate"
+      - name: second_discount_net_income
+        description: "Net income discounted at the second discount rate"
+      - name: first_discounted_capex
+        description: "Capital expenditure discounted at the first discount rate"
+      - name: second_discounted_capex
+        description: "Capital expenditure discounted at the second discount rate"
+      - name: net_income
+        description: "Net income for the month"
+      - name: net_profit
+        description: "Net profit for the month"
+      - name: discount_table_cash_flow_1
+        description: "Discount table cash flow period 1"
+      - name: discount_table_cash_flow_2
+        description: "Discount table cash flow period 2"
+      - name: discount_table_cash_flow_3
+        description: "Discount table cash flow period 3"
+      - name: discount_table_cash_flow_4
+        description: "Discount table cash flow period 4"
+      - name: discount_table_cash_flow_5
+        description: "Discount table cash flow period 5"
+      - name: discount_table_cash_flow_6
+        description: "Discount table cash flow period 6"
+      - name: discount_table_cash_flow_7
+        description: "Discount table cash flow period 7"
+      - name: discount_table_cash_flow_8
+        description: "Discount table cash flow period 8"
+      - name: discount_table_cash_flow_9
+        description: "Discount table cash flow period 9"
+      - name: discount_table_cash_flow_10
+        description: "Discount table cash flow period 10"
+      - name: discount_table_cash_flow_11
+        description: "Discount table cash flow period 11"
+      - name: discount_table_cash_flow_12
+        description: "Discount table cash flow period 12"
+      - name: discount_table_cash_flow_13
+        description: "Discount table cash flow period 13"
+      - name: discount_table_cash_flow_14
+        description: "Discount table cash flow period 14"
+      - name: discount_table_cash_flow_15
+        description: "Discount table cash flow period 15"
+      - name: discount_table_cash_flow_16
+        description: "Discount table cash flow period 16"
+      - name: afit_discount_table_cash_flow_1
+        description: "After federal income tax discount table cash flow period 1"
+      - name: afit_discount_table_cash_flow_2
+        description: "After federal income tax discount table cash flow period 2"
+      - name: afit_discount_table_cash_flow_3
+        description: "After federal income tax discount table cash flow period 3"
+      - name: afit_discount_table_cash_flow_4
+        description: "After federal income tax discount table cash flow period 4"
+      - name: afit_discount_table_cash_flow_5
+        description: "After federal income tax discount table cash flow period 5"
+      - name: afit_discount_table_cash_flow_6
+        description: "After federal income tax discount table cash flow period 6"
+      - name: afit_discount_table_cash_flow_7
+        description: "After federal income tax discount table cash flow period 7"
+      - name: afit_discount_table_cash_flow_8
+        description: "After federal income tax discount table cash flow period 8"
+      - name: afit_discount_table_cash_flow_9
+        description: "After federal income tax discount table cash flow period 9"
+      - name: afit_discount_table_cash_flow_10
+        description: "After federal income tax discount table cash flow period 10"
+      - name: afit_discount_table_cash_flow_11
+        description: "After federal income tax discount table cash flow period 11"
+      - name: afit_discount_table_cash_flow_12
+        description: "After federal income tax discount table cash flow period 12"
+      - name: afit_discount_table_cash_flow_13
+        description: "After federal income tax discount table cash flow period 13"
+      - name: afit_discount_table_cash_flow_14
+        description: "After federal income tax discount table cash flow period 14"
+      - name: afit_discount_table_cash_flow_15
+        description: "After federal income tax discount table cash flow period 15"
+      - name: afit_discount_table_cash_flow_16
+        description: "After federal income tax discount table cash flow period 16"
+      - name: total_revenue
+        description: "Total revenue from all product streams for the month"
+      - name: oil_revenue
+        description: "Revenue from oil production"
+      - name: gas_revenue
+        description: "Revenue from gas production"
+      - name: ngl_revenue
+        description: "Revenue from natural gas liquids production"
+      - name: drip_condensate_revenue
+        description: "Revenue from drip condensate production"
+      - name: total_expense
+        description: "Total expenses for the month"
+      - name: total_fixed_expense
+        description: "Total fixed expenses"
+      - name: total_variable_expense
+        description: "Total variable expenses"
+      - name: total_oil_variable_expense
+        description: "Total variable expenses for oil"
+      - name: total_gas_variable_expense
+        description: "Total variable expenses for gas"
+      - name: total_ngl_variable_expense
+        description: "Total variable expenses for NGL"
+      - name: total_drip_condensate_variable_expense
+        description: "Total variable expenses for drip condensate"
+      - name: fixed_expense_1
+        description: "Monthly well cost (fixed expense category 1). ComboCurve: MONTHLYWELLCOST"
+      - name: fixed_expense_2
+        description: "Other monthly cost category 1. ComboCurve: OTHERMONTHLYCOST_1"
+      - name: fixed_expense_3
+        description: "Other monthly cost category 2. ComboCurve: OTHERMONTHLYCOST_2"
+      - name: fixed_expense_4
+        description: "Other monthly cost category 3. ComboCurve: OTHERMONTHLYCOST_3"
+      - name: fixed_expense_5
+        description: "Other monthly cost category 4. ComboCurve: OTHERMONTHLYCOST_4"
+      - name: fixed_expense_6
+        description: "Other monthly cost category 5. ComboCurve: OTHERMONTHLYCOST_5"
+      - name: fixed_expense_7
+        description: "Other monthly cost category 6. ComboCurve: OTHERMONTHLYCOST_6"
+      - name: fixed_expense_8
+        description: "Other monthly cost category 7. ComboCurve: OTHERMONTHLYCOST_7"
+      - name: fixed_expense_9
+        description: "Other monthly cost category 8. ComboCurve: OTHERMONTHLYCOST_8"
+      - name: oil_gathering_expense
+        description: "Oil gathering expense"
+      - name: oil_processing_expense
+        description: "Oil processing expense"
+      - name: oil_transportation_expense
+        description: "Oil transportation expense"
+      - name: oil_marketing_expense
+        description: "Oil marketing expense"
+      - name: oil_other_expense
+        description: "Other oil expenses"
+      - name: gas_gathering_expense
+        description: "Gas gathering expense"
+      - name: gas_processing_expense
+        description: "Gas processing expense"
+      - name: gas_transportation_expense
+        description: "Gas transportation expense"
+      - name: gas_marketing_expense
+        description: "Gas marketing expense"
+      - name: gas_other_expense
+        description: "Other gas expenses"
+      - name: ngl_gathering_expense
+        description: "NGL gathering expense"
+      - name: ngl_processing_expense
+        description: "NGL processing expense"
+      - name: ngl_transportation_expense
+        description: "NGL transportation expense"
+      - name: ngl_marketing_expense
+        description: "NGL marketing expense"
+      - name: ngl_other_expense
+        description: "Other NGL expenses"
+      - name: drip_condensate_gathering_expense
+        description: "Drip condensate gathering expense"
+      - name: drip_condensate_processing_expense
+        description: "Drip condensate processing expense"
+      - name: drip_condensate_transportation_expense
+        description: "Drip condensate transportation expense"
+      - name: drip_condensate_marketing_expense
+        description: "Drip condensate marketing expense"
+      - name: drip_condensate_other_expense
+        description: "Other drip condensate expenses"
+      - name: water_disposal
+        description: "Water disposal expense"
+      - name: gross_boe_sales_volume
+        description: "Gross barrel of oil equivalent sales volume"
+      - name: gross_boe_wellhead_volume
+        description: "Gross barrel of oil equivalent wellhead volume"
+      - name: gross_oil_sales_volume
+        description: "Gross oil sales volume"
+      - name: gross_oil_wellhead_volume
+        description: "Gross oil wellhead volume"
+      - name: gross_gas_sales_volume
+        description: "Gross gas sales volume"
+      - name: gross_gas_wellhead_volume
+        description: "Gross gas wellhead volume"
+      - name: gross_ngl_sales_volume
+        description: "Gross NGL sales volume"
+      - name: gross_drip_condensate_sales_volume
+        description: "Gross drip condensate sales volume"
+      - name: gross_mcfe_sales_volume
+        description: "Gross MCF equivalent sales volume"
+      - name: gross_mcfe_wellhead_volume
+        description: "Gross MCF equivalent wellhead volume"
+      - name: gross_water_wellhead_volume
+        description: "Gross water wellhead volume"
+      - name: net_boe_sales_volume
+        description: "Net barrel of oil equivalent sales volume"
+      - name: net_oil_sales_volume
+        description: "Net oil sales volume"
+      - name: net_gas_sales_volume
+        description: "Net gas sales volume"
+      - name: net_ngl_sales_volume
+        description: "Net NGL sales volume"
+      - name: net_drip_condensate_sales_volume
+        description: "Net drip condensate sales volume"
+      - name: net_mcfe_sales_volume
+        description: "Net MCF equivalent sales volume"
+      - name: wi_boe_sales_volume
+        description: "Working interest barrel of oil equivalent sales volume"
+      - name: wi_oil_sales_volume
+        description: "Working interest oil sales volume"
+      - name: wi_gas_sales_volume
+        description: "Working interest gas sales volume"
+      - name: wi_ngl_sales_volume
+        description: "Working interest NGL sales volume"
+      - name: wi_drip_condensate_sales_volume
+        description: "Working interest drip condensate sales volume"
+      - name: wi_mcfe_sales_volume
+        description: "Working interest MCF equivalent sales volume"
+      - name: oil_price
+        description: "Oil price used in the economic calculation"
+      - name: gas_price
+        description: "Gas price used in the economic calculation"
+      - name: ngl_price
+        description: "NGL price used in the economic calculation"
+      - name: drip_condensate_price
+        description: "Drip condensate price used in the economic calculation"
+      - name: input_oil_price
+        description: "Input oil price before adjustments"
+      - name: input_gas_price
+        description: "Input gas price before adjustments"
+      - name: input_ngl_price
+        description: "Input NGL price before adjustments"
+      - name: input_drip_condensate_price
+        description: "Input drip condensate price before adjustments"
+      - name: oil_differentials_1
+        description: "Oil price differential tier 1"
+      - name: oil_differentials_2
+        description: "Oil price differential tier 2"
+      - name: gas_differentials_1
+        description: "Gas price differential tier 1"
+      - name: gas_differentials_2
+        description: "Gas price differential tier 2"
+      - name: ngl_differentials_1
+        description: "NGL price differential tier 1"
+      - name: ngl_differentials_2
+        description: "NGL price differential tier 2"
+      - name: drip_condensate_differentials_1
+        description: "Drip condensate price differential tier 1"
+      - name: drip_condensate_differentials_2
+        description: "Drip condensate price differential tier 2"
+      - name: total_capex
+        description: "Total capital expenditure (net to WI)"
+      - name: total_intangible_capex
+        description: "Total intangible capital expenditure"
+      - name: total_tangible_capex
+        description: "Total tangible capital expenditure"
+      - name: total_gross_capex
+        description: "Total gross capital expenditure (100% WI)"
+      - name: total_other_investment
+        description: "Total other investment"
+      - name: intangible_other_investment
+        description: "Intangible other investment"
+      - name: tangible_other_investment
+        description: "Tangible other investment"
+      - name: total_drilling
+        description: "Total drilling capital"
+      - name: intangible_drilling
+        description: "Intangible drilling capital"
+      - name: tangible_drilling
+        description: "Tangible drilling capital"
+      - name: total_completion
+        description: "Total completion capital"
+      - name: intangible_completion
+        description: "Intangible completion capital"
+      - name: tangible_completion
+        description: "Tangible completion capital"
+      - name: total_development
+        description: "Total development capital"
+      - name: intangible_development
+        description: "Intangible development capital"
+      - name: tangible_development
+        description: "Tangible development capital"
+      - name: total_facilities
+        description: "Total facilities capital"
+      - name: intangible_facilities
+        description: "Intangible facilities capital"
+      - name: tangible_facilities
+        description: "Tangible facilities capital"
+      - name: total_pad
+        description: "Total pad capital"
+      - name: intangible_pad
+        description: "Intangible pad capital"
+      - name: tangible_pad
+        description: "Tangible pad capital"
+      - name: total_pipelines
+        description: "Total pipelines capital"
+      - name: intangible_pipelines
+        description: "Intangible pipelines capital"
+      - name: tangible_pipelines
+        description: "Tangible pipelines capital"
+      - name: total_waterline
+        description: "Total waterline capital"
+      - name: intangible_waterline
+        description: "Intangible waterline capital"
+      - name: tangible_waterline
+        description: "Tangible waterline capital"
+      - name: total_appraisal
+        description: "Total appraisal capital"
+      - name: intangible_appraisal
+        description: "Intangible appraisal capital"
+      - name: tangible_appraisal
+        description: "Tangible appraisal capital"
+      - name: total_exploration
+        description: "Total exploration capital"
+      - name: intangible_exploration
+        description: "Intangible exploration capital"
+      - name: tangible_exploration
+        description: "Tangible exploration capital"
+      - name: total_artificial_lift
+        description: "Total artificial lift capital"
+      - name: intangible_artificial_lift
+        description: "Intangible artificial lift capital"
+      - name: tangible_artificial_lift
+        description: "Tangible artificial lift capital"
+      - name: total_workover
+        description: "Total workover capital"
+      - name: intangible_workover
+        description: "Intangible workover capital"
+      - name: tangible_workover
+        description: "Tangible workover capital"
+      - name: total_abandonment
+        description: "Total abandonment capital"
+      - name: intangible_abandonment
+        description: "Intangible abandonment capital"
+      - name: tangible_abandonment
+        description: "Tangible abandonment capital"
+      - name: total_salvage
+        description: "Total salvage capital"
+      - name: intangible_salvage
+        description: "Intangible salvage capital"
+      - name: tangible_salvage
+        description: "Tangible salvage capital"
+      - name: total_leasehold
+        description: "Total leasehold capital"
+      - name: intangible_leasehold
+        description: "Intangible leasehold capital"
+      - name: tangible_leasehold
+        description: "Tangible leasehold capital"
+      - name: total_legal
+        description: "Total legal capital"
+      - name: intangible_legal
+        description: "Intangible legal capital"
+      - name: tangible_legal
+        description: "Tangible legal capital"
+      - name: federal_income_tax
+        description: "Federal income tax for the month"
+      - name: state_income_tax
+        description: "State income tax for the month"
+      - name: taxable_income
+        description: "Taxable income for the month"
+      - name: ad_valorem_tax
+        description: "Ad valorem tax for the month"
+      - name: total_production_tax
+        description: "Total production tax"
+      - name: total_severance_tax
+        description: "Total severance tax"
+      - name: oil_severance_tax
+        description: "Oil severance tax"
+      - name: gas_severance_tax
+        description: "Gas severance tax"
+      - name: ngl_severance_tax
+        description: "NGL severance tax"
+      - name: drip_condensate_severance_tax
+        description: "Drip condensate severance tax"
+      - name: depreciation
+        description: "Depreciation for the month"
+      - name: gross_well_count
+        description: "Gross well count"
+      - name: nri_well_count
+        description: "Net revenue interest well count"
+      - name: wi_well_count
+        description: "Working interest well count"
+      - name: nri_oil
+        description: "Net revenue interest oil percentage"
+      - name: nri_gas
+        description: "Net revenue interest gas percentage"
+      - name: nri_ngl
+        description: "Net revenue interest NGL percentage"
+      - name: nri_drip_condensate
+        description: "Net revenue interest drip condensate percentage"
+      - name: wi_oil
+        description: "Working interest oil percentage"
+      - name: wi_gas
+        description: "Working interest gas percentage"
+      - name: wi_ngl
+        description: "Working interest NGL percentage"
+      - name: wi_drip_condensate
+        description: "Working interest drip condensate percentage"
+      - name: lease_nri
+        description: "Lease net revenue interest"
+      - name: ngl_yield
+        description: "NGL yield"
+      - name: drip_condensate_yield
+        description: "Drip condensate yield"
+      - name: oil_loss
+        description: "Oil loss percentage"
+      - name: oil_shrinkage
+        description: "Oil shrinkage percentage"
+      - name: gas_loss
+        description: "Gas loss percentage"
+      - name: gas_shrinkage
+        description: "Gas shrinkage percentage"
+      - name: gas_flare
+        description: "Gas flare percentage"
+      - name: oil_start_using_forecast_date
+        description: "Oil start date based on forecast"
+      - name: gas_start_using_forecast_date
+        description: "Gas start date based on forecast"
+      - name: water_start_using_forecast_date
+        description: "Water start date based on forecast"
+      - name: _portable_extracted
+        description: "Timestamp when Portable extracted this record from ComboCurve API"
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record"
+
+  - name: stg_cc__economic_one_liners
+    description: >
+      Summary economic metrics per well from ComboCurve econ runs. Metrics extracted from JSON output variant.
+      Source: CC_RAW.ECON_RUN_ONE_LINERS (1.2M rows, 12 columns). Refactored to 5-CTE pattern.
+      Key metrics (NPV, IRR, breakeven, EUR, cumulative production) extracted in enhanced CTE.
+      Company name and reserve category standardized via transform macros.
+    columns:
+      - name: economic_one_liner_sk
+        description: "Surrogate key (MD5 hash of economic_one_liner_id)"
+      - name: economic_run_well_id
+        description: "Composite surrogate key (MD5 hash of economic_run_id, well_id, project_id, scenario_id, combo_name) for joining to monthly results"
+      - name: economic_one_liner_id
+        description: "Unique identifier for the economic one-liner record"
+        data_tests:
+          - unique
+          - not_null
+      - name: economic_run_id
+        description: "Identifier for the economic run"
+        data_tests:
+          - not_null
+      - name: project_id
+        description: "Identifier for the project"
+        data_tests:
+          - not_null
+      - name: scenario_id
+        description: "Identifier for the scenario"
+        data_tests:
+          - not_null
+      - name: well_id
+        description: "Identifier for the well"
+      - name: combo_name
+        description: "Name of the economic scenario combination"
+      - name: economic_group
+        description: "Group identifier for the economic analysis"
+      - name: prms_reserves_category
+        description: "Petroleum Resources Management System (PRMS) reserves category"
+      - name: prms_reserves_subcategory
+        description: "PRMS reserves sub-category"
+      - name: prms_resources_class
+        description: "PRMS resources classification"
+      - name: after_tax_npv_10
+        description: "Net Present Value at 10% discount rate, after tax"
+      - name: before_tax_npv_10
+        description: "Net Present Value at 10% discount rate, before tax"
+      - name: breakeven_oil_price
+        description: "Oil price at which the project breaks even (before tax)"
+      - name: breakeven_oil_price_after_tax
+        description: "Oil price at which the project breaks even (after tax)"
+      - name: capex
+        description: "Capital expenditure for the project"
+      - name: cumulative_oil
+        description: "Cumulative oil production"
+      - name: cumulative_gas
+        description: "Cumulative gas production"
+      - name: cumulative_boe
+        description: "Cumulative barrels of oil equivalent production"
+      - name: cumulative_mcfe
+        description: "Cumulative thousand cubic feet equivalent production"
+      - name: cumulative_ngl
+        description: "Cumulative natural gas liquids production"
+      - name: eur_oil
+        description: "Estimated ultimate recovery for oil"
+      - name: eur_gas
+        description: "Estimated ultimate recovery for gas"
+      - name: eur_boe
+        description: "Estimated ultimate recovery in barrels of oil equivalent"
+      - name: eur_mcfe
+        description: "Estimated ultimate recovery in thousand cubic feet equivalent"
+      - name: eur_ngl
+        description: "Estimated ultimate recovery for natural gas liquids"
+      - name: first_production_date
+        description: "Date of first production"
+      - name: gross_wells_count
+        description: "Number of gross wells"
+      - name: irr
+        description: "Internal Rate of Return (before tax)"
+      - name: irr_after_tax
+        description: "Internal Rate of Return (after tax)"
+      - name: net_wells_count
+        description: "Number of net wells"
+      - name: payout_months
+        description: "Number of months to payout (before tax)"
+      - name: payout_months_after_tax
+        description: "Number of months to payout (after tax)"
+      - name: total_expense
+        description: "Total expenses"
+      - name: total_revenue
+        description: "Total revenue"
+      - name: working_interest_wells_count
+        description: "Number of working interest wells"
+      - name: chosen_id
+        description: "Chosen identifier for the entity"
+      - name: basin
+        description: "Geological basin where the well or project is located"
+      - name: operating_category
+        description: "Operating category classification"
+      - name: shrunk_gas_btu
+        description: "BTU content of shrunk gas"
+      - name: company_name
+        description: >
+          Standardized company name. If the company name doesn't match any of the mappings,
+          it falls back to using the basin name. Mappings:
+          - 'FP Meramec': From 'Meramec'
+          - 'FP Goldsmith (Saddleback)': From 'Saddleback', 'FP_GOLDSMITH-SBE'
+          - 'FP Goldsmith (SLANT)': From 'FP_GOLDSMITH-SLANT', 'Slant'
+          - 'FP Green': From 'Green'
+          - 'FP Lakefork': From 'Lake Fork'
+          - 'FP Overlook': From 'Overlook'
+          - 'FP Rio Grande': From 'Rio Grande'
+          - 'FP Balboa LA': From 'Balboa LA'
+          - 'FP Balboa MS': From 'Balboa MS'
+          - 'FP Balboa ND': From 'Balboa ND'
+          - 'FP Divide': From 'Divide'
+          - 'FP Kingfisher': From 'Kingfisher', 'FP_KINGFISHER'
+          - 'FP Maverick': From 'Maverick', 'FP_MAVERICK'
+          - 'FP Wheeler': From 'Wheeler'
+          - 'Snyder Drillco': From 'Snyder'
+          - 'FP Pronghorn': From 'FP_PRONGHORN'
+          - 'FP Drake': From 'FP_DRAKE'
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - 'FP Meramec'
+                  - 'FP Goldsmith (Saddleback)'
+                  - 'FP Goldsmith (SLANT)'
+                  - 'FP Green'
+                  - 'FP Lakefork'
+                  - 'FP Overlook'
+                  - 'FP Rio Grande'
+                  - 'FP Balboa LA'
+                  - 'FP Balboa MS'
+                  - 'FP Balboa ND'
+                  - 'FP Divide'
+                  - 'FP Kingfisher'
+                  - 'FP Maverick'
+                  - 'FP Wheeler'
+                  - 'Snyder Drillco'
+                  - 'FP Pronghorn'
+                  - 'FP Drake'
+                quote: true
+      - name: net_operating_income
+        description: "Net operating income"
+      - name: before_income_tax_cash_flow
+        description: "Cash flow before income tax"
+      - name: reserves_category
+        description: >
+          Standardized category classification for reserves. Mappings:
+          - '1PDP': Includes '01PDP', '1PDP', '1PDP_COST', '1PDP_NEW', '1PDP_PLANT', '1PDP_SOLD', '1PDP_WO'
+          - '2WIP': From '2WIP'
+          - '3PDNP': From '3PDSI'
+          - '4PUD': Includes '3PUD', '4PUD', '4PUD_HZ', '4PUD_RC', '4PUD_VT'
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["1PDP", "2WIP", "3PDNP", "4PUD"]
+                quote: true
+      - name: reference_after_tax_npv_10
+        description: "Reference case Net Present Value at 10% discount rate, after tax"
+      - name: reference_before_tax_npv_10
+        description: "Reference case Net Present Value at 10% discount rate, before tax"
+      - name: reference_breakeven_oil_price
+        description: "Reference case oil price at which the project breaks even (before tax)"
+      - name: reference_breakeven_oil_price_after_tax
+        description: "Reference case oil price at which the project breaks even (after tax)"
+      - name: reference_capex
+        description: "Reference case capital expenditure"
+      - name: reference_cumulative_oil
+        description: "Reference case cumulative oil production"
+      - name: reference_cumulative_gas
+        description: "Reference case cumulative gas production"
+      - name: reference_cumulative_boe
+        description: "Reference case cumulative barrels of oil equivalent production"
+      - name: reference_cumulative_mcfe
+        description: "Reference case cumulative thousand cubic feet equivalent production"
+      - name: reference_cumulative_ngl
+        description: "Reference case cumulative natural gas liquids production"
+      - name: reference_eur_oil
+        description: "Reference case estimated ultimate recovery for oil"
+      - name: reference_eur_gas
+        description: "Reference case estimated ultimate recovery for gas"
+      - name: reference_eur_boe
+        description: "Reference case estimated ultimate recovery in barrels of oil equivalent"
+      - name: reference_eur_mcfe
+        description: "Reference case estimated ultimate recovery in thousand cubic feet equivalent"
+      - name: reference_eur_ngl
+        description: "Reference case estimated ultimate recovery for natural gas liquids"
+      - name: reference_irr
+        description: "Reference case Internal Rate of Return (before tax)"
+      - name: reference_irr_after_tax
+        description: "Reference case Internal Rate of Return (after tax)"
+      - name: reference_payout_months
+        description: "Reference case number of months to payout (before tax)"
+      - name: reference_payout_months_after_tax
+        description: "Reference case number of months to payout (after tax)"
+      - name: reference_total_expense
+        description: "Reference case total expenses"
+      - name: reference_total_revenue
+        description: "Reference case total revenue"
+      - name: economic_output_raw
+        description: "Raw JSON variant containing all economic output data (kept for debugging or future parsing)"
+      - name: _portable_extracted
+        description: "Timestamp when Portable extracted this record from ComboCurve API"
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record"
+
+  - name: stg_cc__project_econ_model_general_options
+    description: >
+      Economic model configuration options from ComboCurve. One row per econ model per project.
+      Source: CC_RAW.PROJECT_ECON_MODEL_GENERAL_OPTIONS (964 rows, 17 columns). Refactored to 5-CTE pattern.
+      VARIANT columns parsed into typed fields: BOE conversion factors, discount rates,
+      income tax settings, main options, and reporting units.
+    columns:
+      - name: econ_model_options_sk
+        description: "Surrogate key (MD5 hash of project_econ_model_general_options_id)"
+      - name: project_econ_model_general_options_id
+        description: "ComboCurve economic model options GUID -- natural key. ComboCurve: ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: project_id
+        description: "ComboCurve project GUID. ComboCurve: PROJECT"
+        data_tests:
+          - not_null
+      - name: name
+        description: "User-defined name for the economic model options. ComboCurve: NAME"
+      - name: economic_model_type
+        description: "Type of economic model (e.g., deterministic). ComboCurve: ECONMODELTYPE"
+      - name: copied_from
+        description: "GUID of the source model if this was copied. ComboCurve: COPIEDFROM"
+      - name: is_unique
+        description: "Flag indicating if the record is unique. ComboCurve: _UNIQUE"
+      - name: boe_conversion_drip_condensate
+        description: "BOE conversion factor for drip condensate"
+      - name: boe_conversion_dry_gas
+        description: "BOE conversion factor for dry gas"
+      - name: boe_conversion_ngl
+        description: "BOE conversion factor for NGL"
+      - name: boe_conversion_oil
+        description: "BOE conversion factor for oil"
+      - name: boe_conversion_wet_gas
+        description: "BOE conversion factor for wet gas"
+      - name: discount_cash_accrual_time
+        description: "Cash accrual timing for discount calculations"
+      - name: discount_method
+        description: "Method used for discounting cash flows"
+      - name: discount_rate_1
+        description: "Discount table rate 1"
+      - name: discount_rate_2
+        description: "Discount table rate 2"
+      - name: discount_rate_3
+        description: "Discount table rate 3"
+      - name: discount_rate_4
+        description: "Discount table rate 4"
+      - name: discount_rate_5
+        description: "Discount table rate 5"
+      - name: discount_rate_6
+        description: "Discount table rate 6"
+      - name: discount_rate_7
+        description: "Discount table rate 7"
+      - name: discount_rate_8
+        description: "Discount table rate 8"
+      - name: discount_rate_9
+        description: "Discount table rate 9"
+      - name: discount_rate_10
+        description: "Discount table rate 10"
+      - name: discount_rate_11
+        description: "Discount table rate 11"
+      - name: discount_rate_12
+        description: "Discount table rate 12"
+      - name: discount_rate_13
+        description: "Discount table rate 13"
+      - name: discount_rate_14
+        description: "Discount table rate 14"
+      - name: discount_rate_15
+        description: "Discount table rate 15"
+      - name: discount_rate_16
+        description: "Discount table rate 16"
+      - name: first_discount
+        description: "Primary discount rate for NPV calculations"
+      - name: second_discount
+        description: "Secondary discount rate for NPV calculations"
+      - name: income_tax_carry_forward
+        description: "Income tax carry forward settings (VARIANT)"
+      - name: federal_income_tax_well_life
+        description: "Federal income tax well life setting"
+      - name: federal_income_tax_multiplier
+        description: "Federal income tax rate multiplier"
+      - name: income_tax_fifteen_depletion
+        description: "Fifteen percent depletion settings (VARIANT)"
+      - name: state_income_tax_well_life
+        description: "State income tax well life setting"
+      - name: state_income_tax_multiplier
+        description: "State income tax rate multiplier"
+      - name: aggregation_date
+        description: "Date used for aggregating economic results"
+      - name: currency
+        description: "Currency used for economic calculations"
+      - name: fiscal
+        description: "Fiscal regime setting"
+      - name: income_tax_enabled
+        description: "Whether income tax calculations are enabled"
+      - name: project_type
+        description: "Type of economic project"
+      - name: reporting_period
+        description: "Reporting period for economic results (e.g., monthly, annual)"
+      - name: cash_unit
+        description: "Reporting unit for cash values"
+      - name: condensate_gas_ratio_unit
+        description: "Reporting unit for condensate-gas ratio"
+      - name: drip_condensate_unit
+        description: "Reporting unit for drip condensate volumes"
+      - name: drip_condensate_yield_unit
+        description: "Reporting unit for drip condensate yield"
+      - name: gas_unit
+        description: "Reporting unit for gas volumes"
+      - name: gor_unit
+        description: "Reporting unit for gas-oil ratio"
+      - name: ngl_unit
+        description: "Reporting unit for NGL volumes"
+      - name: ngl_yield_unit
+        description: "Reporting unit for NGL yield"
+      - name: oil_unit
+        description: "Reporting unit for oil volumes"
+      - name: pressure_unit
+        description: "Reporting unit for pressure"
+      - name: water_unit
+        description: "Reporting unit for water volumes"
+      - name: created_by
+        description: "User who created the economic model options. ComboCurve: CREATEDBY"
+      - name: created_at
+        description: "Timestamp when the record was created. ComboCurve: CREATEDAT"
+      - name: last_updated_by
+        description: "User who last updated the record. ComboCurve: LASTUPDATEDBY"
+      - name: updated_at
+        description: "Timestamp when the record was last updated. ComboCurve: UPDATEDAT"
+      - name: _portable_extracted
+        description: "Timestamp when Portable extracted this record from ComboCurve API"
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record"

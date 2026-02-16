@@ -29,64 +29,58 @@ enhanced_wells as (
         operator,
         operator_code,
         is_operated,
-        
+
         -- Well characteristics
         status,
         primary_product,
-        
+
         -- Well technical details
         surface_latitude,
         surface_longitude,
         measured_depth,
         true_vertical_depth,
         lateral_length,
-        
+
         -- Geographic location
         basin,
         county,
         state,
-        
+
         -- Classification and categorization
         reserve_category,
         company_name,
-        operator_cateogry, -- Note: there appears to be a typo in your source model (cateogry)
-        
+        operator_category,
+
         -- Add derived fields
-        case 
-            when lateral_length > 0 and true_vertical_depth > 0 
-            then true_vertical_depth + lateral_length
+        data_pool,
+
+        data_source,
+
+        has_daily,
+
+        has_monthly,
+
+        -- Source metadata
+        created_at,
+        updated_at,
+        _portable_extracted,
+        case
+            when lateral_length > 0 and true_vertical_depth > 0
+                then true_vertical_depth + lateral_length
             else measured_depth
         end as calculated_total_depth,
-        
+        coalesce(lateral_length > 0, false) as is_horizontal,
+        coalesce(status = 'ACTIVE' or status = 'PRODUCING', false) as is_active,
         case
-            when lateral_length > 0 then true
-            else false
-        end as is_horizontal,
-        
-        case
-            when status = 'ACTIVE' or status = 'PRODUCING' then true
-            else false
-        end as is_active,
-        
-        case 
             when primary_product = 'OIL' then 'Oil'
             when primary_product = 'GAS' then 'Gas'
             when primary_product = 'BOTH' or primary_product = 'OIL & GAS' then 'Oil & Gas'
             else coalesce(primary_product, 'Unknown')
         end as product_category,
-        
-        -- Source metadata
-        data_pool,
-        data_source,
-        has_daily,
-        has_monthly,
-        created_at,
-        updated_at,
-        _portable_extracted,
-        
+
         -- Processing metadata
         current_timestamp() as loaded_at
-    
+
     from stg_wells
 ),
 
@@ -101,10 +95,10 @@ final as (
             when is_horizontal then 'Short Lateral'
             else 'Vertical'
         end as well_class,
-        
+
         -- Create unified location string
         basin || ' - ' || county || ', ' || state as location_str
-    
+
     from enhanced_wells
 )
 
