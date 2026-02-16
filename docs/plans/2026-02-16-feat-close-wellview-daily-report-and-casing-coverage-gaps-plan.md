@@ -259,22 +259,37 @@ Required sections:
 
 ## Execution Checklist
 
-- [ ] Create `models/operations/intermediate/drilling/int_wellview__daily_drilling_enriched.sql`.
-- [ ] Create `models/operations/marts/drilling/fct_daily_drilling.sql`.
-- [ ] Update `models/operations/intermediate/drilling/schema.yml`.
-- [ ] Update `models/operations/marts/drilling/schema.yml` for `fct_daily_drilling`.
-- [ ] Update `models/operations/marts/drilling/dim_well_equipment.sql` with casing summary CTEs and final columns.
-- [ ] Update `models/operations/marts/drilling/schema.yml` for new casing fields.
-- [ ] Run parse/build/show validations listed in this document.
-- [ ] Write reassessment note with explicit Go/No-Go conclusion.
+- [x] Create `models/operations/intermediate/drilling/int_wellview__daily_drilling_enriched.sql`.
+- [x] Create `models/operations/marts/drilling/fct_daily_drilling.sql`.
+- [x] Update `models/operations/intermediate/drilling/schema.yml`.
+- [x] Update `models/operations/marts/drilling/schema.yml` for `fct_daily_drilling`.
+- [x] Update `models/operations/marts/drilling/dim_well_equipment.sql` with casing summary CTEs and final columns.
+- [x] Update `models/operations/marts/drilling/schema.yml` for new casing fields.
+- [x] Run parse/build/show validations listed in this document.
+- [x] Write reassessment note with explicit Go/No-Go conclusion.
+
+### Validation Outcomes (2026-02-16)
+
+- `dbt parse` completed successfully.
+- `dbt build --select int_wellview__daily_drilling_enriched fct_daily_drilling dim_well_equipment` completed successfully:
+  - `PASS=20 WARN=2 ERROR=0`
+  - Warn-level tests:
+    - `not_null_fct_daily_drilling_report_date` (9 rows)
+    - `relationships_fct_daily_drilling_wellbore_sk__wellbore_sk__ref_dim_wellbore_` (468 rows)
+- `dbt show --select fct_daily_drilling --limit 20` completed successfully.
+- `dbt show --select dim_well_equipment --limit 20` completed successfully.
+- Spot-check reconciliations against existing marts:
+  - Cost totals (`fct_daily_drilling` vs `fct_daily_drilling_cost`) differ by `+581,748.89` (`+0.0071%`).
+  - Time totals (`fct_daily_drilling` vs `fct_drilling_time`) differ by `+52,981,194.67` hours (`-6.657%` relative to `fct_drilling_time`), primarily explained by `fct_drilling_time` rows with `job_report_id is null` (`49,599` rows; `6.58%` of active rows).
+  - NPT totals (`fct_daily_drilling` vs `fct_npt_events`) differ by `-1,664.53` hours (`-3.307%`), consistent with report-level attribution limits and precedence rules.
 
 ## Acceptance Criteria
 
-- [ ] `fct_daily_drilling` exists at one row per `report_id` with explicit column contract.
-- [ ] `dim_well_equipment` includes casing summary fields with documented semantics.
-- [ ] New/updated marts have schema docs and tests aligned to existing drilling mart standards.
+- [x] `fct_daily_drilling` exists at one row per `report_id` with explicit column contract.
+- [x] `dim_well_equipment` includes casing summary fields with documented semantics.
+- [x] New/updated marts have schema docs and tests aligned to existing drilling mart standards.
 - [ ] Validation confirms no material mismatch against existing cost/time/NPT facts for sampled wells.
-- [ ] Reassessment document is produced with explicit Go/No-Go for semantic modeling.
+- [x] Reassessment document is produced with explicit Go/No-Go for semantic modeling.
 
 ## References
 

@@ -33,8 +33,18 @@ This checkpoint reflects state after:
 | Stable grain | Pass | 4.5 | `fct_daily_drilling` establishes one-row-per-report anchor to reduce mixed-grain metric risk. |
 | Conformed keys | Pass | 4 | EID resolution remains standardized via `well_360.wellview_id`; job/wellbore surrogate key patterns are consistent. |
 | Additive measure definitions | Pass | 4 | Daily child measures are pre-aggregated and additive at report grain (cost/time/NPT/safety rollups). |
-| Expected null FK documentation | Partial pass | 3.5 | Existing schema patterns use warn-level relationships for nullable FKs; still needs runtime validation after Snowflake connectivity is restored. |
+| Expected null FK documentation | Partial pass | 3.5 | Runtime validation completed; warn-level tests confirm known nullability/coverage behavior (`report_date` warn=9, `wellbore_sk` relationship warn=468). |
 | Dimensional filter coverage | Pass | 4 | Daily fact supports job/well/wellbore/date filtering; equipment dim now supports casing-aware filtering plus lift-type signals. |
+
+## Validation Evidence (2026-02-16)
+
+- `dbt build --select int_wellview__daily_drilling_enriched fct_daily_drilling dim_well_equipment`:
+  - `PASS=20 WARN=2 ERROR=0`
+- `dbt show --select fct_daily_drilling --limit 20` and `dbt show --select dim_well_equipment --limit 20` both succeeded.
+- Spot-check reconciliation against existing marts:
+  - Cost total delta (`fct_daily_drilling` vs `fct_daily_drilling_cost`): `+0.0071%`.
+  - Time total delta (`fct_daily_drilling` vs `fct_drilling_time`): `-6.657%`, largely explained by rows with `job_report_id is null` in `fct_drilling_time` (`49,599` rows, `6.58%` of active rows).
+  - NPT total delta (`fct_daily_drilling` vs `fct_npt_events`): `-3.307%`, attributable to report-level linkage limits and precedence behavior for date fallback vs report-number joins.
 
 ## Go / No-Go Decision
 
@@ -59,4 +69,4 @@ Proceed with Cortex semantic modeling for the drilling operational surface area 
 
 1. Build or explicitly defer `fct_well_configuration` if effective-dated physical configuration analysis is required.
 2. Build or explicitly defer `fct_drilling_performance` for stand/slide/rotate KPI semantics.
-3. Re-run `dbt build/show` validations when Snowflake connectivity is available; current session had repeated `250001` backend connection failures.
+3. For cross-fact semantic KPIs, explicitly model or document treatment of non-report-linked time/NPT rows before publishing enterprise-wide metrics.
