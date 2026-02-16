@@ -248,7 +248,9 @@ final as (
             when lower(company_name) like '%estate%'
                 then 'Estate'
             when
-                lower(company_name) like '% lp%'
+                lower(company_name) like '% lp'
+                or lower(company_name) like '% lp,%'
+                or lower(company_name) like '% lp %'
                 or lower(company_name) like '%l.p.%'
                 then 'LP'
             when
