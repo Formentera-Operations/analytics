@@ -14,11 +14,11 @@ source as (
 renamed as (
     select
         -- identifiers
-        id::varchar as scenario_id,
-        project::varchar as project_id,
+        trim(id)::varchar as scenario_id,
+        trim(project)::varchar as project_id,
 
         -- descriptive fields
-        name::varchar as scenario_name,
+        trim(name)::varchar as scenario_name,
 
         -- dates
         createdat::timestamp_ntz as created_at,

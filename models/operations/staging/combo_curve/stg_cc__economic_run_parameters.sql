@@ -14,12 +14,12 @@ source as (
 renamed as (
     select
         -- identifiers
-        id::varchar as econ_run_id,
-        project::varchar as project_id,
-        scenario::varchar as scenario_id,
+        trim(id)::varchar as econ_run_id,
+        trim(project)::varchar as project_id,
+        trim(scenario)::varchar as scenario_id,
 
         -- descriptive fields
-        status::varchar as status,
+        trim(status)::varchar as status,
 
         -- dates
         rundate::timestamp_ntz as econ_run_date,

@@ -14,13 +14,13 @@ source as (
 renamed as (
     select
         -- identifiers
-        id::varchar as project_econ_model_general_options_id,
-        project::varchar as project_id,
+        trim(id)::varchar as project_econ_model_general_options_id,
+        trim(project)::varchar as project_id,
 
         -- descriptive fields
-        name::varchar as name,
-        econmodeltype::varchar as economic_model_type,
-        copiedfrom::varchar as copied_from,
+        trim(name)::varchar as name,
+        trim(econmodeltype)::varchar as economic_model_type,
+        trim(copiedfrom)::varchar as copied_from,
 
         -- flags
         _unique::boolean as is_unique,
@@ -33,8 +33,8 @@ renamed as (
         nullif(boeconversion:WETGAS, '')::float as boe_conversion_wet_gas,
 
         -- discount table
-        nullif(discounttable:CASHACCRUALTIME, '')::string as discount_cash_accrual_time,
-        nullif(discounttable:DISCOUNTMETHOD, '')::string as discount_method,
+        nullif(discounttable:CASHACCRUALTIME, '')::varchar as discount_cash_accrual_time,
+        nullif(discounttable:DISCOUNTMETHOD, '')::varchar as discount_method,
         nullif(discounttable:DISCOUNTS[0]:DISCOUNTTABLE, '')::float as discount_rate_1,
         nullif(discounttable:DISCOUNTS[1]:DISCOUNTTABLE, '')::float as discount_rate_2,
         nullif(discounttable:DISCOUNTS[2]:DISCOUNTTABLE, '')::float as discount_rate_3,
@@ -56,32 +56,32 @@ renamed as (
 
         -- income tax
         incometax:CARRYFORWARD::variant as income_tax_carry_forward,
-        nullif(incometax:FEDERALINCOMETAX[0]:ENTIREWELLLIFE, '')::string as federal_income_tax_well_life,
+        nullif(incometax:FEDERALINCOMETAX[0]:ENTIREWELLLIFE, '')::varchar as federal_income_tax_well_life,
         nullif(incometax:FEDERALINCOMETAX[0]:MULTIPLIER, '')::float as federal_income_tax_multiplier,
         incometax:FIFTEENDEPLETION::variant as income_tax_fifteen_depletion,
-        nullif(incometax:STATEINCOMETAX[0]:ENTIREWELLLIFE, '')::string as state_income_tax_well_life,
+        nullif(incometax:STATEINCOMETAX[0]:ENTIREWELLLIFE, '')::varchar as state_income_tax_well_life,
         nullif(incometax:STATEINCOMETAX[0]:MULTIPLIER, '')::float as state_income_tax_multiplier,
 
         -- main options
         nullif(mainoptions:AGGREGATIONDATE, '')::timestamp_ntz as aggregation_date,
-        nullif(mainoptions:CURRENCY, '')::string as currency,
-        nullif(mainoptions:FISCAL, '')::string as fiscal,
+        nullif(mainoptions:CURRENCY, '')::varchar as currency,
+        nullif(mainoptions:FISCAL, '')::varchar as fiscal,
         nullif(mainoptions:INCOMETAX, '')::boolean as income_tax_enabled,
-        nullif(mainoptions:PROJECTTYPE, '')::string as project_type,
-        nullif(mainoptions:REPORTINGPERIOD, '')::string as reporting_period,
+        nullif(mainoptions:PROJECTTYPE, '')::varchar as project_type,
+        nullif(mainoptions:REPORTINGPERIOD, '')::varchar as reporting_period,
 
         -- reporting units
-        nullif(reportingunits:CASH, '')::string as cash_unit,
-        nullif(reportingunits:CONDENSATEGASRATIO, '')::string as condensate_gas_ratio_unit,
-        nullif(reportingunits:DRIPCONDENSATE, '')::string as drip_condensate_unit,
-        nullif(reportingunits:DRIPCONDENSATEYIELD, '')::string as drip_condensate_yield_unit,
-        nullif(reportingunits:GAS, '')::string as gas_unit,
-        nullif(reportingunits:GOR, '')::string as gor_unit,
-        nullif(reportingunits:NGL, '')::string as ngl_unit,
-        nullif(reportingunits:NGLYIELD, '')::string as ngl_yield_unit,
-        nullif(reportingunits:OIL, '')::string as oil_unit,
-        nullif(reportingunits:PRESSURE, '')::string as pressure_unit,
-        nullif(reportingunits:WATER, '')::string as water_unit,
+        nullif(reportingunits:CASH, '')::varchar as cash_unit,
+        nullif(reportingunits:CONDENSATEGASRATIO, '')::varchar as condensate_gas_ratio_unit,
+        nullif(reportingunits:DRIPCONDENSATE, '')::varchar as drip_condensate_unit,
+        nullif(reportingunits:DRIPCONDENSATEYIELD, '')::varchar as drip_condensate_yield_unit,
+        nullif(reportingunits:GAS, '')::varchar as gas_unit,
+        nullif(reportingunits:GOR, '')::varchar as gor_unit,
+        nullif(reportingunits:NGL, '')::varchar as ngl_unit,
+        nullif(reportingunits:NGLYIELD, '')::varchar as ngl_yield_unit,
+        nullif(reportingunits:OIL, '')::varchar as oil_unit,
+        nullif(reportingunits:PRESSURE, '')::varchar as pressure_unit,
+        nullif(reportingunits:WATER, '')::varchar as water_unit,
 
         -- dates
         createdby::varchar as created_by,

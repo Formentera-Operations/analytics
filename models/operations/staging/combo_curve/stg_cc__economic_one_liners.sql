@@ -14,20 +14,20 @@ source as (
 renamed as (
     select
         -- identifiers
-        id::varchar as economic_one_liner_id,
-        econrun::varchar as economic_run_id,
-        project::varchar as project_id,
-        scenario::varchar as scenario_id,
-        well::varchar as well_id,
-        comboname::varchar as combo_name,
+        trim(id)::varchar as economic_one_liner_id,
+        trim(econrun)::varchar as economic_run_id,
+        trim(project)::varchar as project_id,
+        trim(scenario)::varchar as scenario_id,
+        trim(well)::varchar as well_id,
+        trim(comboname)::varchar as combo_name,
 
         -- descriptive fields
-        econgroup::varchar as economic_group,
+        trim(econgroup)::varchar as economic_group,
 
         -- category fields
-        econprmsreservescategory::varchar as prms_reserves_category,
-        econprmsreservessubcategory::varchar as prms_reserves_subcategory,
-        econprmsresourcesclass::varchar as prms_resources_class,
+        trim(econprmsreservescategory)::varchar as prms_reserves_category,
+        trim(econprmsreservessubcategory)::varchar as prms_reserves_subcategory,
+        trim(econprmsresourcesclass)::varchar as prms_resources_class,
 
         -- variant / json fields
         output as economic_output_raw,
