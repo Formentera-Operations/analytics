@@ -15,7 +15,7 @@
 #}
 
 with source as (
-    select 
+    select
         phdwin_id as eid,
         well_id as combo_curve_id,
         aries_id as aries_propnum,
@@ -26,7 +26,7 @@ with source as (
         lease_name,
         operator,
         operator_code,
-        operator_cateogry as operator_category,  -- fixing typo from source
+        operator_category,
         is_operated,
         status as combo_curve_status,
         surface_latitude,
@@ -47,8 +47,8 @@ deduplicated as (
     select *
     from source
     qualify row_number() over (
-        partition by eid 
-        order by 
+        partition by eid
+        order by
             -- Prefer records with more complete data
             case when api_14 is not null then 0 else 1 end,
             case when well_name is not null then 0 else 1 end,
