@@ -25,7 +25,9 @@ enriched as (
         s.stimulation_sk,
 
         -- dimensional FKs
-        {{ dbt_utils.generate_surrogate_key(['s.job_id']) }} as job_sk,
+        case
+            when s.job_id is not null then {{ dbt_utils.generate_surrogate_key(['s.job_id']) }}
+        end as job_sk,
         w360.eid,
 
         -- natural keys

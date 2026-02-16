@@ -606,10 +606,10 @@ Based on the entity models above, these are the marts that should eventually exi
 |------|------|-------------|--------|--------------|
 | `well_360` | Dimension | Well (golden record) | **Exists** | `int_well__spine` + source prep models |
 | `dim_wellbore` | Dimension | Wellbore, Sections, Key Depths | **Exists** | `stg_wellview__wellbores` |
-| `dim_well_survey` | Dimension | Directional Survey, Stations | Not started | Staged |
-| `dim_zone` | Dimension | Zone, Status, Formation | Not started | `stg_wellview__zones` (staged). **Note:** primarily useful for vertical/legacy wells (~472 zones, ~161 wells). Horizontal wells use zones as a simple target formation tag (~1 zone/well, sparse metadata). |
+| `dim_well_survey` | Dimension | Directional Survey, Stations | **Exists** | `stg_wellview__wellbore_directional_surveys`, `stg_wellview__wellbore_directional_survey_data` |
+| `dim_zone` | Dimension | Zone, Status, Formation | **Exists** | `stg_wellview__zones`. **Note:** primarily useful for vertical/legacy wells (~472 zones, ~161 wells). Horizontal wells use zones as a simple target formation tag (~1 zone/well, sparse metadata). |
 | `dim_completion` | Dimension | Completion, Zones, Links | **Low priority** | Only 23 records total in WellView. Horizontal well completions better sourced from Stimulation + Perforation entities or ProdView. Staging not warranted until vertical well management becomes a priority. |
-| `dim_well_equipment` | Dimension | Casing + Tubing + Rods + Perfs + Prod Settings | Not started | Staged (8+5+2+1 models + `stg_wellview__production_settings` needed). Derive artificial lift type via COALESCE: (1) `PRODMETHTYP` from prod settings when non-null (~670 wells), (2) equipment inference from rods/tubing (~3,984 wells), (3) `setting_objective` as tertiary. 194K component records enable BOM, failure analysis, and vendor tracking. |
+| `dim_well_equipment` | Dimension | Casing + Tubing + Rods + Perfs + Prod Settings | **Exists** | Built from staged tubing/rod/perforation/prod-settings with COALESCE lift-type inference: (1) `PRODMETHTYP`, (2) equipment inference, (3) `setting_objective`. Current model is a well-level snapshot. |
 | `fct_well_configuration` | Fact | Point-in-time well configuration snapshot | Not started | Multiple Physical Well entities |
 
 ### Well Work Marts
