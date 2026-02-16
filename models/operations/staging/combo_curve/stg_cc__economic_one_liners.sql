@@ -97,14 +97,19 @@ enhanced as (
         get(economic_output_raw, 'total_expense')::float as total_expense,
         get(economic_output_raw, 'total_revenue')::float as total_revenue,
         get(economic_output_raw, 'wi_wells')::float as working_interest_wells_count,
-        get(economic_output_raw, 'chosen_id')::string as chosen_id,
-        get(economic_output_raw, 'basin')::string as basin,
-        get(economic_output_raw, 'op_cat')::string as operating_category,
+        get(economic_output_raw, 'chosen_id')::varchar as chosen_id,
+        get(economic_output_raw, 'basin')::varchar as basin,
+        get(economic_output_raw, 'op_cat')::varchar as operating_category,
         get(economic_output_raw, 'shrunk_gas_btu')::float as shrunk_gas_btu,
-        {{ transform_company_name("get(economic_output_raw, 'company_name')::string") }} as company_name,
+        {{
+            transform_company_name(
+                "get(economic_output_raw, 'company_name')::varchar",
+                "get(economic_output_raw, 'basin')::varchar"
+            )
+        }} as company_name,
         get(economic_output_raw, 'net_operating_income')::float as net_operating_income,
         get(economic_output_raw, 'before_income_tax_cash_flow')::float as before_income_tax_cash_flow,
-        {{ transform_reserve_category("get(economic_output_raw, 'rsv_cat')::string") }} as reserves_category,
+        {{ transform_reserve_category("get(economic_output_raw, 'rsv_cat')::varchar") }} as reserves_category,
 
         -- reference values
         get(economic_output_raw, 'reference_after_tax_npv_10.0')::float as reference_after_tax_npv_10,

@@ -1,4 +1,4 @@
-{% macro transform_company_name(column_name) %}
+{% macro transform_company_name(column_name, fallback=none) %}
     case
         when {{ column_name }} in ('Meramec')
             then 'FP Meramec'
@@ -34,6 +34,6 @@
             then 'FP Pronghorn'
         when {{ column_name }} = 'FP_DRAKE'
             then 'FP Drake'
-        else coalesce({{ column_name }}, get(output, 'basin')::string)
+        else coalesce({{ column_name }}, {{ fallback if fallback else 'null' }})
     end
 {% endmacro %}
