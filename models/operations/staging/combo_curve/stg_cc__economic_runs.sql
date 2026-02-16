@@ -1,46 +1,31 @@
 {{
     config(
-        materialized='view'
+        materialized='view',
+        tags=['combo_curve', 'staging', 'formentera']
     )
 }}
 
-with source as (
+with
 
+source as (
     select * from {{ source('combo_curve', 'econ_run_monthly_export_results') }}
-
 ),
 
-surrogate_key as (
-    
-    select
-        *,
-        {{ dbt_utils.generate_surrogate_key([
-            'ECONRUN',
-            'WELL',
-            'PROJECT',
-            'SCENARIO',
-            'COMBONAME'
-        ]) }} as economic_run_well_id
-    from source
+renamed as (
+    select  -- noqa: ST06
+        -- identifiers
+        _ID::varchar as id,
+        ECONRUN::varchar as econ_run_id,
+        WELL::varchar as well_id,
+        PROJECT::varchar as project_id,
+        SCENARIO::varchar as scenario_id,
+        COMBONAME::varchar as combo_name,
 
-),
-
-converted as (
-
-    select
-        -- Metadata and Identifiers (keep as strings)
-        _ID as id,
-        _PORTABLE_EXTRACTED as extracted_at,
-        ECONRUN as econ_run,
-        ECON_RUN_DATE as econ_run_date,
+        -- dates
+        ECON_RUN_DATE::varchar as econ_run_date,
         try_to_date(DATE) as date,
-        COMBONAME as combo_name,
-        WELL as well_id,
-        PROJECT as project,
-        SCENARIO as scenario,
-        economic_run_well_id,
 
-        -- Cash Flow Fields (convert to numeric)
+        -- cash flow
         try_to_decimal(BEFOREINCOMETAXCASHFLOW, 38, 6) as before_income_tax_cash_flow,
         try_to_decimal(AFTERINCOMETAXCASHFLOW, 38, 6) as after_income_tax_cash_flow,
         try_to_decimal(FIRSTDISCOUNTCASHFLOW, 38, 6) as first_discount_cash_flow,
@@ -52,7 +37,7 @@ converted as (
         try_to_decimal(NETINCOME, 38, 6) as net_income,
         try_to_decimal(NETPROFIT, 38, 6) as net_profit,
 
-        -- Discount Table Cash Flow Fields (convert to numeric)
+        -- discount table cash flow
         try_to_decimal(DISCOUNTTABLECASHFLOW1, 38, 6) as discount_table_cash_flow_1,
         try_to_decimal(DISCOUNTTABLECASHFLOW2, 38, 6) as discount_table_cash_flow_2,
         try_to_decimal(DISCOUNTTABLECASHFLOW3, 38, 6) as discount_table_cash_flow_3,
@@ -70,7 +55,7 @@ converted as (
         try_to_decimal(DISCOUNTTABLECASHFLOW15, 38, 6) as discount_table_cash_flow_15,
         try_to_decimal(DISCOUNTTABLECASHFLOW16, 38, 6) as discount_table_cash_flow_16,
 
-        -- After-Tax Discount Table Cash Flow Fields (convert to numeric)
+        -- after-tax discount table cash flow
         try_to_decimal(AFITDISCOUNTTABLECASHFLOW1, 38, 6) as afit_discount_table_cash_flow_1,
         try_to_decimal(AFITDISCOUNTTABLECASHFLOW2, 38, 6) as afit_discount_table_cash_flow_2,
         try_to_decimal(AFITDISCOUNTTABLECASHFLOW3, 38, 6) as afit_discount_table_cash_flow_3,
@@ -88,14 +73,14 @@ converted as (
         try_to_decimal(AFITDISCOUNTTABLECASHFLOW15, 38, 6) as afit_discount_table_cash_flow_15,
         try_to_decimal(AFITDISCOUNTTABLECASHFLOW16, 38, 6) as afit_discount_table_cash_flow_16,
 
-        -- Revenue Fields (convert to numeric)
+        -- revenue
         try_to_decimal(TOTALREVENUE, 38, 6) as total_revenue,
         try_to_decimal(OILREVENUE, 38, 6) as oil_revenue,
         try_to_decimal(GASREVENUE, 38, 6) as gas_revenue,
         try_to_decimal(NGLREVENUE, 38, 6) as ngl_revenue,
         try_to_decimal(DRIPCONDENSATEREVENUE, 38, 6) as drip_condensate_revenue,
 
-        -- Expense Fields (convert to numeric)
+        -- expenses (total)
         try_to_decimal(TOTALEXPENSE, 38, 6) as total_expense,
         try_to_decimal(TOTALFIXEDEXPENSE, 38, 6) as total_fixed_expense,
         try_to_decimal(TOTALVARIABLEEXPENSE, 38, 6) as total_variable_expense,
@@ -113,39 +98,38 @@ converted as (
         try_to_decimal(OTHERMONTHLYCOST_7, 38, 6) as fixed_expense_8,
         try_to_decimal(OTHERMONTHLYCOST_8, 38, 6) as fixed_expense_9,
 
-
-        -- Oil Processing Expenses (convert to numeric)
+        -- expenses (oil processing)
         try_to_decimal(OILGATHERINGEXPENSE, 38, 6) as oil_gathering_expense,
         try_to_decimal(OILPROCESSINGEXPENSE, 38, 6) as oil_processing_expense,
         try_to_decimal(OILTRANSPORTATIONEXPENSE, 38, 6) as oil_transportation_expense,
         try_to_decimal(OILMARKETINGEXPENSE, 38, 6) as oil_marketing_expense,
         try_to_decimal(OILOTHEREXPENSE, 38, 6) as oil_other_expense,
 
-        -- Gas Processing Expenses (convert to numeric)
+        -- expenses (gas processing)
         try_to_decimal(GASGATHERINGEXPENSE, 38, 6) as gas_gathering_expense,
         try_to_decimal(GASPROCESSINGEXPENSE, 38, 6) as gas_processing_expense,
         try_to_decimal(GASTRANSPORTATIONEXPENSE, 38, 6) as gas_transportation_expense,
         try_to_decimal(GASMARKETINGEXPENSE, 38, 6) as gas_marketing_expense,
         try_to_decimal(GASOTHEREXPENSE, 38, 6) as gas_other_expense,
 
-        -- NGL Processing Expenses (convert to numeric)
+        -- expenses (ngl processing)
         try_to_decimal(NGLGATHERINGEXPENSE, 38, 6) as ngl_gathering_expense,
         try_to_decimal(NGLPROCESSINGEXPENSE, 38, 6) as ngl_processing_expense,
         try_to_decimal(NGLTRANSPORTATIONEXPENSE, 38, 6) as ngl_transportation_expense,
         try_to_decimal(NGLMARKETINGEXPENSE, 38, 6) as ngl_marketing_expense,
         try_to_decimal(NGLOTHEREXPENSE, 38, 6) as ngl_other_expense,
 
-        -- Drip Condensate Processing Expenses (convert to numeric)
+        -- expenses (drip condensate processing)
         try_to_decimal(DRIPCONDENSATEGATHERINGEXPENSE, 38, 6) as drip_condensate_gathering_expense,
         try_to_decimal(DRIPCONDENSATEPROCESSINGEXPENSE, 38, 6) as drip_condensate_processing_expense,
         try_to_decimal(DRIPCONDENSATETRANSPORTATIONEXPENSE, 38, 6) as drip_condensate_transportation_expense,
         try_to_decimal(DRIPCONDENSATEMARKETINGEXPENSE, 38, 6) as drip_condensate_marketing_expense,
         try_to_decimal(DRIPCONDENSATEOTHEREXPENSE, 38, 6) as drip_condensate_other_expense,
 
-        -- Water Expenses (convert to numeric)
+        -- water expenses
         try_to_decimal(WATERDISPOSAL, 38, 6) as water_disposal,
 
-        -- Volume Fields - Production Volumes (convert to numeric)
+        -- volumes (gross)
         try_to_decimal(GROSSBOESALESVOLUME, 38, 6) as gross_boe_sales_volume,
         try_to_decimal(GROSSBOEWELLHEADVOLUME, 38, 6) as gross_boe_wellhead_volume,
         try_to_decimal(GROSSOILSALESVOLUME, 38, 6) as gross_oil_sales_volume,
@@ -157,6 +141,8 @@ converted as (
         try_to_decimal(GROSSMCFESALESVOLUME, 38, 6) as gross_mcfe_sales_volume,
         try_to_decimal(GROSSMCFEWELLHEADVOLUME, 38, 6) as gross_mcfe_wellhead_volume,
         try_to_decimal(GROSSWATERWELLHEADVOLUME, 38, 6) as gross_water_wellhead_volume,
+
+        -- volumes (net)
         try_to_decimal(NETBOESALESVOLUME, 38, 6) as net_boe_sales_volume,
         try_to_decimal(NETOILSALESVOLUME, 38, 6) as net_oil_sales_volume,
         try_to_decimal(NETGASSALESVOLUME, 38, 6) as net_gas_sales_volume,
@@ -164,7 +150,7 @@ converted as (
         try_to_decimal(NETDRIPCONDENSATESALESVOLUME, 38, 6) as net_drip_condensate_sales_volume,
         try_to_decimal(NETMCFESALESVOLUME, 38, 6) as net_mcfe_sales_volume,
 
-        -- Working Interest Volumes (convert to numeric)
+        -- volumes (working interest)
         try_to_decimal(WIBOESALESVOLUME, 38, 6) as wi_boe_sales_volume,
         try_to_decimal(WIOILSALESVOLUME, 38, 6) as wi_oil_sales_volume,
         try_to_decimal(WIGASSALESVOLUME, 38, 6) as wi_gas_sales_volume,
@@ -172,9 +158,9 @@ converted as (
         try_to_decimal(WIDRIPCONDENSATESALESVOLUME, 38, 6) as wi_drip_condensate_sales_volume,
         try_to_decimal(WIMCFESALESVOLUME, 38, 6) as wi_mcfe_sales_volume,
 
-        -- Price Fields (convert to numeric)
+        -- prices
         try_to_decimal(OILPRICE, 38, 6) as oil_price,
-        try_to_decimal(GASPRICE, 38, 6) as gas_price, 
+        try_to_decimal(GASPRICE, 38, 6) as gas_price,
         try_to_decimal(NGLPRICE, 38, 6) as ngl_price,
         try_to_decimal(DRIPCONDENSATEPRICE, 38, 6) as drip_condensate_price,
         try_to_decimal(INPUTOILPRICE, 38, 6) as input_oil_price,
@@ -182,7 +168,7 @@ converted as (
         try_to_decimal(INPUTNGLPRICE, 38, 6) as input_ngl_price,
         try_to_decimal(INPUTDRIPCONDENSATEPRICE, 38, 6) as input_drip_condensate_price,
 
-        -- Differentials (convert to numeric)
+        -- differentials
         try_to_decimal(OILDIFFERENTIALS1, 38, 6) as oil_differentials_1,
         try_to_decimal(OILDIFFERENTIALS2, 38, 6) as oil_differentials_2,
         try_to_decimal(GASDIFFERENTIALS1, 38, 6) as gas_differentials_1,
@@ -192,30 +178,18 @@ converted as (
         try_to_decimal(DRIPCONDENSATEDIFFERENTIALS1, 38, 6) as drip_condensate_differentials_1,
         try_to_decimal(DRIPCONDENSATEDIFFERENTIALS2, 38, 6) as drip_condensate_differentials_2,
 
-        -- Capital Expenditure Fields (convert to numeric)
+        -- capital expenditure (total)
         try_to_decimal(TOTALCAPEX, 38, 6) as total_capex,
         try_to_decimal(TOTALINTANGIBLECAPEX, 38, 6) as total_intangible_capex,
         try_to_decimal(TOTALTANGIBLECAPEX, 38, 6) as total_tangible_capex,
         try_to_decimal(TOTALGROSSCAPEX, 38, 6) as total_gross_capex,
 
-        -- Other Investment Fields (convert to numeric)
+        -- capital expenditure (other investment)
         try_to_decimal(TOTALOTHERINVESTMENT, 38, 6) as total_other_investment,
         try_to_decimal(INTANGIBLEOTHERINVESTMENT, 38, 6) as intangible_other_investment,
         try_to_decimal(TANGIBLEOTHERINVESTMENT, 38, 6) as tangible_other_investment,
 
-        -- Fixed Expense Fields (convert to numeric)
-        --try_to_decimal(FIXEDEXPENSE1, 38, 6) as fixed_expense_1,
-        --try_to_decimal(FIXEDEXPENSE2, 38, 6) as fixed_expense_2,
-        --try_to_decimal(FIXEDEXPENSE3, 38, 6) as fixed_expense_3,
-        --try_to_decimal(FIXEDEXPENSE4, 38, 6) as fixed_expense_4,
-        --try_to_decimal(FIXEDEXPENSE5, 38, 6) as fixed_expense_5,
-        --try_to_decimal(FIXEDEXPENSE6, 38, 6) as fixed_expense_6,
-        --try_to_decimal(FIXEDEXPENSE7, 38, 6) as fixed_expense_7,
-        --try_to_decimal(FIXEDEXPENSE8, 38, 6) as fixed_expense_8,
-        --try_to_decimal(FIXEDEXPENSE9, 38, 6) as fixed_expense_9,
-        --try_to_decimal(FIXEDEXPENSE10, 38, 6) as fixed_expense_10,
-
-        -- Development Capital (convert to numeric)
+        -- capital expenditure (development)
         try_to_decimal(TOTALDRILLING, 38, 6) as total_drilling,
         try_to_decimal(INTANGIBLEDRILLING, 38, 6) as intangible_drilling,
         try_to_decimal(TANGIBLEDRILLING, 38, 6) as tangible_drilling,
@@ -226,7 +200,7 @@ converted as (
         try_to_decimal(INTANGIBLEDEVELOPMENT, 38, 6) as intangible_development,
         try_to_decimal(TANGIBLEDEVELOPMENT, 38, 6) as tangible_development,
 
-        -- Facilities Capital (convert to numeric)
+        -- capital expenditure (facilities)
         try_to_decimal(TOTALFACILITIES, 38, 6) as total_facilities,
         try_to_decimal(INTANGIBLEFACILITIES, 38, 6) as intangible_facilities,
         try_to_decimal(TANGIBLEFACILITIES, 38, 6) as tangible_facilities,
@@ -240,7 +214,7 @@ converted as (
         try_to_decimal(INTANGIBLEWATERLINE, 38, 6) as intangible_waterline,
         try_to_decimal(TANGIBLEWATERLINE, 38, 6) as tangible_waterline,
 
-        -- Other Capital Categories (convert to numeric)
+        -- capital expenditure (other categories)
         try_to_decimal(TOTALAPPRAISAL, 38, 6) as total_appraisal,
         try_to_decimal(INTANGIBLEAPPRAISAL, 38, 6) as intangible_appraisal,
         try_to_decimal(TANGIBLEAPPRAISAL, 38, 6) as tangible_appraisal,
@@ -266,7 +240,7 @@ converted as (
         try_to_decimal(INTANGIBLELEGAL, 38, 6) as intangible_legal,
         try_to_decimal(TANGIBLELEGAL, 38, 6) as tangible_legal,
 
-        -- Tax Fields (convert to numeric)
+        -- taxes
         try_to_decimal(FEDERALINCOMETAX, 38, 6) as federal_income_tax,
         try_to_decimal(STATEINCOMETAX, 38, 6) as state_income_tax,
         try_to_decimal(TAXABLEINCOME, 38, 6) as taxable_income,
@@ -278,10 +252,10 @@ converted as (
         try_to_decimal(NGLSEVERANCETAX, 38, 6) as ngl_severance_tax,
         try_to_decimal(DRIPCONDENSATESEVERANCETAX, 38, 6) as drip_condensate_severance_tax,
 
-        -- Accounting
+        -- accounting
         try_to_decimal(DEPRECIATION, 38, 6) as depreciation,
 
-        -- Production Parameters (convert to numeric)
+        -- production parameters
         try_to_decimal(GROSSWELLCOUNT, 38, 6) as gross_well_count,
         try_to_decimal(NRIWELLCOUNT, 38, 6) as nri_well_count,
         try_to_decimal(WIWELLCOUNT, 38, 6) as wi_well_count,
@@ -295,7 +269,7 @@ converted as (
         try_to_decimal(WIDRIPCONDENSATE, 38, 6) as wi_drip_condensate,
         try_to_decimal(LEASENRI, 38, 6) as lease_nri,
 
-        -- Production Characteristics (convert to numeric)
+        -- production characteristics
         try_to_decimal(NGLYIELD, 38, 6) as ngl_yield,
         try_to_decimal(DRIPCONDENSATEYIELD, 38, 6) as drip_condensate_yield,
         try_to_decimal(OILLOSS, 38, 6) as oil_loss,
@@ -304,21 +278,281 @@ converted as (
         try_to_decimal(GASSHRINKAGE, 38, 6) as gas_shrinkage,
         try_to_decimal(GASFLARE, 38, 6) as gas_flare,
 
-        -- Start Dates (convert to date)
+        -- dates
         try_to_date(OILSTARTUSINGFORECASTDATE) as oil_start_using_forecast_date,
         try_to_date(GASSTARTUSINGFORECASTDATE) as gas_start_using_forecast_date,
-        try_to_date(WATERSTARTUSINGFORECASTDATE) as water_start_using_forecast_date
+        try_to_date(WATERSTARTUSINGFORECASTDATE) as water_start_using_forecast_date,
 
-        from surrogate_key
+        -- ingestion metadata
+        _PORTABLE_EXTRACTED::timestamp_tz as _portable_extracted
 
-    )
+    from source
+),
 
+filtered as (
+    select *
+    from renamed
+    where id is not null
+),
 
-select * from converted
-order by
-    project, 
-    scenario, 
-    econ_run, 
-    combo_name, 
-    well_id, 
-    date asc
+enhanced as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['id']) }} as economic_run_monthly_sk,
+        {{ dbt_utils.generate_surrogate_key([
+            'econ_run_id',
+            'well_id',
+            'project_id',
+            'scenario_id',
+            'combo_name'
+        ]) }} as economic_run_well_id,
+        *,
+        current_timestamp() as _loaded_at
+    from filtered
+),
+
+final as (
+    select
+        economic_run_monthly_sk,
+        economic_run_well_id,
+        -- identifiers
+        id,
+        econ_run_id,
+        well_id,
+        project_id,
+        scenario_id,
+        combo_name,
+        -- dates
+        econ_run_date,
+        date,
+        -- cash flow
+        before_income_tax_cash_flow,
+        after_income_tax_cash_flow,
+        first_discount_cash_flow,
+        second_discount_cash_flow,
+        first_discount_net_income,
+        second_discount_net_income,
+        first_discounted_capex,
+        second_discounted_capex,
+        net_income,
+        net_profit,
+        -- discount table cash flow
+        discount_table_cash_flow_1,
+        discount_table_cash_flow_2,
+        discount_table_cash_flow_3,
+        discount_table_cash_flow_4,
+        discount_table_cash_flow_5,
+        discount_table_cash_flow_6,
+        discount_table_cash_flow_7,
+        discount_table_cash_flow_8,
+        discount_table_cash_flow_9,
+        discount_table_cash_flow_10,
+        discount_table_cash_flow_11,
+        discount_table_cash_flow_12,
+        discount_table_cash_flow_13,
+        discount_table_cash_flow_14,
+        discount_table_cash_flow_15,
+        discount_table_cash_flow_16,
+        -- after-tax discount table cash flow
+        afit_discount_table_cash_flow_1,
+        afit_discount_table_cash_flow_2,
+        afit_discount_table_cash_flow_3,
+        afit_discount_table_cash_flow_4,
+        afit_discount_table_cash_flow_5,
+        afit_discount_table_cash_flow_6,
+        afit_discount_table_cash_flow_7,
+        afit_discount_table_cash_flow_8,
+        afit_discount_table_cash_flow_9,
+        afit_discount_table_cash_flow_10,
+        afit_discount_table_cash_flow_11,
+        afit_discount_table_cash_flow_12,
+        afit_discount_table_cash_flow_13,
+        afit_discount_table_cash_flow_14,
+        afit_discount_table_cash_flow_15,
+        afit_discount_table_cash_flow_16,
+        -- revenue
+        total_revenue,
+        oil_revenue,
+        gas_revenue,
+        ngl_revenue,
+        drip_condensate_revenue,
+        -- expenses
+        total_expense,
+        total_fixed_expense,
+        total_variable_expense,
+        total_oil_variable_expense,
+        total_gas_variable_expense,
+        total_ngl_variable_expense,
+        total_drip_condensate_variable_expense,
+        fixed_expense_1,
+        fixed_expense_2,
+        fixed_expense_3,
+        fixed_expense_4,
+        fixed_expense_5,
+        fixed_expense_6,
+        fixed_expense_7,
+        fixed_expense_8,
+        fixed_expense_9,
+        oil_gathering_expense,
+        oil_processing_expense,
+        oil_transportation_expense,
+        oil_marketing_expense,
+        oil_other_expense,
+        gas_gathering_expense,
+        gas_processing_expense,
+        gas_transportation_expense,
+        gas_marketing_expense,
+        gas_other_expense,
+        ngl_gathering_expense,
+        ngl_processing_expense,
+        ngl_transportation_expense,
+        ngl_marketing_expense,
+        ngl_other_expense,
+        drip_condensate_gathering_expense,
+        drip_condensate_processing_expense,
+        drip_condensate_transportation_expense,
+        drip_condensate_marketing_expense,
+        drip_condensate_other_expense,
+        water_disposal,
+        -- volumes (gross)
+        gross_boe_sales_volume,
+        gross_boe_wellhead_volume,
+        gross_oil_sales_volume,
+        gross_oil_wellhead_volume,
+        gross_gas_sales_volume,
+        gross_gas_wellhead_volume,
+        gross_ngl_sales_volume,
+        gross_drip_condensate_sales_volume,
+        gross_mcfe_sales_volume,
+        gross_mcfe_wellhead_volume,
+        gross_water_wellhead_volume,
+        -- volumes (net)
+        net_boe_sales_volume,
+        net_oil_sales_volume,
+        net_gas_sales_volume,
+        net_ngl_sales_volume,
+        net_drip_condensate_sales_volume,
+        net_mcfe_sales_volume,
+        -- volumes (working interest)
+        wi_boe_sales_volume,
+        wi_oil_sales_volume,
+        wi_gas_sales_volume,
+        wi_ngl_sales_volume,
+        wi_drip_condensate_sales_volume,
+        wi_mcfe_sales_volume,
+        -- prices
+        oil_price,
+        gas_price,
+        ngl_price,
+        drip_condensate_price,
+        input_oil_price,
+        input_gas_price,
+        input_ngl_price,
+        input_drip_condensate_price,
+        -- differentials
+        oil_differentials_1,
+        oil_differentials_2,
+        gas_differentials_1,
+        gas_differentials_2,
+        ngl_differentials_1,
+        ngl_differentials_2,
+        drip_condensate_differentials_1,
+        drip_condensate_differentials_2,
+        -- capital expenditure
+        total_capex,
+        total_intangible_capex,
+        total_tangible_capex,
+        total_gross_capex,
+        total_other_investment,
+        intangible_other_investment,
+        tangible_other_investment,
+        total_drilling,
+        intangible_drilling,
+        tangible_drilling,
+        total_completion,
+        intangible_completion,
+        tangible_completion,
+        total_development,
+        intangible_development,
+        tangible_development,
+        total_facilities,
+        intangible_facilities,
+        tangible_facilities,
+        total_pad,
+        intangible_pad,
+        tangible_pad,
+        total_pipelines,
+        intangible_pipelines,
+        tangible_pipelines,
+        total_waterline,
+        intangible_waterline,
+        tangible_waterline,
+        total_appraisal,
+        intangible_appraisal,
+        tangible_appraisal,
+        total_exploration,
+        intangible_exploration,
+        tangible_exploration,
+        total_artificial_lift,
+        intangible_artificial_lift,
+        tangible_artificial_lift,
+        total_workover,
+        intangible_workover,
+        tangible_workover,
+        total_abandonment,
+        intangible_abandonment,
+        tangible_abandonment,
+        total_salvage,
+        intangible_salvage,
+        tangible_salvage,
+        total_leasehold,
+        intangible_leasehold,
+        tangible_leasehold,
+        total_legal,
+        intangible_legal,
+        tangible_legal,
+        -- taxes
+        federal_income_tax,
+        state_income_tax,
+        taxable_income,
+        ad_valorem_tax,
+        total_production_tax,
+        total_severance_tax,
+        oil_severance_tax,
+        gas_severance_tax,
+        ngl_severance_tax,
+        drip_condensate_severance_tax,
+        -- accounting
+        depreciation,
+        -- production parameters
+        gross_well_count,
+        nri_well_count,
+        wi_well_count,
+        nri_oil,
+        nri_gas,
+        nri_ngl,
+        nri_drip_condensate,
+        wi_oil,
+        wi_gas,
+        wi_ngl,
+        wi_drip_condensate,
+        lease_nri,
+        -- production characteristics
+        ngl_yield,
+        drip_condensate_yield,
+        oil_loss,
+        oil_shrinkage,
+        gas_loss,
+        gas_shrinkage,
+        gas_flare,
+        -- dates
+        oil_start_using_forecast_date,
+        gas_start_using_forecast_date,
+        water_start_using_forecast_date,
+        -- ingestion metadata
+        _portable_extracted,
+        -- dbt metadata
+        _loaded_at
+    from enhanced
+)
+
+select * from final

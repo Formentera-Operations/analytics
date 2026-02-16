@@ -1,0 +1,317 @@
+version: 2
+
+models:
+  - name: stg_cc__company_wells
+    description: >
+      Company-level well master from ComboCurve. One row per well across all projects.
+      Source: CC_RAW.WELLS (5,017 rows, 225 columns). Refactored to 5-CTE pattern.
+      Only key operational columns selected from 225 available.
+    columns:
+      # -- surrogate key
+      - name: company_well_sk
+        description: "Surrogate key (MD5 hash of well_id)"
+
+      # -- identifiers
+      - name: well_id
+        description: "ComboCurve well GUID (24-char hex, MongoDB ObjectId) -- natural key. ComboCurve: ID"
+        data_tests:
+          - unique
+          - not_null
+
+      - name: aries_id
+        description: "PHDWin/Aries well identifier. ComboCurve: ARIESID"
+
+      - name: phdwin_id
+        description: "PHDWin well identifier. ComboCurve: PHDWINID"
+
+      - name: chosen_id
+        description: "Operator-chosen well identifier, primary cross-system matching key. ComboCurve: CHOSENID"
+
+      # -- descriptive fields
+      - name: well_name
+        description: "Well name. ComboCurve: WELLNAME"
+
+      - name: well_number
+        description: "Well number. ComboCurve: WELLNUMBER"
+
+      - name: well_type
+        description: "Well type (e.g., Oil, Gas, OilAndGas). ComboCurve: WELLTYPE"
+
+      - name: lease_name
+        description: "Lease name. ComboCurve: LEASENAME"
+
+      - name: api_10
+        description: "API 10-digit well identifier (state + county + well). ComboCurve: API10"
+
+      - name: api_12
+        description: "API 12-digit well identifier (10 + sidetrack). ComboCurve: API12"
+
+      - name: api_14
+        description: "API 14-digit well identifier (12 + completion event). ComboCurve: API14"
+
+      - name: operator
+        description: "Current well operator name. ComboCurve: CURRENTOPERATOR"
+
+      - name: operator_code
+        description: "Current operator code. ComboCurve: CURRENTOPERATORCODE"
+
+      - name: operator_category
+        description: "Raw operator category from ComboCurve custom field. 'OP' = operated. ComboCurve: CUSTOMSTRING3"
+
+      - name: status
+        description: "Current well status (e.g., Active, ShutIn, Abandoned). ComboCurve: STATUS"
+
+      - name: primary_product
+        description: "Primary produced fluid (Oil, Gas, NGL). ComboCurve: PRIMARYPRODUCT"
+
+      - name: reserve_category
+        description: "Reserve category classification. ComboCurve: CUSTOMSTRING1"
+
+      - name: company_name
+        description: "Company name from ComboCurve custom field. ComboCurve: CUSTOMSTRING22"
+
+      # -- location
+      - name: basin
+        description: "Geologic basin name. ComboCurve: BASIN"
+
+      - name: county
+        description: "County name with state abbreviation suffix stripped (e.g., 'MCCLAIN (OK)' becomes 'MCCLAIN'). ComboCurve: COUNTY"
+
+      - name: state
+        description: "State abbreviation. ComboCurve: STATE"
+
+      # -- measures
+      - name: surface_latitude
+        description: "Surface location latitude (decimal degrees, WGS84). ComboCurve: SURFACELATITUDE"
+
+      - name: surface_longitude
+        description: "Surface location longitude (decimal degrees, WGS84). ComboCurve: SURFACELONGITUDE"
+
+      - name: measured_depth
+        description: "Total measured depth (FT). ComboCurve: MEASUREDDEPTH"
+
+      - name: true_vertical_depth
+        description: "True vertical depth (FT). ComboCurve: TRUEVERTICALDEPTH"
+
+      - name: lateral_length
+        description: "Horizontal lateral length (FT). ComboCurve: LATERALLENGTH"
+
+      # -- flags
+      - name: is_operated
+        description: "True if operator_category = 'OP', indicating Formentera-operated well. Computed in enhanced CTE."
+
+      - name: has_daily
+        description: "True if daily production data exists for this well. ComboCurve: HASDAILY"
+
+      - name: has_monthly
+        description: "True if monthly production data exists for this well. ComboCurve: HASMONTHLY"
+
+      # -- system / audit
+      - name: data_pool
+        description: "Data pool identifier. ComboCurve: DATAPOOL"
+
+      - name: data_source
+        description: "Data source system (e.g., IHS, DI, manual). ComboCurve: DATASOURCE"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- dates
+      - name: created_at
+        description: "Record creation timestamp in ComboCurve. ComboCurve: CREATEDAT"
+
+      - name: updated_at
+        description: "Record last update timestamp in ComboCurve. ComboCurve: UPDATEDAT"
+
+      # -- ingestion metadata
+      - name: _portable_extracted
+        description: "Portable ingestion timestamp. Source: _PORTABLE_EXTRACTED"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: "Timestamp when dbt last processed this row"
+
+  - name: stg_cc__project_wells
+    description: >
+      Project-scoped wells from ComboCurve. A single company well can appear in multiple projects.
+      Source: CC_RAW.PROJECT_WELLS (283,590 rows, 297 columns). Refactored to 5-CTE pattern.
+      Only key operational columns selected from 297 available.
+    columns:
+      # -- surrogate key
+      - name: project_well_sk
+        description: "Surrogate key (MD5 hash of well_id)"
+
+      # -- identifiers
+      - name: well_id
+        description: "ComboCurve well GUID (24-char hex, MongoDB ObjectId) -- natural key. ComboCurve: ID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: project_id
+        description: "Project ID this well belongs to (FK to PROJECTS.ID). ComboCurve: PROJECT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_cc__projects')
+                field: project_id
+              config:
+                severity: warn
+
+      - name: aries_id
+        description: "PHDWin/Aries well identifier. ComboCurve: ARIESID"
+
+      - name: phdwin_id
+        description: "PHDWin well identifier. ComboCurve: PHDWINID"
+
+      - name: chosen_id
+        description: "Operator-chosen well identifier, primary cross-system matching key. ComboCurve: CHOSENID"
+
+      # -- descriptive fields
+      - name: well_name
+        description: "Well name. ComboCurve: WELLNAME"
+
+      - name: well_number
+        description: "Well number. ComboCurve: WELLNUMBER"
+
+      - name: well_type
+        description: "Well type (e.g., Oil, Gas, OilAndGas). ComboCurve: WELLTYPE"
+
+      - name: lease_name
+        description: "Lease name. ComboCurve: LEASENAME"
+
+      - name: api_10
+        description: "API 10-digit well identifier (state + county + well). ComboCurve: API10"
+
+      - name: api_12
+        description: "API 12-digit well identifier (10 + sidetrack). ComboCurve: API12"
+
+      - name: api_14
+        description: "API 14-digit well identifier (12 + completion event). ComboCurve: API14"
+
+      - name: operator
+        description: "Current well operator name. ComboCurve: CURRENTOPERATOR"
+
+      - name: operator_code
+        description: "Current operator code. ComboCurve: CURRENTOPERATORCODE"
+
+      - name: operator_category
+        description: "Raw operator category from ComboCurve custom field. 'OP' = operated. ComboCurve: CUSTOMSTRING3"
+
+      - name: status
+        description: "Current well status (e.g., Active, ShutIn, Abandoned). ComboCurve: STATUS"
+
+      - name: primary_product
+        description: "Primary produced fluid (Oil, Gas, NGL). ComboCurve: PRIMARYPRODUCT"
+
+      - name: reserve_category
+        description: "Reserve category classification. ComboCurve: CUSTOMSTRING1"
+
+      - name: company_name
+        description: "Company name from ComboCurve custom field. ComboCurve: CUSTOMSTRING22"
+
+      # -- location
+      - name: basin
+        description: "Geologic basin name. ComboCurve: BASIN"
+
+      - name: county
+        description: "County name with state abbreviation suffix stripped (e.g., 'MCCLAIN (OK)' becomes 'MCCLAIN'). ComboCurve: COUNTY"
+
+      - name: state
+        description: "State abbreviation. ComboCurve: STATE"
+
+      # -- measures
+      - name: surface_latitude
+        description: "Surface location latitude (decimal degrees, WGS84). ComboCurve: SURFACELATITUDE"
+
+      - name: surface_longitude
+        description: "Surface location longitude (decimal degrees, WGS84). ComboCurve: SURFACELONGITUDE"
+
+      - name: measured_depth
+        description: "Total measured depth (FT). ComboCurve: MEASUREDDEPTH"
+
+      - name: true_vertical_depth
+        description: "True vertical depth (FT). ComboCurve: TRUEVERTICALDEPTH"
+
+      - name: lateral_length
+        description: "Horizontal lateral length (FT). ComboCurve: LATERALLENGTH"
+
+      # -- flags
+      - name: is_operated
+        description: "True if operator_category = 'OP', indicating Formentera-operated well. Computed in enhanced CTE."
+
+      - name: has_daily
+        description: "True if daily production data exists for this well. ComboCurve: HASDAILY"
+
+      - name: has_monthly
+        description: "True if monthly production data exists for this well. ComboCurve: HASMONTHLY"
+
+      # -- system / audit
+      - name: data_pool
+        description: "Data pool identifier. ComboCurve: DATAPOOL"
+
+      - name: data_source
+        description: "Data source system (e.g., IHS, DI, manual). ComboCurve: DATASOURCE"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- dates
+      - name: created_at
+        description: "Record creation timestamp in ComboCurve. ComboCurve: CREATEDAT"
+
+      - name: updated_at
+        description: "Record last update timestamp in ComboCurve. ComboCurve: UPDATEDAT"
+
+      # -- ingestion metadata
+      - name: _portable_extracted
+        description: "Portable ingestion timestamp. Source: _PORTABLE_EXTRACTED"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: "Timestamp when dbt last processed this row"
+
+  - name: stg_cc__projects
+    description: >
+      ComboCurve project containers. Projects organize wells, scenarios, forecasts, and economic models.
+      Source: CC_RAW.PROJECTS (242 rows, 6 columns). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: project_sk
+        description: "Surrogate key (MD5 hash of project_id)"
+
+      # -- identifiers
+      - name: project_id
+        description: "ComboCurve project GUID (24-char hex, MongoDB ObjectId) -- natural key. ComboCurve: ID"
+        data_tests:
+          - unique
+          - not_null
+
+      # -- descriptive fields
+      - name: project_name
+        description: "Project name. ComboCurve: NAME"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- dates
+      - name: created_at
+        description: "Project creation timestamp in ComboCurve. ComboCurve: CREATEDAT"
+
+      - name: updated_at
+        description: "Project last update timestamp in ComboCurve. ComboCurve: UPDATEDAT"
+
+      # -- ingestion metadata
+      - name: _portable_extracted
+        description: "Portable ingestion timestamp. Source: _PORTABLE_EXTRACTED"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: "Timestamp when dbt last processed this row"
