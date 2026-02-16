@@ -3,28 +3,31 @@ version: 2
 models:
   - name: dim_owner
     description: >
-      Owner 360 dimension — contact-centric view of mineral royalty owners.
-      One row per contact with company (legal entity) fields denormalized.
+      Owner 360 dimension — unified view of mineral royalty owners.
+      Combines contact-based owners (persons with optional company association)
+      and company-only owners (entities with no linked contact).
+      One row per owner entity: contact_id-based for contacts (~19K),
+      company_id-based for companies with no contacts (~45K).
       Entity type (LLC, Trust, Estate, LP, Corporation, Individual) is derived
       from company name patterns. Address prefers company address with fallback
       to contact address.
     columns:
       - name: owner_sk
-        description: Surrogate key derived from contact_id (same as contact_sk)
+        description: >
+          Surrogate key — contact_sk for contact-based owners,
+          company_sk for company-only owners
         data_tests:
           - unique
           - not_null
 
       - name: contact_id
-        description: HubSpot contact identifier (natural key)
-        data_tests:
-          - unique
-          - not_null
+        description: >
+          HubSpot contact identifier. NULL for company-only owners.
 
       - name: company_id
         description: >
-          FK to stg_hubspot__companies.company_id. NULL when contact
-          has no company association (56.1% of contacts).
+          FK to stg_hubspot__companies.company_id. NULL when a contact
+          has no company association. Always populated for company-only owners.
         data_tests:
           - relationships:
               arguments:
@@ -32,6 +35,16 @@ models:
                 field: company_id
               config:
                 severity: warn
+
+      - name: owner_source
+        description: >
+          Discriminator for owner origin: 'contact' for contact-based owners,
+          'company_only' for companies with no linked contacts.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['contact', 'company_only']
 
       - name: first_name
         description: Contact first name
@@ -41,8 +54,8 @@ models:
 
       - name: full_name
         description: >
-          Derived full name — coalesce of first+last, last only, first only,
-          then email as final fallback
+          Derived full name — for contacts: coalesce of first+last, last only,
+          first only, then email. For company-only: company_name.
         data_tests:
           - not_null:
               config:
@@ -64,13 +77,15 @@ models:
         description: Job title or role
 
       - name: company_name
-        description: Legal entity name from associated company (NULL if no company)
+        description: >
+          Legal entity name. For contact-based owners, from associated company
+          (NULL if no association). Always populated for company-only owners.
 
       - name: entity_type
         description: >
           Derived entity classification from company name patterns.
           Values: LLC, Trust, Estate, LP, Corporation, Individual, NULL.
-          NULL when no company association exists.
+          NULL only for contact-based owners with no company association.
 
       - name: is_llc
         description: Whether the associated company is an LLC (name-based detection)
@@ -94,7 +109,9 @@ models:
         description: Country — prefers company, falls back to contact
 
       - name: is_address_from_company
-        description: Whether the address was sourced from company (true) or contact (false)
+        description: >
+          Whether the address was sourced from company (true) or contact (false).
+          Always true for company-only owners.
 
       - name: tax_status
         description: Tax filing status (from company)
@@ -151,13 +168,15 @@ models:
         description: HubSpot internal owner (sales rep) assigned to this contact
 
       - name: has_company
-        description: Whether this contact has an associated company record
+        description: >
+          Whether this owner has a company record. Always true for
+          company-only owners. True/false for contact-based owners.
 
       - name: created_at
-        description: Contact creation timestamp
+        description: Record creation timestamp (from contact or company)
 
       - name: last_modified_at
-        description: Contact last modification timestamp
+        description: Record last modification timestamp (from contact or company)
 
       - name: _loaded_at
         description: dbt load timestamp
