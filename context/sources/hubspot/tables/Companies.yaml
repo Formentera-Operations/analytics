@@ -1,0 +1,289 @@
+# HubSpot Companies — Column Reference
+#
+# Source: FO_RAW_DB.HUBSPOT_RAW.COMPANIES
+# Rows: 53,162
+# Ingestion: Portable (full snapshots)
+# Last audited: 2026-02-15
+#
+# Population rates are for non-archived records.
+# Properties are extracted from VARIANT column via properties:KEY_NAME::type
+
+table_name: COMPANIES
+primary_key: ID
+soft_delete: ARCHIVED (boolean)
+
+top_level_columns:
+  - name: ID
+    type: TEXT
+    description: Unique company identifier (HubSpot internal ID)
+    population: 100%
+
+  - name: ARCHIVED
+    type: BOOLEAN
+    description: Soft delete flag — true means record is archived/deleted
+    population: 100%
+
+  - name: CREATEDAT
+    type: TIMESTAMP_NTZ
+    description: When the company record was created in HubSpot
+    population: 100%
+
+  - name: UPDATEDAT
+    type: TIMESTAMP_NTZ
+    description: When the company record was last updated
+    population: 100%
+
+  - name: URL
+    type: TEXT
+    description: HubSpot URL for the company record
+    population: 100%
+
+  - name: _PORTABLE_EXTRACTED
+    type: TIMESTAMP_NTZ
+    description: Portable extraction timestamp
+    population: 100%
+
+properties:
+  # -- Core Identity --
+  - name: NAME
+    type: string
+    description: Company/owner entity name (individual name or legal entity name)
+    population: 100%
+    staging_name: company_name
+
+  - name: DESCRIPTION
+    type: string
+    description: Free-text company description
+    population: 3.4%
+    staging_name: description
+
+  # -- Address --
+  - name: ADDRESS_LINE_ONE
+    type: string
+    description: Primary mailing address line 1
+    population: 95.9%
+    staging_name: address_line_one
+
+  - name: ADDRESS_LINE_TWO
+    type: string
+    description: Mailing address line 2 (suite, apt, etc.)
+    population: 16.9%
+    staging_name: address_line_two
+
+  - name: CITY
+    type: string
+    description: City
+    population: 95.0%
+    staging_name: city
+
+  - name: STATE
+    type: string
+    description: State (typically 2-letter abbreviation)
+    population: 95.5%
+    staging_name: state
+
+  - name: ZIP
+    type: string
+    description: ZIP/postal code
+    population: 94.8%
+    staging_name: zip
+
+  - name: COUNTRY
+    type: string
+    description: Country (typically 2-letter ISO code)
+    population: 100%
+    staging_name: country
+
+  # -- Contact Info --
+  - name: EMAIL
+    type: string
+    description: Company email address
+    population: 13.1%
+    staging_name: email
+
+  - name: PHONE
+    type: string
+    description: Company phone number
+    population: 44.8%
+    staging_name: phone
+
+  # -- Financial / Tax --
+  - name: TAX_STATUS
+    type: string
+    description: Tax filing status
+    population: 100%
+    staging_name: tax_status
+
+  - name: TAX_EXEMPT
+    type: boolean
+    description: Whether the company is tax exempt
+    population: 71.1%
+    staging_name: is_tax_exempt
+
+  - name: TAX_ID_NUMBER
+    type: string
+    description: SSN or EIN for 1099 reporting
+    population: 78.8%
+    staging_name: tax_id_number
+    sensitive: true
+
+  - name: REVENUE_PAYMENT_TYPE
+    type: string
+    description: How revenue payments are made (check, ACH, etc.)
+    population: 94.1%
+    staging_name: revenue_payment_type
+
+  - name: MINIMUM_CHECK_AMOUNT
+    type: number
+    description: Minimum amount for issuing revenue checks
+    population: 100%
+    staging_name: minimum_check_amount
+
+  - name: DBA_1099_NAME
+    type: string
+    description: DBA name used on 1099 forms
+    population: 0.4%
+    staging_name: dba_1099_name
+
+  - name: FEDERAL_WITHHOLDING
+    type: string
+    description: Federal tax withholding setting
+    population: 100%
+    staging_name: federal_withholding
+
+  - name: STATE_WITHHOLDING
+    type: string
+    description: State tax withholding setting
+    population: 99.7%
+    staging_name: state_withholding
+
+  # -- Operations --
+  - name: OWNER_NUMBER___OGSYS
+    type: string
+    description: Owner number from OGSys system (entity resolution key)
+    population: 100%
+    staging_name: owner_number_ogsys
+
+  - name: ACQUIRED_OWNER_NUMBER
+    type: string
+    description: Owner number from prior acquisition
+    population: 74.8%
+    staging_name: acquired_owner_number
+
+  - name: ASSET
+    type: string
+    description: Asset or property association
+    population: 68.1%
+    staging_name: asset
+
+  - name: ACTIVE
+    type: boolean
+    description: Whether the owner entity is currently active
+    population: 100%
+    staging_name: is_active
+
+  - name: WORKING_INTEREST_OWNER
+    type: boolean
+    description: Whether the owner holds working interest
+    population: 66.0%
+    staging_name: is_working_interest_owner
+
+  - name: HOLD_REVENUE_CHECKS
+    type: boolean
+    description: Whether revenue checks are on hold for this owner
+    population: 48.4%
+    staging_name: is_revenue_checks_on_hold
+
+  - name: ENERGY_LINK_UPLOAD
+    type: string
+    description: Energy Link upload status/identifier
+    population: 100%
+    staging_name: energy_link_upload
+
+  - name: STATEMENT_DELIVERY
+    type: string
+    description: How statements are delivered (mail, email, etc.)
+    population: 100%
+    staging_name: statement_delivery
+
+  - name: REVENUE_CHECK_STUB
+    type: string
+    description: Revenue check stub format/setting
+    population: 100%
+    staging_name: revenue_check_stub
+
+  - name: NETTING_CODE
+    type: string
+    description: Revenue netting code
+    population: 99.7%
+    staging_name: netting_code
+
+  - name: NETTING_CODE_HELPER
+    type: string
+    description: Helper field for netting code logic
+    population: 100%
+    staging_name: netting_code_helper
+
+  - name: MINIMUM_JIB
+    type: string
+    description: Minimum joint interest billing threshold
+    population: 100%
+    staging_name: minimum_jib
+
+  - name: SUSPENSE_REASON
+    type: string
+    description: Reason owner payments are in suspense
+    population: 27.1%
+    staging_name: suspense_reason
+
+  # -- HubSpot System --
+  - name: HUBSPOT_OWNER_ID
+    type: string
+    description: HubSpot internal owner (sales rep) assigned to this company
+    population: 5.3%
+    staging_name: hubspot_owner_id
+
+  - name: LIFECYCLESTAGE
+    type: string
+    description: HubSpot lifecycle stage
+    population: 55.8%
+    staging_name: lifecycle_stage
+
+  - name: NUM_ASSOCIATED_CONTACTS
+    type: number
+    description: Count of contacts associated with this company
+    population: 100%
+    staging_name: num_associated_contacts
+
+  - name: HS_WAS_IMPORTED
+    type: boolean
+    description: Whether the record was imported (vs created in HubSpot UI)
+    population: 99.8%
+    staging_name: is_imported
+
+  - name: HS_LASTMODIFIEDDATE
+    type: timestamp
+    description: Last modification timestamp from HubSpot
+    population: 100%
+    staging_name: last_modified_at
+
+  - name: CREATEDATE
+    type: timestamp
+    description: Creation timestamp from HubSpot properties
+    population: 100%
+    staging_name: created_at
+
+dropped_properties:
+  # 0% population (never set):
+  # INDUSTRY, STATUS, VENDOR_NUMBER, VENDOR_TYPE, WELL_COUNT, WELLBORE_COUNT,
+  # W9_RECEIVED, W9_SIGNED_DATE, W9_TYPE, DAYS_TO_CLOSE, WELL, WELL_NAME,
+  # WELL_STATUS, WELL_TYPE, WELLBORE, UNIT, UNIT_TYPE, YEARS_HELD,
+  # WITHHOLDING_REASON, WITHHOLDING_START_DATE, WITHHOLDING_STOP_DATE,
+  # WITHHOLDING_TYPE, VENDOR_WITHHOLDING
+  #
+  # HubSpot analytics (not relevant to ORM):
+  # HS_ANALYTICS_* fields, page_views, visits, source tracking
+  #
+  # HubSpot system metadata (internal use):
+  # HS_OBJECT_SOURCE*, HS_TASK_LABEL, HS_TARGET_ACCOUNT_PROBABILITY,
+  # HS_ALL_*_IDS, HS_USER_IDS_*, pipeline/deal fields
