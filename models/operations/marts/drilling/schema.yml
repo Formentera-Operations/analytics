@@ -53,6 +53,117 @@ models:
                 to: ref('well_360')
                 field: eid
 
+  - name: dim_well_survey
+    description: >
+      Directional survey station dimension sourced from WellView. One row per
+      survey station with trajectory measurements (MD, TVD, inclination, azimuth,
+      dogleg) and survey metadata.
+    columns:
+      - name: well_survey_sk
+        description: Surrogate key for survey station (MD5 hash of survey_data_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: survey_data_id
+        description: WellView natural key for the survey station point
+        data_tests:
+          - unique
+          - not_null
+      - name: survey_id
+        description: Parent directional survey natural key
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_sk
+        description: FK to dim_wellbore
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_wellbore')
+                field: wellbore_sk
+              config:
+                severity: warn
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+  - name: dim_zone
+    description: >
+      Zone dimension sourced from WellView. One row per zone with formation,
+      depth interval, status, lifecycle dates, and completion linkage.
+    columns:
+      - name: zone_sk
+        description: Surrogate key for zone (MD5 hash of record_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: zone_id
+        description: WellView natural key for zone record
+        data_tests:
+          - unique
+          - not_null
+      - name: wellbore_sk
+        description: FK to dim_wellbore
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_wellbore')
+                field: wellbore_sk
+              config:
+                severity: warn
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+  - name: dim_well_equipment
+    description: >
+      Well equipment snapshot dimension sourced from tubing strings, rod strings,
+      perforations, and production settings. One row per well with inferred
+      artificial lift type and current equipment counts.
+    columns:
+      - name: well_equipment_sk
+        description: Surrogate key for well equipment snapshot (MD5 hash of well_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: WellView well GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: eid
+        description: Well entity identifier — FK to well_360
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+      - name: inferred_lift_type
+        description: >
+          Canonical lift-type inference using priority order:
+          production method, equipment inference, then setting objective text.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: lift_type_source
+        description: Source used for inferred_lift_type (production_method_type, equipment_inference, setting_objective, none)
+
   - name: dim_phase
     description: >
       Phase dimension sourced from WellView job program phases. One row per phase.
@@ -115,7 +226,7 @@ models:
     description: >
       Daily drilling cost fact table. One row per cost line item from WellView
       daily reports. Enriched with job classification, well EID, and report date.
-      Incremental merge on cost_line_id with _loaded_at watermark. ~1.9M rows.
+      Incremental merge on cost_line_id with source-synced watermark. ~1.9M rows.
     columns:
       - name: daily_cost_sk
         description: Surrogate key (MD5 hash of cost_line_id)
@@ -213,6 +324,8 @@ models:
         description: Associated work order number
       - name: ticket_number
         description: Associated ticket number
+      - name: source_synced_at
+        description: Stable source freshness watermark used for incremental filtering
       - name: _loaded_at
         description: Timestamp when the record was loaded by dbt
 

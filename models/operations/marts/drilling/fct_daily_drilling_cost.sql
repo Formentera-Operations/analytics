@@ -10,9 +10,31 @@
 }}
 
 with source as (
+    {% if is_incremental() %}
+        {% set target_relation = adapter.get_relation(
+            database=this.database,
+            schema=this.schema,
+            identifier=this.identifier
+        ) %}
+        {% set target_cols = [] %}
+        {% if target_relation is not none %}
+            {% set target_cols = adapter.get_columns_in_relation(target_relation) %}
+        {% endif %}
+        {% set target_col_names = target_cols | map(attribute='name') | list %}
+    {% endif %}
+
     select * from {{ ref('int_wellview__daily_cost_enriched') }}
     {% if is_incremental() %}
-        where _loaded_at > (select max(_loaded_at) from {{ this }})
+        where
+            {% if 'SOURCE_SYNCED_AT' in target_col_names or 'source_synced_at' in target_col_names %}
+                source_synced_at > (
+                    select coalesce(max(source_synced_at), '1900-01-01'::timestamp_ntz) from {{ this }}
+                )
+            {% else %}
+                _loaded_at > (
+                    select coalesce(max(_loaded_at), '1900-01-01'::timestamp_ntz) from {{ this }}
+                )
+            {% endif %}
     {% endif %}
 ),
 
@@ -62,6 +84,9 @@ final as (
         purchase_order_number,
         work_order_number,
         ticket_number,
+
+        -- source freshness watermark used for incremental merge
+        source_synced_at,
 
         -- dbt metadata
         _loaded_at

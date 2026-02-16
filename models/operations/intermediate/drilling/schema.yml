@@ -59,5 +59,7 @@ models:
         description: Associated work order number
       - name: ticket_number
         description: Associated ticket number
+      - name: source_synced_at
+        description: Stable source freshness watermark across daily costs, reports, and jobs
       - name: _loaded_at
         description: Timestamp when the record was loaded by dbt

@@ -10,7 +10,8 @@ job_reports as (
     select
         report_id,
         job_id,
-        report_start_datetime::date as report_date
+        report_start_datetime::date as report_date,
+        _fivetran_synced
     from {{ ref('stg_wellview__job_reports') }}
 ),
 
@@ -18,7 +19,8 @@ jobs as (
     select
         job_id,
         job_category,
-        job_type_primary
+        job_type_primary,
+        _fivetran_synced
     from {{ ref('stg_wellview__jobs') }}
 ),
 
@@ -76,6 +78,13 @@ enriched as (
         dc.purchase_order_number,
         dc.work_order_number,
         dc.ticket_number,
+
+        -- source freshness watermark (stable across runs for incremental merge)
+        greatest(
+            coalesce(dc._fivetran_synced::timestamp_ntz, '1900-01-01'::timestamp_ntz),
+            coalesce(jr._fivetran_synced::timestamp_ntz, '1900-01-01'::timestamp_ntz),
+            coalesce(j._fivetran_synced::timestamp_ntz, '1900-01-01'::timestamp_ntz)
+        ) as source_synced_at,
 
         -- dbt metadata
         dc._loaded_at
