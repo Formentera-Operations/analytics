@@ -25,7 +25,7 @@ source as (
 ),
 
 renamed as (
-    select
+    select -- noqa: ST06
         -- identifiers
         ID::varchar as id,
         APINVOICEDETAILIDENTITY::int as ap_invoice_detail_identity,
@@ -53,26 +53,26 @@ renamed as (
 
         -- allocation
         ALLOCATIONPARENTID::varchar as allocation_parent_id,
+        coalesce(ISALLOCATIONGENERATED = 1, false) as is_allocation_generated,
+        coalesce(ISALLOCATIONPARENT = 1, false) as is_allocation_parent,
         SOURCEWELLALLOCATIONDECKREVISIONID::varchar as source_well_allocation_deck_revision_id,
         WELLALLOCATIONDECKID::varchar as well_allocation_deck_id,
-        TRANSACTIONDATE::date as transaction_date,
-        CREATEDATE::timestamp_ntz as created_at,
 
         -- flags
-        UPDATEDATE::timestamp_ntz as updated_at,
+        coalesce(CURRENCYFLUCTUATIONPASSTHROUGH = 1, false) as is_currency_fluctuation_passthrough,
 
         -- dates
-        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
+        TRANSACTIONDATE::date as transaction_date,
 
         -- audit
+        CREATEDATE::timestamp_ntz as created_at,
+        UPDATEDATE::timestamp_ntz as updated_at,
+        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
         RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
-        "_meta/op"::varchar as _operation_type,
-        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at,
-        coalesce(ISALLOCATIONGENERATED = 1, false) as is_allocation_generated,
 
         -- ingestion metadata
-        coalesce(ISALLOCATIONPARENT = 1, false) as is_allocation_parent,
-        coalesce(CURRENCYFLUCTUATIONPASSTHROUGH = 1, false) as is_currency_fluctuation_passthrough
+        "_meta/op"::varchar as _operation_type,
+        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at
 
     from source
 ),

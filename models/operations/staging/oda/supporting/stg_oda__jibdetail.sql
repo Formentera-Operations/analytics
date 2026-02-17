@@ -27,7 +27,7 @@ source as (
 ),
 
 renamed as (
-    select
+    select -- noqa: ST06
         -- identifiers
         ID::varchar as id,
         JIBDETAILIDENTITY::int as jib_detail_identity,
@@ -70,41 +70,41 @@ renamed as (
         CURRENCYID::varchar as currency_id,
         BILLINGEXCHANGERATEID::varchar as billing_exchange_rate_id,
         GAINLOSSEXCHANGERATEID::varchar as gain_loss_exchange_rate_id,
-        BILLINGSUSPENSECATEGORYID::varchar as billing_suspense_category_id,
-        PENDINGREDISTRIBUTIONID::varchar as pending_redistribution_id,
+        coalesce(CURRENCYFLUCTUATIONPASSTHROUGH = 1, false) as is_currency_fluctuation_passthrough,
+        coalesce(JIBINORIGINALCURRENCY = 1, false) as is_jib_in_original_currency,
 
         -- flags
-        REDISTRIBUTIONVOUCHERID::varchar as redistribution_voucher_id,
-        trim(DESCRIPTION)::varchar as description,
-        trim(REFERENCE)::varchar as reference,
-        CREATEEVENTID::varchar as create_event_id,
-        GROSSEVENTID::varchar as gross_event_id,
-
-        -- suspense
-        UPDATEEVENTID::varchar as update_event_id,
-
-        -- redistribution
-        CREATEDATE::timestamp_ntz as created_at,
-        UPDATEDATE::timestamp_ntz as updated_at,
-
-        -- descriptive
-        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
-        RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
-
-        -- event tracking
-        "_meta/op"::varchar as _operation_type,
-        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at,
-        coalesce(CURRENCYFLUCTUATIONPASSTHROUGH = 1, false) as is_currency_fluctuation_passthrough,
-
-        -- audit
-        coalesce(JIBINORIGINALCURRENCY = 1, false) as is_jib_in_original_currency,
         coalesce(INCLUDEINACCRUALREPORT = 1, false) as is_include_in_accrual_report,
         coalesce(ISAFTERCASING = 1, false) as is_after_casing,
         coalesce(MEMOALSOCODEMISSING = 1, false) as is_memo_also_code_missing,
+        coalesce(SUBTOTALBYSUBACCOUNT = 1, false) as is_subtotal_by_sub_account,
+        coalesce(USERPOSTINGMETHOD = 1, false) as is_user_posting_method,
+
+        -- suspense
+        BILLINGSUSPENSECATEGORYID::varchar as billing_suspense_category_id,
+
+        -- redistribution
+        PENDINGREDISTRIBUTIONID::varchar as pending_redistribution_id,
+        REDISTRIBUTIONVOUCHERID::varchar as redistribution_voucher_id,
+
+        -- descriptive
+        trim(DESCRIPTION)::varchar as description,
+        trim(REFERENCE)::varchar as reference,
+
+        -- event tracking
+        CREATEEVENTID::varchar as create_event_id,
+        GROSSEVENTID::varchar as gross_event_id,
+        UPDATEEVENTID::varchar as update_event_id,
+
+        -- audit
+        CREATEDATE::timestamp_ntz as created_at,
+        UPDATEDATE::timestamp_ntz as updated_at,
+        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
+        RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
 
         -- ingestion metadata
-        coalesce(SUBTOTALBYSUBACCOUNT = 1, false) as is_subtotal_by_sub_account,
-        coalesce(USERPOSTINGMETHOD = 1, false) as is_user_posting_method
+        "_meta/op"::varchar as _operation_type,
+        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at
 
     from source
 ),

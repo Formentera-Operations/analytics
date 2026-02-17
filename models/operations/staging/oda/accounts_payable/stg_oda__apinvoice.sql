@@ -24,7 +24,7 @@ source as (
 ),
 
 renamed as (
-    select
+    select -- noqa: ST06
         -- identifiers
         ID::varchar as id,
         APINVOICEIDENTITY::int as ap_invoice_identity,
@@ -83,22 +83,22 @@ renamed as (
         POSTINGEXCHANGERATEID::varchar as posting_exchange_rate_id,
 
         -- flags
-        CREATEDATE::timestamp_ntz as created_at,
-        UPDATEDATE::timestamp_ntz as updated_at,
-        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
-        RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
-        "_meta/op"::varchar as _operation_type,
-        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at,
-
-        -- audit
         coalesce(APPROVEDFORPOSTING = 1, false) as is_approved_for_posting,
         coalesce(INCLUDEINACCRUALREPORT = 1, false) as is_include_in_accrual_report,
         coalesce(ISFROMAPHISTORYIMPORT = 1, false) as is_from_ap_history_import,
         coalesce(PAYMENTDETAILINCOMPLETE = 1, false) as is_payment_detail_incomplete,
+        coalesce(POSTED = 1, false) as is_posted,
+        coalesce(READYTOPAY = 1, false) as is_ready_to_pay,
+
+        -- audit
+        CREATEDATE::timestamp_ntz as created_at,
+        UPDATEDATE::timestamp_ntz as updated_at,
+        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
+        RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
 
         -- ingestion metadata
-        coalesce(POSTED = 1, false) as is_posted,
-        coalesce(READYTOPAY = 1, false) as is_ready_to_pay
+        "_meta/op"::varchar as _operation_type,
+        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at
 
     from source
 ),

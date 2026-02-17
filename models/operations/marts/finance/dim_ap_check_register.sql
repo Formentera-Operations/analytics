@@ -112,7 +112,7 @@ final as (
         on ac.vendor_id = v.id
     left join vouchers as vo
         on ac.voucher_id = vo.id
-    inner join entities as e
+    left join entities as e
         on v.entity_id = e.id
 
 )

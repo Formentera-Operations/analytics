@@ -24,7 +24,7 @@ source as (
 ),
 
 renamed as (
-    select
+    select -- noqa: ST06
         -- identifiers
         ID::varchar as id,
         APCHECKIDENTITY::int as ap_check_identity,
@@ -45,20 +45,20 @@ renamed as (
         ISSUEDDATEKEY::int as issued_date_key,
 
         -- flags
+        coalesce(RECONCILED = 1, false) as is_reconciled,
+        coalesce(SYSTEMGENERATED = 1, false) as is_system_generated,
+        coalesce(VOIDED = 1, false) as is_voided,
         VOIDEDDATE::date as voided_date,
         VOID1099YEAR::int as void_1099_year,
+
+        -- audit
         CREATEDATE::timestamp_ntz as created_at,
         UPDATEDATE::timestamp_ntz as updated_at,
         RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
-
-        -- audit
         RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
-        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at,
-        coalesce(RECONCILED = 1, false) as is_reconciled,
-        coalesce(SYSTEMGENERATED = 1, false) as is_system_generated,
 
         -- ingestion metadata
-        coalesce(VOIDED = 1, false) as is_voided
+        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at
 
     from source
 ),
