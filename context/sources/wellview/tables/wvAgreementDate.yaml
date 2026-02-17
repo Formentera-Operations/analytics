@@ -1,0 +1,8 @@
+# wellview / asset_management / wvAgreementDate
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvAgreementDate: List of relevant dates for the agreement. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Note(s255) #Note

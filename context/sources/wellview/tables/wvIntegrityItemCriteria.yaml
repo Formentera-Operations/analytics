@@ -1,0 +1,11 @@
+# wellview / integrity_barriers / wvIntegrityItemCriteria
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvIntegrityItemCriteria: Well integrity item criteria. +parent
+  StateTyp(s100) #State Type
+  StateColorCalc(int_calc) #State Color
+  StateMin(dbl) #State Min
+  StateMax(dbl) #State Max
+  StateOperator(s50) #State Operator
+  DaysMax(dbl_days) #Min Threshold
+  StateDes(s100) #State Description

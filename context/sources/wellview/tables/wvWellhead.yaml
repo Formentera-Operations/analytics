@@ -1,0 +1,28 @@
+# wellview / casing_cement / wvWellhead
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvWellhead: Wellhead details including installation date, size, make, model and working pressure. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Typ(s100) #Type
+  Make(s100) #Make
+  Profile(s50) #Profile
+  Service(s50) #Service
+  WorkPres(dbl_kPa) #Working Pressure
+  Sz(dbl_m) #Size
+  DepthBtm(dbl_m) #Set Depth
+  DtTmStart(dt) #Install Date
+  IDRecString(s32) #Annulus
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment
+  PropRunVersionNo(int) #Proposed Version
+  Class(s100) #Class
+  MaxPres(dbl_kPa) #Max Pres
+  ProductSpecLevel(s50) #Product Specification Level
+  TempRating(dbl_degC) #Temp Rating
+  TempRatingDes(s50) #Temp Rating Des
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DtTmOverHaul(dt) #Overhaul Date
+  DtTmPropEnd(dt) #Proposed Removal Date
+  RemoveReason(s100) #Remove Reason
+  DtTmEnd(dt) #Removal Date

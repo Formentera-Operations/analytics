@@ -1,0 +1,15 @@
+# wellview / wellbore_surveys / wvWellboreSumExcludeCalc
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreSumExcludeCalc: Summarized wellbore sections. This table is populated from 'Wellbore Section' for actual records, not proposed. +parent
+  Des(s100_calc) #Section Description
+  Sz(dbl_m_calc) #Size
+  DepthTop(dbl_m_calc) #Actual Top Depth
+  DepthBtm(dbl_m_calc) #Actual Btm Depth
+  DtTmStart(dt_calc) #Start Date
+  DtTmEnd(dt_calc) #End Date
+  DepthTVDTop(dbl_m_calc) #Actual Top Depth (TVD)
+  DepthTVDBtm(dbl_m_calc) #Actual Btm Depth (TVD)
+  MudDensityMax(dbl_kgpm3_calc) #Max Mud Density
+  MudDensityMin(dbl_kgpm3_calc) #Min Mud Density
+  IDRecJobDrillString(s32_calc) #Drill String

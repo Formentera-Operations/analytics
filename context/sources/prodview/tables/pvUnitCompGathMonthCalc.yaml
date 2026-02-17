@@ -1,0 +1,87 @@
+# prodview / completions / pvUnitCompGathMonthCalc
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompGathMonthCalc: Monthly Completion Gathered +parent | Lost Production Due to Downtime
+  DtTmStart(dt_calc) #Start Date
+  Year(integer, calculated) #Year
+  Month(integer, calculated) #Month
+  DtTmEnd(dt_calc) #End Date
+  DurOp(double, days, calculated) #Operating Time
+  DurDown(double, days, calculated) #Downtime
+  VolTotalLiq(dbl_m3_calc) #Total Liquid
+  VolHCLiq(dbl_m3_calc) #Gathered Oil/Condensate
+  VolGas(dbl_m3_calc) #Gathered Gas
+  VolWater(dbl_m3_calc) #Gathered Water
+  VolSand(dbl_m3_calc) #Gathered Sand
+  VolCasingGas(dbl_m3_calc) #Casing Gas
+  VolNewProdGathHCLiq(dbl_m3_calc) #New Gathered Oil/Condensate
+  VolNewProdGathGas(dbl_m3_calc) #New Gathered Gas
+  VolNewProdGathWater(dbl_m3_calc) #New Gathered Water
+  VolNewProdGathSand(dbl_m3_calc) #New Gathered Sand
+  VolProratedHCLiq(dbl_m3_calc) #Prorated HCLiq
+  VolProratedGas(dbl_m3_calc) #Prorated Gas
+  VolProratedWater(dbl_m3_calc) #Prorated Water
+  VolProratedSand(dbl_m3_calc) #Prorated Sand
+  VolGathStartRemainRecovHCLiq(dbl_m3_calc) #Starting Load Oil/Condensate
+  VolGathStartRemainRecovGas(dbl_m3_calc) #Starting Lift Gas
+  VolGathStartRemainRecovWater(dbl_m3_calc) #Starting Load Water
+  VolGathStartRemainRecovSand(dbl_m3_calc) #Starting Sand
+  VolGathRecovHCLiq(dbl_m3_calc) #Recovered Load Oil/Condensate
+  VolGathRecovGas(dbl_m3_calc) #Recovered Lift Gas
+  VolGathRecovWater(dbl_m3_calc) #Recovered Load Water
+  VolGathRecovSand(dbl_m3_calc) #Recovered Sand
+  VolGathInjectRecovGas(dbl_m3_calc) #Injected Lift Gas
+  VolGathInjectRecovHCLiq(dbl_m3_calc) #Injected Load Oil/Condensate
+  VolGathInjectRecovWater(dbl_m3_calc) #Injected Load Water
+  VolGathInjectRecovSand(dbl_m3_calc) #Injected Sand
+  VolGathRemainRecovHCLiq(dbl_m3_calc) #Remaining Load Oil/Condensate
+  VolGathRemainRecovGas(dbl_m3_calc) #Remaining Lift Gas
+  VolGathRemainRecovWater(dbl_m3_calc) #Remaining Load Water
+  VolGathRemainRecovSand(dbl_m3_calc) #Remaining Sand
+  IDRecGasAnalysis(s32_calc) #Gas Analysis
+  IDRecHCLiqAnalysis(s32_calc) #HC Liquid  Analysis
+  IDRecOilAnalysis(s32_calc) #Oil Properties
+  IDRecWaterAnalysis(s32_calc) #Water Properties
+  GOR(double, cubic meters per cubic meter, calculated) #Gas Oil Ratio
+  IDRecFluidLevel(s32_calc) #Last Fluid Level
+  RateTotalLiq(dbl_m3pd_calc) #Rate Total Liquid
+  RateHCLiq(dbl_m3pd_calc) #Rate Oil/Condensate
+  RateGas(dbl_m3pd_calc) #Gas Rate
+  RateWater(dbl_m3pd_calc) #Water Rate
+  RateSand(dbl_m3pd_calc) #Sand Rate
+  RateChgTotalLiq(dbl_m3pd_calc) #Rate Change in Total Liquid
+  RateChgHCLiq(dbl_m3pd_calc) #Rate Change in Oil/Condensate
+  RateChgGas(dbl_m3pd_calc) #Change in Gas Rate
+  RateChgWater(dbl_m3pd_calc) #Change in Water Rate
+  RateChgSand(dbl_m3pd_calc) #Change in Sand Rate
+  PctChgTotLiq(dbl_pct_calc) #Rate Change % in Total Liquid
+  PctChgHCLiq(dbl_pct_calc) #Rate Change % in Oil/Condensate
+  PctChgGas(dbl_pct_calc) #% Change in Gas Rate
+  PctChgWater(dbl_pct_calc) #% Change in Water Rate
+  PctChgSand(dbl_pct_calc) #% Change in Sand Rate
+  RateInTol(boolean, calculated) #All Products Rate within Tolerance?
+  RateHCLiqInTol(boolean, calculated) #Oil/Condensate Rate within Tolerance?
+  RateGasInTol(boolean, calculated) #Gas Rate within Tolerance?
+  RateWaterInTol(boolean, calculated) #Water within Tolerance?
+  RateSandInTol(boolean, calculated) #Sand within Tolerance?
+  IDRecTest(s32_calc) #Last Test
+  IDRecStatus(s32_calc) #Status
+  IDRecFacility(s32_calc) #Reporting Facility
+  IDRecMeasMeth(s32_calc) #Last Measurement Method
+  IDRecParam(s32_calc) #Last Param
+  IDRecDownTime(s32_calc) #Downtime
+  IDRecDeferment(s32_calc) #Deferment
+  PumpEff(dbl_pct_calc) #Pump Efficiency
+  IDRecPumpEntry(s32_calc) #Last Pump Entry
+  VolLostHCLiq(dbl_m3_calc) #Deferred Oil/Condensate Production
+  VolLostGas(dbl_m3_calc) #Deferred Gas Production
+  VolLostWater(dbl_m3_calc) #Deferred Water Production
+  VolLostSand(dbl_m3_calc) #Deferred Sand Production
+  VolDiffTargetHCLiq(dbl_m3_calc) #Difference from Target Oil/Condensate
+  VolDiffTargetGas(dbl_m3_calc) #Difference from Target Gas
+  VolDiffTargetWater(dbl_m3_calc) #Difference from Target Water
+  VolDiffTargetSand(dbl_m3_calc) #Difference from Target Sand
+  VolInjectHCLiq(dbl_m3_calc) #Injection Well - Oil/Cond
+  VolInjectGas(dbl_m3_calc) #Injection Well - Gas
+  VolInjectWater(dbl_m3_calc) #Injection Well - Water
+  VolInjectSand(dbl_m3_calc) #Injection Well - Sand

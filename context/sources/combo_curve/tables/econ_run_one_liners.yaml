@@ -1,0 +1,23 @@
+# combo_curve / economics / econ_run_one_liners
+# Source: context/sources/combo_curve/domains/economics.yaml
+#
+# The OUTPUT column is a VARIANT containing dozens of economic metrics as key-value pairs.
+# Key metrics include: after_tax_npv_10.0, before_tax_npv_10.0, breakeven_oil_price,
+# capex, cum_oil, cum_gas, cum_boe, eur_oil, eur_gas, eur_boe, irr, payout_months,
+# total_expense, total_revenue, net_operating_income, first_production, gross_wells,
+# net_wells, wi_wells, company_name, rsv_cat, chosen_id, basin, op_cat,
+# plus reference_ prefixed versions of many metrics.
+#
+ECON_RUN_ONE_LINERS: Summary economic metrics per well per run. Each row is a single well's one-liner results from an economic run, with key metrics embedded in the OUTPUT variant column. 1,200,692 rows. -> stg_cc__economic_one_liners
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp (NOTE: stored as PORTABLEEXTRACTED without underscore prefix on this table)
+  COMBONAME(txt) #Economic scenario combination name
+  ECONGROUP(txt) #Economic group identifier
+  ECONPRMSRESERVESCATEGORY(txt) #PRMS reserves category classification
+  ECONPRMSRESERVESSUBCATEGORY(txt) #PRMS reserves sub-category
+  ECONPRMSRESOURCESCLASS(txt) #PRMS resources class
+  ECONRUN(txt) #Parent economic run ID (FK to ECON_RUNS.ID)
+  ID(txt) #One liner unique identifier (24-char hex)
+  OUTPUT(variant) #JSON object containing all economic metrics (NPV, IRR, EUR, breakeven, volumes, revenue, expenses, etc.)
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  SCENARIO(txt) #Parent scenario ID (FK to PROJECT_SCENARIOS.ID)
+  WELL(txt) #Well ID (FK to WELLS.ID)

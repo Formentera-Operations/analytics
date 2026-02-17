@@ -1,0 +1,11 @@
+# wellview / production_operations / wvTestDynoData
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvTestDynoData: Dynamometer test data. +parent
+  Typ(s100) #Type
+  Dur(dbl_days) #Duration
+  Position(dbl_m) #Position
+  Load(dbl_kg) #Load
+  AngleCrankHole(dbl_deg) #Crank Hole Degrees
+  Torque(dbl_Nm) #Torque
+  Note(s255) #Note

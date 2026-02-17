@@ -1,0 +1,8 @@
+# wellview / casing_cement / wvTestLeakOffData
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvTestLeakOffData: Test data details including time, pressure, and volume. +parent
+  Tm(dbl_days) #Time
+  Pres(dbl_kPa) #Pressure
+  Vol(dbl_m3) #Volume
+  Note(s255) #Note

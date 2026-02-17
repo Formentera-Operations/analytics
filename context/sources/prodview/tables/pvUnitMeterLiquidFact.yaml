@@ -1,0 +1,8 @@
+# prodview / meters / pvUnitMeterLiquidFact
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterLiquidFact: Meter Factors +parent | Enter a date, a volume per volume measure, and the number of days until the next calibration. ProdVi
+  DtTm(dt) #Effective Date
+  Factor(dbl_m3pm3) #Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due

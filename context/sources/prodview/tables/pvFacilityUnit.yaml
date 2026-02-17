@@ -1,0 +1,7 @@
+# prodview / facilities / pvFacilityUnit
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityUnit: Facility Units +parent | In the Facility Units table, you can link the completions and units to the selected facility.
+  IDRecUnit(s32) #Unit
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date

@@ -1,0 +1,78 @@
+# wellview / operations_jobs / wvJPPCode1Calc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPCode1Calc: Summary of phases grouped by 'Phase.Phase Type 1'. +parent
+  Code1(s100_calc) #Phase Type 1
+  DurationML(dbl_days_calc) #Planned Likely Duration
+  DurationMin(dbl_days_calc) #Planned Min Duration
+  DurationMax(dbl_days_calc) #Planned Max Duration
+  DurationTechLimit(dbl_days_calc) #Planned Tech Limit Duration
+  CostML(dbl_cost_calc) #Planned Likely Phase Cost
+  CostMin(dbl_cost_calc) #Planned Min Phase Cost
+  CostMax(dbl_cost_calc) #Planned Max Phase Cost
+  CostTechLimit(dbl_cost_calc) #Planned Tech Limit Phase Cost
+  DepthStartPlan(dbl_m_calc) #Planned Start Depth
+  DepthTVDStartPlan(dbl_m_calc) #Planned Start Depth (TVD)
+  DepthEndPlan(dbl_m_calc) #Planned End Depth
+  DepthTVDEndPlan(dbl_m_calc) #Planned End Depth (TVD)
+  DtTmStartActual(dt_calc) #Actual Start Date
+  DtTmEndActual(dt_calc) #Actual End Date
+  DayJobMLPlanCum(dbl_days_calc) #Planned Likely Cum Days
+  DayJobMinPlanCum(dbl_days_calc) #Planned Min Cum Days
+  DayJobMaxPlanCum(dbl_days_calc) #Planned Max Cum Days
+  DayJobTechLimitPlanCum(dbl_days_calc) #Planned Tech Limit Cum Days
+  DtTmStartPlanML(dt_calc) #Planned Likely Start Date
+  DtTmEndPlanML(dt_calc) #Planned Likely End Date
+  DtTmStartPlanMin(dt_calc) #Planned Earliest Start Date
+  DtTmEndPlanMin(dt_calc) #Planned Earliest End Date
+  DtTmStartPlanMax(dt_calc) #Planned Latest Start Date
+  DtTmEndPlanMax(dt_calc) #Planned Latest End Date
+  DtTmStartPlanTechLimit(dt_calc) #Planned Tech Limit Start Date
+  DtTmEndPlanTechLimit(dt_calc) #Planned Tech Limit End Date
+  CostMLCum(dbl_cost_calc) #Planned Likely Cum Phase Cost
+  CostMinCum(dbl_cost_calc) #Planned Min Cum Phase Cost
+  CostMaxCum(dbl_cost_calc) #Planned Max Cum Phase Cost
+  CostTechLimitCum(dbl_cost_calc) #Planned Tech Limit Cum Phase Cost
+  DepthStartActual(dbl_m_calc) #Actual Start Depth
+  DepthTVDStartActual(dbl_m_calc) #Actual Start Depth (TVD)
+  DepthEndActual(dbl_m_calc) #Actual End Depth
+  DepthTVDEndActual(dbl_m_calc) #Actual End Depth (TVD)
+  DaySpudActual(dbl_days_calc) #Actual Phase End Days from Spud
+  DayJobActual(dbl_days_calc) #Actual Phase End Days from Start of Job
+  DurationActual(dbl_days_calc) #Actual Duration
+  DurCumActual(dbl_days_calc) #Actual Cum Duration
+  DurationTimeLogTotal(dbl_days_calc) #Time Log Total Hours
+  DurationTimeLogTotCum(dbl_days_calc) #Cum Time Log Days
+  DurationVariance(dbl_days_calc) #Ahead of Plan for Phase
+  DurationVarianceCum(dbl_days_calc) #Ahead of Plan for Job
+  DurCumActualStartPhase(dbl_days_calc) #Actual Cum Duration at Phase Start
+  DurationNoProbTime(dbl_days_calc) #Time Log - Problem Hours
+  DurationProblemTime(dbl_days_calc) #Problem Time Hours
+  CostActual(dbl_cost_calc) #Actual Phase Field Est
+  CostActualCum(dbl_cost_calc) #Actual Phase Cum Field Est
+  CostVariance(dbl_cost_calc) #Variance - Cost ML
+  CostVarianceCum(dbl_cost_calc) #Variance - Cum Cost ML
+  CostVarianceMin(dbl_cost_calc) #Variance - Cost Min
+  CostVarianceMinCum(dbl_cost_calc) #Variance - Cum Cost Min
+  CostVarianceMax(dbl_cost_calc) #Variance - Cost Max
+  CostVarianceMaxCum(dbl_cost_calc) #Variance - Cum Cost Max
+  PhaseMudCost(dbl_cost_calc) #Total Phase Mud Field Est
+  CostActualNorm(dbl_cost_calc) #Normalized Actual Phase Field Est
+  CostActualNormCum(dbl_cost_calc) #Normalized Actual Phase Cum Field Est
+  CostVarianceNorm(dbl_cost_calc) #Norm Variance - Cost ML
+  CostVarianceNormCum(dbl_cost_calc) #Norm Variance - Cum Cost ML
+  CostVarianceMinNorm(dbl_cost_calc) #Norm Variance - Cost Min
+  CostVarianceMinNormCum(dbl_cost_calc) #Norm Variance - Cum Cost Min
+  CostVarianceMaxNorm(dbl_cost_calc) #Norm Variance - Cost Max
+  CostVarianceMaxNormCum(dbl_cost_calc) #Norm Variance - Cum Cost Max
+  PhaseMudCostNorm(dbl_cost_calc) #Normalized Total Phase Mud Field Est
+  ActivityDepthStartMin(dbl_m_calc) #Activity Start Depth
+  ActivityDepthEndMax(dbl_m_calc) #Activity End Depth
+  ActivityDurationML(dbl_days_calc) #Activity Plan Likely Sum
+  ActivityDurationMLCum(dbl_days_calc) #Activity Plan Likely Cum
+  ActivityDurationMax(dbl_days_calc) #Activity Plan Max Sum
+  ActivityDurationMaxCum(dbl_days_calc) #Activity Plan Max Cum
+  ActivityDurationMin(dbl_days_calc) #Activity Plan Min Sum
+  ActivityDurationMinCum(dbl_days_calc) #Activity Plan Min Cum
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

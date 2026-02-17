@@ -1,0 +1,15 @@
+# wellview / operations_jobs / wvJobRigSolidsCentCyc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigSolidsCentCyc: Centrifuge and cyclone specifications. +parent
+  Typ(s100) #Type
+  Make(s100) #Make
+  Model(s100) #Model
+  SzDia(dbl_m) #Diameter
+  Qty(int) #Number
+  SN(s50) #Serial Number
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Com(txt2k) #Comment
+  RefID(s50) #Reference ID
+  DtTmManufacture(dt) #Manufacture Date

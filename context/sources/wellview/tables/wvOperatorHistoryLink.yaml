@@ -1,0 +1,6 @@
+# wellview / asset_management / wvOperatorHistoryLink
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvOperatorHistoryLink: Link the operator to a specific 'Wellbore' and / or 'Zone' if desired to track the history or operators to this level of detail. +parent
+  IDRecItem(s32) #Associated Items
+  Com(txt2k) #Comment

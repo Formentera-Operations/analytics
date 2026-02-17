@@ -1,0 +1,19 @@
+# prodview / fluid_analysis / pvHCLiqAnaly
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvHCLiqAnaly: HC Liquid Analysis Groups | Group of liquid analyses. Many nodes can point to this group and will be updated when a new analysis
+  Name(s255) #Name
+  DtTmStartCalc(dt_calc) #Earliest Analysis in Group
+  DtTmEndCalc(dt_calc) #Last Analysis in Group
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  LocSampleCode(s255) #Sample Location Point Code
+  LocSampleName(s255) #Sample Location Point Name
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  Com(txt2k) #Comment

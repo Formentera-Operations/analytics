@@ -1,0 +1,7 @@
+# prodview / fluid_analysis / pvOilAnalysisDistill
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvOilAnalysisDistill: Oil Distillation +parent | Oil sample distilled volume vs. temperature details.
+  VolumeFrac(dbl_m3pm3) #Volume Fraction Distilled
+  Temperature(dbl_degC) #Temp
+  Com(txt255) #Note

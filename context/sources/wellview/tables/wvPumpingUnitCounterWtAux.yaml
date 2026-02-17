@@ -1,0 +1,6 @@
+# wellview / surface_equipment / wvPumpingUnitCounterWtAux
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvPumpingUnitCounterWtAux: Model and quantity of auxiliary weights. +parent
+  Qty(int) #Quantity
+  Model(s100) #Model

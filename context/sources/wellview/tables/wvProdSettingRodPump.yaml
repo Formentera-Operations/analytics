@@ -1,0 +1,15 @@
+# wellview / production_operations / wvProdSettingRodPump
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSettingRodPump: Max rod load, pitman position, stoke length, etc for the time interval defined in 'Production Setting'. +extension
+  LoadPolishRodMax(dbl_N) #Max Rod Load
+  PitmanPos(int) #Pitman Rod Position
+  StrokeLength(dbl_m) #Current Stroke Length
+  SPM(dbl_spm) #Strokes Per Minute
+  RotationDir(s20) #Rotation Direction
+  ChokeSz(dbl_m) #Choke Size
+  CrankPinSetting(int) #Crank Pin Setting
+  DurOp(dbl_days) #Operation Duration
+  DurShutIn(dbl_days) #Shut In Duration
+  NoCyclePerDayCalc(dbl_calc) ## Cycles/Day
+  PctOnCalc(dbl_pct_calc) #% On Production

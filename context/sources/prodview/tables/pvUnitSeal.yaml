@@ -1,0 +1,17 @@
+# prodview / reference / pvUnitSeal
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitSeal: Seals +parent | Seals that are attached to meters, tanks or equipment and may need to be taken off and put back on w
+  Name(s50) #Name
+  DtTmStart(dt) #Start
+  DtTmEnd(dt) #End
+  IDRecItem(s32) #Link
+  Com(txt255) #Note
+  DtTmHide(dt) #Hide Record As Of
+  UserTxt1(s50) #UserTxt1
+  UserTxt2(s50) #UserTxt2
+  UserTxt3(s50) #UserTxt3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence

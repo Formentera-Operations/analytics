@@ -1,0 +1,46 @@
+# prodview / tanks / pvUnitTankEntry
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankEntry: Tank Readings +parent | Daily entries for each tank. Entries are only required when level changes or audit requirements. By 
+  DtTm(dt) #Date
+  TankLevelTop(s50) #Level Top
+  BSW(dbl_pct) #BS&W
+  SandCut(dbl_pct) #Sand Cut
+  TankLevelFreeWater(s50) #Water Bottom
+  TankLevelSand(s50) #Level Sand
+  UserDtTm3(dt) #Load Transfer Request Date
+  Com(txt255) #Comments
+  VolUncorrTotalCalc(dbl_m3_calc) #Total Volume
+  VolUncorrHCLiqCalc(dbl_m3_calc) #Oil/Condensate Volume
+  VolFreeWaterCalc(dbl_m3_calc) #Free Water Volume
+  VolSettledSandCalc(dbl_m3_calc) #Settled Sand Volume
+  BSWUncorrCalc(dbl_pct_calc) #BS&W
+  SandCutUncorrCalc(dbl_pct_calc) #Sand Cut
+  TempOfVol(dbl_degC) #Temperature of Volume
+  PresOfVol(dbl_kPa) #Pressure of Volume
+  TempSample(dbl_degC) #Temperature of Sample
+  PresSample(dbl_kPa) #Pressure of Sample
+  DensitySample(dbl_kgpm3) #Density of Sample
+  DensitySample60F(double, kilograms per cubic meter, calculated) #Density of Sample at 60F
+  VolChgTotalCalc(dbl_m3_calc) #Change in Total Volume
+  VolChgHCLiqCalc(dbl_m3_calc) #Change in Oil/Condensate Volume
+  VolChgHCLiqGasEqCalc(dbl_m3_calc) #Change in Gas Equivalent of Oil/Cond Volume
+  VolChgWaterCalc(dbl_m3_calc) #Change in Water Volume
+  VolChgSandCalc(dbl_m3_calc) #Change in Sand Volume
+  VolTotalCalc(dbl_m3_calc) #Final Total Fluid Volume
+  VolHCLiqCalc(dbl_m3_calc) #Final Hydrocarbon Liquid Volume
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Final Gas Equivalent of Oil/Condensate Volume
+  VolWaterCalc(dbl_m3_calc) #Final Water Volume
+  VolSandCalc(dbl_m3_calc) #Final Sand Volume
+  BSWCalc(dbl_pct_calc) #Final BS&W
+  SandCutCalc(dbl_pct_calc) #Final Sand Cut
+  VolCapacityRemainCalc(dbl_m3_calc) #Capacity Remaining
+  IDRecHCLiqAnalysisCalc(s32_calc) #HC Liquid  Analysis
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2

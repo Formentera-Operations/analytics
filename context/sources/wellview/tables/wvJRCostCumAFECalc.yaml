@@ -1,0 +1,29 @@
+# wellview / operations_jobs / wvJRCostCumAFECalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRCostCumAFECalc: All 'Daily Cost' and 'Daily Recurring Cost' combined for this reporting period; cum of the costs up to the end of the report period, grouped by AFE. +parent
+  AFENumber(s50_calc) #AFE Number
+  Des(s100_calc) #Cost Description
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Code5(s100_calc) #Code 5
+  Code6(s100_calc) #Code 6
+  CostReportFieldEst(dbl_cost_calc) #Report Field Est
+  CostCumFieldEst(dbl_cost_calc) #Cum Field Est
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE Supp Amount
+  CostAFETotal(dbl_cost_calc) #AFE + Supp Amount
+  CostVar(dbl_cost_calc) #Cum Variance
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+  CostNetReportFieldEst(dbl_cost_calc) #Net Report Field Est
+  CostNetCumFieldEst(dbl_cost_calc) #Net Cum Field Est
+  CostNetAFE(dbl_cost_calc) #Net AFE Amount
+  CostNetAFESup(dbl_cost_calc) #Net AFE Supp Amount
+  CostNetAFETotal(dbl_cost_calc) #Net AFE + Supp Amount
+  CostNetVar(dbl_cost_calc) #Net Cum Variance
+  CostNetForecast(dbl_cost_calc) #Net Forecast Amount
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

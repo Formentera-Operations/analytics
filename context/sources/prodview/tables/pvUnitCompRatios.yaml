@@ -1,0 +1,14 @@
+# prodview / completions / pvUnitCompRatios
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompRatios: Ratios for Production +parent
+  DtTm(dt) #Effective Date
+  GOR(dbl_m3pm3) #Gas Oil Ratio
+  CGR(dbl_m3pm3) #Condensate Gas Ratio
+  WGR(dbl_m3pm3) #Water Gas Ratio
+  NGLYield(dbl_m3pm3) #NGL Yield Factor
+  FactHeat(double, joule per cubic meter) #Heat Factor
+  FactGasDT(dbl_pct) #Gas Reduction w/ Liquids DT
+  DurValid(dbl_days) #Duration Between Tests
+  DtTmNextCalc(dt_calc) #Next Test Due
+  Com(txt2k) #Comment

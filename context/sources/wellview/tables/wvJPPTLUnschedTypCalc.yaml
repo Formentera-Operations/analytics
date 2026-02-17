@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJPPTLUnschedTypCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPTLUnschedTypCalc: Calculated breakdown of 'Job Time Log.Unscheduled Type' associated with the phase. +parent
+  UnschedTyp(s100_calc) #Unscheduled Type
+  Duration(dbl_days_calc) #Duration
+  FractionTotalTime(dbl_pct_calc) #% Total Time
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

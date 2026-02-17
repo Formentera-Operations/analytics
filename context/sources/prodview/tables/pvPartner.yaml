@@ -1,0 +1,8 @@
+# prodview / admin / pvPartner
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvPartner: Partners
+  PartnerName(s50) #Partner Name
+  PartnerIDA(s50) #Partner ID
+  Com(txt2k) #Comment
+  IncludeInNet(bool) #Include Partner in Net

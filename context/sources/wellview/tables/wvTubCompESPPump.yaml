@@ -1,0 +1,12 @@
+# wellview / tubing_rods_equipment / wvTubCompESPPump
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompESPPump: ESP pump details. +extension
+  VolRateDesign(dbl_m3pd) #Designed Volumetric Rate
+  PresInDesign(dbl_kPa) #Design Intake Pressure
+  HydHeadDesign(dbl_m) #Designed Hydrostatic Head
+  PowerRating(dbl_W) #Power Rating
+  HsngStgs(int) #Number of Stages in Pump Housing
+  ActiveStgs(int) #Number of Active Stages
+  HsngMat(s20) #Pump Housing Material
+  ImpellerMat(s20) #Impeller Material

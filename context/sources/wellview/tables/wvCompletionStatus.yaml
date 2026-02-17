@@ -1,0 +1,13 @@
+# wellview / zones_completions / wvCompletionStatus
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvCompletionStatus: Status of the 'Completion' by date. +parent
+  DtTm(dt) #Status Date
+  Status1(s50) #Status
+  Status2(s50) #Sub Status
+  FluidDes(s100) #Fluid Type
+  Typ1(s100) #Completion Type
+  Typ2(s100) #Completion Subtype
+  MethodProd(s50) #Production Method
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment

@@ -1,0 +1,13 @@
+# wellview / integrity_barriers / wvIntegrity
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvIntegrity: Well integrity program. +parent
+  Typ1(s100) #Program Type
+  Typ2(s100) #Program Subtype
+  Typ3(s100) #Program Type 3
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Com(txt2k) #Comment
+  ProgramStateTyp(s100) #Program State Type
+  ProgramStateColorCalc(int_calc) #Program State Color

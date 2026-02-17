@@ -1,0 +1,22 @@
+# wellview / operations_jobs / wvJobAFEFinalInvoiceCost
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobAFEFinalInvoiceCost: Breakdown of final invoice costs by code. +parent
+  Des(s100) #Cost Description
+  Code1(s100) #Code 1
+  Code2(s100) #Code 2
+  Code3(s100) #Code 3
+  Code4(s100) #Code 4
+  Code5(s100) #Code 5
+  Code6(s100) #Code 6
+  Amount(dbl_cost) #Final Inv Amount
+  FinalInvoiceDtTm(dt) #Final Invoice Date
+  InvoiceRefNo(s50) #Invoice Ref #
+  Note(s255) #Note
+  Vendor(s100) #Vendor
+  VendorCode(s100) #Vendor Code
+  VendorSubCode(s100) #Vendor Subcode
+  AmountLocal(dbl_cost) #Final Inv Amount (Local)
+  CurrencyCodeLocal(s10) #Local Currency Code
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

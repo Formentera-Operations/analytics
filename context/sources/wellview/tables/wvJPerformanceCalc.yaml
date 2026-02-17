@@ -1,0 +1,16 @@
+# wellview / operations_jobs / wvJPerformanceCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPerformanceCalc: Performance calculations by Year and Month. +parent
+  RefYear(dbl_calc) #Reference Year
+  RefMonth(dbl_calc) #Reference Month
+  BHATotalRun(dbl_calc) #BHA Runs
+  BHADrillRun(dbl_calc) #BHA Drill Runs
+  BitTotalRun(dbl_calc) #Bit Runs
+  DepthDrilled(dbl_m_calc) #Depth Drilled
+  DepthDrilledPerBHA(dbl_m_calc) #Depth Drilled/BHA Drill Runs
+  DurationTimeLog(dbl_days_calc) #Time Log Hours
+  RatioDurTimeLogRefHours(dbl_calc) #Time Log Hours/Ref Hours
+  DepthPerRatioDuration(dbl_m_calc) #DepthDrilled/(TL Hours/Ref Hours)
+  TmDrill(dbl_days_calc) #Drilling Hours
+  TmCirc(dbl_days_calc) #Circulating Hours

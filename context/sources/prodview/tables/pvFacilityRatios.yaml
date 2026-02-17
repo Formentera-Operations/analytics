@@ -1,0 +1,9 @@
+# prodview / facilities / pvFacilityRatios
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityRatios: Facility Ratios +parent | In the Facility Ratios table, you can enter the STV factor or NGL yield factor for this facility. Yo
+  DtTm(dt) #Effective Date
+  STV(dbl_m3pm3) #STV Factor
+  NGLYield(dbl_m3pm3) #NGL Yield Factor
+  DurValid(dbl_days) #Duration Between Ratios
+  DtTmNextCalc(dt_calc) #Next Ratio Due

@@ -1,0 +1,19 @@
+# prodview / reference / pvUnitSealEntry
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitSealEntry: Seal Entries +parent | Seal entries for each related parent seal tracking seals that were taken off and which were put back
+  DtTm(dt) #Date
+  Reason(s50) #Reason
+  ValveStatus(s50) #Valve Position
+  SealOff(txt2k) #Seal Off
+  SealOn(txt2k) #Seal On
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

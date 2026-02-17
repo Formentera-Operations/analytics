@@ -1,0 +1,24 @@
+# wellview / production_operations / wvAnnulus
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvAnnulus: This table allows you to model the annulus, which is the space between two strings where fluid can flow. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Typ1(s100) #Annulus Type
+  Typ2(s100) #Annulus Sub Type
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IDRecStringInner(s32) #Inner Boundary
+  IDRecStringOuter(s32) #Outer Boundary
+  Gradient(dbl_kPapm) #Frac Gradient
+  Volume(dbl_m3) #Volume
+  Com(txt2k) #Comment
+  PropVersionNo(int) #Proposed Version #
+  PresRatingOpMax(dbl_kPa) #Max Well Operating Pressure
+  PresRatingOpMin(dbl_kPa) #Min Well Operating Pressure
+  PresRatingSurfMax(dbl_kPa) #Max Annulus Surface Pressure
+  PresRatingSurfMin(dbl_kPa) #Min Annulus Surface Pressure

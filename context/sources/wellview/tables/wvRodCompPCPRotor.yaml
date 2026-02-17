@@ -1,0 +1,26 @@
+# wellview / tubing_rods_equipment / wvRodCompPCPRotor
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvRodCompPCPRotor: Progressive cavity pump rotor details. +extension
+  IDRecTubComp(s32) #Associated Pump Body
+  DisplPerRPM(dbl_m3prpm) #Displ Per RPM
+  LiftCapacity(dbl_m) #Lift Capacity
+  PresInDesign(dbl_kPa) #Design Intake Pressure
+  RateDesign(dbl_m3pd) #Design Pump Rate
+  RPMDesign(dbl_rpm) #Design RPM
+  SzODMax(dbl_m) #Max OD Size
+  SzODMin(dbl_m) #Min OD Size
+  Eccentricity(dbl_m) #Eccentricity
+  SweptAngle(dbl_deg) #Swept Angle
+  LobeConfig(s10) #Lobe Config
+  CavityInflowIndex(dbl) #Cavity Inflow Index
+  Pitch(dbl_m) #Pitch Length
+  Length(dbl_m) #Helix Length
+  ConnTop(s20) #Conn Top
+  DriveTyp(s100) #Drive Type
+  GearRatio(s20) #Gear Ratio
+  BtmCircPump(bool) #Btm Circ Pump?
+  ChargePump(bool) #Charge Pump?
+  DtTmLastInspect(dt) #Last Inspection Date
+  EfficiencyInspect(dbl_pct) #Efficiency Inspect
+  NoteInspect(s255) #Note Inspection

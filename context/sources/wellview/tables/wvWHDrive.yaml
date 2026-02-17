@@ -1,0 +1,31 @@
+# wellview / surface_equipment / wvWHDrive
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvWHDrive: Power, speed and other details of the drive. +parent
+  DriveTyp(s100) #Drive Type
+  IDRecRod(s32) #Rod String
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  ConditionStart(s50) #Condition Start
+  ConditionEnd(s50) #Condition End
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  ShaftAngle(dbl_deg) #Shaft Angle
+  BearingTyp(s100) #Bearing Type
+  ShaftTyp(s100) #Shaft Type
+  WellheadConn(s50) #Wellhead Conn
+  SzODMainShaft(dbl_m) #OD Main Shaft Size
+  MaxTorque(dbl_Nm) #Max Torque
+  MaxThrustBearingLoad(dbl_N) #Max Thrust Bearing Load
+  MaxStructureLoad(dbl_N) #Max Structure Load
+  MaxPower(dbl_W) #Max Power
+  MaxSpeed(dbl_rpm) #Max Speed
+  GearBoxRatio(dbl) #Gear Box Ratio
+  MaxGearBoxTorque(dbl_Nm) #Max Gear Box Torque
+  DtTmLastOverhaul(dt) #Last Overhaul Date
+  BrakeSystem(s50) #Brake System
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  RefID(s50) #Reference ID

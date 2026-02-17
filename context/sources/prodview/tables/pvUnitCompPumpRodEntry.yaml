@@ -1,0 +1,15 @@
+# prodview / artificial_lift / pvUnitCompPumpRodEntry
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpRodEntry: Rod Pump Entries +parent
+  DtTm(dt) #Date
+  SPM(double, strokes per minute) #Strokes Per Minute
+  StrokeLength(double, meter) #Current Stroke Length
+  UserNum1(dbl_pct) #Run Time
+  Com(txt2k) #Comments
+  VolPerDayCalc(dbl_m3pd_calc) #Volume Throughput
+  UserTxt1(s50) #Crank Hole
+  UserTxt2(s50) #Rotation
+  UserTxt3(s50) #User Text 3
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

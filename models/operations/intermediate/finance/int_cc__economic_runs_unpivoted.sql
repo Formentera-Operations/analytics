@@ -228,7 +228,7 @@ unioned as (
 final as (
     select
         s.id,
-        s.extracted_at,
+        s._portable_extracted,
         s.econ_run,
         s.econ_run_date,
         s.date,

@@ -1,0 +1,21 @@
+# wellview / casing_cement / wvCasCompECP
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCasCompECP: Additional external casing packer details for the casing component. +extension
+  Typ(s100) #Type
+  ReqSet(s50) #Setting Requirement
+  ReqRelease(s50) #Release Requirements
+  InflationMeth(s20) #Inflation Method
+  SelectiveInfl(bool) #Selective Inflation?
+  InflFluidTyp(s100) #Inflation Fluid Type
+  InflFluidDen(dbl_kgpm3) #Inflation Fluid Density
+  SVPresSet(dbl_kPa) #AV Setting Pressure
+  SVPresAct(dbl_kPa) #AV Acting Pressure
+  ICVPresSet(dbl_kPa) #ICV Setting Pressure
+  ICVPresAct(dbl_kPa) #ICV Activation Pressure
+  ECPLoad(dbl_N) #ECP Load
+  SealLoad(dbl_N) #Seal Load
+  InflVol(dbl_m3) #Inflation Volume
+  EquivHoleSz(dbl_m) #Equivalent Hole Size
+  KnockOffRod(bool) #Knock Off Rod?
+  DepthBtmACP(dbl_m) #ACP Bottom Depth

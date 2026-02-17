@@ -1,0 +1,5 @@
+# wellview / production_operations / wvProdSettingFlow
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSettingFlow: Choke size for the time interval defined in 'Production Setting'. +extension
+  ChokeSz(dbl_m) #Choke Size

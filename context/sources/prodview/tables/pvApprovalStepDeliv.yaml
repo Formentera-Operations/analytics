@@ -1,0 +1,15 @@
+# prodview / admin / pvApprovalStepDeliv
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvApprovalStepDeliv: Deliverables +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  AssignToName(s50) #Assigned To Name
+  AssignToDept(s50) #Assigned To Department
+  AssignToEmail(s50) #Email
+  Completed(bool) #Complete?
+  DtTmComplete(dt) #Completion Date
+  CompletedBy(s50) #Completed By
+  Com(txt2k) #Comment
+  sysSeq(int) #Sequence

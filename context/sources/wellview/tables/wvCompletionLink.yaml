@@ -1,0 +1,8 @@
+# wellview / zones_completions / wvCompletionLink
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvCompletionLink: Define the completion relationship (flow path) by linking to 'Tubing String', 'Casing String', etc. +parent
+  IDRecItem(s32) #Associated Items
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Note(s255) #Note

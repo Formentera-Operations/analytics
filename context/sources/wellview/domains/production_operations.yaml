@@ -1,0 +1,52 @@
+# Peloton WellView: Production Operations & Failures
+# Well reviews, production failures, production settings (by lift type), annulus, chemical injection, fluid analysis, dynamometer tests
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__production_failures
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvWellReview: Details of well review. +parent
+#   wvWellReviewContact: Contact names of participants in the well review. +parent
+#   wvProblem: Production equipment failure information including dates, type, cause, failur...
+#   wvProblemDetail: Production equipment failure links to specific equipment. +parent
+#   wvProblemDetailAnalysis: Production equipment failure analysis. +parent
+#   wvProdSetting: Producing method - Flowing, Plunger lift, Gas lift, Rod pump, ESP, PCP, other...
+#   wvProdSettingESP: ESP operating parameters for the time interval defined in 'Production Setting...
+#   wvProdSettingFlow: Choke size for the time interval defined in 'Production Setting'. +extension
+#   wvProdSettingGasLift: Gas injection rate and choke size for the time interval defined in 'Productio...
+#   wvProdSettingPCP: RPM, Rod torque and electric current for the time interval defined in 'Produc...
+#   wvProdSettingPlunger: Arrival, open, delay, shut in times and pressure for the time interval define...
+#   wvProdSettingRodPump: Max rod load, pitman position, stoke length, etc for the time interval define...
+#   wvAnnulus: This table allows you to model the annulus, which is the space between two st...
+#   wvAnnulusFluid: Annulus fluid. +parent
+#   wvChemicalInjection: Details of chemical treatments for the well. +parent
+#   wvFluidAnalysis: General fluid analysis details. +parent
+#   wvFluidAnalysisGas: Detailed gas properties. +extension
+#   wvFluidAnalysisGasComp: Mole fraction composition of gas. +parent
+#   wvFluidAnalysisOil: Oil sample properties and distillation parameters. +extension
+#   wvFluidAnalysisOilDistill: Oil sample distilled volume vs. +parent
+#   wvFluidAnalysisOilVis: Oil viscosity vs. +parent
+#   wvFluidAnalysisWater: Water property details. +extension
+#   wvFluidAnalysisWaterComp: Mass fraction by component. +parent
+#   wvFluidAnalysisLiquid: Observed and calculated hydrocarbon liquid properties. +extension
+#   wvFluidAnalysisLiquidComp: Hydrocarbon liquid molecular, mass and volume fractions by component. +parent
+#   wvTestDyno: Dynamometer tests. +parent
+#   wvTestDynoData: Dynamometer test data. +parent
+#   wvProduction: Production volumes. +parent
+#   wvProductionDownTime: Start date, duration and reason for down time. +parent
+#   wvProductionGas: Gas product type and volumes for time period defined in 'Production Volume'. ...
+#   wvProductionLiquid: Liquid product type and volumes for time period defined in 'Production Volume...

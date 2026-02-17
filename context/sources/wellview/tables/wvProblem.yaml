@@ -1,0 +1,53 @@
+# wellview / production_operations / wvProblem
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProblem: Production equipment failure information including dates, type, cause, failure cost & actions taken to resolve. +parent
+  DtTmStart(dt) #Failure Date
+  Typ(s100) #Failure Type
+  TypDetail(s100) #Failure Detail
+  Des(s100) #Failure Description
+  FailureSystem(s50) #Failure System
+  FailureSymptom(s50) #Failure Symptom
+  Priority(s50) #Priority
+  RegulatoryIssue(bool) #Regulatory Issue?
+  PerformanceAffect(bool) #Performance Affected?
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecProdSettingCalc(s32_calc) #Most Recent Prod Setting
+  IDRecWellStatusCalc(s32_calc) #Pre Failure Well Status
+  Status1(s50) #Status
+  Status2(s50) #Status Detail
+  Com(txt2k) #Comment
+  RateOptimumOil(dbl_m3pd) #Optimum Rate Oil
+  RateOptimumGas(dbl_m3pd) #Optimum Rate Gas
+  RateOptimumCond(dbl_m3pd) #Optimum Rate Cond
+  RateOptimumWater(dbl_m3pd) #Optimum Rate Water
+  RateFailOil(dbl_m3pd) #Failure Rate Oil
+  RateFailGas(dbl_m3pd) #Failure Rate Gas
+  RateFailCond(dbl_m3pd) #Failure Rate Cond
+  RateFailWater(dbl_m3pd) #Failure Rate Water
+  EstCost(dbl_cost) #Estimated Cost of Failure
+  RateChangeOilCalc(dbl_m3pd_calc) #Optimum - Failure Oil Rate
+  RateChangeGasCalc(dbl_m3pd_calc) #Optimum - Failure Gas Rate
+  RateChangeCondCalc(dbl_m3pd_calc) #Optimum - Failure Cond Rate
+  RateChangeWaterCalc(dbl_m3pd_calc) #Optimum - Failure Water Rate
+  EstReserveLossOil(dbl_m3) #Estimated Lost Oil Reserves
+  EstReserveLossGas(dbl_m3) #Estimated Lost Gas Reserves
+  EstReserveLossCond(dbl_m3) #Estimated Loss Condensate Reserves
+  EstReserveLossWater(dbl_m3) #Estimated Lost Water Reserves
+  Cause(s50) #Cause of Failure
+  CauseDetail(s50) #Cause of Failure Detail
+  DtTmAction(dt) #Action Date
+  ActionTaken(s255) #Action Taken
+  IDRecJob(s32) #Failure Repair Job
+  DtTmEnd(dt) #Resolved Date
+  ReportTo(s50) #Report Problem To
+  CauseCom(txt2k) #Cause Comment
+  DurEndToStartCalc(dbl_days_calc) #Failure to Resolution Duration
+  DurActionToStartCalc(dbl_days_calc) #Failure to Action Duration
+  DurJobStartToStartCalc(dbl_days_calc) #Failure to Job Start Duration
+  DurEndToActionCalc(dbl_days_calc) #Action to Resolution Duration
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3

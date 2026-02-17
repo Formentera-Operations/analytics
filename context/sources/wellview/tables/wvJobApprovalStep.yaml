@@ -1,0 +1,24 @@
+# wellview / operations_jobs / wvJobApprovalStep
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApprovalStep: The steps of the 'Approval Process'. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  RequiredBy(s50) #Required By
+  Status(s50) #Status
+  DtTmAssigned(dt) #Assigned Date
+  DtTmRequired(dt) #Required Date
+  DtTmStart(dt) #Start Date
+  DurPlan(dbl_days) #Estimated Duration
+  DurActCalc(dbl_days_calc) #Actual Duration
+  ApprovalCompleteCalc(bool_calc) #Approvals Complete?
+  DtTmApprovalCompleteOR(dt) #Approval Complete Date
+  DtTmApprovalCompleteCalc(dt_calc) #Date Approvals Complete
+  DelivCompleteCalc(bool_calc) #Deliverables Completed?
+  DtTmDelivCompleteCalc(dt_calc) #Date Deliverables Completed
+  DtTmEarliestPlanStartCalc(dt_calc) #Earliest Plan Start
+  DtTmLatestPlanStartCalc(dt_calc) #Latest Plan Start
+  PreReqCalc(s255_calc) #Prerequisites
+  PrereqCompleteCalc(bool_calc) #Prerequisites Complete?
+  Com(txt2k) #Comment

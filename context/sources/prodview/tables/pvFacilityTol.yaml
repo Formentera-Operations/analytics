@@ -1,0 +1,9 @@
+# prodview / facilities / pvFacilityTol
+# Source: context/sources/prodview/domains/facilities.yaml
+#
+pvFacilityTol: Facility Tolerance +parent | Overrides the default tolerance specified in 'Calculation Setting'. Entries in this table are handle
+  DtTm(dt) #Date
+  PctBalHCLiq(dbl_pct) #Oil/Condensate Balance Tolerance
+  PctBalGas(dbl_pct) #Gas Balance Tolerance
+  PctBalWater(dbl_pct) #Water Balance Tolerance
+  PctBalSand(dbl_pct) #Sand Balance Tolerance

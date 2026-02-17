@@ -1,0 +1,77 @@
+# wellview / reservoir_tests / wvWellTestFlowbackPer
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestFlowbackPer: Define the Start and End dates the daily testing period. The 'Flowback Test Data' is summarized for the period, and the last reading is available a... +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurCalc(dbl_days_calc) #Total Duration
+  DurCumCalc(dbl_days_calc) #Cum Duration
+  TypCalc(s100_calc) #Flowback/Shut-In
+  DurFlowbackCumCalc(dbl_days_calc) #Cum Flowback Duration
+  DurShutInCumCalc(dbl_days_calc) #Cum Shut In Duration
+  Com(txt255) #Comment
+  PresBHEndCalc(dbl_kPa_calc) #Bottomhole Pressure End
+  PresCasEndCalc(dbl_kPa_calc) #Casing Pressure End
+  PresTubEndCalc(dbl_kPa_calc) #Tubing Pressure End
+  PresWHEndCalc(dbl_kPa_calc) #Wellhead Pressure End
+  TempBHEndCalc(dbl_degC_calc) #Bottomhole Temperature End
+  TempWHEndCalc(dbl_degC_calc) #Wellhead Temperature End
+  SzChokeEndCalc(dbl_m_calc) #Choke Size End
+  SzChokeUpstreamEndCalc(dbl_m_calc) #Choke Size Upstream End
+  DensityHCLiqEndCalc(dbl_kgpm3_calc) #Oil Density End
+  RateHCLiqDayEndCalc(dbl_m3pd_calc) #Daily Oil Rate End
+  RateHCLiqHrEndCalc(dbl_m3pd_calc) #Hourly Oil Rate End
+  VolHCLiqCalc(dbl_m3_calc) #Vol Oil
+  VolHCLiqCumCalc(dbl_m3_calc) #Cum Vol Oil
+  VolLoadToRecovHCLiqCalc(dbl_m3_calc) #Vol Load Oil to Recover End
+  VolPctLoadHCLiqRecovCalc(dbl_pct_calc) #Load Oil Recovered End
+  RateWaterDayEndCalc(dbl_m3pd_calc) #Daily Water Rate End
+  RateWaterHrEndCalc(dbl_m3pd_calc) #Hourly Water Rate End
+  VolWaterCalc(dbl_m3_calc) #Vol Water
+  VolWaterCumCalc(dbl_m3_calc) #Cum Vol Water
+  VolLoadToRecovWaterCalc(dbl_m3_calc) #Vol Load Water to Recover End
+  VolPctLoadWaterRecovCalc(dbl_pct_calc) #Load Water Recovered End
+  BSWEndCalc(dbl_pct_calc) #BSW End
+  ChloridesEndCalc(dbl_kgpm3_calc) #Chlorides End
+  DensityWaterEndCalc(dbl_kgpm3_calc) #Water Density End
+  pHWaterEndCalc(dbl_calc) #pH End
+  SalinityWaterEndCalc(dbl_pct_calc) #Salinity End
+  RateSandDayEndCalc(dbl_m3pd_calc) #Daily Sand Rate End
+  RateSandHrEndCalc(dbl_m3pd_calc) #Hourly Sand Rate End
+  SandCutEndCalc(dbl_pct_calc) #Sand Cut End
+  VolSandCalc(dbl_m3_calc) #Vol Sand
+  VolSandCumCalc(dbl_m3_calc) #Cum Vol Sand
+  VolLoadToRecovSandCalc(dbl_m3_calc) #Vol Load Sand to Recover End
+  VolPctLoadSandRecovCalc(dbl_pct_calc) #Load Sand Recovered End
+  SolidsTotalEndCalc(dbl_pct_calc) #Total Dissolved Solids End
+  SandDesEndCalc(s100_calc) #Sand Description End
+  RateGasDayEndCalc(dbl_m3pd_calc) #Daily Gas Rate End
+  RateGasHrEndCalc(dbl_m3pd_calc) #Hourly Gas Rate End
+  RatioGasHCLiqEndCalc(dbl_m3pm3_calc) #Gas Oil Ratio End
+  RatioWaterGasEndCalc(dbl_m3pm3_calc) #Water Gas Ratio End
+  VolGasCalc(dbl_m3_calc) #Vol Gas
+  VolGasCumCalc(dbl_m3_calc) #Cum Vol Gas
+  VolLoadToRecovGasCalc(dbl_m3_calc) #Vol Load Gas to Recover End
+  VolPctLoadGasRecovCalc(dbl_pct_calc) #Load Gas Recovered End
+  DensityGasEndCalc(dbl_kgpm3_calc) #Gas Density
+  H2SEndCalc(dbl_pct_calc) #H2S End
+  CO2EndCalc(dbl_pct_calc) #CO2 End
+  PresDiffEndCalc(dbl_kPa_calc) #Differential Pressure End
+  PresStaticEndCalc(dbl_kPa_calc) #Static Pressure (gauge) End
+  PresStaticSalesEndCalc(dbl_kPa_calc) #Sales Static Pressure (gauge) End
+  SzOrificeEndCalc(dbl_m_calc) #Orifice Size End
+  TempSalesEndCalc(dbl_degC_calc) #Sales Temperature End
+  TempSepEndCalc(dbl_degC_calc) #Separator Temperature End
+  RateGasFlareDayEndCalc(dbl_m3pd_calc) #Daily Flare Gas Rate End
+  RateGasFlareHrEndCalc(dbl_m3pd_calc) #Hourly Flare Gas Rate End
+  VolGasFlareCalc(dbl_m3_calc) #Vol Flare Gas
+  VolGasFlareCumCalc(dbl_m3_calc) #Cum Vol Flare Gas
+  RateGasSalesDayEndCalc(dbl_m3pd_calc) #Daily Sales Gas Rate End
+  RateGasSalesHrEndCalc(dbl_m3pd_calc) #Hourly Sales Gas Rate End
+  VolGasSalesCalc(dbl_m3_calc) #Vol Sales Gas
+  VolGasSalesCumCalc(dbl_m3_calc) #Cum Vol Sales Gas
+  RateTotalFluidDayEndCalc(dbl_m3pd_calc) #Daily Total Fluid Rate End
+  RateTotalFluidHrEndCalc(dbl_m3pd_calc) #Hourly Total Fluid Rate End
+  VolTotalFluidCalc(dbl_m3_calc) #Vol Total Fluid
+  VolTotalFluidCumCalc(dbl_m3_calc) #Cum Total Fluid
+  DensitySampleEndCalc(dbl_kgpm3_calc) #Sample Density End

@@ -1,0 +1,30 @@
+# wellview / surface_equipment / wvPrimeMover
+# Source: context/sources/wellview/domains/surface_equipment.yaml
+#
+wvPrimeMover: Pumping prime mover information. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Make(s100) #Make
+  Model(s100) #Model
+  PMTyp(s100) #Type
+  SN(s50) #Serial Number
+  PowerRating(dbl_W) #Power Rating
+  RPMRating(dbl_rpm) #RPM Rating
+  SpeedDes(s100) #Speed Description
+  Frame(s50) #Frame
+  ServiceFact(dbl) #Service Factor
+  DtTmLastOverhaul(dt) #Last Overhaul Date
+  IDRecRod(s32) #Driven Rod String
+  BeltModel(s100) #Belt Model
+  BeltPowerTransEff(dbl_pct) #Belt Power Trans Eff
+  BeltReductionRatio(dbl_pct) #Belt Reduction Ratio
+  BeltXSect(s10) #Belt Cross Section
+  BeltLength(dbl_m) #Belt Length
+  SzSheave(dbl_m) #Sheave Size
+  BeltNo(int) #Number of Belts
+  DtTmStart(dt) #Install Date
+  IDRecJob(s32) #Job
+  ConditionStart(s50) #Installed Condition
+  DtTmEnd(dt) #Remove Date
+  ConditionEnd(s50) #Removed Condition
+  RefID(s50) #Reference ID
+  Com(txt2k) #Comment

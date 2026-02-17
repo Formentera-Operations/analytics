@@ -1,0 +1,179 @@
+# wellview / operations_jobs / wvJobProgramPhase
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramPhase: Planned phases of the 'Job'. +parent
+  Code1(s100) #Phase Type 1
+  Code2(s100) #Phase Type 2
+  Code3(s100) #Phase Type 3
+  Code4(s100) #Phase Type 4
+  DurationML(dbl_days) #Planned Likely Duration
+  DurationMin(dbl_days) #Planned Min Duration
+  DurationMax(dbl_days) #Planned Max Duration
+  DurationTechLimit(dbl_days) #Tech Limit Duration
+  CostML(dbl_cost) #Planned Likely Phase Cost
+  CostMin(dbl_cost) #Planned Min Phase Cost
+  CostMax(dbl_cost) #Planned Max Phase Cost
+  CostTechLimit(dbl_cost) #Tech Limit Cost
+  DepthStartPlan(dbl_m) #Planned Start Depth
+  DepthTVDStartPlanCalc(dbl_m_calc) #Planned Start Depth (TVD)
+  DepthEndPlan(dbl_m) #Planned End Depth
+  DepthTVDEndPlanCalc(dbl_m_calc) #Planned End Depth (TVD)
+  IDRecWellbore(s32) #Wellbore
+  PlanPhase(txt2k) #Plan Details
+  Hazards(s255) #Hazards
+  DtTmStartActual(dt) #Actual Start Date
+  DtTmEndActual(dt) #Actual End Date
+  DtTmEndCalc(dt_calc) #Derived End Date
+  PlanChange(bool) #Plan Change?
+  Exclude(bool) #Exclude from Calculations?
+  Des(s100) #Description
+  RefNoCalc(int_calc) #Reference #
+  Code1234Calc(s200_calc) #Typ1 - 2 - 3 - 4
+  Summary(txt2k) #Summary
+  Definitive(bool) #Definitive?
+  MethodTyp1(s100) #Method Type
+  MethodTyp2(s100) #Method Sub Type
+  Source(s50) #Source
+  DayJobMLPlanCalc(dbl_days_calc) #Planned Likely Cum Days
+  DayJobMinPlanCalc(dbl_days_calc) #Planned Min Cum Days
+  DayJobMaxPlanCalc(dbl_days_calc) #Planned Max Cum Days
+  DayJobTechLimitPlanCalc(dbl_days_calc) #Planned Tech Limit Cum Days
+  DtTmStartPlanMLCalc(dt_calc) #Planned Likely Start Date
+  DtTmEndPlanMLCalc(dt_calc) #Planned Likely End Date
+  DtTmStartPlanMinCalc(dt_calc) #Planned Earliest Start Date
+  DtTmEndPlanMinCalc(dt_calc) #Planned Earliest End Date
+  DtTmStartPlanMaxCalc(dt_calc) #Planned Latest Start Date
+  DtTmEndPlanMaxCalc(dt_calc) #Planned Latest End Date
+  DtTmStartPlanTechLimitCalc(dt_calc) #Planned Tech Limit Start Date
+  DtTmEndPlanTechLimitCalc(dt_calc) #Planned Tech Limit End Date
+  CostMLCumCalc(dbl_cost_calc) #Planned Likely Cum Phase Cost
+  CostMinCumCalc(dbl_cost_calc) #Planned Min Cum Phase Cost
+  CostMaxCumCalc(dbl_cost_calc) #Planned Max Cum Phase Cost
+  CostTechLimitCumCalc(dbl_cost_calc) #Planned Tech Limit Cum Phase Cost
+  CostPerDepthPlanCalc(dbl_cpm_calc) #Plan Cost Per Depth
+  CostPerDepthPlanNormCalc(dbl_cpm_calc) #Normalized Plan Cost Per Depth
+  DepthProgressPlanCalc(dbl_m_calc) #Plan Depth Progress
+  LengthPlanCalc(dbl_m_calc) #Plan Phase Length
+  DurationSpudtoPlanMLCalc(dbl_days_calc) #Spud to Plan ML Duration
+  DurationSpudtoPlanMinCalc(dbl_days_calc) #Spud to Plan Min Duration
+  DurationSpudtoPlanMaxCalc(dbl_days_calc) #Spud to Plan Max Duration
+  DurationSpudtoPlanTechLCalc(dbl_days_calc) #Spud to Plan Tech Limit Duration
+  DayJobMLPlanAltCalc(dbl_days_calc) #Planned Likely Cum Days (Alt)
+  DayJobMaxPlanAltCalc(dbl_days_calc) #Planned Max Cum Days (Alt)
+  DayJobMinPlanAltCalc(dbl_days_calc) #Planned Min Cum Days (Alt)
+  DayJobTLPlanAltCalc(dbl_days_calc) #Planned Tech Limit Cum Days (Alt)
+  DepthStartActualCalc(dbl_m_calc) #Actual Start Depth
+  DepthTVDStartActualCalc(dbl_m_calc) #Actual Start Depth (TVD)
+  DepthEndActualCalc(dbl_m_calc) #Actual End Depth
+  DepthTVDEndActualCalc(dbl_m_calc) #Actual End Depth (TVD)
+  WellboreSzCalc(dbl_m_calc) #Wellbore Size
+  MudTypCalc(s100_calc) #Mud Type
+  MudDensityMaxCalc(dbl_kgpm3_calc) #Max Mud Density
+  MudDensityMinCalc(dbl_kgpm3_calc) #Min Mud Density
+  WeightMetalRecovTotalCalc(dbl_kg_calc) #Weight Metal Recovered
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  FormationCalc(s255_calc) #Formation
+  LengthActualCalc(dbl_m_calc) #Actual Phase Length
+  DurationActualCalc(dbl_days_calc) #Actual Duration
+  DurCumActualCalc(dbl_days_calc) #Actual Cum Duration
+  DayJobActualCalc(dbl_days_calc) #Actual Phase End Days from Start of Job
+  DaySpudActualCalc(dbl_days_calc) #Actual Phase End Days from Spud
+  DurCumActualStartPhaseCalc(dbl_days_calc) #Actual Cum Duration at Phase Start
+  DurationVarianceCalc(dbl_days_calc) #Ahead of Plan for Phase
+  DurationVarianceCumCalc(dbl_days_calc) #Ahead of Plan for Job
+  DurationTimeLogTotalCalc(dbl_days_calc) #Time Log Total Hours
+  DurationTimeLogTotCumCalc(dbl_days_calc) #Cum Time Log Days
+  DurationTimeLogCumSpudCalc(dbl_days_calc) #Cum Time Log Days From Spud
+  DurationProblemTimeCalc(dbl_days_calc) #Problem Time Hours
+  DurationProblemTimeCumCalc(dbl_days_calc) #Cum Problem Time Hours
+  PctProblemTimeCalc(dbl_pct_calc) #Percent Problem Time
+  PctProblemTimeCumCalc(dbl_pct_calc) #Cum Percent Problem Time
+  DurationNoProbTimeCalc(dbl_days_calc) #Time Log - Problem Hours
+  DurationNoProbTimeCumCalc(dbl_days_calc) #Cum Time Log - Problem Hours
+  DurationILTCalc(dbl_days_calc) #Invisible Lost Time
+  DurationILTCumCalc(dbl_days_calc) #Cum Invisible Lost Time
+  CostActualCalc(dbl_cost_calc) #Actual Phase Field Est
+  CostActualNormCalc(dbl_cost_calc) #Normalized Actual Phase Field Est
+  CostActualCumCalc(dbl_cost_calc) #Actual Phase Cum Field Est
+  CostActualCumNormCalc(dbl_cost_calc) #Normalized Actual Phase Cum Field Est
+  CostVarianceCalc(dbl_cost_calc) #Variance - Cost ML
+  CostVarianceCumCalc(dbl_cost_calc) #Variance - Cum Cost ML
+  CostVarianceMinCalc(dbl_cost_calc) #Variance - Cost Min
+  CostVarianceMinCumCalc(dbl_cost_calc) #Variance - Cum Cost Min
+  CostVarianceMaxCalc(dbl_cost_calc) #Variance - Cost Max
+  CostVarianceMaxCumCalc(dbl_cost_calc) #Variance - Cum Cost Max
+  CostVarianceTechLimitCalc(dbl_cost_calc) #Variance - Cost Tech Limit
+  CostVarianceTechLimitCumCalc(dbl_cost_calc) #Variance - Cum Cost Tech Limit
+  PhaseMudCostCalc(dbl_cost_calc) #Total Phase Mud Field Est
+  CostPerDepthCalc(dbl_cpm_calc) #Cost Per Depth Drilled
+  CostPerDepthNormCalc(dbl_cpm_calc) #Normalized Cost Per Depth Drilled
+  PhaseMudCostPerDepthCalc(dbl_cpm_calc) #Mud Cost/Depth
+  PhaseMudCostPerDepthNormCalc(dbl_cpm_calc) #Normalized Mud Cost/Depth
+  DepthProgressActualCalc(dbl_m_calc) #Actual Depth Progress
+  BitRevsCalc(dbl_calc) #Bit Revs
+  PercentTmRotatingCalc(dbl_pct_calc) #% Rotating Time
+  PercentTmSlidingCalc(dbl_pct_calc) #% Sliding Time
+  ROPCalc(dbl_mpd_calc) #Phase ROP
+  ROPRotatingCalc(dbl_mpd_calc) #Rotating ROP
+  ROPSlidingCalc(dbl_mpd_calc) #Sliding ROP
+  TmDrillCalc(dbl_days_calc) #Drilling Hours
+  TmDrillCumCalc(dbl_days_calc) #Cum Drilling Time
+  TmDrillNoExcCalc(dbl_days_calc) #Drilling Time (No Excl)
+  TmDrillCumNoExcCalc(dbl_days_calc) #Cum Drilling Time (No Excl)
+  TmCircCalc(dbl_days_calc) #Circulating Hours
+  TmCircCumCalc(dbl_days_calc) #Cum Circulating Time
+  TmOtherCalc(dbl_days_calc) #Other Time
+  TmOtherCumCalc(dbl_days_calc) #Cum Other Time
+  TmTripCalc(dbl_days_calc) #Tripping Time
+  TmTripCumCalc(dbl_days_calc) #Cum Trip Time
+  TmCircTripOtherCalc(dbl_days_calc) #Circ+Other+Trip
+  TmCircTripOtherCumCalc(dbl_days_calc) #Cum Circ+Other+Trip
+  TmRotatingCalc(dbl_days_calc) #Rotating Hours
+  TmSlidingCalc(dbl_days_calc) #Sliding Hours
+  ROPInstAvgCalc(dbl_mpd_calc) #Avg ROP Instantaneous
+  BHATotalRunCalc(dbl_calc) #BHA Runs
+  RatioDepthActualPlanCalc(dbl_pct_calc) #Actual Depth/Planned Depth
+  DurationPersonnelRegCalc(dbl_days_calc) #Personnel Regular hours
+  DurationPersonnelOTCalc(dbl_days_calc) #Personnel OT Hours
+  DurationPersonnelTotCalc(dbl_days_calc) #Personnel Total Hours
+  DurPersonnelRegCumCalc(dbl_days_calc) #Cum Personnel Regular Hours
+  DurPersonnelOTCumCalc(dbl_days_calc) #Cum Personnel OT Hours
+  DurPersonnelTotCumCalc(dbl_days_calc) #Cum Personnel Total Hours
+  ActivityDurationMLCalc(dbl_days_calc) #Activity Plan Likely Sum
+  ActivityDurationMinCalc(dbl_days_calc) #Activity Plan Min Sum
+  ActivityDurationMaxCalc(dbl_days_calc) #Activity Plan Max Sum
+  ActivityDurationMLCumCalc(dbl_days_calc) #Activity Plan Likely Cum
+  ActivityDurationMaxCumCalc(dbl_days_calc) #Activity Plan Max Cum
+  ActivityDurationMinCumCalc(dbl_days_calc) #Activity Plan Min Cum
+  ActivityDepthStartMinCalc(dbl_m_calc) #Activity Start Depth
+  ActivityDepthEndMaxCalc(dbl_m_calc) #Activity End Depth
+  VolMudAddedCalc(dbl_m3_calc) #Additions
+  VolMudLossCalc(dbl_m3_calc) #Losses
+  VolMudAddedLossVarCalc(dbl_m3_calc) #Additions - Losses
+  ReportDayCalc(dbl_days_calc) #Job Day
+  ReportNoCalc(dbl_calc) #Report Number
+  DaysFromSpudCalc(dbl_days_calc) #Days From Spud
+  DurProblemTimeCumDaysCalc(dbl_days_calc) #Cum Problem Time Days
+  DurNoProbTimeCumDaysCalc(dbl_days_calc) #Cum Time Log - Problem
+  FlatOrSlopeCalc(s100_calc) #Flat or Slope
+  DurCumFlatCalc(dbl_days_calc) #Cum Flat Duration
+  DurCumSlopeCalc(dbl_days_calc) #Cum Slope Duration
+  CostMaxNormCalc(dbl_cost_calc) #Normalized Max Phase Cost
+  CostMaxNormCumCalc(dbl_cost_calc) #Normalized Max Cum Phase Cost
+  CostMinNormCalc(dbl_cost_calc) #Normalized Min Phase Cost
+  CostMinNormCumCalc(dbl_cost_calc) #Normalized Min Cum Phase Cost
+  CostMLCumNoExcludeCalc(dbl_cost_calc) #Cum ML Phase Cost (No Excl)
+  CostMLNormCalc(dbl_cost_calc) #Normalized Planned Likely Phase Cost
+  CostMLNormCumCalc(dbl_cost_calc) #Normalized Planned Likely Cum Phase Cost
+  CostTechLimitNormCalc(dbl_cost_calc) #Normalized Planned Tech Limit Phase Cost
+  CostTechLimitNormCumCalc(dbl_cost_calc) #Normalized Planned Tech Limit Cum Phase Cost
+  DurMLCumNoExcludeCalc(dbl_days_calc) #Cum ML Duration (No Excl)
+  PhaseMudCostNormCalc(dbl_cost_calc) #Normalized Total Phase Mud Field Est
+  IDRecLastCasCalc(s32_calc) #Last Casing String
+  IDRecLastTubCalc(s32_calc) #Last Tubing String
+  VolKickSumCalc(dbl_m3_calc) #Total Kick Volume
+  VolLossSumCalc(dbl_m3_calc) #Total Lost Volume
+  UserTxt1(s100) #User Text 1

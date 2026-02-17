@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobRigSolidsShakerScrn
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigSolidsShakerScrn: Screen size, install and removal date. +parent
+  DeckNo(int) #Deck Number
+  ScreenNo(int) #Screen Number
+  SizeX(dbl) #Screen Size  X
+  SizeY(dbl) #Screen  Size Y
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  TmDrillCalc(dbl_days_calc) #Drilling Time
+  TmCircCalc(dbl_days_calc) #Circulating Time
+  Note(s255) #Note

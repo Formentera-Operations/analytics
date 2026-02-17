@@ -1,0 +1,265 @@
+# combo_curve / economics / econ_run_monthly_export_results
+# Source: context/sources/combo_curve/domains/economics.yaml
+#
+# LARGEST table in CC_RAW (262M+ rows). Monthly cash flow and economic detail by well.
+# ALL columns are TEXT type except _PORTABLE_EXTRACTED (TIMESTAMP_NTZ) and
+# ECON_RUN_DATE (TIMESTAMP_NTZ). Numeric columns require explicit casting in staging.
+#
+ECON_RUN_MONTHLY_EXPORT_RESULTS: Monthly cash flow and economic detail by well per economic run. Each row is a single well+month combination containing revenue, expenses, volumes, prices, CAPEX, taxes, and interest detail. 262,344,749 rows. -> stg_cc__economic_runs
+  # --- Identifiers ---
+  _ID(txt) #Row unique identifier
+  ECONRUN(txt) #Parent economic run ID (FK to ECON_RUNS.ID)
+  WELL(txt) #Well ID (FK to WELLS.ID)
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  SCENARIO(txt) #Parent scenario ID (FK to PROJECT_SCENARIOS.ID)
+  COMBONAME(txt) #Economic scenario combination name
+  DATE(txt) #Month date for this row (requires casting to date)
+  ECON_RUN_DATE(ts) #Date the economic run was executed
+  # --- Cash Flow ---
+  BEFOREINCOMETAXCASHFLOW(txt) #Before income tax cash flow
+  AFTERINCOMETAXCASHFLOW(txt) #After income tax cash flow
+  FIRSTDISCOUNTCASHFLOW(txt) #First discount rate cash flow (NPV component)
+  SECONDDISCOUNTCASHFLOW(txt) #Second discount rate cash flow (NPV component)
+  FIRSTDISCOUNTNETINCOME(txt) #First discount rate net income
+  SECONDDISCOUNTNETINCOME(txt) #Second discount rate net income
+  FIRSTDISCOUNTEDCAPEX(txt) #First discount rate discounted CAPEX
+  SECONDDISCOUNTEDCAPEX(txt) #Second discount rate discounted CAPEX
+  NETINCOME(txt) #Net income for the month
+  NETPROFIT(txt) #Net profit for the month
+  # --- Discount Table Cash Flow (16 rates) ---
+  DISCOUNTTABLECASHFLOW1(txt) #Discount table cash flow at rate 1
+  DISCOUNTTABLECASHFLOW2(txt) #Discount table cash flow at rate 2
+  DISCOUNTTABLECASHFLOW3(txt) #Discount table cash flow at rate 3
+  DISCOUNTTABLECASHFLOW4(txt) #Discount table cash flow at rate 4
+  DISCOUNTTABLECASHFLOW5(txt) #Discount table cash flow at rate 5
+  DISCOUNTTABLECASHFLOW6(txt) #Discount table cash flow at rate 6
+  DISCOUNTTABLECASHFLOW7(txt) #Discount table cash flow at rate 7
+  DISCOUNTTABLECASHFLOW8(txt) #Discount table cash flow at rate 8
+  DISCOUNTTABLECASHFLOW9(txt) #Discount table cash flow at rate 9
+  DISCOUNTTABLECASHFLOW10(txt) #Discount table cash flow at rate 10
+  DISCOUNTTABLECASHFLOW11(txt) #Discount table cash flow at rate 11
+  DISCOUNTTABLECASHFLOW12(txt) #Discount table cash flow at rate 12
+  DISCOUNTTABLECASHFLOW13(txt) #Discount table cash flow at rate 13
+  DISCOUNTTABLECASHFLOW14(txt) #Discount table cash flow at rate 14
+  DISCOUNTTABLECASHFLOW15(txt) #Discount table cash flow at rate 15
+  DISCOUNTTABLECASHFLOW16(txt) #Discount table cash flow at rate 16
+  # --- After-Tax Discount Table Cash Flow (16 rates) ---
+  AFITDISCOUNTTABLECASHFLOW1(txt) #After-tax discount table cash flow at rate 1
+  AFITDISCOUNTTABLECASHFLOW2(txt) #After-tax discount table cash flow at rate 2
+  AFITDISCOUNTTABLECASHFLOW3(txt) #After-tax discount table cash flow at rate 3
+  AFITDISCOUNTTABLECASHFLOW4(txt) #After-tax discount table cash flow at rate 4
+  AFITDISCOUNTTABLECASHFLOW5(txt) #After-tax discount table cash flow at rate 5
+  AFITDISCOUNTTABLECASHFLOW6(txt) #After-tax discount table cash flow at rate 6
+  AFITDISCOUNTTABLECASHFLOW7(txt) #After-tax discount table cash flow at rate 7
+  AFITDISCOUNTTABLECASHFLOW8(txt) #After-tax discount table cash flow at rate 8
+  AFITDISCOUNTTABLECASHFLOW9(txt) #After-tax discount table cash flow at rate 9
+  AFITDISCOUNTTABLECASHFLOW10(txt) #After-tax discount table cash flow at rate 10
+  AFITDISCOUNTTABLECASHFLOW11(txt) #After-tax discount table cash flow at rate 11
+  AFITDISCOUNTTABLECASHFLOW12(txt) #After-tax discount table cash flow at rate 12
+  AFITDISCOUNTTABLECASHFLOW13(txt) #After-tax discount table cash flow at rate 13
+  AFITDISCOUNTTABLECASHFLOW14(txt) #After-tax discount table cash flow at rate 14
+  AFITDISCOUNTTABLECASHFLOW15(txt) #After-tax discount table cash flow at rate 15
+  AFITDISCOUNTTABLECASHFLOW16(txt) #After-tax discount table cash flow at rate 16
+  # --- Revenue ---
+  TOTALREVENUE(txt) #Total revenue across all products
+  OILREVENUE(txt) #Oil revenue
+  GASREVENUE(txt) #Gas revenue
+  NGLREVENUE(txt) #NGL revenue
+  DRIPCONDENSATEREVENUE(txt) #Drip condensate revenue
+  # --- Expenses (Summary) ---
+  TOTALEXPENSE(txt) #Total operating expenses
+  TOTALFIXEDEXPENSE(txt) #Total fixed operating expenses
+  TOTALVARIABLEEXPENSE(txt) #Total variable operating expenses
+  TOTALOILVARIABLEEXPENSE(txt) #Total oil variable expenses
+  TOTALGASVARIABLEEXPENSE(txt) #Total gas variable expenses
+  TOTALNGLVARIABLEEXPENSE(txt) #Total NGL variable expenses
+  TOTALDRIPCONDENSATEVARIABLEEXPENSE(txt) #Total drip condensate variable expenses
+  MONTHLYWELLCOST(txt) #Monthly well cost (fixed LOE)
+  OTHERMONTHLYCOST_1(txt) #Other monthly cost category 1
+  OTHERMONTHLYCOST_2(txt) #Other monthly cost category 2
+  OTHERMONTHLYCOST_3(txt) #Other monthly cost category 3
+  OTHERMONTHLYCOST_4(txt) #Other monthly cost category 4
+  OTHERMONTHLYCOST_5(txt) #Other monthly cost category 5
+  OTHERMONTHLYCOST_6(txt) #Other monthly cost category 6
+  OTHERMONTHLYCOST_7(txt) #Other monthly cost category 7
+  OTHERMONTHLYCOST_8(txt) #Other monthly cost category 8
+  # --- Oil Expenses ---
+  OILGATHERINGEXPENSE(txt) #Oil gathering expense
+  OILPROCESSINGEXPENSE(txt) #Oil processing expense
+  OILTRANSPORTATIONEXPENSE(txt) #Oil transportation expense
+  OILMARKETINGEXPENSE(txt) #Oil marketing expense
+  OILOTHEREXPENSE(txt) #Oil other expense
+  # --- Gas Expenses ---
+  GASGATHERINGEXPENSE(txt) #Gas gathering expense
+  GASPROCESSINGEXPENSE(txt) #Gas processing expense
+  GASTRANSPORTATIONEXPENSE(txt) #Gas transportation expense
+  GASMARKETINGEXPENSE(txt) #Gas marketing expense
+  GASOTHEREXPENSE(txt) #Gas other expense
+  # --- NGL Expenses ---
+  NGLGATHERINGEXPENSE(txt) #NGL gathering expense
+  NGLPROCESSINGEXPENSE(txt) #NGL processing expense
+  NGLTRANSPORTATIONEXPENSE(txt) #NGL transportation expense
+  NGLMARKETINGEXPENSE(txt) #NGL marketing expense
+  NGLOTHEREXPENSE(txt) #NGL other expense
+  # --- Drip Condensate Expenses ---
+  DRIPCONDENSATEGATHERINGEXPENSE(txt) #Drip condensate gathering expense
+  DRIPCONDENSATEPROCESSINGEXPENSE(txt) #Drip condensate processing expense
+  DRIPCONDENSATETRANSPORTATIONEXPENSE(txt) #Drip condensate transportation expense
+  DRIPCONDENSATEMARKETINGEXPENSE(txt) #Drip condensate marketing expense
+  DRIPCONDENSATEOTHEREXPENSE(txt) #Drip condensate other expense
+  # --- Water ---
+  WATERDISPOSAL(txt) #Water disposal expense
+  # --- Gross Volumes ---
+  GROSSBOESALESVOLUME(txt) #Gross BOE sales volume
+  GROSSBOEWELLHEADVOLUME(txt) #Gross BOE wellhead volume
+  GROSSOILSALESVOLUME(txt) #Gross oil sales volume (bbl)
+  GROSSOILWELLHEADVOLUME(txt) #Gross oil wellhead volume (bbl)
+  GROSSGASSALESVOLUME(txt) #Gross gas sales volume (mcf)
+  GROSSGASWELLHEADVOLUME(txt) #Gross gas wellhead volume (mcf)
+  GROSSNGLSALESVOLUME(txt) #Gross NGL sales volume (bbl)
+  GROSSDRIPCONDENSATESALESVOLUME(txt) #Gross drip condensate sales volume (bbl)
+  GROSSMCFESALESVOLUME(txt) #Gross MCFE sales volume
+  GROSSMCFEWELLHEADVOLUME(txt) #Gross MCFE wellhead volume
+  GROSSWATERWELLHEADVOLUME(txt) #Gross water wellhead volume (bbl)
+  # --- Net Volumes ---
+  NETBOESALESVOLUME(txt) #Net BOE sales volume (NRI-adjusted)
+  NETOILSALESVOLUME(txt) #Net oil sales volume (bbl, NRI-adjusted)
+  NETGASSALESVOLUME(txt) #Net gas sales volume (mcf, NRI-adjusted)
+  NETNGLSALESVOLUME(txt) #Net NGL sales volume (bbl, NRI-adjusted)
+  NETDRIPCONDENSATESALESVOLUME(txt) #Net drip condensate sales volume (bbl, NRI-adjusted)
+  NETMCFESALESVOLUME(txt) #Net MCFE sales volume (NRI-adjusted)
+  # --- WI Volumes ---
+  WIBOESALESVOLUME(txt) #Working interest BOE sales volume
+  WIOILSALESVOLUME(txt) #Working interest oil sales volume (bbl)
+  WIGASSALESVOLUME(txt) #Working interest gas sales volume (mcf)
+  WINGLSALESVOLUME(txt) #Working interest NGL sales volume (bbl)
+  WIDRIPCONDENSATESALESVOLUME(txt) #Working interest drip condensate sales volume (bbl)
+  WIMCFESALESVOLUME(txt) #Working interest MCFE sales volume
+  # --- Prices ---
+  OILPRICE(txt) #Realized oil price ($/bbl)
+  GASPRICE(txt) #Realized gas price ($/mcf)
+  NGLPRICE(txt) #Realized NGL price ($/bbl)
+  DRIPCONDENSATEPRICE(txt) #Realized drip condensate price ($/bbl)
+  INPUTOILPRICE(txt) #Input/base oil price before differentials ($/bbl)
+  INPUTGASPRICE(txt) #Input/base gas price before differentials ($/mcf)
+  INPUTNGLPRICE(txt) #Input/base NGL price before differentials ($/bbl)
+  INPUTDRIPCONDENSATEPRICE(txt) #Input/base drip condensate price before differentials ($/bbl)
+  # --- Differentials ---
+  OILDIFFERENTIALS1(txt) #Oil price differential 1
+  OILDIFFERENTIALS2(txt) #Oil price differential 2
+  GASDIFFERENTIALS1(txt) #Gas price differential 1
+  GASDIFFERENTIALS2(txt) #Gas price differential 2
+  NGLDIFFERENTIALS1(txt) #NGL price differential 1
+  NGLDIFFERENTIALS2(txt) #NGL price differential 2
+  DRIPCONDENSATEDIFFERENTIALS1(txt) #Drip condensate price differential 1
+  DRIPCONDENSATEDIFFERENTIALS2(txt) #Drip condensate price differential 2
+  # --- CAPEX (Total) ---
+  TOTALCAPEX(txt) #Total capital expenditure
+  TOTALINTANGIBLECAPEX(txt) #Total intangible capital expenditure
+  TOTALTANGIBLECAPEX(txt) #Total tangible capital expenditure
+  TOTALGROSSCAPEX(txt) #Total gross capital expenditure (before WI adjustment)
+  # --- CAPEX (Drilling) ---
+  TOTALDRILLING(txt) #Total drilling CAPEX (requires numeric casting)
+  INTANGIBLEDRILLING(txt) #Intangible drilling CAPEX (requires numeric casting)
+  TANGIBLEDRILLING(txt) #Tangible drilling CAPEX (requires numeric casting)
+  # --- CAPEX (Completion) ---
+  TOTALCOMPLETION(txt) #Total completion CAPEX (requires numeric casting)
+  INTANGIBLECOMPLETION(txt) #Intangible completion CAPEX (requires numeric casting)
+  TANGIBLECOMPLETION(txt) #Tangible completion CAPEX (requires numeric casting)
+  # --- CAPEX (Development) ---
+  TOTALDEVELOPMENT(txt) #Total development CAPEX (requires numeric casting)
+  INTANGIBLEDEVELOPMENT(txt) #Intangible development CAPEX (requires numeric casting)
+  TANGIBLEDEVELOPMENT(txt) #Tangible development CAPEX (requires numeric casting)
+  # --- CAPEX (Facilities) ---
+  TOTALFACILITIES(txt) #Total facilities CAPEX (requires numeric casting)
+  INTANGIBLEFACILITIES(txt) #Intangible facilities CAPEX (requires numeric casting)
+  TANGIBLEFACILITIES(txt) #Tangible facilities CAPEX (requires numeric casting)
+  # --- CAPEX (Pad) ---
+  TOTALPAD(txt) #Total pad CAPEX (requires numeric casting)
+  INTANGIBLEPAD(txt) #Intangible pad CAPEX (requires numeric casting)
+  TANGIBLEPAD(txt) #Tangible pad CAPEX (requires numeric casting)
+  # --- CAPEX (Pipelines) ---
+  TOTALPIPELINES(txt) #Total pipelines CAPEX (requires numeric casting)
+  INTANGIBLEPIPELINES(txt) #Intangible pipelines CAPEX (requires numeric casting)
+  TANGIBLEPIPELINES(txt) #Tangible pipelines CAPEX (requires numeric casting)
+  # --- CAPEX (Waterline) ---
+  TOTALWATERLINE(txt) #Total waterline CAPEX (requires numeric casting)
+  INTANGIBLEWATERLINE(txt) #Intangible waterline CAPEX (requires numeric casting)
+  TANGIBLEWATERLINE(txt) #Tangible waterline CAPEX (requires numeric casting)
+  # --- CAPEX (Appraisal) ---
+  TOTALAPPRAISAL(txt) #Total appraisal CAPEX (requires numeric casting)
+  INTANGIBLEAPPRAISAL(txt) #Intangible appraisal CAPEX (requires numeric casting)
+  TANGIBLEAPPRAISAL(txt) #Tangible appraisal CAPEX (requires numeric casting)
+  # --- CAPEX (Exploration) ---
+  TOTALEXPLORATION(txt) #Total exploration CAPEX (requires numeric casting)
+  INTANGIBLEEXPLORATION(txt) #Intangible exploration CAPEX (requires numeric casting)
+  TANGIBLEEXPLORATION(txt) #Tangible exploration CAPEX (requires numeric casting)
+  # --- CAPEX (Artificial Lift) ---
+  TOTALARTIFICIALLIFT(txt) #Total artificial lift CAPEX (requires numeric casting)
+  INTANGIBLEARTIFICIALLIFT(txt) #Intangible artificial lift CAPEX (requires numeric casting)
+  TANGIBLEARTIFICIALLIFT(txt) #Tangible artificial lift CAPEX (requires numeric casting)
+  # --- CAPEX (Workover) ---
+  TOTALWORKOVER(txt) #Total workover CAPEX (requires numeric casting)
+  INTANGIBLEWORKOVER(txt) #Intangible workover CAPEX (requires numeric casting)
+  TANGIBLEWORKOVER(txt) #Tangible workover CAPEX (requires numeric casting)
+  # --- CAPEX (Abandonment) ---
+  TOTALABANDONMENT(txt) #Total abandonment CAPEX (requires numeric casting)
+  INTANGIBLEABANDONMENT(txt) #Intangible abandonment CAPEX (requires numeric casting)
+  TANGIBLEABANDONMENT(txt) #Tangible abandonment CAPEX (requires numeric casting)
+  # --- CAPEX (Salvage) ---
+  TOTALSALVAGE(txt) #Total salvage CAPEX (requires numeric casting)
+  INTANGIBLESALVAGE(txt) #Intangible salvage CAPEX (requires numeric casting)
+  TANGIBLESALVAGE(txt) #Tangible salvage CAPEX (requires numeric casting)
+  # --- CAPEX (Leasehold) ---
+  TOTALLEASEHOLD(txt) #Total leasehold CAPEX (requires numeric casting)
+  INTANGIBLELEASEHOLD(txt) #Intangible leasehold CAPEX (requires numeric casting)
+  TANGIBLELEASEHOLD(txt) #Tangible leasehold CAPEX (requires numeric casting)
+  # --- CAPEX (Legal) ---
+  TOTALLEGAL(txt) #Total legal CAPEX (requires numeric casting)
+  INTANGIBLELEGAL(txt) #Intangible legal CAPEX (requires numeric casting)
+  TANGIBLELEGAL(txt) #Tangible legal CAPEX (requires numeric casting)
+  # --- CAPEX (Other Investment) ---
+  TOTALOTHERINVESTMENT(txt) #Total other investment CAPEX (requires numeric casting)
+  INTANGIBLEOTHERINVESTMENT(txt) #Intangible other investment CAPEX (requires numeric casting)
+  TANGIBLEOTHERINVESTMENT(txt) #Tangible other investment CAPEX (requires numeric casting)
+  # --- Taxes ---
+  FEDERALINCOMETAX(txt) #Federal income tax
+  STATEINCOMETAX(txt) #State income tax
+  TAXABLEINCOME(txt) #Taxable income
+  ADVALOREMTAX(txt) #Ad valorem (property) tax
+  TOTALPRODUCTIONTAX(txt) #Total production tax
+  TOTALSEVERANCETAX(txt) #Total severance tax
+  OILSEVERANCETAX(txt) #Oil severance tax
+  GASSEVERANCETAX(txt) #Gas severance tax
+  NGLSEVERANCETAX(txt) #NGL severance tax
+  DRIPCONDENSATESEVERANCETAX(txt) #Drip condensate severance tax
+  # --- Accounting ---
+  DEPRECIATION(txt) #Depreciation expense
+  # --- Well Counts ---
+  GROSSWELLCOUNT(txt) #Gross well count
+  NRIWELLCOUNT(txt) #NRI well count
+  WIWELLCOUNT(txt) #Working interest well count
+  # --- Interest Percentages ---
+  NRIOIL(txt) #Net revenue interest for oil (decimal)
+  NRIGAS(txt) #Net revenue interest for gas (decimal)
+  NRINGL(txt) #Net revenue interest for NGL (decimal)
+  NRIDRIPCONDENSATE(txt) #Net revenue interest for drip condensate (decimal)
+  WIOIL(txt) #Working interest for oil (decimal)
+  WIGAS(txt) #Working interest for gas (decimal)
+  WINGL(txt) #Working interest for NGL (decimal)
+  WIDRIPCONDENSATE(txt) #Working interest for drip condensate (decimal)
+  LEASENRI(txt) #Lease net revenue interest (decimal)
+  # --- Production Characteristics ---
+  NGLYIELD(txt) #NGL yield (bbl/mmcf)
+  DRIPCONDENSATEYIELD(txt) #Drip condensate yield (bbl/mmcf)
+  OILLOSS(txt) #Oil loss percentage (decimal)
+  OILSHRINKAGE(txt) #Oil shrinkage factor (decimal)
+  GASLOSS(txt) #Gas loss percentage (decimal)
+  GASSHRINKAGE(txt) #Gas shrinkage factor (decimal)
+  GASFLARE(txt) #Gas flare percentage (decimal)
+  # --- Start Dates ---
+  OILSTARTUSINGFORECASTDATE(txt) #Oil start date using forecast date (requires casting)
+  GASSTARTUSINGFORECASTDATE(txt) #Gas start date using forecast date (requires casting)
+  WATERSTARTUSINGFORECASTDATE(txt) #Water start date using forecast date (requires casting)
+  # --- Metadata ---
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp

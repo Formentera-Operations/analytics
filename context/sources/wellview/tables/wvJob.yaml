@@ -1,0 +1,188 @@
+# wellview / operations_jobs / wvJob
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJob: A group of operational activities including dates, objectives, and summary. +parent
+  wvTyp(s100) #Job Category
+  JobTyp(s100) #Primary Job Type
+  JobSubTyp(s100) #Secondary Job Type
+  DtTmStartPlan(dt) #Planned Start Date
+  DtTmStart(dt) #Job Start Date
+  DtTmEnd(dt) #Job End Date
+  DtTmSpud(dt) #Spud Date
+  AFENumberCalc(s200_calc) #AFE Number
+  AFENumberSuppCalc(s200_calc) #Supplemental AFE Number
+  ProjectRefNumberCalc(s200_calc) #Project Ref #
+  Client(s50) #Engineer
+  ComplexityIndex(s50) #Complexity Index
+  Status1(s50) #Status 1
+  Status2(s50) #Status 2
+  Objective(txt2k) #Objective
+  ObjectiveGeo(txt2k) #Geological Objective
+  TargetDepth(dbl_m) #Target Depth
+  TargetDepthTVDCalc(dbl_m_calc) #Target Depth (TVD)
+  TargetForm(s50) #Target Formation
+  RateTargetOil(dbl_m3pd) #Target Oil Rate
+  RateTargetGas(dbl_m3pd) #Target Gas Rate
+  RateTargetCond(dbl_m3pd) #Target Cond Rate
+  RateTargetWater(dbl_m3pd) #Target Water Rate
+  ResponsibleGrp1(s50) #Responsible Grp 1
+  ResponsibleGrp2(s50) #Responsible Grp 2
+  ResponsibleGrp3(s50) #Responsible Grp 3
+  Summary(txt2k) #Summary
+  SummaryGeo(txt2k) #Geological Summary
+  ResultTechnical(s50) #Technical Result
+  ChartOfAccounts(s50) #Chart Of Accounts
+  CurrencyExchangeRate(dbl) #Currency Exchange Rate
+  CurrencyCode(s10) #Currency Code
+  CostFinalActual(dbl_cost) #Actual Final Job Cost
+  AFEAmtCalc(dbl_cost_calc) #Total AFE Amount
+  AFESupAmtCalc(dbl_cost_calc) #Total AFE Supplemental Amount
+  AFETotalCalc(dbl_cost_calc) #Total AFE + Supp Amount
+  CostTotalCalc(dbl_cost_calc) #Total Field Estimate
+  VarianceFieldCalc(dbl_cost_calc) #AFE - Field Est
+  VarianceFinalCalc(dbl_cost_calc) #AFE - Final Job Cost
+  MudCostCalc(dbl_cost_calc) #Total Mud Additive Field Est
+  JobSupplyCostCalc(dbl_cost_calc) #Total Job Supply Field Est
+  FinalInvoiceTotalCalc(dbl_cost_calc) #Total Final Invoice
+  VarianceAFEFinalCalc(dbl_cost_calc) #AFE - Final Invoice
+  VarianceFieldFinalCalc(dbl_cost_calc) #Field - Final Invoice
+  CostForecastCalc(dbl_cost_calc) #Forecast Amount
+  CostAFEForecastVarCalc(dbl_cost_calc) #AFE - Forecast
+  CostForecastFieldVarCalc(dbl_cost_calc) #Forecast - Field Est
+  AFECostTypCalc(s200_calc) #AFE Number - Cost Type
+  CostPerTLDurCalc(dbl_cpd_calc) #Cost/Hour
+  AFEPerDurMLCalc(dbl_cpd_calc) #AFE/Duration ML
+  AFEPerTargetDepthCalc(dbl_cpm_calc) #AFE/Target Depth
+  CostPerLateralCalc(dbl_cpm_calc) #Total Cost/Lateral Length
+  CostPerLateralAllCalc(dbl_cpm_calc) #Total Cost/Lateral Length (All)
+  AFEAmtNormCalc(dbl_cost_calc) #Normalized Total AFE Amount
+  AFESupAmtNormCalc(dbl_cost_calc) #Normalized Total AFE Supp Amount
+  AFETotalNormCalc(dbl_cost_calc) #Normalized Total AFE + Supp Amount
+  CostNormTotalCalc(dbl_cost_calc) #Normalized Total Field Est
+  VarianceNormFieldCalc(dbl_cost_calc) #Normalized AFE - Field Est
+  VarianceNormFinalCalc(dbl_cost_calc) #Normalized AFE - Final Job Cost
+  CostNormPerDepthCalc(dbl_cpm_calc) #Normalized Cost Per Depth Drilled
+  MudCostNormCalc(dbl_cost_calc) #Normalized Total Mud Additive Field Est
+  JobSupplyCostNormCalc(dbl_cost_calc) #Normalized Total Job Supply Field Est
+  FinalInvoiceTotalNormCalc(dbl_cost_calc) #Normalized Total Final Invoice
+  VarianceNormAFEFinalCalc(dbl_cost_calc) #Normalized AFE - Final Invoice
+  VarianceNormFieldFinalCalc(dbl_cost_calc) #Normalized Field - Final Invoice
+  CostNormForecastCalc(dbl_cost_calc) #Normalized Forecast Amount
+  CostPerTLDurNormCalc(dbl_cpd_calc) #Normalized Cost Per Hour
+  AFEPerDurMLNormCalc(dbl_cpd_calc) #Normalized AFE/Duration ML
+  AFEPerTargetDepthNormCalc(dbl_cpm_calc) #Normalized AFE/Target Depth
+  CostNormPerDepthPlanMLCalc(dbl_cpm_calc) #Normalized Planned ML Cost / Depth
+  MudCostPerDepthNormCalc(dbl_cpm_calc) #Normalized Total Mud Cost Per Depth Drilled
+  CostNormPerLateralCalc(dbl_cpm_calc) #Normalized Total Cost/Lateral Length
+  CostNormPerLateralAllCalc(dbl_cpm_calc) #Normalized Total Cost/Lateral Length (All)
+  CostNormAFEForecastVarCalc(dbl_cost_calc) #Normalized AFE - Forecast
+  CostNormForecastFieldVarCalc(dbl_cost_calc) #Normalized Forecast - Field
+  ROPSpudTimeLogCalc(dbl_mpd_calc) #Avg ROP from Spud Time
+  ROPTimeLogCalc(dbl_mpd_calc) #Avg ROP from Time Log
+  CostPerDepthCalc(dbl_cpm_calc) #Cost Per Depth Drilled
+  DtTmTotalDepthCalc(dt_calc) #Date TD Reached (wellbore)
+  TotalDepthCalc(dbl_m_calc) #Total Depth Reached (wellbore)
+  TotalDepthTVDCalc(dbl_m_calc) #Total Depth (TVD) Reached
+  TDtoMudCalc(dbl_m_calc) #TD (wellbore) - Mud Line
+  CostPerDepthPlanMLCalc(dbl_cpm_calc) #Planned ML Cost / Depth
+  MudCostPerDepthCalc(dbl_cpm_calc) #Total Mud Cost Per Depth Drilled
+  ReportNoCalc(dbl_calc) #Total Number of Reports
+  DurationSpudtoTDCalc(dbl_days_calc) #Spud to TD Duration
+  DurationTimeLogTotalCalc(dbl_days_calc) #Total Time Log Hours
+  DurationSpudTimeLogCalc(dbl_days_calc) #Total Time Log Hours (Spud to TD)
+  DurationSpudtoRRCalc(dbl_days_calc) #Spud to RR Duration
+  DurationNoProblemTimeCalc(dbl_days_calc) #Time Log - Problem Hours
+  DurationProblemTimeCalc(dbl_days_calc) #Total Problem Hours
+  PctProblemTimeCalc(dbl_pct_calc) #Problem Time
+  DurationILTCalc(dbl_days_calc) #Invisible Lost Time
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  DepthPlanMaxCalc(dbl_m_calc) #Planned Max Depth
+  RatioDepthActualPlanCalc(dbl_pct_calc) #Actual Depth/Planned Depth
+  RatioDepthActualTargetCalc(dbl_pct_calc) #Actual Depth/Target Depth
+  DepthDrilledSpudToRRCalc(dbl_mpd_calc) #Depth Drilled/(Spud to RR)
+  DepthDrilledPerReportNoCalc(dbl_m_calc) #Depth Drilled/Report #
+  DepthDrilledCalc(dbl_m_calc) #Total Depth Drilled
+  TmDrillCalc(dbl_days_calc) #Drilling Time
+  TmCircCalc(dbl_days_calc) #Circulating Time
+  TmOtherCalc(dbl_days_calc) #Other Time
+  TmTripCalc(dbl_days_calc) #Tripping Time
+  ROPCalc(dbl_mpd_calc) #Avg ROP
+  ROPAvgfromSpudCalc(dbl_mpd_calc) #Avg ROP from Spud
+  BitRevsCalc(dbl_calc) #Bit Revs
+  TmRotatingCalc(dbl_days_calc) #Rotating Time
+  TmSlidingCalc(dbl_days_calc) #Sliding Time
+  PercentTmRotatingCalc(dbl_pct_calc) #Rotating Time
+  PercentTmSlidingCalc(dbl_pct_calc) #Sliding Time
+  DepthRotatingCalc(dbl_m_calc) #Depth Rotating
+  DepthSlidingCalc(dbl_m_calc) #Depth Sliding
+  PercentDepthRotatingCalc(dbl_pct_calc) #% Rotating Depth
+  PercentDepthSlidingCalc(dbl_pct_calc) #% Sliding Depth
+  ROPRotatingCalc(dbl_mpd_calc) #Rotating ROP
+  ROPSlidingCalc(dbl_mpd_calc) #Sliding ROP
+  BHADrillRunCalc(dbl_calc) #BHA Drill Runs
+  BHATotalRunCalc(dbl_calc) #BHA Runs
+  DepthDrilledPerBHACalc(dbl_m_calc) #Depth Drilled/BHA Drill Runs
+  DepthPerRatioDurationCalc(dbl_m_calc) #DepthDrilled/(TL Hours/Ref Hours)
+  RatioDurTimeLogRefHoursCalc(dbl_calc) #Time Log Hours/Ref Hours
+  RateActualCond(dbl_m3pd) #Actual Cond Rate
+  RateActualGas(dbl_m3pd) #Actual Gas Rate
+  RateActualOil(dbl_m3pd) #Actual Oil Rate
+  RateActualWater(dbl_m3pd) #Actual Water Rate
+  SafetyIncNoCalc(dbl_calc) ## of Safety Incidents
+  SafetyIncReportNoCalc(dbl_calc) ## of Reportable Safety Incidents
+  HazardIDNoRptCalc(int_calc) #Number of Hazard IDs
+  DurationPersonnelRegCalc(dbl_days_calc) #Personnel Regular hours
+  DurationPersonnelOTCalc(dbl_days_calc) #Personnel OT Hours
+  DurationPersonnelTotCalc(dbl_days_calc) #Personnel Total Hours
+  DtTmEndPlanMLCalc(dt_calc) #Planned Most Likely End Date
+  DtTmEndPlanMinCalc(dt_calc) #Min Planned End Date
+  DtTmEndPlanMaxCalc(dt_calc) #Max Planned End Date
+  DurationMLTotalCalc(dbl_days_calc) #Most Likely Duration
+  DurationMinTotalCalc(dbl_days_calc) #Min Duration
+  DurationMaxTotalCalc(dbl_days_calc) #Max Duration
+  DurationTechLimitTotalCalc(dbl_days_calc) #Tech Limit Duration
+  DurMLTotalNoPlanChangeCalc(dbl_days_calc) #Most Likely Duration (no plan change)
+  CostMLTotalCalc(dbl_cost_calc) #Planned Most Likely Cost
+  CostMinTotalCalc(dbl_cost_calc) #Min Cost
+  CostMaxTotalCalc(dbl_cost_calc) #Max Cost
+  CostTechLimitTotalCalc(dbl_cost_calc) #Plan Tech Limit Cost
+  CostMLTotalNoPlanChangeCalc(dbl_cost_calc) #Planned Most Likely Cost (no plan change)
+  ProgramMudDensityMinCalc(dbl_kgpm3_calc) #Min Program Mud Density
+  ProgramMudDensityMaxCalc(dbl_kgpm3_calc) #Max Program Mud Density
+  DepthPerDurPlanMLCalc(dbl_mpd_calc) #Planned Depth / ML Duration
+  DtTmEndPlanTechLimitCalc(dt_calc) #Planned Tech Limit End Date
+  DurationSpudtoPlanMLCalc(dbl_days_calc) #Spud to Plan ML Duration
+  DurationSpudtoPlanTechLimCalc(dbl_days_calc) #Spud to Plan Tech Limit Duration
+  DurationSpudtoPlanMaxCalc(dbl_days_calc) #Spud to Plan Max Duration
+  DurationSpudtoPlanMinCalc(dbl_days_calc) #Spud to Plan Min Duration
+  CostMLNoExcludeCalc(dbl_cost_calc) #Cum ML Phase Cost (no exclude)
+  DurMLNoExcludeCalc(dbl_days_calc) #Cum ML Duration (no excludes)
+  EstTimeSaveCalc(dbl_days_calc) #Possible Time Savings
+  EstCostSaveCalc(dbl_cost_calc) #Possible Cost Savings
+  EstCostNormSaveCalc(dbl_cost_calc) #Normalized Possible Cost Savings
+  EstProblemTimeCalc(dbl_days_calc) #Estimated Problem Time
+  EstProblemCostCalc(dbl_cost_calc) #Estimated Problem Cost
+  EstProblemCostNormCalc(dbl_cost_calc) #Normalized Estimated Problem Cost
+  DtTmEndCalc(dt_calc) #Derived End Date
+  DurStartToEndCalc(dbl_days_calc) #Job Duration
+  MudTypCalc(s100_calc) #Mud Type
+  MudDensityMaxCalc(dbl_kgpm3_calc) #Max Mud Density
+  MudDensityMinCalc(dbl_kgpm3_calc) #Min Mud Density
+  IDRecWellBore(s32) #Primary Wellbore Affected
+  IDRecWellBoreCalc(s32_calc) #Wellbore
+  IDRecTub(s32) #Primary Tubing String  Affected
+  JobIDA(s50) #Job IDA
+  JobIDB(s50) #Job IDB
+  JobIDC(s50) #Job IDC
+  UserTxt1(s100) #User Text 1
+  UserTxt2(s100) #User Text 2
+  UserTxt3(s100) #User Text 3
+  UserTxt4(s100) #User Text 4
+  UserTxt5(s100) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserBoolean1(bool) #User Boolean 1
+  UserBoolean2(bool) #User Boolean 2

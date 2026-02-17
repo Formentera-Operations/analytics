@@ -1,0 +1,31 @@
+# wellview / zones_completions / wvCompletion
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvCompletion: A wellbore completion is comprised of one or more wellbore contact intervals ('Zone'). +parent
+  CompletionName(s50) #Surface Commingle Number
+  CompletionCode(s50) #Completion Code
+  DtTmOnProd(dt) #POP Date
+  DtTmAbandon(dt) #Abandon Date
+  DtTmStatusCalc(dt_calc) #Current Status Date
+  CurrentStatusCalc(s50_calc) #Current Status
+  DepthRefTop(dbl_m) #Reference Top Depth
+  DepthRefBtm(dbl_m) #Reference Bottom Depth
+  Com(txt2k) #Comment
+  CompletionLicenseNo(s50) #Completion License Number
+  CompletionLicensee(s50) #Completion Licensee
+  DtTmLicense(dt) #Completion License Date
+  FieldName(s50) #Field Name
+  FieldCode(s50) #Field Code
+  UnitName(s50) #Unit Name
+  UnitCode(s50) #Unit Code
+  CompletionIDA(s50) #Completion API #
+  CompletionIDB(s50) #Completion ID B
+  CompletionIDC(s50) #Completion ID C
+  CompletionIDD(s50) #Completion ID D
+  CompletionIDE(s50) #Completion ID E
+  CompIDPA(s50) #Production Accounting Identifier for Completion
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5

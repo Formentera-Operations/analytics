@@ -1,0 +1,12 @@
+# wellview / operations_jobs / wvJRPersCtRefDerrickCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRPersCtRefDerrickCalc: Summary of 'Daily Personnel Log.Head Count' and 'Daily Personnel Log.Regular Working Time' for this reporting period by 'Daily Personnel Log.Derric... +parent
+  RefDerrick(s50_calc) #Derrick Reference
+  CompanyTyp(s100_calc) #Type
+  HeadCount(int_calc) #Head Count
+  DurationWorkReg(dbl_days_calc) #Regular Work Hours
+  DurationWorkOT(dbl_days_calc) #OT Work Hours
+  DurationWorkTot(dbl_days_calc) #Total  Work Hours
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

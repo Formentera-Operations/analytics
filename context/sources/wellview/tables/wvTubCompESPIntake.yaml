@@ -1,0 +1,7 @@
+# wellview / tubing_rods_equipment / wvTubCompESPIntake
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompESPIntake: ESP intake detail information. +extension
+  GasSep(bool) #Integral Gas Separator?
+  CheckValve(bool) #Check Valve?
+  GasSepEff(dbl_pct) #Gas Separator Efficiency

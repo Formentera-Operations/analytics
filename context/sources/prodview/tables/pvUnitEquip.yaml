@@ -1,0 +1,38 @@
+# prodview / equipment / pvUnitEquip
+# Source: context/sources/prodview/domains/equipment.yaml
+#
+pvUnitEquip: Equipment +parent
+  Name(s50) #Equipment Name
+  Make(s50) #Make
+  Model(s50) #Model
+  Typ(s50) #Type
+  TypRecording(s50) #Recording Type
+  PowerRating(double, watt) #Power Rating
+  EnergySource(s50) #Energy Source
+  IDRecLoc(s32) #Equipment Location
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #MeasPtCode
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #DSCode
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  IDEquipment(s32) #Equipment Link
+  sysSeq(int) #Sequence

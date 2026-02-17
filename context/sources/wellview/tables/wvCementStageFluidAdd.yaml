@@ -1,0 +1,10 @@
+# wellview / casing_cement / wvCementStageFluidAdd
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCementStageFluidAdd: Additives in the cement stage fluid. +parent
+  Des(s100) #Additive
+  Typ(s100) #Type
+  Amount(dbl) #Amount
+  AmountUnitLabel(s10) #Amount Units
+  Conc(dbl) #Concentration
+  ConcUnitLbl(s10) #Conc Unit label

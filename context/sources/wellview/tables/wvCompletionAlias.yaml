@@ -1,0 +1,12 @@
+# wellview / zones_completions / wvCompletionAlias
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvCompletionAlias: History of completion ID changes. +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Typ1(s100) #ID Type
+  Typ2(s100) #ID Subtype
+  ChangeTyp(s100) #Change Type
+  Value(s50) #Value
+  Source(s50) #Source
+  Com(txt2k) #Comment

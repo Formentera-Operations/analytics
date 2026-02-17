@@ -1,0 +1,142 @@
+version: 2
+
+models:
+  - name: int_wellview__daily_cost_enriched
+    description: >
+      Enriches daily cost line items with report date, job context (category, type),
+      and dimensional FKs (job_sk, well EID). Ephemeral — compiles as CTE into
+      fct_daily_drilling_cost. Grain: one row per cost line item.
+    columns:
+      - name: daily_cost_sk
+        description: Surrogate key (MD5 hash of cost_line_id)
+      - name: job_sk
+        description: FK to dim_job surrogate key
+      - name: eid
+        description: Well entity identifier — FK to well_360
+      - name: cost_line_id
+        description: WellView cost line item natural key (IDRec)
+      - name: job_report_id
+        description: FK to stg_wellview__job_reports (daily report that contains this cost)
+      - name: well_id
+        description: WellView well GUID
+      - name: job_id
+        description: WellView job GUID (resolved via job_reports)
+      - name: report_date
+        description: Date the cost was incurred (cast from job report start datetime)
+      - name: job_category
+        description: "Job classification: Drilling, Completion, Facilities, or Well Servicing"
+      - name: job_type_primary
+        description: Primary job type (e.g., New Drill, Workover, Recompletion)
+      - name: field_estimate_cost
+        description: Cost amount for this line item (field estimate, base currency)
+      - name: cumulative_field_estimate_cost
+        description: Running cumulative field estimate cost
+      - name: main_account_id
+        description: Level 1 account code
+      - name: sub_account_id
+        description: Level 2 account code
+      - name: spend_category
+        description: Level 3 account code (spend category)
+      - name: expense_type
+        description: Level 4 account code (expense type)
+      - name: tangible_intangible
+        description: Level 5 account code (tangible vs intangible classification)
+      - name: afe_category
+        description: Level 6 account code (AFE category)
+      - name: account_name
+        description: Human-readable account description
+      - name: vendor_name
+        description: Vendor or supplier name
+      - name: vendor_code
+        description: Vendor identifier code
+      - name: ops_category
+        description: Operational category classification
+      - name: status
+        description: Cost line item status
+      - name: purchase_order_number
+        description: Associated purchase order number
+      - name: work_order_number
+        description: Associated work order number
+      - name: ticket_number
+        description: Associated ticket number
+      - name: source_synced_at
+        description: Stable source freshness watermark across daily costs, reports, and jobs
+      - name: _loaded_at
+        description: Timestamp when the record was loaded by dbt
+
+  - name: int_wellview__daily_drilling_enriched
+    description: >
+      Enriches WellView daily reports with rolled-up cost, time log, NPT, and safety
+      metrics at report grain. Ephemeral — compiles as CTE into fct_daily_drilling.
+      Grain: one row per daily report (report_id).
+    columns:
+      - name: daily_drilling_sk
+        description: Surrogate key (MD5 hash of report_id)
+      - name: job_sk
+        description: FK to dim_job surrogate key (MD5 hash of job_id)
+      - name: wellbore_sk
+        description: FK to dim_wellbore surrogate key (nullable when report has no wellbore_id)
+      - name: eid
+        description: Well entity identifier — FK to well_360
+      - name: report_id
+        description: WellView daily report natural key (IDRec)
+      - name: job_id
+        description: WellView job GUID
+      - name: well_id
+        description: WellView well GUID
+      - name: wellbore_id
+        description: WellView wellbore GUID associated with the report
+      - name: report_date
+        description: Daily report date (cast from report_start_datetime)
+      - name: report_number
+        description: WellView report number used for deterministic NPT/safety joins
+      - name: days_from_spud
+        description: Days elapsed from spud at report date
+      - name: cost_line_count
+        description: Number of cost line items attached to this report
+      - name: daily_field_estimate_cost
+        description: Sum of field estimate cost line amounts for this report
+      - name: time_log_entry_count
+        description: Number of active time log entries attached to this report
+      - name: daily_time_duration_hours
+        description: Sum of time log duration hours for this report
+      - name: daily_time_problem_hours
+        description: Sum of time log NPT/problem hours for this report
+      - name: daily_time_no_problem_hours
+        description: Sum of time log non-problem hours for this report
+      - name: daily_on_bottom_minutes
+        description: Sum of on-bottom minutes for this report
+      - name: daily_off_bottom_minutes
+        description: Sum of off-bottom minutes for this report
+      - name: daily_pipe_moving_minutes
+        description: Sum of pipe-moving minutes for this report
+      - name: time_join_used_report_number_fallback
+        description: True when time-log rows were attributed via (job_id, report_number) because job_report_id was null
+      - name: time_join_used_date_fallback
+        description: True when time-log rows were attributed via canonical (job_id, report_date) fallback because job_report_id and report_number were null
+      - name: npt_event_count
+        description: Count of NPT interval problem records attributed to this report
+      - name: daily_npt_gross_hours
+        description: Sum of NPT gross duration hours for this report
+      - name: daily_npt_net_hours
+        description: Sum of NPT net duration hours for this report
+      - name: daily_npt_cost
+        description: Sum of NPT problem cost for this report
+      - name: npt_join_used_date_fallback
+        description: True when NPT rows with null report_number were attributed via canonical (job_id, report_date)
+      - name: safety_event_count
+        description: Count of safety checks and incidents attributed to this report
+      - name: safety_check_count
+        description: Count of safety checks attributed to this report
+      - name: safety_incident_count
+        description: Count of safety incidents attributed to this report
+      - name: safety_lost_time_hours
+        description: Sum of lost time hours from safety incidents for this report
+      - name: safety_estimated_cost
+        description: Sum of estimated safety incident cost for this report
+      - name: safety_join_used_date_fallback
+        description: True when safety rows with null report_number were attributed via canonical (job_id, report_date)
+      - name: source_synced_at
+        description: Stable source freshness watermark across all joined source sets
+      - name: _loaded_at
+        description: Timestamp when the report row was loaded by dbt in staging

@@ -1,0 +1,7 @@
+# wellview / operations_jobs / wvJobApprovalStepRevAction
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApprovalStepRevAction: Follow up action required in the 'Approval Process Step Approve' +parent
+  ActionRequired(bool) #Action Required?
+  IDRecIssue(s32) #Issue of Concern
+  Reason(s100) #Reason

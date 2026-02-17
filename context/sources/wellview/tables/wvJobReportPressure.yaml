@@ -1,0 +1,12 @@
+# wellview / operations_jobs / wvJobReportPressure
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportPressure: Daily pressure values. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  DtTm(dt) #Date
+  Typ1(s100) #Pressure Type
+  Typ2(s100) #Pressure Subtype
+  Des(s100) #Description
+  Pres(dbl_kPa) #Pressure
+  IDRecString(s32) #String
+  Note(s255) #Note

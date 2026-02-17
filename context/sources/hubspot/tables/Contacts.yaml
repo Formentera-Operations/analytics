@@ -1,0 +1,185 @@
+# HubSpot Contacts — Column Reference
+#
+# Source: FO_RAW_DB.HUBSPOT_RAW.CONTACTS
+# Rows: 19,174
+# Ingestion: Portable (full snapshots)
+# Last audited: 2026-02-15
+#
+# Population rates are for non-archived records.
+# Properties are extracted from VARIANT column via properties:KEY_NAME::type
+
+table_name: CONTACTS
+primary_key: ID
+soft_delete: ARCHIVED (boolean)
+
+top_level_columns:
+  - name: ID
+    type: TEXT
+    description: Unique contact identifier (HubSpot internal ID)
+    population: 100%
+
+  - name: ARCHIVED
+    type: BOOLEAN
+    description: Soft delete flag — true means record is archived/deleted
+    population: 100%
+
+  - name: CREATEDAT
+    type: TIMESTAMP_NTZ
+    description: When the contact record was created in HubSpot
+    population: 100%
+
+  - name: UPDATEDAT
+    type: TIMESTAMP_NTZ
+    description: When the contact record was last updated
+    population: 100%
+
+  - name: URL
+    type: TEXT
+    description: HubSpot URL for the contact record
+    population: 100%
+
+  - name: _PORTABLE_EXTRACTED
+    type: TIMESTAMP_NTZ
+    description: Portable extraction timestamp
+    population: 100%
+
+properties:
+  # -- Identity --
+  - name: FIRSTNAME
+    type: string
+    description: Contact first name
+    population: 75.7%
+    staging_name: first_name
+
+  - name: LASTNAME
+    type: string
+    description: Contact last name
+    population: 72.8%
+    staging_name: last_name
+
+  - name: EMAIL
+    type: string
+    description: Primary email address
+    population: 94.5%
+    staging_name: email
+
+  - name: HS_EMAIL_DOMAIN
+    type: string
+    description: Email domain extracted from primary email
+    population: 94.5%
+    staging_name: email_domain
+
+  - name: PHONE
+    type: string
+    description: Primary phone number
+    population: 49.5%
+    staging_name: phone
+
+  - name: MOBILEPHONE
+    type: string
+    description: Mobile phone number
+    population: 5.0%
+    staging_name: mobile_phone
+
+  - name: JOBTITLE
+    type: string
+    description: Job title or role
+    population: 14.5%
+    staging_name: job_title
+
+  # -- Company Association --
+  - name: ASSOCIATEDCOMPANYID
+    type: string
+    description: >
+      ID of the associated company record. Links contact to company via
+      companies.ID. 43.9% populated — many older imports lack association.
+    population: 43.9%
+    staging_name: associated_company_id
+
+  # -- Address --
+  - name: ADDRESS
+    type: string
+    description: Full mailing address (may differ from structured address fields)
+    population: 15.7%
+    staging_name: address
+
+  - name: CITY
+    type: string
+    description: City
+    population: 33.1%
+    staging_name: city
+
+  - name: STATE
+    type: string
+    description: State
+    population: 33.0%
+    staging_name: state
+
+  - name: ZIP
+    type: string
+    description: ZIP/postal code
+    population: 32.9%
+    staging_name: zip
+
+  - name: COUNTRY
+    type: string
+    description: Country
+    population: 17.9%
+    staging_name: country
+
+  # -- Revenue/Statements --
+  - name: REV_STATEMENT_DELIVERY
+    type: string
+    description: Revenue statement delivery preference
+    population: 10.6%
+    staging_name: rev_statement_delivery
+
+  - name: REV_STATEMENT_EMAIL
+    type: string
+    description: Email address for revenue statement delivery
+    population: 10.5%
+    staging_name: rev_statement_email
+
+  # -- HubSpot System --
+  - name: HUBSPOT_OWNER_ID
+    type: string
+    description: HubSpot internal owner (sales rep) assigned to this contact
+    population: 40.8%
+    staging_name: hubspot_owner_id
+
+  - name: LIFECYCLESTAGE
+    type: string
+    description: HubSpot lifecycle stage
+    population: 27.3%
+    staging_name: lifecycle_stage
+
+  - name: HS_WAS_IMPORTED
+    type: boolean
+    description: Whether the record was imported (vs created in HubSpot UI)
+    population: 32.8%
+    staging_name: is_imported
+
+  - name: LASTMODIFIEDDATE
+    type: timestamp
+    description: Last modification timestamp from HubSpot
+    population: 100%
+    staging_name: last_modified_at
+
+  - name: CREATEDATE
+    type: timestamp
+    description: Creation timestamp from HubSpot properties
+    population: 100%
+    staging_name: created_at
+
+dropped_properties:
+  # HubSpot analytics (not relevant to ORM):
+  # HS_ANALYTICS_* fields, HS_SOCIAL_* clicks, page views, visits
+  #
+  # HubSpot system metadata (internal use):
+  # HS_OBJECT_SOURCE*, HS_ALL_*_IDS, HS_USER_IDS_*, HS_IS_CONTACT,
+  # HS_IS_UNWORKED, HS_PIPELINE, HS_REGISTERED_MEMBER, HS_SEQUENCES_*,
+  # HS_PROSPECTING_AGENT_*, HS_FULL_NAME_OR_EMAIL
+  #
+  # Low population (<1%) and not business-critical:
+  # FAX (4.3%), ADDRESS_LINE_TWO (1.2%), IP_* fields, HS_EMAIL_* fields,
+  # CLOSEDATE, DAYS_TO_CLOSE, COMPANY (text field, 0.0%)

@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJPersCtSumCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPersCtSumCalc: Summary of 'Daily Personnel Log' grouped by 'Daily Personnel Log.Type'. +parent
+  CompanyTyp(s100_calc) #Type
+  HeadCount(int_calc) #Head Count
+  DurationWorkReg(dbl_days_calc) #Regular Work Hours
+  DurationWorkOT(dbl_days_calc) #OT Work Hours
+  DurationWorkTot(dbl_days_calc) #Total  Work Hours
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

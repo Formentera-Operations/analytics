@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJRSafetyChkDesCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRSafetyChkDesCalc: Summary of 'Safety Check'  records during the job. +parent
+  Typ(s100_calc) #Type
+  Des(s100_calc) #Description
+  Frequency(dbl_calc) #Number of Occurrences
+  LastDtTm(dt_calc) #Last Date
+  DurationSinceLastChk(dbl_days_calc) #Days Since Last Check
+  NextDtTm(dt_calc) #Next Check Date
+  DurationNextChk(dbl_days_calc) #Days Until Next Check
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

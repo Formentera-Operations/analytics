@@ -1,0 +1,35 @@
+# prodview / meters / pvUnitMeterVirtual
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterVirtual: Virtual Meters +parent | A virtual meter that allows entry of all products. May be real or not a real meter. Can be used as a
+  Name(s50) #Name
+  TypRecording(s50) #Recording Type
+  LocMeas(s50) #Location
+  UOMVolHCLiq(s20) #Volume Units Oil/Cond
+  UOMVolGas(s20) #Volume Units Gas
+  UOMVolWater(s20) #Volume Units Water
+  UOMVolSand(s20) #Volume Units Sand
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

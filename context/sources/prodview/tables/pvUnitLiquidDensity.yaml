@@ -1,0 +1,9 @@
+# prodview / fluid_analysis / pvUnitLiquidDensity
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvUnitLiquidDensity: Liquid Densities +parent | Density of oil, water and sand for products ticketed out of 'Unit'. Used for calculation of volumes 
+  DtTm(dt) #Effective Date
+  DensityHCLiq(dbl_kgpm3) #Density Oil/Condensate
+  DensityWater(dbl_kgpm3) #Density Water
+  DensitySand(dbl_kgpm3) #Density Sand
+  Com(txt255) #Note

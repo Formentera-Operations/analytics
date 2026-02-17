@@ -1,0 +1,54 @@
+# wellview / operations_jobs / wvJobRig
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRig: General rig information including contractor, start and release dates. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Contractor(s50) #Contractor
+  ContractorParent(s50) #Contractor Parent
+  RigNo(s50) #Rig Number
+  IDRecJobContactContractor(s32) #Rig Supervisor
+  DateORTyp(s100) #Date Override
+  DtTmStart(dt) #Rig Start Date
+  DtTmEnd(dt) #Rig Release Date
+  DurCalc(dbl_days_calc) #Rig Duration
+  Typ1(s100) #Rig Type
+  Typ2(s100) #Rig  Subtype
+  ContractTyp(s100) #Contract Type
+  RigRateRef(dbl_cpd) #Rig Rate (ref)
+  Registration(s100) #Rig Registration Country
+  DtTmStartORCalc(dt_calc) #Earliest Start Date
+  DtTmEndORCalc(dt_calc) #Latest End Date
+  Com(txt2k) #Comment
+  Purpose(s100) #Purpose
+  RefHeight(dbl_m) #Reference Height
+  RotarySystem(s50) #Rotary System
+  HookLoadMax(dbl_N) #Max Hook Load
+  WeightBlock(dbl_N) #Block Weight
+  TorqueMax(dbl_Nm) #Max Torque
+  DepthMax(dbl_m) #Rated Depth
+  HeightMastClearance(dbl_m) #Mast Clearance Height
+  HeightSubClear(dbl_m) #Sub Clearance Height
+  SetBackCapacity(dbl_kg) #Setback Capacity
+  TransportLoads(int) ## Loads to Transport
+  InventoryNo(s10) #Inventory #
+  SzIDKillLine(dbl_m) #Kill Line ID Size
+  LengthKillLine(dbl_m) #Length Kill Line
+  SzIDChokeLine(dbl_m) #Choke Line ID Size
+  LengthChokeLine(dbl_m) #Length Choke Line
+  VolSurfLine(dbl_m3) #Vol Surf Line
+  VolKillLineCalc(dbl_m3_calc) #Vol Kill Line
+  VolChokeLineCalc(dbl_m3_calc) #Vol Choke Line
+  DerrickTyp(s100) #Derrick Type
+  DrawWorkTyp(s100) #Draw Work Type
+  DrawWorkMake(s100) #Draw Work Make
+  DrawWorkModel(s100) #Draw Work Model
+  PowerTyp(s100) #Power Type
+  Power(dbl_W) #Power
+  WaterDepthMax(dbl_m) #Max Rated Water Depth
+  PosTyp(s100) #Positioning System Type
+  SlipJtExtMax(dbl_m) #Max Slip Jt Ext
+  MaxVariableLoad(dbl_N) #Max Variable Load
+  AnchorNo(int) #Number of Anchors
+  AnchorTyp(s100) #Anchor Type
+  AnchorLineTyp(s100) #Anchor Line Type
+  AnchorMaxTension(dbl_N) #Max Anchor Tension

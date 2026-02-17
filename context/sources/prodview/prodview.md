@@ -4,7 +4,7 @@
 
 Peloton ProdView is Formentera's **production accounting and surveillance system**. It tracks daily/monthly production volumes, well completions, artificial lift equipment, tank inventories, meter readings, and allocation calculations. It is the **system of record for operated production volumes**.
 
-- **Vendor:** Peloton (now part of Quorum)
+- **Vendor:** Peloton
 - **Version:** ProdView 5.0
 - **Snowflake database:** `PELOTON_FORMENTERAOPS_FORMENTERAOPS_PV30`
 - **Snowflake schema:** `FORMENTERAOPS_PV30_DBO`

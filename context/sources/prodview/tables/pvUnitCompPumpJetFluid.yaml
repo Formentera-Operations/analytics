@@ -1,0 +1,17 @@
+# prodview / artificial_lift / pvUnitCompPumpJetFluid
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpJetFluid: Jet Pump Fluid +parent
+  DtTm(dt) #Date
+  Typ(s50) #Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  Com(txt2k) #Note

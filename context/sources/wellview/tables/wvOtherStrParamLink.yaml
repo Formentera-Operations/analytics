@@ -1,0 +1,6 @@
+# wellview / tubing_rods_equipment / wvOtherStrParamLink
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherStrParamLink: Link the operational parameter to the 'Perforation' and/or 'Other In Hole' +parent
+  IDRecItem(s32) #Link
+  Note(s255) #Note

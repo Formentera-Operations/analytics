@@ -1,0 +1,13 @@
+# wellview / asset_management / wvLegalStatus
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvLegalStatus: Legal status of the well. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RefNo(s50) #Reference #
+  ContactName(s50) #Contact Name
+  Status(s50) #Status
+  Com(txt2k) #Comment

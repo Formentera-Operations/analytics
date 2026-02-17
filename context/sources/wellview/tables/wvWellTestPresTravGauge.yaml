@@ -1,0 +1,18 @@
+# wellview / reservoir_tests / wvWellTestPresTravGauge
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestPresTravGauge: Gauge details including make, model, pressure & temperature ratings. +parent
+  Des(s100) #Description
+  Typ(s100) #Type
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  DtTmLastCal(dt) #Last Cal Date
+  PresRange(dbl_kPa) #Pressure Range
+  PresResolution(dbl_kPa) #Pressure Resolution
+  PresAccuracy(dbl_kPa) #Pressure Accuracy
+  TempRange(dbl_degC) #Temp Range
+  TempResolution(dbl_degC) #Temp Resolution
+  TempAccuracy(dbl_degC) #Temp Accuracy
+  Com(txt50) #Comment
+  RefID(s50) #Reference ID

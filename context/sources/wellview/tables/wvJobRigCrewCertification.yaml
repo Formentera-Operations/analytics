@@ -1,0 +1,15 @@
+# wellview / operations_jobs / wvJobRigCrewCertification
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigCrewCertification: Crew training details. +parent
+  DtTm(dt) #Date of Training/Certification
+  DtTmExpiry(dt) #Expiry Date
+  Typ1(s100) #Training Type
+  Typ2(s100) #Training Subtype
+  Des(s100) #Description
+  RefNo(s50) #Reference #
+  DurTraining(dbl_days) #Hours of Training
+  Com(txt2k) #Comment
+  Company(s100) #Training Company
+  CompanyContact(s50) #Training Company Contact
+  CompanyContactTitle(s50) #Training Contact Title

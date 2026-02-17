@@ -1,0 +1,34 @@
+# wellview / reservoir_tests / wvWellTestLogProdData
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestLogProdData: Production log test data by zone. +parent
+  RunNo(int) #Run #
+  PresTyp(s100) #Static or Flowing
+  TripDir(s20) #Trip Direction
+  TripSpeed(dbl_mpd) #Trip Speed
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecWellbore(s32) #Wellbore
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DepthDatum(dbl_m) #Datum Depth
+  DepthSSDatum(dbl_m) #Datum Depth (TVD SS) Override
+  DepthTVDDatumCalc(dbl_m_calc) #Datum Depth (TVD)
+  DepthMPPCalc(dbl_m_calc) #MPP Depth
+  DepthTVDMPPCalc(dbl_m_calc) #MPP Depth (TVD)
+  Note(s255) #Note
+  FlowContribution(dbl_pct) #Contribution
+  RPS(dbl) #RPS
+  RPSContribution(dbl_pct) #RPS Per Zone
+  RPSDelta(dbl) #Delta RPS
+  Temp(dbl_degC) #Temperature
+  RateOil(dbl_m3pd) #Downhole Oil Rate
+  RateGas(dbl_m3pd) #Downhole Gas Rate
+  RateWater(dbl_m3pd) #Downhole Water Rate
+  RateCond(dbl_m3pd) #Downhole Cond Rate
+  PresMPP(dbl_kPa) #MPP Pressure
+  PresGradient(dbl_kPapm) #Observed Pressure Gradient
+  PresDatumGradient(dbl_kPapm) #Datum Pressure Gradient
+  PresDatumGradientDes(s100) #Datum Pressure Gradient Source
+  PresDatumCalc(dbl_kPa_calc) #Datum Pressure

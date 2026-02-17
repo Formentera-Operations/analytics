@@ -1,0 +1,9 @@
+# prodview / reference / pvOpenStateTank
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvOpenStateTank: Tank Opening Inventories +parent | The Tank Opening Inventories table provides a tank’s opening inventory for a particular day to start
+  IDRecTank(s32) #Tank
+  VolHCLiq(dbl_m3) #Oil/Condensate Volume
+  VolGas(dbl_m3) #Gas Volume
+  VolWater(dbl_m3) #Water Volume
+  VolSand(dbl_m3) #Sand Volume

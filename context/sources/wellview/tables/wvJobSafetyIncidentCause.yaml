@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobSafetyIncidentCause
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobSafetyIncidentCause: Analysis of the cause of the safety incident. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s255) #Description
+  RefNo(s20) #Reference #
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  Com(txt2k) #Comment
+  ActionRqd(bool) #Action Required?

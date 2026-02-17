@@ -1,0 +1,22 @@
+# wellview / operations_jobs / wvJobAFECost
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobAFECost: Breakdown of AFE costs by code. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  Des(s100) #Account Name
+  Code1(s100) #Main Account ID
+  Code2(s100) #Sub Account ID
+  Code3(s100) #AFE Category
+  Code4(s100) #Expense Type
+  Code5(s100) #Tangible / Intangible
+  Code6(s100) #Code 6
+  Amount(dbl_cost) #AFE Amount
+  AmountSupp(dbl_cost) #Supplemental Amount
+  AmountSuppDtTm(dt) #Supplemental Date
+  AFENumberSuppRev(s50) #Supplemental AFE # Revision
+  Note(s255) #Note
+  IDRecPhaseCustom(s32) #Phase
+  DtTmForecast(dt) #Forecast Date
+  Forecast(dbl_cost) #Forecast Amount
+  DtTmForecastSpend(dt) #Forecast Spend Date
+  Justification(txt2k) #Justification

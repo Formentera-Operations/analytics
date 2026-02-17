@@ -1,0 +1,14 @@
+# prodview / completions / pvUnitTestSep
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitTestSep: Test Separators +parent
+  Name(s50) #Separator Name
+  Typ(s50) #Type
+  LocProvTap(s50) #Proving Tap Location
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  sysSeq(int) #Sequence

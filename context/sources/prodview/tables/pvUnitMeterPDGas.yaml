@@ -1,0 +1,40 @@
+# prodview / meters / pvUnitMeterPDGas
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterPDGas: Gas PD Meters +parent | You can record any gas PD (positive displacement) meters that are used in the unit to measure gas vo
+  Name(s50) #Meter Name
+  UOMVol(s20) #Reading Units
+  TypRecording(s50) #Recording Type
+  LocProvTap(s50) #Proving Tap Location
+  TempBase(dbl_degC) #Meter Base Temperature
+  PresBase(dbl_kPa) #Meter Base Pressure
+  CorrPresTemp(bool) #Correct to Network Pres and Temp
+  RezeroStart(bool) #Zero Start
+  ReadingRollover(dbl) #Reading Rollover Value
+  EstMissingDay(bool) #Estimate Missing Days?
+  IdealGas(bool) #Assume Ideal Gas
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  IDRecUnitNodeCalc(s32_calc) #Node
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence

@@ -1,0 +1,1768 @@
+version: 2
+
+models:
+  # ──────────────────────────────────────────────────────────────────────
+  # REFACTORED MODELS (5-CTE pattern) — full column documentation
+  # ──────────────────────────────────────────────────────────────────────
+
+  - name: stg_wellview__jobs
+    description: >
+      Job staging from WellView. One row per drilling/completions/workover job.
+      Source: WVT_WVJOB (CALC schema). Contains calc rollup columns for
+      drilling performance, costs, durations, and AFE summaries.
+    columns:
+      - name: job_sk
+        description: "Surrogate key (MD5 hash of job_id)"
+      - name: job_id
+        description: "WellView job GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_id
+        description: "Wellbore GUID (IDRECWELLBORE)"
+      - name: job_category
+        description: "High-level job category (e.g., Drilling, Completions, Workover)"
+      - name: job_type_primary
+        description: "Primary job type classification"
+      - name: job_type_secondary
+        description: "Secondary job type classification"
+      - name: job_start_at
+        description: "Actual job start datetime"
+      - name: job_end_at
+        description: "Actual job end datetime"
+      - name: spud_at
+        description: "Spud datetime — when drilling began"
+      - name: target_depth_ft
+        description: "Planned target depth in feet (converted from meters)"
+      - name: total_depth_ft
+        description: "Calculated total depth reached in feet"
+      - name: rop_ft_per_hr
+        description: "Rate of penetration in ft/hr (converted from m/s)"
+      - name: afe_number
+        description: "AFE number associated with this job (calc rollup)"
+      - name: cost_final_actual
+        description: "Actual final job cost"
+      - name: total_field_estimate
+        description: "Total field estimate cost (calc rollup from daily costs)"
+      - name: status_primary
+        description: "Primary job status"
+
+  - name: stg_wellview__job_reports
+    description: >
+      Daily report staging from WellView. One row per daily operations report.
+      Source: WVT_WVJOBREPORT (CALC schema). Contains depths, drilling rates,
+      costs, mud volumes, gas readings, safety metrics, and schedule projections.
+    columns:
+      - name: job_report_sk
+        description: "Surrogate key (MD5 hash of report_id)"
+      - name: report_id
+        description: "WellView daily report GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: report_start_datetime
+        description: "Report period start datetime"
+      - name: report_end_datetime
+        description: "Report period end datetime"
+      - name: report_number
+        description: "Sequential report number within the job"
+      - name: report_day
+        description: "Day number within the job"
+      - name: end_depth_ft
+        description: "Depth at end of report period in feet"
+      - name: rop_ft_per_hr
+        description: "Rate of penetration in ft/hr for this report period"
+      - name: total_cost
+        description: "Total daily cost for this report period"
+      - name: cost_to_date
+        description: "Cumulative cost to date through this report"
+      - name: operations_summary
+        description: "Free-text operations summary for the report period"
+      - name: wellbore_id
+        description: "Current wellbore GUID (calc)"
+      - name: job_program_phase_id
+        description: "Current program phase GUID (calc)"
+
+  - name: stg_wellview__job_time_log
+    description: >
+      Time log staging from WellView. One row per time log entry within a daily
+      report. Source: WVT_WVJOBTIMELOG (CALC schema). Contains activity codes,
+      durations, depths, ROP, and problem time flags.
+    columns:
+      - name: job_time_log_sk
+        description: "Surrogate key (MD5 hash of time_log_id)"
+      - name: time_log_id
+        description: "WellView time log GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: start_datetime
+        description: "Activity start datetime"
+      - name: end_datetime
+        description: "Activity end datetime"
+      - name: duration_hours
+        description: "Activity duration in hours (converted from days)"
+      - name: time_log_code_1
+        description: "Primary activity code"
+      - name: time_log_code_2
+        description: "Secondary activity code"
+      - name: ops_category
+        description: "Operational category classification"
+      - name: start_depth_ft
+        description: "Depth at activity start in feet"
+      - name: end_depth_ft
+        description: "Depth at activity end in feet"
+      - name: rop_ft_per_hour
+        description: "Rate of penetration in ft/hr for this activity"
+      - name: is_problem_time
+        description: "Whether this activity is classified as non-productive time"
+      - name: job_report_id
+        description: "Parent daily report GUID (calc)"
+      - name: wellbore_id
+        description: "Wellbore GUID"
+
+  - name: stg_wellview__rigs
+    description: >
+      Rig assignment staging from WellView. One row per rig assignment to a job.
+      Source: WVT_WVJOBRIG (CALC schema). Contains contractor, rig specs,
+      equipment capacity, surface lines, and duration.
+    columns:
+      - name: rig_sk
+        description: "Surrogate key (MD5 hash of job_rig_id)"
+      - name: job_rig_id
+        description: "WellView rig assignment GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: proposed_or_actual
+        description: "Whether rig assignment is proposed or actual"
+      - name: rig_contractor
+        description: "Rig contractor company name"
+      - name: rig_number
+        description: "Rig number identifier"
+      - name: rig_type
+        description: "Primary rig type classification"
+      - name: rig_start_datetime
+        description: "Rig assignment start datetime"
+      - name: rig_end_datetime
+        description: "Rig assignment end datetime"
+      - name: rig_duration_hours
+        description: "Total rig assignment duration in hours (converted from days)"
+      - name: max_rated_depth_ft
+        description: "Maximum rated depth for the rig in feet"
+      - name: max_hook_load_klbf
+        description: "Maximum hook load capacity in thousands of lbf"
+      - name: power_rating_hp
+        description: "Rig power rating in horsepower"
+
+  - name: stg_wellview__daily_costs
+    description: >
+      Daily cost line item staging from WellView. One row per cost entry on a
+      daily report. Source: WVT_WVJOBREPORTCOSTGEN (CALC schema). Contains
+      cost amounts, 6-level account coding, vendor info, and PO references.
+    columns:
+      - name: daily_cost_sk
+        description: "Surrogate key (MD5 hash of cost_line_id)"
+      - name: cost_line_id
+        description: "WellView cost line GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_report_id
+        description: "Parent daily report GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: field_estimate_cost
+        description: "Daily cost amount (field estimate)"
+      - name: cumulative_field_estimate_cost
+        description: "Cumulative field estimate cost through this report"
+      - name: main_account_id
+        description: "Primary account code (code1)"
+      - name: sub_account_id
+        description: "Sub-account code (code2)"
+      - name: spend_category
+        description: "Spend category code (code3)"
+      - name: expense_type
+        description: "Expense type code (code4)"
+      - name: tangible_intangible
+        description: "Tangible/intangible classification (code5)"
+      - name: afe_category
+        description: "AFE category code (code6)"
+      - name: account_name
+        description: "Cost account description"
+      - name: vendor_name
+        description: "Vendor/supplier name"
+      - name: ops_category
+        description: "Operational category classification"
+
+  - name: stg_wellview__job_afe_definitions
+    description: >
+      AFE definition staging from WellView. One row per AFE linked to a job.
+      Source: WVT_WVJOBAFE (CALC schema). Contains AFE amounts (gross,
+      normalized, net), field estimates, forecasts, final invoices, and variances.
+    columns:
+      - name: job_afe_sk
+        description: "Surrogate key (MD5 hash of job_afe_id)"
+      - name: job_afe_id
+        description: "WellView AFE GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: job_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: afe_number
+        description: "AFE number"
+      - name: supplemental_afe_number
+        description: "Supplemental AFE number"
+      - name: afe_status
+        description: "AFE approval/workflow status"
+      - name: afe_date
+        description: "AFE creation or approval date"
+      - name: afe_close_date
+        description: "AFE close date"
+      - name: working_interest_percent
+        description: "Working interest percentage (converted from proportion)"
+      - name: total_afe_amount
+        description: "Gross total AFE amount (calc rollup)"
+      - name: total_afe_plus_supplemental_amount
+        description: "Gross AFE + supplemental amount (calc rollup)"
+      - name: total_field_estimate
+        description: "Total field estimate rolled up from daily costs"
+      - name: forecast_amount
+        description: "Forecasted total cost"
+      - name: total_final_invoice
+        description: "Total final invoice amount"
+
+  - name: stg_wellview__job_program_phases
+    description: >
+      Program phase staging from WellView. One row per planned/actual phase within
+      a job. Source: WVT_WVJOBPROGRAMPHASE (CALC schema). Contains phase
+      classifications, planned vs actual depths/durations/costs, and drilling
+      performance metrics per phase.
+    columns:
+      - name: job_program_phase_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      - name: record_id
+        description: "WellView program phase GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: wellbore_id
+        description: "Wellbore GUID (IDRECWELLBORE)"
+      - name: phase_type_1
+        description: "Primary phase type code"
+      - name: combined_phase_types
+        description: "Concatenation of all phase type codes"
+      - name: description
+        description: "Phase description text"
+      - name: planned_likely_duration_days
+        description: "Most-likely planned duration in days"
+      - name: planned_likely_phase_cost
+        description: "Most-likely planned phase cost"
+      - name: planned_start_depth_ft
+        description: "Planned start depth in feet (converted from meters)"
+      - name: planned_end_depth_ft
+        description: "Planned end depth in feet (converted from meters)"
+      - name: actual_start_date
+        description: "Actual phase start datetime"
+      - name: actual_end_date
+        description: "Actual phase end datetime"
+      - name: actual_duration_days
+        description: "Actual phase duration in days"
+      - name: actual_phase_field_est
+        description: "Actual phase field estimate cost"
+
+  - name: stg_wellview__job_interval_problems
+    description: >
+      Interval problem (NPT) staging from WellView. One row per non-productive
+      time event. Source: WVT_WVJOBINTERVALPROBLEM (CALC schema). Contains
+      problem categorization, severity, durations, depths, and cost impacts.
+    columns:
+      - name: job_interval_problem_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      - name: record_id
+        description: "WellView interval problem GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent job GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: major_category
+        description: "High-level problem category"
+      - name: problem_type
+        description: "Problem type classification"
+      - name: problem_subtype
+        description: "Problem subtype detail"
+      - name: severity
+        description: "Severity rating of the problem"
+      - name: status
+        description: "Current problem status"
+      - name: start_date
+        description: "Problem event start datetime"
+      - name: end_date
+        description: "Problem event end datetime"
+      - name: start_depth_ft
+        description: "Depth at problem start in feet (converted from meters)"
+      - name: problem_duration_gross_hours
+        description: "Gross problem duration in hours (converted from days)"
+      - name: problem_duration_net_hours
+        description: "Net problem duration in hours (after adjustments)"
+      - name: estimated_lost_time_hours
+        description: "Estimated lost time in hours"
+      - name: problem_cost
+        description: "Calculated cost of the problem event"
+
+  # ==========================================================================
+  # stg_wellview__daily_personnel_logs
+  # ==========================================================================
+  - name: stg_wellview__daily_personnel_logs
+    description: >
+      Daily personnel log staging from WellView. One row per personnel entry
+      on a daily report. Source: WVT_WVJOBREPORTPERSONNELCOUNT (CALC schema).
+      Tracks employee headcounts, working hours (regular, overtime, total),
+      and company/contractor information per report. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: daily_personnel_log_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      # -- identifiers
+      - name: record_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_report_id
+        description: "Parent daily report GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: sequence_number
+        description: "Display sequence order within the report. WellView: SYSSEQ"
+      # -- personnel information
+      - name: employee_name
+        description: "Name of the employee or position. WellView: EMPLOYEENAME"
+      - name: employee_type
+        description: "Employee type classification (e.g., Company Man, Driller). WellView: EMPLOYEETYP"
+      - name: company_name
+        description: "Company or contractor name. WellView: COMPANY"
+      - name: company_type
+        description: "Company type classification (e.g., Operator, Contractor). WellView: COMPANYTYP"
+      - name: head_count
+        description: "Number of personnel for this entry. WellView: HEADCOUNT"
+      # -- working hours
+      - name: regular_working_hours
+        description: "Regular working hours (converted from days). WellView: DURATIONWORKREG"
+      - name: overtime_working_hours
+        description: "Overtime working hours (converted from days). WellView: DURATIONWORKOT"
+      - name: total_working_hours
+        description: "Total working hours — calc rollup (converted from days). WellView: DURATIONWORKTOTCALC"
+      # -- configuration flags
+      - name: carry_forward_to_next_parent
+        description: "Whether to carry this personnel entry forward to the next report. WellView: SYSCARRYFWDP"
+      - name: exclude_from_calculations
+        description: "Whether to exclude from aggregate calculations. WellView: EXCLUDE"
+      - name: derrick_reference
+        description: "Derrick or workstation assignment reference. WellView: REFDERRICK"
+      # -- notes
+      - name: note
+        description: "Free-text notes for this personnel entry. WellView: NOTE"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at
+        description: "Record creation timestamp. WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at
+        description: "Last modification timestamp. WellView: SYSMODDATE"
+      - name: system_tag
+        description: "System tag for record classification. WellView: SYSTAG"
+      - name: system_lock_me_ui
+        description: "UI lock flag for this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock flag for child records. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Data lock flag for this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Data lock flag for child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "Lock effective date. WellView: SYSLOCKDATE"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__daily_recurring_costs
+  # ==========================================================================
+  - name: stg_wellview__daily_recurring_costs
+    description: >
+      Daily recurring cost staging from WellView. One row per recurring rental
+      or service cost entry per daily report. Source: WVT_WVJOBREPORTCOSTRENTAL
+      (CALC schema). Contains rental rates, billing parameters (day/standby/hour/depth),
+      vendor info, PO references, and 6-level cost coding inherited from the
+      parent rental item definition. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: daily_recurring_cost_sk
+        description: "Surrogate key (MD5 hash of recurring_cost_id)"
+      # -- identifiers
+      - name: recurring_cost_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: daily_report_id
+        description: "Parent daily report GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID — parent well FK. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: sequence_number
+        description: "Display sequence order. WellView: SYSSEQ"
+      # -- rental item reference
+      - name: rental_item_id
+        description: "FK to parent rental item definition. WellView: IDRECJOBRENTALITEM"
+      - name: rental_item_table_key
+        description: "Table key for rental item FK. WellView: IDRECJOBRENTALITEMTK"
+      # -- calculated period and description
+      - name: report_start_datetime
+        description: "Report period start (calc from parent report). WellView: DTTMSTARTCALC"
+      - name: report_end_datetime
+        description: "Report period end (calc from parent report). WellView: DTTMENDCALC"
+      - name: cost_description
+        description: "Cost line description (calc from rental item). WellView: DESCALC"
+      # -- billing parameters
+      - name: quantity
+        description: "Quantity billed this period. WellView: QTY"
+      - name: use_day_charge
+        description: "Whether day rate billing is active. WellView: USEDAY"
+      - name: use_standby_charge
+        description: "Whether standby rate billing is active. WellView: USESTANDBY"
+      - name: hours_charged
+        description: "Hours charged this period (converted from days). WellView: USEHOUR"
+      - name: depth_charged_ft
+        description: "Depth charged in feet (converted from meters). WellView: USEDEPTH"
+      - name: other_rate_1
+        description: "Other rate amount. WellView: USEOTHER"
+      # -- cost calculations
+      - name: rental_field_estimate
+        description: "Calculated rental cost for this period. WellView: COSTRENTALCALC"
+      - name: additional_one_time_amount
+        description: "One-time additional charge. WellView: COSTONETIME"
+      - name: cumulative_field_estimate
+        description: "Cumulative rental cost to date. WellView: COSTCUMCALC"
+      # -- operational classification
+      - name: operations_category
+        description: "Operational category. WellView: OPSCATEGORY"
+      - name: unscheduled_type
+        description: "Unscheduled event type classification. WellView: UNSCHEDTYP"
+      - name: cost_status
+        description: "Cost line approval status. WellView: STATUS"
+      - name: cost_notes
+        description: "Free-text notes. WellView: NOTE"
+      # -- equipment tracking
+      - name: serial_number
+        description: "Equipment serial number. WellView: SN"
+      - name: ticket_number
+        description: "Field ticket number. WellView: TICKETNO"
+      - name: work_order_number
+        description: "Work order number. WellView: WORKORDERNO"
+      # -- cost coding
+      - name: cost_code_1
+        description: "Cost code level 1 (calc from rental item). WellView: CODE1CALC"
+      - name: cost_code_2
+        description: "Cost code level 2 (calc from rental item). WellView: CODE2CALC"
+      - name: cost_code_3
+        description: "Cost code level 3 (calc from rental item). WellView: CODE3CALC"
+      - name: cost_code_4
+        description: "Cost code level 4 (calc from rental item). WellView: CODE4CALC"
+      - name: cost_code_5
+        description: "Cost code level 5 (calc from rental item). WellView: CODE5CALC"
+      - name: cost_code_6
+        description: "Cost code level 6 (calc from rental item). WellView: CODE6CALC"
+      # -- vendor information
+      - name: vendor_name
+        description: "Vendor name (calc from rental item). WellView: VENDORCALC"
+      - name: vendor_code
+        description: "Vendor code (calc from rental item). WellView: VENDORCODECALC"
+      - name: vendor_subcode
+        description: "Vendor subcode (calc from rental item). WellView: VENDORSUBCODECALC"
+      # -- purchase order information
+      - name: purchase_order_number
+        description: "PO number (calc from rental item). WellView: PONOCALC"
+      - name: purchase_order_line_number
+        description: "PO line number (calc from rental item). WellView: POLINENOCALC"
+      - name: purchase_order_amount
+        description: "PO amount (calc from rental item). WellView: POAMTCALC"
+      # -- custom allocations
+      - name: custom_phase_allocation_id
+        description: "Custom phase allocation FK. WellView: IDRECPHASECUSTOM"
+      - name: custom_phase_allocation_table_key
+        description: "Table key for custom phase allocation. WellView: IDRECPHASECUSTOMTK"
+      - name: custom_afe_allocation_id
+        description: "Custom AFE allocation FK. WellView: IDRECAFECUSTOM"
+      - name: custom_afe_allocation_table_key
+        description: "Table key for custom AFE allocation. WellView: IDRECAFECUSTOMTK"
+      - name: custom_interval_problem_allocation_id
+        description: "Custom interval problem allocation FK. WellView: IDRECINTERVALPROBLEMCUSTOM"
+      - name: custom_interval_problem_allocation_table_key
+        description: "Table key for custom interval problem allocation. WellView: IDRECINTERVALPROBLEMCUSTOMTK"
+      - name: interval_problem_allocation_percent
+        description: "Interval problem cost allocation percentage (converted from proportion). WellView: INTERVALPROBLEMPCT"
+      # -- flags
+      - name: carry_forward_to_next_report
+        description: "Whether to carry this cost forward to the next report. WellView: SYSCARRYFWDP"
+      # -- related entities
+      - name: job_id
+        description: "Parent job GUID (calc). WellView: IDRECJOBCALC"
+      - name: job_table_key
+        description: "Table key for parent job. WellView: IDRECJOBCALCTK"
+      # -- user fields
+      - name: user_boolean_1
+        description: "User-defined boolean field 1 (calc). WellView: USERBOOLEAN1CALC"
+      - name: user_text_1
+        description: "User-defined text field 1. WellView: USERTXT1"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at
+        description: "Record creation timestamp. WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at
+        description: "Last modification timestamp. WellView: SYSMODDATE"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_date
+        description: "Lock effective date. WellView: SYSLOCKDATE"
+      - name: system_lock_me
+        description: "Data lock flag for this record. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Data lock flag for child records. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_me_ui
+        description: "UI lock flag for this record. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "UI lock flag for child records. WellView: SYSLOCKCHILDRENUI"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__drill_bits
+  # ==========================================================================
+  - name: stg_wellview__drill_bits
+    description: >
+      Drill bit staging from WellView. One row per bit run within a job.
+      Source: WVT_WVJOBDRILLBIT (CALC schema). Contains bit specifications,
+      IADC codes, depth/time performance, ROP, WOB, flow rates, pressures,
+      mud density, ECD, and hydraulic power metrics. All measurements converted
+      from metric to US oilfield units. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: drill_bit_sk
+        description: "Surrogate key (MD5 hash of drill_bit_id)"
+      # -- identifiers
+      - name: drill_bit_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: sequence_number
+        description: "Display sequence order. WellView: SYSSEQ"
+      # -- basic bit information
+      - name: proposed_or_actual
+        description: "Whether bit run is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: bit_type
+        description: "Primary bit type. WellView: TYP1"
+      - name: bit_subtype
+        description: "Secondary bit type. WellView: TYP2"
+      - name: bit_size_in
+        description: "Bit outer diameter in inches (converted from meters). WellView: SZODDRILL"
+      - name: manufacturer
+        description: "Bit manufacturer. WellView: MAKE"
+      - name: serial_number
+        description: "Bit serial number. WellView: SN"
+      - name: iadc_codes_combined
+        description: "Combined IADC code string (calc). WellView: IADCCODESCALC"
+      # -- depth performance
+      - name: depth_in_ft
+        description: "Depth at bit run start in feet (calc). WellView: DEPTHINCALC"
+      - name: depth_out_ft
+        description: "Depth at bit run end in feet (calc). WellView: DEPTHOUTCALC"
+      - name: depth_drilled_this_job_ft
+        description: "Footage drilled this job in feet (calc). WellView: DEPTHDRILLEDJOBCALC"
+      - name: total_depth_drilled_ft
+        description: "Total cumulative footage drilled in feet (calc). WellView: DEPTHDRILLEDTOTALCALC"
+      # -- time performance
+      - name: drilling_time_this_job_hr
+        description: "Drilling time this job in hours (converted from days). WellView: TMDRILLEDJOBCALC"
+      - name: total_drilling_time_hr
+        description: "Total cumulative drilling time in hours (converted from days). WellView: TMDRILLEDTOTALCALC"
+      # -- rate of penetration
+      - name: avg_rop_this_job_ft_per_hr
+        description: "Average ROP this job in ft/hr (converted from m/s). WellView: ROPJOBCALC"
+      - name: total_avg_rop_ft_per_hr
+        description: "Total average ROP in ft/hr (converted from m/s). WellView: ROPTOTALCALC"
+      # -- weight on bit
+      - name: avg_weight_on_bit_klbf
+        description: "Average WOB in klbf (converted from newtons). WellView: WOBAVGCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__drill_strings
+  # ==========================================================================
+  - name: stg_wellview__drill_strings
+    description: >
+      Drill string (BHA) header staging from WellView. One row per drill string
+      assembly within a job. Source: WVT_WVJOBDRILLSTRING (CALC schema).
+      Contains bit info, dull grading, depth/time performance, ROP, WOB,
+      hook loads, flow rates, pressures, mud density, ECD, hydraulic power,
+      string dimensions, tripping, and inclination data.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: drill_string_sk
+        description: "Surrogate key (MD5 hash of drill_string_id)"
+      # -- identifiers
+      - name: drill_string_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- basic drill string information
+      - name: proposed_or_actual
+        description: "Whether BHA is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: drill_string_description
+        description: "BHA description. WellView: DES"
+      - name: bha_number
+        description: "BHA sequence number. WellView: STRINGNO"
+      - name: bha_objective
+        description: "BHA objective. WellView: STRINGOBJECTIVE"
+      - name: bha_result
+        description: "BHA result classification. WellView: STRINGRESULT"
+      # -- depth performance
+      - name: depth_in_ft
+        description: "Depth at BHA run start in feet (calc). WellView: DEPTHINCALC"
+      - name: depth_out_ft
+        description: "Depth at BHA run end in feet (calc). WellView: DEPTHOUTCALC"
+      - name: depth_drilled_ft
+        description: "Footage drilled in feet (calc). WellView: DEPTHDRILLEDCALC"
+      # -- time performance
+      - name: drilling_time_hr
+        description: "Drilling time in hours (converted from days). WellView: TMDRILLEDCALC"
+      # -- rate of penetration
+      - name: avg_rop_ft_per_hr
+        description: "Average ROP in ft/hr (converted from m/s). WellView: ROPCALC"
+      # -- related entities
+      - name: wellbore_id
+        description: "Wellbore GUID (calc). WellView: IDRECWELLBORECALC"
+      - name: drill_bit_id
+        description: "FK to drill bit record. WellView: IDRECBIT"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__drill_string_components
+  # ==========================================================================
+  - name: stg_wellview__drill_string_components
+    description: >
+      Drill string component staging from WellView. One row per individual
+      component in a BHA assembly. Source: WVT_WVJOBDRILLSTRINGCOMP (CALC schema).
+      Contains physical dimensions (OD, ID, length), weight, volume, connection
+      specs, torque ratings, manufacturer info, condition, and operational
+      performance. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: drill_string_component_sk
+        description: "Surrogate key (MD5 hash of drill_string_component_id)"
+      # -- identifiers
+      - name: drill_string_component_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: drill_string_id
+        description: "Parent drill string GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: sequence_number
+        description: "Component position in BHA sequence. WellView: SYSSEQ"
+      # -- basic component information
+      - name: item_description
+        description: "Component description. WellView: DES"
+      - name: equipment_type
+        description: "Component sub-type classification. WellView: COMPSUBTYP"
+      - name: grade
+        description: "Material grade. WellView: GRADE"
+      - name: number_of_joints
+        description: "Number of joints. WellView: JOINTS"
+      # -- physical dimensions
+      - name: nominal_od_in
+        description: "Nominal outer diameter in inches (converted from meters). WellView: SZODNOM"
+      - name: nominal_id_in
+        description: "Nominal inner diameter in inches (converted from meters). WellView: SZIDNOM"
+      - name: length_ft
+        description: "Component length in feet (converted from meters). WellView: LENGTH"
+      - name: cumulative_length_ft
+        description: "Cumulative BHA length at this component in feet (calc). WellView: LENGTHCUMCALC"
+      # -- weight specifications
+      - name: weight_per_length_lb_per_ft
+        description: "Linear weight in lb/ft (converted from kg/m). WellView: WTPERLENGTH"
+      - name: component_weight_lbf
+        description: "Component weight in lbf (converted from newtons). WellView: WEIGHTCALC"
+      # -- connection specifications
+      - name: top_connection_type
+        description: "Top connection type. WellView: CONNTYPTOP"
+      - name: bottom_connection_type
+        description: "Bottom connection type. WellView: CONNTYPBTM"
+      # -- manufacturer information
+      - name: manufacturer
+        description: "Component manufacturer. WellView: MAKE"
+      - name: serial_number
+        description: "Serial number. WellView: SN"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__drill_string_drilling_parameters
+  # ==========================================================================
+  - name: stg_wellview__drill_string_drilling_parameters
+    description: >
+      Drill string drilling parameter staging from WellView. One row per set
+      of operating parameters for a drill string per depth/time interval.
+      Source: WVT_WVJOBDRILLSTRINGDRILLPARAM (CALC schema). Contains WOB,
+      SPP, flow rates, temperatures, hook loads, RPM, bit revolutions,
+      inclination, ROP, depth drilled, and time breakdowns per stand.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: drilling_parameter_sk
+        description: "Surrogate key (MD5 hash of drilling_parameter_id)"
+      # -- identifiers
+      - name: drilling_parameter_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: drill_string_id
+        description: "Parent drill string GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- wellbore and operational references
+      - name: wellbore_id
+        description: "Wellbore GUID. WellView: IDRECWELLBORE"
+      - name: job_program_phase_id
+        description: "Program phase GUID (calc). WellView: IDRECJOBPROGRAMPHASECALC"
+      # -- date and time information
+      - name: start_datetime
+        description: "Parameter interval start datetime. WellView: DTTMSTART"
+      - name: end_datetime
+        description: "Parameter interval end datetime. WellView: DTTMEND"
+      - name: duration_minutes
+        description: "Interval duration in minutes (converted from days). WellView: DURATIONCALC"
+      # -- depth information
+      - name: start_depth_ft
+        description: "Start depth in feet (converted from meters). WellView: DEPTHSTART"
+      - name: end_depth_ft
+        description: "End depth in feet (converted from meters). WellView: DEPTHEND"
+      - name: depth_drilled_ft
+        description: "Footage drilled in feet (calc). WellView: DEPTHDRILLEDCALC"
+      # -- drilling parameters
+      - name: weight_on_bit_klbf
+        description: "Weight on bit in klbf (converted from newtons). WellView: WOB"
+      - name: standpipe_pressure_psi
+        description: "Standpipe pressure in PSI (converted from kPa). WellView: SPPDRILL"
+      - name: rop_ft_per_hr
+        description: "Rate of penetration in ft/hr (converted from m/s). WellView: ROPCALC"
+      # -- rpm parameters
+      - name: string_rpm
+        description: "String RPM. WellView: RPMSTRING"
+      - name: motor_rpm
+        description: "Motor RPM. WellView: RPMMOTOR"
+      - name: total_rpm
+        description: "Total RPM (string + motor, calc). WellView: RPMTOTALCALC"
+      # -- formation
+      - name: formation
+        description: "Formation name (calc). WellView: FORMATIONCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__job_supplies
+  # ==========================================================================
+  - name: stg_wellview__job_supplies
+    description: >
+      Job supply definition staging from WellView. One row per supply item
+      linked to a job. Source: WVT_WVJOBSUPPLY (CALC schema). Contains supply
+      descriptions, unit info, vendor details, cost coding, planned vs actual
+      consumption quantities, and inventory levels. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: job_supply_sk
+        description: "Surrogate key (MD5 hash of job_supply_id)"
+      # -- identifiers
+      - name: job_supply_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: sequence_number
+        description: "Display sequence order. WellView: SYSSEQ"
+      # -- supply description
+      - name: supply_item_description
+        description: "Supply item description. WellView: DES"
+      - name: supply_type
+        description: "Supply type classification. WellView: TYP"
+      - name: supply_notes
+        description: "Free-text notes. WellView: NOTE"
+      # -- unit information
+      - name: unit_label
+        description: "Unit of measure label. WellView: UNITLABEL"
+      - name: unit_size
+        description: "Unit size. WellView: UNITSZ"
+      # -- vendor information
+      - name: vendor_name
+        description: "Vendor name. WellView: VENDOR"
+      - name: vendor_code
+        description: "Vendor code. WellView: VENDORCODE"
+      # -- cost information
+      - name: unit_cost
+        description: "Cost per unit. WellView: COST"
+      - name: total_field_estimate_cost
+        description: "Total field estimate cost (calc). WellView: COSTCALC"
+      # -- cost coding system
+      - name: cost_code_1
+        description: "Cost code level 1. WellView: CODE1"
+      - name: cost_code_2
+        description: "Cost code level 2. WellView: CODE2"
+      - name: cost_code_3
+        description: "Cost code level 3. WellView: CODE3"
+      - name: cost_code_4
+        description: "Cost code level 4. WellView: CODE4"
+      - name: cost_code_5
+        description: "Cost code level 5. WellView: CODE5"
+      - name: cost_code_6
+        description: "Cost code level 6. WellView: CODE6"
+      # -- quantity tracking
+      - name: planned_consumed_amount
+        description: "Planned consumption amount. WellView: CONSUMEDESIGN"
+      - name: total_received_quantity
+        description: "Total received quantity (calc). WellView: RECEIVEDCALC"
+      - name: total_consumed_quantity
+        description: "Total consumed quantity (calc). WellView: CONSUMEDCALC"
+      - name: total_returned_quantity
+        description: "Total returned quantity (calc). WellView: RETURNEDCALC"
+      - name: inventory_on_location
+        description: "Current inventory on location (calc). WellView: INVENTORYCALC"
+      - name: planned_vs_actual_consumed_variance
+        description: "Variance between planned and actual consumption (calc). WellView: CONSUMEDESIGNVARCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__job_supply_amounts
+  # ==========================================================================
+  - name: stg_wellview__job_supply_amounts
+    description: >
+      Job supply transaction staging from WellView. One row per supply quantity
+      transaction (received, consumed, returned) per report period.
+      Source: WVT_WVJOBSUPPLYAMT (CALC schema). Contains daily and cumulative
+      quantities, cost overrides, and links to support vessels and items.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: supply_amount_sk
+        description: "Surrogate key (MD5 hash of supply_amount_id)"
+      # -- identifiers
+      - name: supply_amount_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_supply_id
+        description: "Parent job supply GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- transaction timing
+      - name: transaction_datetime
+        description: "Transaction timestamp. WellView: DTTM"
+      - name: report_number
+        description: "Report number for this transaction (calc). WellView: REPORTNOCALC"
+      # -- daily transaction amounts
+      - name: daily_received_quantity
+        description: "Quantity received this period. WellView: RECEIVED"
+      - name: daily_consumed_quantity
+        description: "Quantity consumed this period. WellView: CONSUMED"
+      - name: daily_returned_quantity
+        description: "Quantity returned this period. WellView: RETURNED"
+      # -- cumulative calculations
+      - name: cumulative_received_quantity
+        description: "Cumulative received quantity (calc). WellView: RECEIVEDCUMCALC"
+      - name: cumulative_consumed_quantity
+        description: "Cumulative consumed quantity (calc). WellView: CONSUMEDCUMCALC"
+      - name: cumulative_returned_quantity
+        description: "Cumulative returned quantity (calc). WellView: RETURNEDCUMCALC"
+      - name: cumulative_inventory_on_location
+        description: "Running inventory balance on location (calc). WellView: INVENTORYCUMCALC"
+      # -- cost information
+      - name: cost_override
+        description: "Cost override amount. WellView: COSTOR"
+      - name: daily_field_estimate_cost
+        description: "Daily field estimate cost (calc). WellView: COSTCALC"
+      - name: cumulative_field_estimate_cost
+        description: "Cumulative field estimate cost (calc). WellView: COSTCUMCALC"
+      # -- related entities
+      - name: support_vessel_id
+        description: "FK to support vessel. WellView: IDRECJOBSUPPORTVESSEL"
+      - name: last_rig_id
+        description: "Last rig GUID (calc). WellView: IDRECLASTRIGCALC"
+      # -- additional information
+      - name: transaction_notes
+        description: "Free-text transaction notes. WellView: NOTE"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__mud_additivies
+  # ==========================================================================
+  - name: stg_wellview__mud_additivies
+    description: >
+      Mud additive definition staging from WellView. One row per mud product
+      linked to a job. Source: WVT_WVJOBMUDADD (CALC schema). Contains
+      additive descriptions, vendor info, cost coding, consumption tracking
+      (planned vs actual), consumption per depth, and inventory levels.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: mud_additive_sk
+        description: "Surrogate key (MD5 hash of mud_additive_id)"
+      # -- identifiers
+      - name: mud_additive_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_id
+        description: "Parent job GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- additive identification
+      - name: description
+        description: "Mud additive product description. WellView: DES"
+      - name: additive_type
+        description: "Additive type classification. WellView: TYP"
+      - name: unit_label
+        description: "Unit of measure label. WellView: UNITLABEL"
+      - name: unit_size
+        description: "Unit size. WellView: UNITSZ"
+      - name: notes
+        description: "Free-text notes. WellView: NOTE"
+      # -- vendor information
+      - name: vendor
+        description: "Vendor name. WellView: VENDOR"
+      - name: vendor_code
+        description: "Vendor code. WellView: VENDORCODE"
+      # -- cost information
+      - name: unit_cost
+        description: "Cost per unit. WellView: COST"
+      - name: total_field_estimate_cost
+        description: "Total field estimate cost (calc). WellView: COSTCALC"
+      # -- cost codes
+      - name: code_1
+        description: "Cost code level 1. WellView: CODE1"
+      - name: code_2
+        description: "Cost code level 2. WellView: CODE2"
+      - name: code_3
+        description: "Cost code level 3. WellView: CODE3"
+      - name: code_4
+        description: "Cost code level 4. WellView: CODE4"
+      - name: code_5
+        description: "Cost code level 5. WellView: CODE5"
+      - name: code_6
+        description: "Cost code level 6. WellView: CODE6"
+      # -- consumption tracking
+      - name: planned_consumed_amount
+        description: "Planned consumption amount. WellView: CONSUMEDESIGN"
+      - name: total_consumed
+        description: "Total consumed quantity (calc). WellView: CONSUMEDCALC"
+      - name: planned_vs_actual_consumed_variance
+        description: "Variance between planned and actual consumption (calc). WellView: CONSUMEDESIGNVARCALC"
+      - name: consumed_per_depth_per_ft
+        description: "Consumption rate per foot drilled (converted from per-meter). WellView: CONSUMEDPERDEPTHCALC"
+      # -- inventory tracking
+      - name: total_received
+        description: "Total received quantity (calc). WellView: RECEIVEDCALC"
+      - name: total_returned
+        description: "Total returned quantity (calc). WellView: RETURNEDCALC"
+      - name: inventory_on_location
+        description: "Current inventory on location (calc). WellView: INVENTORYCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__mud_checks
+  # ==========================================================================
+  - name: stg_wellview__mud_checks
+    description: >
+      Mud check staging from WellView. One row per mud property measurement.
+      Source: WVT_WVJOBMUDCHK (CALC schema). Contains mud density, ECD,
+      temperatures, pressures, fluid composition, rheology (PV, YP, gel
+      strengths), viscometer readings, filtration, chemical concentrations,
+      and water phase salinity calculations. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: mud_check_sk
+        description: "Surrogate key (MD5 hash of mud_check_id)"
+      # -- identifiers
+      - name: mud_check_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_report_id
+        description: "Parent daily report GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- check information
+      - name: check_datetime
+        description: "Mud check timestamp. WellView: DTTM"
+      - name: mud_type
+        description: "Primary mud type classification. WellView: MUDTYP1"
+      - name: fluid_category
+        description: "Fluid category. WellView: MUDTYP2"
+      - name: checked_by
+        description: "Person who performed the check. WellView: CHECKEDBY"
+      - name: mud_company
+        description: "Mud company/contractor. WellView: CONTRACTOR"
+      # -- depth and location
+      - name: depth_ft
+        description: "Measurement depth in feet (converted from meters). WellView: DEPTH"
+      - name: depth_tvd_ft
+        description: "TVD at measurement in feet (calc). WellView: DEPTHTVDCALC"
+      # -- basic mud properties
+      - name: density_lb_per_gal
+        description: "Mud weight in lb/gal (converted from kg/m3). WellView: DENSITY"
+      - name: ecd_lb_per_gal
+        description: "Equivalent circulating density in lb/gal (converted from kg/m3). WellView: ECD"
+      # -- temperatures
+      - name: flowline_temperature_deg_f
+        description: "Flowline temperature in deg F (converted from deg C). WellView: TEMPFLOWLINE"
+      - name: bottom_hole_temperature_deg_f
+        description: "Bottom hole temperature in deg F (converted from deg C). WellView: TEMPBOTTOMHOLE"
+      # -- rheological properties
+      - name: plastic_viscosity_cp
+        description: "Plastic viscosity in centipoise (converted from Pa*s). WellView: PLASTICVIS"
+      - name: yield_point_lbf_per_100ft2
+        description: "Yield point in lbf/100ft2 (converted from Pa). WellView: YIELDPT"
+      - name: gel_10_sec_lbf_per_100ft2
+        description: "10-second gel strength in lbf/100ft2 (converted from Pa). WellView: GEL10SEC"
+      - name: gel_10_min_lbf_per_100ft2
+        description: "10-minute gel strength in lbf/100ft2 (converted from Pa). WellView: GEL10MIN"
+      # -- fluid composition
+      - name: water_percent
+        description: "Water content percentage (converted from proportion). WellView: WATERPERCENT"
+      - name: oil_percent
+        description: "Oil content percentage (converted from proportion). WellView: OILPERCENT"
+      - name: solids_percent
+        description: "Total solids percentage (converted from proportion). WellView: SOLIDS"
+      # -- filtration
+      - name: filtrate_ml_per_30min
+        description: "API filtrate in ml/30min. WellView: FILTRATE"
+      - name: filter_cake_32nds_in
+        description: "Filter cake thickness in 32nds of an inch. WellView: FILTERCAKE"
+      # -- chemical concentrations
+      - name: chlorides_mg_per_l
+        description: "Chlorides concentration in mg/L. WellView: CHLORIDES"
+      - name: calcium_mg_per_l
+        description: "Calcium concentration in mg/L. WellView: CALCIUM"
+      # -- wps calculations
+      - name: total_wps_concentration_ppm
+        description: "Total water phase salinity in PPM (calc). WellView: CONCPPMTOTALWPSCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__other_in_hole_equipment
+  # ==========================================================================
+  - name: stg_wellview__other_in_hole_equipment
+    description: >
+      Other in-hole equipment staging from WellView. One row per non-casing/
+      non-tubing equipment record (packers, plugs, screens, etc.).
+      Source: WVT_WVOTHERINHOLE (CALC schema). Contains equipment specs,
+      dimensions, depths, inclination, tension/pressure ratings, operational
+      dates, run/pull history, and related entity references.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: other_in_hole_equipment_sk
+        description: "Surrogate key (MD5 hash of other_in_hole_id)"
+      # -- identifiers
+      - name: other_in_hole_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- basic equipment information
+      - name: proposed_or_actual
+        description: "Whether equipment record is proposed or actual. WellView: PROPOSEDORACTUAL"
+      - name: equipment_description
+        description: "Equipment description. WellView: DES"
+      - name: equipment_type
+        description: "Equipment type classification. WellView: COMPSUBTYP"
+      # -- manufacturer information
+      - name: manufacturer
+        description: "Equipment manufacturer. WellView: MAKE"
+      - name: equipment_model
+        description: "Equipment model. WellView: MODEL"
+      - name: serial_number
+        description: "Serial number. WellView: SN"
+      # -- physical dimensions
+      - name: nominal_outer_diameter_in
+        description: "Nominal OD in inches (converted from meters). WellView: SZODNOM"
+      - name: nominal_inner_diameter_in
+        description: "Nominal ID in inches (converted from meters). WellView: SZIDNOM"
+      - name: equipment_length_ft
+        description: "Equipment length in feet (calc). WellView: LENGTHCALC"
+      # -- depths
+      - name: top_depth_ft
+        description: "Top depth in feet (converted from meters). WellView: DEPTHTOP"
+      - name: bottom_depth_ft
+        description: "Bottom depth in feet (converted from meters). WellView: DEPTHBTM"
+      # -- ratings
+      - name: pressure_rating_psi
+        description: "Pressure rating in PSI (converted from kPa). WellView: PRESRATING"
+      - name: temperature_rating_f
+        description: "Temperature rating in deg F (converted from deg C). WellView: TEMPRATING"
+      # -- operational dates
+      - name: run_datetime
+        description: "Equipment run datetime. WellView: DTTMRUN"
+      - name: pull_datetime
+        description: "Equipment pull datetime. WellView: DTTMPULL"
+      - name: current_status
+        description: "Current equipment status (calc). WellView: CURRENTSTATUSCALC"
+      # -- flags
+      - name: is_radioactive_source
+        description: "Whether equipment contains a radioactive source. WellView: RADIOACTIVESOURCE"
+      # -- related entities
+      - name: wellbore_id
+        description: "Wellbore GUID. WellView: IDRECWELLBORE"
+      - name: run_job_id
+        description: "Job GUID when equipment was run. WellView: IDRECJOBRUN"
+      - name: pull_job_id
+        description: "Job GUID when equipment was pulled. WellView: IDRECJOBPULL"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__rig_mud_pumps
+  # ==========================================================================
+  - name: stg_wellview__rig_mud_pumps
+    description: >
+      Rig mud pump definition staging from WellView. One row per mud pump
+      assigned to a rig. Source: WVT_WVJOBRIGPUMP (CALC schema). Contains
+      pump identification, manufacturer details, action type, physical specs
+      (stroke length, rod diameter), and power rating.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: rig_mud_pump_sk
+        description: "Surrogate key (MD5 hash of rig_pump_id)"
+      # -- identifiers
+      - name: rig_pump_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: job_rig_id
+        description: "Parent rig assignment GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- pump identification
+      - name: pump_number
+        description: "Pump number or designation. WellView: DES"
+      - name: reference_id
+        description: "Reference identifier. WellView: REFID"
+      # -- manufacturer information
+      - name: pump_manufacturer
+        description: "Pump manufacturer. WellView: MAKE"
+      - name: pump_model
+        description: "Pump model. WellView: MODEL"
+      - name: serial_number
+        description: "Serial number. WellView: SN"
+      # -- pump classification
+      - name: action_category
+        description: "Pump action category (e.g., Triplex, Duplex). WellView: ACTIONCATEGORY"
+      - name: action_type
+        description: "Pump action type. WellView: ACTIONTYP"
+      # -- physical specifications
+      - name: stroke_length_in
+        description: "Stroke length in inches (converted from meters). WellView: STROKELENGTH"
+      - name: rod_diameter_in
+        description: "Rod diameter in inches (converted from meters). WellView: SZODROD"
+      # -- power rating
+      - name: power_rating_hp
+        description: "Pump power rating in HP (converted from watts). WellView: POWERRATING"
+      # -- date information
+      - name: pump_start_datetime
+        description: "Pump service start datetime. WellView: DTTMSTART"
+      - name: pump_end_datetime
+        description: "Pump service end datetime. WellView: DTTMEND"
+      - name: manufacture_datetime
+        description: "Manufacture date. WellView: DTTMMANUFACTURE"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at
+        description: "Record creation timestamp. WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at
+        description: "Last modification timestamp. WellView: SYSMODDATE"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__rig_mud_pump_checks
+  # ==========================================================================
+  - name: stg_wellview__rig_mud_pump_checks
+    description: >
+      Rig mud pump check staging from WellView. One row per pump performance
+      check (slow pump rate test). Source: WVT_WVJOBRIGPUMPCHK (CALC schema).
+      Contains check depth, strokes per minute, volumetric efficiency,
+      calculated flow rate, and well control pressures (standpipe, choke line
+      friction, kill line friction). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: rig_mud_pump_check_sk
+        description: "Surrogate key (MD5 hash of pump_check_id)"
+      # -- identifiers
+      - name: pump_check_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: rig_pump_id
+        description: "Parent mud pump GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- check timing and location
+      - name: check_datetime
+        description: "Pump check timestamp. WellView: DTTM"
+      - name: depth_ft
+        description: "Depth at pump check in feet (converted from meters). WellView: DEPTH"
+      # -- pump operation parameters
+      - name: strokes_per_minute
+        description: "Strokes per minute during check. WellView: SPM"
+      - name: pumping_mode
+        description: "Pumping mode during check. WellView: PUMPINGMODE"
+      - name: is_slow_speed_check
+        description: "Whether this is a slow pump rate check (well control). WellView: SLOWSPEED"
+      # -- performance metrics
+      - name: volumetric_efficiency_percent
+        description: "Volumetric efficiency percentage (converted from proportion). WellView: VOLEFFICIENCY"
+      - name: calculated_flow_rate_gpm
+        description: "Calculated flow rate in GPM (converted from m3/s). WellView: FLOWRATECALC"
+      # -- pressure readings
+      - name: pressure_psi
+        description: "Pump pressure in PSI (converted from kPa). WellView: PRES"
+      - name: choke_line_friction_pressure_psi
+        description: "Choke line friction pressure in PSI (converted from kPa). WellView: PRESCLF"
+      - name: kill_line_friction_pressure_psi
+        description: "Kill line friction pressure in PSI (converted from kPa). WellView: PRESKLF"
+      # -- related data references
+      - name: last_mud_check_id
+        description: "FK to last mud check at time of pump check (calc). WellView: IDRECLASTMUDCHKCALC"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at
+        description: "Record creation timestamp. WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at
+        description: "Last modification timestamp. WellView: SYSMODDATE"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__rig_mud_pump_operations
+  # ==========================================================================
+  - name: stg_wellview__rig_mud_pump_operations
+    description: >
+      Rig mud pump operation staging from WellView. One row per pump operational
+      configuration period (liner change, efficiency update). Source:
+      WVT_WVJOBRIGPUMPOP (CALC schema). Contains liner size, max pressure,
+      volume per stroke (override and calculated), circulating/drilling time,
+      and volumetric efficiency. Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: rig_mud_pump_operation_sk
+        description: "Surrogate key (MD5 hash of pump_operation_id)"
+      # -- identifiers
+      - name: pump_operation_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: rig_pump_id
+        description: "Parent mud pump GUID. WellView: IDRECPARENT"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: "WellView well GUID. WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- operational period
+      - name: operation_start_datetime
+        description: "Pump operation period start. WellView: DTTMSTART"
+      - name: operation_end_datetime
+        description: "Pump operation period end. WellView: DTTMEND"
+      # -- pump configuration
+      - name: liner_size_in
+        description: "Liner size in inches (converted from meters). WellView: SZLINER"
+      # -- pressure
+      - name: maximum_pressure_psi
+        description: "Maximum operating pressure in PSI (converted from kPa). WellView: PRESSUREMAX"
+      # -- volume per stroke
+      - name: volume_per_stroke_override_bbl_per_stroke
+        description: "Volume per stroke override in bbl/stroke (converted from m3). WellView: VOLPERSTROKE"
+      - name: volume_per_stroke_calculated_bbl_per_stroke
+        description: "Calculated volume per stroke in bbl/stroke (calc). WellView: VOLPERSTROKECALC"
+      # -- operational time tracking
+      - name: circulating_time_hours
+        description: "Circulating time in hours (converted from days). WellView: TMCIRCCALC"
+      - name: drilling_time_hours
+        description: "Drilling time in hours (converted from days). WellView: TMDRILLCALC"
+      # -- performance metrics
+      - name: volumetric_efficiency_percent
+        description: "Volumetric efficiency percentage (converted from proportion, calc). WellView: VOLEFFICIENCYCALC"
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: created_at
+        description: "Record creation timestamp. WellView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: modified_at
+        description: "Last modification timestamp. WellView: SYSMODDATE"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__safety_checks
+  # ==========================================================================
+  - name: stg_wellview__safety_checks
+    description: >
+      Safety check staging from WellView. One row per safety meeting or
+      inspection record linked to a daily report.
+      Source: WVT_WVJOBSAFETYCHK (CALC schema). Contains check type, result,
+      inspector, tour, and scheduling metadata. ~57,857 rows.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: safety_check_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      # -- identifiers
+      - name: record_id
+        description: "WellView safety check GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent daily report GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      # -- descriptive fields
+      - name: check_type
+        description: "Safety check type (e.g., Safety Meeting, BOP Drill). WellView: TYP"
+      - name: check_frequency
+        description: "Check frequency classification. WellView: TYPFREQUENCY"
+      - name: check_result
+        description: "Result of the check (e.g., Acceptable, Failed). WellView: RESULT"
+      - name: inspector
+        description: "Person who conducted the check. WellView: INSPECTOR"
+      - name: tour
+        description: "Tour/shift when check was performed (Day/Night). WellView: TOUR"
+      - name: description
+        description: "Check topic or description. WellView: DES"
+      - name: comment
+        description: "Additional comments. WellView: COM"
+      # -- temporal
+      - name: check_datetime
+        description: "Datetime of the safety check. WellView: DTTM"
+      - name: next_check_datetime
+        description: "Next scheduled check datetime (calc). WellView: NEXTDTTMCALC"
+      - name: report_number
+        description: "Daily report number (calc). WellView: REPORTNOCALC"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__safety_incidents
+  # ==========================================================================
+  - name: stg_wellview__safety_incidents
+    description: >
+      Safety incident staging from WellView. One row per safety event,
+      near miss, or injury record linked to a daily report.
+      Source: WVT_WVJOBSAFETYINCIDENT (CALC schema). Contains incident
+      classification (type, severity, cause), reportability flag, lost time,
+      estimated cost, witness info, and rig crew context. ~4,711 rows.
+      Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: safety_incident_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+      # -- identifiers
+      - name: record_id
+        description: "WellView safety incident GUID (IDREC) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well GUID (IDWELL)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: parent_record_id
+        description: "Parent daily report GUID (IDRECPARENT)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: phase_id
+        description: "Job program phase GUID (calc). WellView: IDRECJOBPROGRAMPHASECALC"
+      - name: last_rig_id
+        description: "Last rig assignment GUID (calc). WellView: IDRECLASTRIGCALC"
+      # -- classification
+      - name: incident_type
+        description: "Primary incident type (e.g., Near Miss, First Aid, LTI). WellView: TYP1"
+      - name: incident_subtype
+        description: "Secondary incident classification. WellView: TYP2"
+      - name: category
+        description: "Incident category. WellView: CATEGORY"
+      - name: severity
+        description: "Actual severity level. WellView: SEVERITY"
+      - name: potential_severity
+        description: "Potential severity if conditions were worse. WellView: POTENTIALSEVERITY"
+      - name: cause
+        description: "Root cause of the incident. WellView: CAUSE"
+      - name: ops_function
+        description: "Operational function during incident. WellView: OPSFUNCTION"
+      # -- flags
+      - name: is_reportable
+        description: "Whether the incident is OSHA/regulatory reportable (derived from REPORTABLE field)"
+      - name: is_lost_time_incident
+        description: "Whether the incident resulted in lost work time (derived from LOSTTIME > 0)"
+      - name: reportable
+        description: "Raw reportable field value for audit. WellView: REPORTABLE"
+      # -- measures
+      - name: lost_time_hours
+        description: "Hours of lost work time. WellView: LOSTTIME"
+      - name: estimated_cost
+        description: "Estimated cost of the incident. WellView: ESTCOST"
+      # -- temporal
+      - name: incident_datetime
+        description: "Datetime of the incident. WellView: DTTM"
+      - name: tour
+        description: "Tour/shift when incident occurred (Day/Night). WellView: TOUR"
+      - name: report_number
+        description: "Daily report number (calc). WellView: REPORTNOCALC"
+      # -- people
+      - name: reported_by
+        description: "Person who reported the incident. WellView: REPORTEDBY"
+      - name: witness
+        description: "Witness name. WellView: WITNESS"
+      - name: rig_crew_name
+        description: "Rig crew name (calc). WellView: RIGCREWNAMECALC"
+      # -- descriptive
+      - name: description
+        description: "Incident description. WellView: DES"
+      - name: comment
+        description: "Additional comments. WellView: COM"
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

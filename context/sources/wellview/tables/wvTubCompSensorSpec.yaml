@@ -1,0 +1,9 @@
+# wellview / tubing_rods_equipment / wvTubCompSensorSpec
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompSensorSpec: Tubing sensor specifications. +parent
+  Typ1(s100) #Setting Type
+  Typ2(s100) #Setting Subtype
+  Des(s100) #Description
+  Value(dbl) #Value
+  UnitLabel(s10) #Unit

@@ -1,0 +1,15 @@
+# wellview / geological_evaluations / wvGeoEvalPorosity
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalPorosity: Interpretation of sample porosity. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Porosity(dbl_m3pm3) #Porosity
+  PorosityTyp(s100) #Porosity Type
+  PorosityCode(s20) #Porosity Code
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Note(s255) #Note

@@ -1,0 +1,36 @@
+# Peloton WellView: Asset Management
+# Notes, sources/destinations, operator history, responsible teams, legal status, agreements, external reporting
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvNote: General notes that do not fall under another category in the data structure. ...
+#   wvSourceDest: Water sources. +parent
+#   wvOperatorHistory: History of operators of this well. +parent
+#   wvOperatorHistoryLink: Link the operator to a specific 'Wellbore' and / or 'Zone' if desired to trac...
+#   wvResponsibleTeam: Names, roles and contact information for personnel involved with the well. A ...
+#   wvLegalStatus: Legal status of the well. +parent
+#   wvAgreement: Agreement details - working interest, acquisition, divestiture. +parent
+#   wvAgreementDate: List of relevant dates for the agreement. +parent
+#   wvAgreementInt: List of partners and their associated interest or royalty details. +parent
+#   wvAgreementContact: Names, roles and contact information for personnel involved with the agreemen...
+#   wvAgreementLink: Link to 'Zone'(s), 'Job'(s), 'AFE'(s) that are relevant to this agreement. +p...
+#   wvAgreementDataObl: Partner data obligation and status, per agreement. +parent
+#   wvExtReport: External reporting allows you to track regulatory and external reporting requ...
+#   wvExtReportDetail: Define the status and report date. +parent
+#   wvExtReportDetailCheckList: Define the detailed elements for the regulatory or external submission. +parent

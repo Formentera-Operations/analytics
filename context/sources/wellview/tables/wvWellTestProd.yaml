@@ -1,0 +1,49 @@
+# wellview / reservoir_tests / wvWellTestProd
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestProd: Details of production tests. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  IDRecZoneCompletion(s32) #Completion/Zone
+  DisplayFlag(bool) #Display Flag
+  IDRecJob(s32) #Job
+  Duration(dbl_days) #Duration
+  TestedBy(s50) #Tested By
+  DataSource(s50) #Data Source
+  PurposeReg(bool) #Regulatory?
+  PurposeDeliv(bool) #Deliverability?
+  PurposeAlloc(bool) #Allocation?
+  Com(txt2k) #Comment
+  RateOil(dbl_m3pd) #Rate Oil
+  RateCond(dbl_m3pd) #Rate Cond
+  RateWater(dbl_m3pd) #Rate Water
+  RateSteam(dbl_m3pd) #Rate Steam
+  DensityOilCond(dbl_kgpm3) #Oil Cond Density
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  PhWater(dbl) #pH Water
+  Salinity(dbl_pct) #Salinity
+  QualitySteam(dbl_pct) #Quality Steam
+  RateGas(dbl_m3pd) #Gas Rate
+  DensityGas(dbl_kgpm3) #Gas Density
+  VolPctCO2(dbl_pct) #Vol Pct CO2
+  VolPctN2(dbl_pct) #Vol Pct N2
+  VolPctOther(dbl_pct) #Vol Pct Other
+  TypVolPctOther(s100) #Other Gas Component Type
+  H2S(dbl_pct) #H2S
+  RateGasNetCalc(dbl_m3pd_calc) #Net Gas Rate
+  RateInjectGasLiftGas(dbl_m3pd) #Rate Inject Gas Lift Gas
+  PresInjectGasLiftGas(dbl_kPa) #Pressure Inject Gas Lift Gas
+  RateInjectDiluent(dbl_m3pd) #Rate Inject Diluent
+  PresBH(dbl_kPa) #Pressure BH
+  TempBH(dbl_degC) #Temp BH
+  PresWH(dbl_kPa) #Pressure WellHead
+  TempWH(dbl_degC) #Temp WH
+  PresCas(dbl_kPa) #Casing Pressure
+  PresTestSep(dbl_kPa) #Pressure Test Separator
+  TempTestSep(dbl_degC) #Temp Test Sep
+  PresProdSep(dbl_kPa) #Pressure Prod Sep
+  TempProdSep(dbl_degC) #Temp Prod Sep
+  SzDiaChoke(dbl_m) #Choke Diameter Size

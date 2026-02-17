@@ -1,0 +1,8 @@
+# wellview / reservoir_tests / wvWellTestTransGaugeData
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestTransGaugeData: Pressure, temperature by date/time for the gauge. +parent
+  DtTm(dt) #Date
+  Pres(dbl_kPa) #Pressure
+  Temp(dbl_degC) #Temp
+  Note(s255) #Note

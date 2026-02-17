@@ -1,0 +1,15 @@
+# wellview / perfs_stims / wvSwab
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvSwab: Swab description. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  Contractor(s50) #Swab Company
+  Com(txt2k) #Comment
+  VolTotalCalc(dbl_m3_calc) #Total Volume Recovered
+  VolTotalGasCalc(dbl_m3_calc) #Total Gas Volume
+  VolTotalOilCalc(dbl_m3_calc) #Total Oil Recovered
+  VolTotalBSWCalc(dbl_m3_calc) #Total BSW Recovered

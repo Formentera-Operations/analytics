@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJobOtherCirc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOtherCirc: Details of circulation (duration, pressure, rate) while running casing, tubing or other string. +parent
+  OpsInProg(s50) #Operation in Progress
+  IDRecLink(s32) #String
+  Des(s100) #Description
+  FluidDes(s100) #Fluid Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DepthStart(dbl_m) #Start Depth
+  DepthTVDStartCalc(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m) #End Depth
+  DepthTVDEndCalc(dbl_m_calc) #End Depth (TVD)
+  TmCirc(dbl_days) #Circulation Time
+  Rate(dbl_m3pd) #Rate
+  Pres(dbl_kPa) #Pressure
+  Com(txt2k) #Comment

@@ -1,0 +1,14 @@
+# wellview / geological_evaluations / wvGeoEvalGrainSz
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalGrainSz: Interpretation of grain size. +parent
+  DtTm(dt) #Date
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  GrainSzCode(s20) #Code
+  GrainSz(dbl_m) #Size
+  Distribution(s20) #Distribution
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer

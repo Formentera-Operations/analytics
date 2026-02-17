@@ -1,0 +1,14 @@
+# wellview / operations_jobs / wvJobApprovalStepDeliv
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApprovalStepDeliv: The deliverables for the 'Approval Process Step' +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Des(s100) #Description
+  AssignToDept(s50) #Assigned To Department
+  AssignToName(s50) #Assigned To Name
+  AssignToEmail(s50) #Email
+  Completed(bool) #Complete?
+  CompletedBy(s50) #Completed By
+  DtTmComplete(dt) #Completion Date
+  Com(txt2k) #Comment

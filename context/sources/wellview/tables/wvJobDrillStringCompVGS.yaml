@@ -1,0 +1,7 @@
+# wellview / operations_jobs / wvJobDrillStringCompVGS
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringCompVGS: Actuation type, min and max size of the stabilizer. +extension
+  ActuationTyp(s100) #Actuation Type
+  GaugeMax(dbl_m) #Max Gauge
+  GaugeMin(dbl_m) #Min Gauge

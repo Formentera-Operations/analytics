@@ -1,0 +1,9 @@
+# wellview / production_operations / wvProductionGas
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProductionGas: Gas product type and volumes for time period defined in 'Production Volume'. +parent
+  ProductTyp(s50) #Product Type
+  Volume(dbl_m3) #Volume
+  VolumeMethod(s50) #Volume Method
+  ThermalQuality(dbl_J) #Thermal Quality
+  Note(s100) #Note

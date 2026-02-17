@@ -1,0 +1,43 @@
+# wellview / casing_cement / wvWellheadComp
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvWellheadComp: Define the vertical components in the stack. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  SzID(dbl_m) #ID
+  IDRecString(s32) #String
+  Sect(s10) #Section
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  WorkPres(dbl_kPa) #Working Pressure
+  MaxPres(dbl_kPa) #Max Pres
+  Service(s20) #Service
+  ConnTopTyp(s100) #Top Connection Type
+  ConnTopSz(dbl_m) #Top Connection Size
+  WorkPresTop(dbl_kPa) #Top Working Pressure
+  ConnBtmSz(dbl_m) #Bottom Connection Size
+  ConnBtmTyp(s100) #Bottom Connection Type
+  WorkPresBtm(dbl_kPa) #Bottom Working Pressure
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  DtTmManufacture(dt) #Manufacture Date
+  IconName(s255) #Icon
+  Length(dbl_m) #Length (Drawing)
+  SzODNom(dbl_m) #OD Nominal
+  SzIDNom(dbl_m) #ID Nominal
+  VolumeVoid(dbl_m3) #Void Volume
+  ProductSpecLevel(s50) #Product Specification Level
+  MinBore(dbl_m) #Min Bore
+  PackoffType(s100) #Packoff Type
+  Material(s20) #Material
+  TempRating(dbl_degC) #Temp Rating
+  RefID(s50) #Reference ID
+  Com(txt2k) #Comment
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label
+  Usertxt(s255) #User Text

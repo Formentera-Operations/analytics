@@ -1,0 +1,9 @@
+# prodview / fluid_analysis / pvGasAnalysisComp
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvGasAnalysisComp: Gas Compositions +parent
+  Component(s20) #Component
+  MoleFracAirFree(double, mol/mol) #Mole Fraction - Air Free as Received
+  MoleFracAirFreeAcidFree(double, mol/mol) #Mole Fraction - Air Free Acid Gas Free Received
+  Com(stringlong 50) #Note
+  sysSeq(int) #Sequence

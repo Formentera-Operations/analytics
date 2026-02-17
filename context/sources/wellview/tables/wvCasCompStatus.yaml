@@ -1,0 +1,8 @@
+# wellview / casing_cement / wvCasCompStatus
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCasCompStatus: Status of component by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  IconName(s255) #Icon Override
+  Note(s255) #Note

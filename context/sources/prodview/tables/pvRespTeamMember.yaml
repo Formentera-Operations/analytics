@@ -1,0 +1,20 @@
+# prodview / admin / pvRespTeamMember
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvRespTeamMember: Responsible Team Members +parent | Names, roles and contact information for personnel involved with this flow network.
+  ContactName(s50) #Contact Name
+  Role(s50) #Role
+  Company(s50) #Company
+  Department(s50) #Department
+  Location(s50) #Location
+  PhoneOffice(s20) #Phone Office
+  PhoneMobile(s20) #Phone Mobile
+  PhonePager(s20) #Pager
+  PhoneHome(s20) #Phone Home
+  PhoneAlt(s20) #Phone Alternate #
+  Fax(s20) #Fax
+  Email(s255) #E-mail
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  RptDist(s50) #Report Distribution
+  Com(txt2k) #Comment

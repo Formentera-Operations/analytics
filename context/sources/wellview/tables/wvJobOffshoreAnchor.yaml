@@ -1,0 +1,10 @@
+# wellview / operations_jobs / wvJobOffshoreAnchor
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOffshoreAnchor: Offshore anchor tensions. +extension
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  AnchorDes(s100) #Description
+  TensionAvg(dbl_N) #Tension
+  TensionMax(dbl_N) #Max Tension
+  Length(dbl_m) #Anchor Chain Length
+  Note(s255) #Note

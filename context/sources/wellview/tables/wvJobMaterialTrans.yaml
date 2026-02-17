@@ -1,0 +1,27 @@
+# wellview / operations_jobs / wvJobMaterialTrans
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobMaterialTrans: Record of materials transported to and from location. +parent
+  MaterialTransNo(s50) #Material Transfer #
+  IDRecJobContact(s32) #Company Contact
+  ToFrom(s50) #To or From Location?
+  DtTm(dt) #Transfer Date
+  LocationDes(s100) #Location Description
+  LocationTyp1(s100) #Location Type
+  LocationTyp2(s100) #Location Subtype
+  Carrier(s50) #Carrier
+  CarrierDriverName(s50) #Carrier Contact Name
+  CarrierRefNo(s50) #Carrier Ref #
+  AcctNoFrom(s50) #Acct No From
+  AcctNoTo(s50) #Acct No To
+  IDRecAFECustom(s32) #Custom AFE Allocation
+  Com(txt2k) #Comment
+  ApproveByName(s50) #Approver Name
+  DtTmApprove(dt) #Approval Date
+  DtTmMaterialTrans(dt) #Material Transfer Issued Date
+  MaterialTransReason(s200) #Reason for Material Transfer
+  Status(s50) #Status
+  IDRecJobSupportVessel(s32) #Support Vessel
+  UserTxt1(s50) #User Text 1
+  MatTransIDA(s50) #Material Trans IDA
+  MatTransIDB(s50) #Material Trans IDB

@@ -1,0 +1,12 @@
+# wellview / operations_jobs / wvJRIntProbCatCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRIntProbCatCalc: Summary of NPT during 'Daily Operation' by 'Interval Problem (NPT).Major Category' Exclude records where 'Interval Problem (NPT).Exclude From Probl... +parent
+  Category(s100_calc) #Problem Category
+  ProblemDuration(dbl_days_calc) #Problem Duration
+  ProblemDurationCum(dbl_days_calc) #Cum Problem Duration
+  ExcludeFromProblemTime(bool_calc) #Exclude From Problem Time Calcs?
+  FractionTotalNPT(dbl_pct_calc) #% Total NPT
+  FractionCumTotalNPT(dbl_pct_calc) #Cum % Total NPT
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

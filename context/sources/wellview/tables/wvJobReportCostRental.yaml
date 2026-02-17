@@ -1,0 +1,44 @@
+# wellview / operations_jobs / wvJobReportCostRental
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportCostRental: Choose costs defined in 'Recurring Cost Item' to apply to this reporting period. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  IDRecJobRentalItem(s32) #Recurring Cost Item
+  Qty(dbl) #Quantity
+  UseDay(bool) #Day Charge?
+  UseStandby(bool) #Day Standby?
+  UseHour(dbl_days) #Hours Charged
+  UseDepth(dbl_m) #Depth Charged
+  UseOther(dbl) #Other Rate 1
+  CostOneTime(dbl_cost) #Additional Amount
+  OpsCategory(s50) #Ops Category
+  UnschedTyp(s100) #Unscheduled Type
+  CostRentalCalc(dbl_cost_calc) #Field Est
+  CostCumCalc(dbl_cost_calc) #Cum Field Est
+  SN(s50) #Serial Number
+  TicketNo(s50) #Ticket Number
+  WorkOrderNo(s50) #Work Order Number
+  Note(s255) #Note
+  IDRecPhaseCustom(s32) #Custom Phase Allocation
+  IDRecAFECustom(s32) #Custom AFE Allocation
+  IDRecIntervalProblemCustom(s32) #Custom Interval Problem Allocation
+  IntervalProblemPct(dbl_pct) #Interval Problem Allocation %
+  DtTmStartCalc(dt_calc) #Report Start Date
+  DtTmEndCalc(dt_calc) #Report End Date
+  DesCalc(s100_calc) #Cost Description
+  Code1Calc(s100_calc) #Code 1
+  Code2Calc(s100_calc) #Code 2
+  Code3Calc(s100_calc) #Code 3
+  Code4Calc(s100_calc) #Code 4
+  Code5Calc(s100_calc) #Code 5
+  Code6Calc(s100_calc) #Code 6
+  VendorCalc(s100_calc) #Vendor
+  VendorCodeCalc(s100_calc) #Vendor Code
+  VendorSubCodeCalc(s100_calc) #Vendor Sub Code
+  PONoCalc(s50_calc) #Purchase Order Number
+  POAmtCalc(dbl_cost_calc) #Purchase Order Amount
+  POLineNoCalc(s50_calc) #Purchase Order Line Number
+  IDRecJobCalc(s32_calc) #Job
+  UserBoolean1Calc(bool_calc) #User Boolean 1
+  Status(s50) #Status
+  UserTxt1(s50) #User Text 1

@@ -1,0 +1,554 @@
+version: 2
+
+models:
+  # ==========================================================================
+  # stg_wellview__well_header
+  # ==========================================================================
+  - name: stg_wellview__well_header
+    description: >
+      Well header staging from WellView. One row per well.
+      Source: WVT_WVWELLHEADER (CALC schema). Refactored to 5-CTE pattern.
+      Elevations and distances converted from metric to US units via wv_* macros.
+    columns:
+      # -- surrogate key
+      - name: well_header_sk
+        description: "Surrogate key (MD5 hash of well_id)"
+
+      # -- identifiers
+      - name: well_id
+        description: "WellView well GUID (IDWELL) — natural key"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_name
+        description: "Well name. WellView: WELLNAME"
+      - name: api_10_number
+        description: "API 10-digit well number. WellView: WELLIDA"
+      - name: cost_center
+        description: "Cost center identifier. WellView: WELLIDB"
+      - name: eid
+        description: "Entity ID — primary cross-system identifier. WellView: WELLIDC"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: producing_formation
+        description: "Producing formation name. WellView: WELLIDD"
+      - name: producing_method
+        description: "Producing method. WellView: WELLIDE"
+      - name: lease_name
+        description: "Lease name. WellView: LEASE"
+      - name: state_lease_id
+        description: "State lease ID (parent). WellView: LEASECODE"
+      - name: pad_name
+        description: "Pad name. WellView: PADNAME"
+      - name: facility_name
+        description: "Facility name. WellView: PADCODE"
+
+      # -- well license
+      - name: operator_name
+        description: "Operator name. WellView: OPERATOR"
+      - name: operated_descriptor
+        description: "Operated descriptor. WellView: OPERATORCODE"
+      - name: unique_well_identifier
+        description: "Unique well identifier / license number. WellView: WELLLICENSENO"
+      - name: licensee
+        description: "Licensee. WellView: WELLLICENSEE"
+      - name: government_authority
+        description: "Government authority. WellView: GOVAUTHORITY"
+
+      # -- well classification
+      - name: basin_name
+        description: "Basin name. WellView: BASIN"
+      - name: basin_code
+        description: "Basin code. WellView: BASINCODE"
+      - name: field_name
+        description: "Field name. WellView: FIELDNAME"
+      - name: regulatory_field_name
+        description: "Regulatory field name. WellView: FIELDCODE"
+      - name: well_type
+        description: "Well type (original). WellView: WELLTYP1"
+      - name: well_subtype
+        description: "Well subtype (original). WellView: WELLTYP2"
+      - name: current_well_type
+        description: "Current well type (calculated). WellView: CURRENTWELLTYP1CALC"
+      - name: current_well_subtype
+        description: "Current well subtype (calculated). WellView: CURRENTWELLTYP2CALC"
+      - name: fluid_type
+        description: "Fluid type (original). WellView: PRIMARYFLUIDDES"
+      - name: current_fluid_type
+        description: "Current fluid type (calculated). WellView: CURRENTPRIMARYFLUIDDESCALC"
+      - name: well_configuration_type
+        description: "Well configuration type. WellView: WELLCONFIG"
+      - name: number_of_wellbores
+        description: "Number of wellbores (calculated). WellView: WELLBORENOCALC"
+      - name: well_status
+        description: "Well status (original). WellView: CURRENTWELLSTATUS1"
+      - name: well_sub_status
+        description: "Well sub-status (original). WellView: CURRENTWELLSTATUS2"
+      - name: current_well_status
+        description: "Current well status (calculated). WellView: CURRENTWELLSTATUS1CALC"
+      - name: current_well_sub_status
+        description: "Current well sub-status (calculated). WellView: CURRENTWELLSTATUS2CALC"
+      - name: current_status_date
+        description: "Current status date (calculated, NTZ). WellView: DTTMSTATUSCALC"
+      - name: sour_class
+        description: "Sour class. WellView: WELLCLASS"
+      - name: is_environment_sensitive
+        description: "Whether the well is in an environmentally sensitive area. WellView: ENVIRONMENTSENSITIVE"
+      - name: is_high_h2s
+        description: "Whether the well has high H2S. WellView: HIH2S"
+      - name: is_high_sitp
+        description: "Whether the well has high SITP. WellView: HISITP"
+      - name: is_location_sensitive
+        description: "Whether the well location is sensitive. WellView: LOCATIONSENSITIVE"
+      - name: risk_class
+        description: "Risk class. WellView: RISKCLASS"
+
+      # -- elevations (converted from meters to feet)
+      - name: original_kb_elevation_ft
+        description: "Original KB elevation in feet. WellView: ELVORIGKB"
+      - name: ground_elevation_ft
+        description: "Ground elevation in feet. WellView: ELVGROUND"
+      - name: casing_flange_elevation_ft
+        description: "Casing flange elevation in feet. WellView: ELVCASFLANGE"
+      - name: tubing_head_elevation_ft
+        description: "Tubing head elevation in feet. WellView: ELVTUBHEAD"
+      - name: mud_line_elevation_ft
+        description: "Mud line elevation in feet. WellView: ELVMUDLINE"
+      - name: lowest_astronomical_tide_elevation_ft
+        description: "Lowest astronomical tide elevation in feet. WellView: ELVLAT"
+      - name: active_working_elevation_id
+        description: "Active working/other elevation record ID. WellView: IDRECELVHISTORYCALC"
+      - name: active_working_elevation_table_key
+        description: "Active working/other elevation table key. WellView: IDRECELVHISTORYCALCTK"
+
+      # -- elevation differences (converted from meters to feet)
+      - name: kb_to_tubing_head_distance_ft
+        description: "KB to tubing head distance in feet (calculated). WellView: KBTOTUBCALC"
+      - name: kb_to_casing_flange_distance_ft
+        description: "KB to casing flange distance in feet (calculated). WellView: KBTOCASCALC"
+      - name: kb_to_ground_distance_ft
+        description: "KB to ground distance in feet (calculated). WellView: KBTOGRDCALC"
+      - name: kb_to_mud_line_distance_ft
+        description: "KB to mud line distance in feet (calculated). WellView: KBTOMUDCALC"
+      - name: kb_to_other_distance_ft
+        description: "KB to other distance in feet (calculated). WellView: KBTOOTHERCALC"
+      - name: other_to_tubing_head_distance_ft
+        description: "Other to tubing head distance in feet (calculated). WellView: OTHERTOTUBCALC"
+      - name: other_to_casing_flange_distance_ft
+        description: "Other to casing flange distance in feet (calculated). WellView: OTHERTOCASCALC"
+      - name: other_to_ground_distance_ft
+        description: "Other to ground distance in feet (calculated). WellView: OTHERTOGRDCALC"
+      - name: other_to_mud_line_distance_ft
+        description: "Other to mud line distance in feet (calculated). WellView: OTHERTOMUDCALC"
+
+      # -- depths (converted from meters to feet)
+      - name: water_depth_reference
+        description: "Water depth reference datum. WellView: WATERDEPTHREF"
+      - name: water_depth_ft
+        description: "Water depth in feet. WellView: WATERDEPTH"
+      - name: total_depth_ft
+        description: "Total depth in feet (calculated). WellView: TDCALC"
+      - name: total_depth_all
+        description: "Total depth all wellbores (calculated). WellView: TDALLCALC"
+      - name: total_depth_all_tvd
+        description: "Total depth all wellbores TVD (calculated). WellView: TDTVDALLCALC"
+      - name: pbtd_all
+        description: "Plug back total depth all wellbores (calculated). WellView: PBTDALLCALC"
+      - name: unwrapped_displacement_ft
+        description: "Unwrapped displacement in feet (calculated). WellView: DISPLACEUNWRAPCALC"
+
+      # -- dates (all timestamp_ntz)
+      - name: permit_date
+        description: "Well permit date (NTZ). WellView: DTTMWELLLIC"
+      - name: spud_date
+        description: "Spud date (NTZ). WellView: DTTMSPUD"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: rig_release_date
+        description: "Rig release date (NTZ). WellView: DTTMRR"
+      - name: estimated_on_production_date
+        description: "Estimated on-production date (NTZ). WellView: DTTMFIRSTPRODEST"
+      - name: on_production_date
+        description: "On-production date (NTZ). WellView: DTTMFIRSTPROD"
+      - name: first_zone_on_production_date
+        description: "First zone on-production date (calculated, NTZ). WellView: DTTMZONEONPRODFIRSTCALC"
+      - name: estimated_last_production_date
+        description: "Estimated last production date (NTZ). WellView: DTTMLASTPRODEST"
+      - name: last_production_date
+        description: "Last production date (NTZ). WellView: DTTMLASTPROD"
+      - name: estimated_abandonment_date
+        description: "Estimated abandonment date (NTZ). WellView: DTTMABANDONEST"
+      - name: abandon_date
+        description: "Abandonment date (NTZ). WellView: DTTMABANDON"
+      - name: h2s_certificate_approval_date
+        description: "H2S certificate approval date (NTZ). WellView: DTTMWELLCLASS"
+      - name: age_of_well_days
+        description: "Age of well in days from spud to today (calculated). WellView: DURSPUDTOTODAYCALC"
+
+      # -- location
+      - name: onshore_offshore_designation
+        description: "Onshore or offshore designation. WellView: LOCATIONTYP"
+      - name: legal_survey_type
+        description: "Legal survey type. WellView: LEGALSURVEYTYP"
+      - name: legal_survey_subtype
+        description: "Legal survey subtype. WellView: LEGALSURVEYSUBTYP"
+      - name: joa_name
+        description: "JOA name. WellView: LOCATIONNOTE"
+      - name: surface_legal_location
+        description: "Surface legal location description. WellView: LEGALSURVEYLOC"
+      - name: north_south_distance_ft
+        description: "North/south distance in feet. WellView: NSDIST"
+      - name: north_south_reference
+        description: "North/south reference direction. WellView: NSFLAG"
+      - name: east_west_distance_ft
+        description: "East/west distance in feet. WellView: EWDIST"
+      - name: east_west_reference
+        description: "East/west reference direction. WellView: EWFLAG"
+      - name: nearest_town
+        description: "Nearest town name. WellView: TOWNNAME"
+      - name: distance_to_nearest_town_miles
+        description: "Distance to nearest town in miles. WellView: TOWNDIST"
+      - name: nearest_town_ref_direction
+        description: "Direction to nearest town. WellView: TOWNFLAG"
+      - name: nearest_town_state_prov
+        description: "Nearest town state/province. WellView: TOWNSTATEPROV"
+      - name: location_reference
+        description: "Location reference. WellView: LOCATIONREF"
+      - name: asset_company
+        description: "Asset company (Formentera: AssetCo). WellView: AREA"
+      - name: county_parish
+        description: "County or parish. WellView: COUNTY"
+      - name: state_province
+        description: "State or province. WellView: STATEPROV"
+      - name: country
+        description: "Country. WellView: COUNTRY"
+      - name: field_office
+        description: "Field office. WellView: FIELDOFFICE"
+      - name: district_office
+        description: "District office. WellView: FIELDOFFICECODE"
+      - name: district
+        description: "District. WellView: DISTRICT"
+      - name: division
+        description: "Division. WellView: DIVISION"
+      - name: company_code
+        description: "Company code. WellView: DIVISIONCODE"
+      - name: directions_to_well
+        description: "Directions to the well site. WellView: DIRECTIONSTOWELL"
+
+      # -- coordinates
+      - name: lat_long_data_source
+        description: "Source of lat/long data. WellView: LATLONGSOURCE"
+      - name: lat_long_datum
+        description: "Geodetic datum of lat/long data. WellView: LATLONGDATUM"
+      - name: latitude_degrees
+        description: "Latitude in decimal degrees. WellView: LATITUDE"
+      - name: longitude_degrees
+        description: "Longitude in decimal degrees. WellView: LONGITUDE"
+      - name: utm_source
+        description: "Source of UTM data. WellView: UTMSOURCE"
+      - name: utm_grid_zone
+        description: "UTM grid zone. WellView: UTMGRIDZONE"
+      - name: utm_easting_meters
+        description: "UTM easting in meters. WellView: UTMX"
+      - name: utm_northing_meters
+        description: "UTM northing in meters. WellView: UTMY"
+
+      # -- operational
+      - name: route
+        description: "Route name (Formentera: field route). WellView: PLATFORM"
+      - name: dsu
+        description: "Drilling spacing unit. WellView: SLOT"
+      - name: production_setting_id
+        description: "Production setting record ID (calculated). WellView: IDRECPRODSETTINGCALC"
+      - name: production_setting_table_key
+        description: "Production setting table key (calculated). WellView: IDRECPRODSETTINGCALCTK"
+      - name: number_of_casing_strings
+        description: "Number of casing strings (calculated). WellView: CASINGRUNCALC"
+      - name: has_problem_with_well
+        description: "Whether the well has a problem flag. WellView: PROBLEMFLAG"
+      - name: production_failure_id
+        description: "Production failure record ID (calculated). WellView: IDRECPROBLEMCALC"
+      - name: production_failure_table_key
+        description: "Production failure table key (calculated). WellView: IDRECPROBLEMCALCTK"
+      - name: total_number_of_failures
+        description: "Total number of failures (calculated). WellView: PROBLEMTOTALCALC"
+      - name: failures_in_last_12_months
+        description: "Number of failures in last 12 months (calculated). WellView: PROBLEMLAST12MONTHCALC"
+      - name: is_operated
+        description: "Whether Formentera operates this well. WellView: OPERATED"
+      - name: surface_rights
+        description: "Surface rights. WellView: SURFACERIGHTS"
+      - name: agent
+        description: "Agent. WellView: AGENT"
+      - name: local_time_zone_hours
+        description: "Local time zone offset in hours (converted from days). WellView: LOCALTIMEZONE"
+      - name: last_job
+        description: "Last job description (calculated). WellView: LASTJOBCALC"
+      - name: last_daily_ops_report
+        description: "Last daily ops report (calculated). WellView: LASTJOBREPORTCALC"
+
+      # -- user fields
+      - name: rtp_lease_clause
+        description: "RTP lease clause. WellView: USERTXT1"
+      - name: election_days
+        description: "Election days. WellView: USERTXT2"
+      - name: payout_penalty_percent
+        description: "Payout penalty percent. WellView: USERTXT3"
+      - name: order_number
+        description: "Order number. WellView: USERTXT4"
+      - name: mawp_psig
+        description: "Maximum allowable working pressure in psig. WellView: USERTXT5"
+      - name: mawp_weak_point_description
+        description: "MAWP weak point description. WellView: USERTXT6"
+      - name: maasp_psig
+        description: "Maximum allowable annular surface pressure in psig. WellView: USERTXT7"
+      - name: uic_permit_pressure_psig
+        description: "UIC permit pressure in psig. WellView: USERTXT8"
+      - name: uic_permit_rate_bpd
+        description: "UIC permit rate in BPD. WellView: USERTXT9"
+      - name: acquisition_accounting_id
+        description: "Acquisition accounting identifier. WellView: USERTXT10"
+      - name: is_last_well_on_lease
+        description: "Whether this is the last well on the lease. WellView: USERBOOLEAN1"
+      - name: is_blm
+        description: "Whether the well is on BLM land. WellView: USERBOOLEAN2"
+      - name: is_fed_surface
+        description: "Whether the well is on federal surface. WellView: USERBOOLEAN3"
+      - name: is_split_estate
+        description: "Whether the well is on a split estate. WellView: USERBOOLEAN4"
+      - name: is_fo_drilled
+        description: "Whether Formentera drilled this well. WellView: USERBOOLEAN5"
+      - name: working_interest
+        description: "Working interest decimal. WellView: USERNUM1"
+      - name: nri_total
+        description: "Net revenue interest — total decimal. WellView: USERNUM2"
+      - name: nri_wi_only
+        description: "Net revenue interest — WI only decimal. WellView: USERNUM3"
+      - name: override_decimal
+        description: "Override decimal. WellView: USERNUM4"
+      - name: mineral_royalty_decimal
+        description: "Mineral royalty decimal. WellView: USERNUM5"
+      - name: shut_in_clock_days
+        description: "Shut-in clock in days. WellView: USERNUM6"
+      - name: first_sales_date
+        description: "First sales date (NTZ). WellView: USERDTTM1"
+      - name: ops_effective_date
+        description: "Operations effective date (NTZ). WellView: USERDTTM2"
+      - name: regulatory_effective_date
+        description: "Regulatory effective date (NTZ). WellView: USERDTTM3"
+      - name: last_approved_mit_date
+        description: "Last approved MIT date (NTZ). WellView: USERDTTM4"
+      - name: joa_date
+        description: "JOA date (NTZ). WellView: USERDTTM5"
+
+      # -- comments
+      - name: land_legal_description
+        description: "Land legal description. WellView: COM"
+
+      # -- system / audit
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: last_write_to_database
+        description: "Last write to database timestamp (NTZ). WellView: SYSMODDATEDB"
+      - name: last_write_to_database_user
+        description: "User who last wrote to the database. WellView: SYSMODUSERDB"
+      - name: security_type
+        description: "Security type. WellView: SYSSECURITYTYP"
+      - name: master_lock_date
+        description: "Master lock date (NTZ). WellView: SYSLOCKDATEMASTER"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__reference_wells
+  # ==========================================================================
+  - name: stg_wellview__reference_wells
+    description: >
+      Reference well relationships staging from WellView. One row per well-to-well link.
+      Allows linking related wells (e.g., parent/child, offset, replacement).
+      Source: WVT_WVREFWELLS (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: reference_well_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well FK (WellView well GUID). WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- reference well relationship
+      - name: reference_well_id
+        description: "Reference well record link — GUID of the linked well. WellView: IDRECREFWELL"
+      - name: reference_well_table_key
+        description: "Reference well table key. WellView: IDRECREFWELLTK"
+      - name: relationship_type
+        description: "Relationship type (e.g., Offset, Parent, Child). WellView: TYP1"
+      - name: relationship_subtype
+        description: "Relationship subtype. WellView: TYP2"
+      - name: relationship_description
+        description: "Free-text description of the relationship. WellView: DES"
+
+      # -- dates
+      - name: start_date
+        description: "Relationship start date (NTZ). WellView: DTTMSTART"
+      - name: end_date
+        description: "Relationship end date (NTZ). WellView: DTTMEND"
+
+      # -- wellview data link
+      - name: wellview_data_link_id
+        description: "WellView data link record ID — links to an item in another WellView table. WellView: IDRECITEM"
+      - name: wellview_data_link_table_key
+        description: "WellView data link table key. WellView: IDRECITEMTK"
+
+      # -- distance
+      - name: distance_to_well_miles
+        description: "Distance to the reference well in miles (converted from meters via wv_meters_to_miles). WellView: DIST"
+
+      # -- comments
+      - name: comment
+        description: "Free-text comment on the relationship. WellView: COM"
+
+      # -- system / audit
+      - name: sequence_number
+        description: "System sequence number for record ordering. WellView: SYSSEQ"
+      - name: created_at_utc
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: last_mod_at_utc
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: last_mod_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"
+
+  # ==========================================================================
+  # stg_wellview__well_status_history
+  # ==========================================================================
+  - name: stg_wellview__well_status_history
+    description: >
+      Well status history staging from WellView. One row per status change event.
+      Tracks the chronological history of well status, type, and fluid changes.
+      Source: WVT_WVWELLSTATUSHISTORY (CALC schema). Refactored to 5-CTE pattern.
+    columns:
+      # -- surrogate key
+      - name: well_status_history_sk
+        description: "Surrogate key (MD5 hash of record_id)"
+
+      # -- identifiers
+      - name: record_id
+        description: "Unique record identifier. WellView: IDREC"
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: "Parent well FK (WellView well GUID). WellView: IDWELL"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      # -- status details
+      - name: status_date
+        description: "Date of the status change (NTZ). WellView: DTTM"
+      - name: well_status
+        description: "Well status at this point in history. WellView: WELLSTATUS1"
+      - name: well_sub_status
+        description: "Well sub-status at this point in history. WellView: WELLSTATUS2"
+      - name: well_type
+        description: "Well type at this point in history. WellView: WELLTYP1"
+      - name: well_subtype
+        description: "Well subtype at this point in history. WellView: WELLTYP2"
+      - name: primary_fluid_type
+        description: "Primary fluid type at this point in history. WellView: PRIMARYFLUIDDES"
+      - name: status_source
+        description: "Source of the status change record. WellView: SOURCE"
+
+      # -- comments
+      - name: comment
+        description: "Free-text comment on the status change. WellView: COM"
+
+      # -- system / audit
+      - name: created_at
+        description: "Record creation timestamp (NTZ). WellView: SYSCREATEDATE"
+      - name: created_by
+        description: "User who created the record. WellView: SYSCREATEUSER"
+      - name: modified_at
+        description: "Last modification timestamp (NTZ). WellView: SYSMODDATE"
+      - name: modified_by
+        description: "User who last modified the record. WellView: SYSMODUSER"
+      - name: system_tag
+        description: "System tag. WellView: SYSTAG"
+      - name: system_lock_me_ui
+        description: "Whether the record is locked in the UI. WellView: SYSLOCKMEUI"
+      - name: system_lock_children_ui
+        description: "Whether child records are locked in the UI. WellView: SYSLOCKCHILDRENUI"
+      - name: system_lock_me
+        description: "Whether the record is locked. WellView: SYSLOCKME"
+      - name: system_lock_children
+        description: "Whether child records are locked. WellView: SYSLOCKCHILDREN"
+      - name: system_lock_date
+        description: "System lock date (NTZ). WellView: SYSLOCKDATE"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft delete flag"
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp (TZ)"
+      - name: _loaded_at
+        description: "dbt model load timestamp (current_timestamp at build time)"

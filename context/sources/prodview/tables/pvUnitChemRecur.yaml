@@ -1,0 +1,17 @@
+# prodview / reference / pvUnitChemRecur
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitChemRecur: Chemicals - Recurring +parent | In ProdView, you can keep an ongoing inventory of specific chemicals added to stimulate production. 
+  ProductName(s50) #Chemical Name
+  Typ(s50) #Type
+  Purpose(s50) #Purpose
+  Vendor(s50) #Vendor
+  IDRecLoc(s32) #Applied To
+  LocDetail(s50) #Location Detail
+  MeasMethod(s20) #Measurement Method
+  UOMAmount(s10) #Amount Unit
+  UOMPeriod(s20) #Rate Duration
+  CalcInventory(bool) #Calculate Inventory?
+  Com(stringlong 100) #Note
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type

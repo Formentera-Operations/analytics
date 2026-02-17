@@ -1,0 +1,39 @@
+# prodview / reference / pvUnitEventEntry
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvUnitEventEntry: Event Entries +parent
+  DtTm(dt) #Date
+  Qty(int) #Number of events
+  Com(txt2k) #Comment
+  VolUncorrHCLiqCalc(dbl_m3_calc) #Oil/Condensate Volume
+  VolUncorrGasCalc(dbl_m3_calc) #Gas Volume
+  VolUncorrWaterCalc(dbl_m3_calc) #Water Volume
+  VolUncorrSandCalc(dbl_m3_calc) #Sand Volume
+  VolORHCLiq(dbl_m3) #Override Oil/Condensate
+  VolORGas(dbl_m3) #Override Gas
+  VolORWater(dbl_m3) #Override Water
+  VolORSand(dbl_m3) #Override Sand
+  VolHCLiqCalc(dbl_m3_calc) #Final Oil/Condensate Volume
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Final Gas Equivalent of Oil/Cond Volume
+  VolGasCalc(dbl_m3_calc) #Final Gas Volume
+  VolWaterCalc(dbl_m3_calc) #Final Water Volume
+  VolSandCalc(dbl_m3_calc) #Final Sand Volume
+  VolUncorrHeatCalc(double, joule, calculated) #Uncorrected Heat Calc
+  VolORHeat(double, joule per cubic meter) #Override Heat
+  VolHeatCalc(double, joule per cubic meter, calculated) #Final Heat Calc
+  RegulatoryCode1(s50) #Regulatory Code 1
+  RegulatoryCode2(s50) #Regulatory Code 2
+  RegulatoryCode3(s50) #Regulatory Code 3
+  IDRecFluidAnalysisCalc(s32_calc) #Fluid Analysis
+  DtTmStart(dt) #Start of Event
+  DtTmEnd(dt) #End of Event
+  DurOnOR(dbl_days) #Event Hours Override
+  DurOnCalc(double, days, calculated) #Event Hours
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserBool1(bool) #User Boolean 1
+  UserBool2(bool) #User Boolean 2

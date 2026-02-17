@@ -1,0 +1,10 @@
+# prodview / completions / pvUnitCompAllow
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompAllow: Allowables +parent
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  VolHCLiq(dbl_m3) #Allowable Oil/Condensate
+  VolWater(dbl_m3) #Allowable Water
+  VolGas(dbl_m3) #Allowable Gas
+  PresInject(dbl_kPa) #Maximum Injection Pressure

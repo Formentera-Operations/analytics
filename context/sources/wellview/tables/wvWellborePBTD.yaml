@@ -1,0 +1,10 @@
+# wellview / wellbore_surveys / wvWellborePBTD
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellborePBTD: Plug Back Total Depth history for the 'Wellbore'. +parent
+  DtTm(dt) #Date
+  Typ(s100) #Type
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  MeasMeth(s50) #Measurement Method
+  Com(txt2k) #Comment

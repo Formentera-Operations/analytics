@@ -1,0 +1,10 @@
+# wellview / other / wvAttributes
+# Source: context/sources/wellview/domains/other.yaml
+#
+wvAttributes: Additional attributes. +parent
+  Typ1(s100) #Attribute Type
+  Typ2(s100) #Attribute Subtype
+  AttribValue(s100) #Value
+  DtTm(dt) #Date
+  Com(txt2k) #Comment
+  UserNum(dbl) #User Num 1

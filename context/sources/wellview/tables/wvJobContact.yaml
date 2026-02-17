@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJobContact
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobContact: Names, roles and contact information for personnel involved with the 'Job'. +parent
+  Company(s100) #Company
+  ContactName(s50) #Contact Name
+  Title(s50) #Title
+  Location(s50) #Location
+  Typ(s100) #Type
+  RptDist(s50) #Report Distribution
+  Note(s255) #Note
+  PhoneOffice(s20) #Phone Office
+  PhoneMobile(s20) #Phone Mobile
+  PhoneHome(s20) #Phone Home
+  PhoneAlt(s20) #Phone Alternate
+  PhonePager(s20) #Pager
+  Fax(s20) #Fax
+  Email(s255) #Email

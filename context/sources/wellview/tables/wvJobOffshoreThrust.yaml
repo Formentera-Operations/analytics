@@ -1,0 +1,9 @@
+# wellview / operations_jobs / wvJobOffshoreThrust
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobOffshoreThrust: Thruster details. +extension
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  ThrusterDes(s100) #Description
+  Thrust(dbl_W) #Thrust
+  ThrustMax(dbl_W) #Max Thrust
+  Note(s255) #Note

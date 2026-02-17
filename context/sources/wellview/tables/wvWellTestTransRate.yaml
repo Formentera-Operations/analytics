@@ -1,0 +1,17 @@
+# wellview / reservoir_tests / wvWellTestTransRate
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestTransRate: Rate, density, H2S, salinity by date/time. +parent
+  DtTm(dt) #Date
+  RateOil(dbl_m3pd) #Rate Oil
+  RateCond(dbl_m3pd) #Rate Cond
+  RateGas(dbl_m3pd) #Rate Gas
+  RateWater(dbl_m3pd) #Rate Water
+  PhWater(dbl) #pH Water
+  SalinityWater(dbl_pct) #Salinity Water
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  H2S(dbl_pct) #H2S
+  DensityOil(dbl_kgpm3) #Oil Density
+  DensityGas(dbl_kgpm3) #Gas Density
+  Com(txt2k) #Comment

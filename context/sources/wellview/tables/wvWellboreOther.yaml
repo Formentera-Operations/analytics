@@ -1,0 +1,11 @@
+# wellview / wellbore_surveys / wvWellboreOther
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreOther: Describes hole washouts or other changes in hole size not described in the 'Wellbore Section'  table. +parent
+  Des(s100) #Description of Point/Interval
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  MaxOD(dbl_m) #Max OD
+  Volume(dbl_m3) #Volume

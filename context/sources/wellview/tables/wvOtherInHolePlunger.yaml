@@ -1,0 +1,16 @@
+# wellview / tubing_rods_equipment / wvOtherInHolePlunger
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherInHolePlunger: Details of plungers associated with the bumper spring assembly. Plunger type, make, model, run and pull date. +extension
+  RefNo(s20) #Reference #
+  Typ(s100) #Plunger Type
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  SzOD(dbl_m) #OD
+  Length(dbl_m) #Length
+  DtTmRun(dt) #Run Date
+  DtTmPull(dt) #Pull Date
+  PullReason(s100) #Pull Reason
+  Com(txt2k) #Comment
+  RefID(s50) #Reference ID

@@ -1,0 +1,6 @@
+# wellview / operations_jobs / wvJobApprovalStepPreReq
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApprovalStepPreReq: All 'Approval Process Step' that must be completed prior to starting the next step. +parent
+  IDRecStep(s32) #Prerequisite
+  Note(s255) #Note

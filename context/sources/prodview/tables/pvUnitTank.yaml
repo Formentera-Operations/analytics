@@ -1,0 +1,43 @@
+# prodview / tanks / pvUnitTank
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTank: Tanks +parent
+  Name(s50) #Tank Name
+  DtTmStart(dt) #Start Using Tank
+  DtTmEnd(dt) #Stop Using Tank
+  VolCapacity(dbl_m3) #Tank Capacity Volume
+  VolRemainCalc(dbl_m3_calc) #Remaining Capacity
+  PctFullCalc(dbl_pct_calc) #Capacity Pct
+  ProductName(s50) #Product
+  InitialBSW(dbl_pct) #Initial BSW
+  FacProductName(s50) #Facility Product
+  MethodMeasure(s50) #Measurement Method
+  ExcludeFmProd(bool) #Exclude from Production
+  UOMLevel(s10) #Level Reading Unit
+  VRMethod(s50) #Vapor Recovery Method
+  TypRecording(s50) #Recording Type
+  Underground(bool) #Underground
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Historical Name
+  OtherID(s50) #Equip SK #
+  EntryReqPeriod(s50) #Entry Requirement Period
+  IDRecUnitDataEntryOR(s32) #Data Entry Unit
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  sysSeq(int) #Sequence

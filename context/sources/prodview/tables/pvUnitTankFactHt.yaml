@@ -1,0 +1,8 @@
+# prodview / tanks / pvUnitTankFactHt
+# Source: context/sources/prodview/domains/tanks.yaml
+#
+pvUnitTankFactHt: Height Factor +ext,parent | Tank height factor which is multiplied by the level in order to arrive at a volumetric measurement.
+  DtTm(dt) #Effective Date
+  Factor(double, cubic meter per meter) #Factor
+  DurValid(dbl_days) #Duration Between Calibrations
+  DtTmNextCalc(dt_calc) #Next Calibration Due

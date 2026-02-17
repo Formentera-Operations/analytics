@@ -1,0 +1,133 @@
+# prodview / allocations / pvUnitAllocMonthDay
+# Source: context/sources/prodview/domains/allocations.yaml
+#
+pvUnitAllocMonthDay: Daily Allocations +parent | Lost Production Due to Downtime
+  DtTm(dt) #Date
+  Year(int) #Year
+  Month(int) #Month
+  DayOfMonth(int) #Day
+  DurDown(dbl_days) #Downtime
+  DurOp(dbl_days) #Operating Time
+  IDRecUnit(s32) #Unit
+  IDRecComp(s32) #Completion
+  IDRecCompZone(s32) #Reporting/Contact Interval
+  VolProdGathHCLiq(dbl_m3) #Gathered HCLiq
+  VolProdGathGas(dbl_m3) #Gathered Gas
+  VolProdGathWater(dbl_m3) #Gathered Water
+  VolProdGathSand(dbl_m3) #Gathered Sand
+  VolProdAllocHCLiq(dbl_m3) #Allocated HCLiq
+  VolProdAllocOil(dbl_m3) #Allocated Oil
+  VolProdAllocCond(dbl_m3) #Allocated Cond
+  VolProdAllocNGL(dbl_m3) #Allocated NGL
+  VolProdAllocHCLiqGasEq(dbl_m3) #Allocated Gas Equivalent of HCLiq
+  VolProdAllocGas(dbl_m3) #Allocated Gas
+  VolProdAllocWater(dbl_m3) #Allocated Water
+  VolProdAllocSand(dbl_m3) #Allocated Sand
+  AllocFactHCLiq(dbl_m3pm3) #Allocation Factor HCLiq
+  AllocFactGas(dbl_m3pm3) #Allocation Factor Gas
+  AllocFactWater(dbl_m3pm3) #Allocation Factor Water
+  AllocFactSand(dbl_m3pm3) #Allocation Factor Sand
+  VolNewProdAllocHCLiq(dbl_m3) #New Production HCLiq
+  VolNewProdAllocOil(dbl_m3) #New Production Oil
+  VolNewProdAllocCond(dbl_m3) #New Production Cond
+  VolNewProdAllocNGL(dbl_m3) #New Production NGL
+  VolNewProdAllocHCLiqGasEq(dbl_m3) #New Production of Gas Equivalent of HCLiq
+  VolNewProdAllocGas(dbl_m3) #New Production Gas
+  VolNewProdAllocWater(dbl_m3) #New Production Water
+  VolNewProdAllocSand(dbl_m3) #New Production Sand
+  WIHCLiq(dbl_pct) #Working Interest Oil/Cond
+  WIGas(dbl_pct) #Working Interest Gas
+  WIWater(dbl_pct) #Working Interest Water
+  WISand(dbl_pct) #Working Interest Sand
+  NRIHCLiq(dbl_pct) #Net Revenue Interest Oil/Cond
+  NRIGas(dbl_pct) #Net Revenue Interest Gas
+  NRIWater(dbl_pct) #Net Revenue Interest Water
+  NRISand(dbl_pct) #Net Revenue Interest Sand
+  VolLostHCLiq(dbl_m3) #Deferred Oil/Condensate Production
+  VolLostGas(dbl_m3) #Deferred Gas Production
+  VolLostWater(dbl_m3) #Deferred Water Production
+  VolLostSand(dbl_m3) #Deferred Sand Production
+  VolDiffTargetHCLiq(dbl_m3) #Difference from Target HCLiq
+  VolDiffTargetOil(dbl_m3) #Difference from Target Oil
+  VolDiffTargetCond(dbl_m3) #Difference from Target Cond
+  VolDiffTargetNGL(dbl_m3) #Difference from Target NGL
+  VolDiffTargetGas(dbl_m3) #Difference from Target Gas
+  VolDiffTargetWater(dbl_m3) #Difference from Target Water
+  VolDiffTargetSand(dbl_m3) #Difference from Target Sand
+  VolRecovHCLiq(dbl_m3) #Recovered Load Oil/Condensate
+  VolRecovGas(dbl_m3) #Recovered Lift Gas
+  VolRecovWater(dbl_m3) #Recovered Load Water
+  VolRecovSand(dbl_m3) #Recovered Sand
+  VolInjectRecovGas(dbl_m3) #Injected Lift Gas
+  VolInjectRecovHCLiq(dbl_m3) #Injected Load Oil/Condensate
+  VolInjectRecovWater(dbl_m3) #Injected Load Water
+  VolInjectRecovSand(dbl_m3) #Injected Sand
+  VolStartRemainRecovHCLiq(dbl_m3) #Starting Load Oil/Condensate
+  VolStartRemainRecovGas(dbl_m3) #Starting Lift Gas
+  VolStartRemainRecovWater(dbl_m3) #Starting Load Water
+  VolStartRemainRecovSand(dbl_m3) #Starting Sand
+  VolRemainRecovHCLiq(dbl_m3) #Remaining Load Oil/Condensate
+  VolRemainRecovGas(dbl_m3) #Remaining Lift Gas
+  VolRemainRecovWater(dbl_m3) #Remaining Load Water
+  VolRemainRecovSand(dbl_m3) #Remaining Sand
+  VolStartInvHCLiq(dbl_m3) #Opening Inventory Oil/Condensate
+  VolStartInvHCLiqGasEq(dbl_m3) #Opening Inventory Gas Equivalent of Oil/Cond
+  VolStartInvWater(dbl_m3) #Opening Inventory Water
+  VolStartInvSand(dbl_m3) #Opening Inventory Sand
+  VolEndInvHCLiq(dbl_m3) #Closing Inventory Oil/Condensate
+  VolEndInvHCLiqGasEq(dbl_m3) #Closing Inventory Gas Equiv of Oil/Condensate
+  VolEndInvWater(dbl_m3) #Closing Inventory Water
+  VolEndInvSand(dbl_m3) #Closing Inventory Sand
+  VolChgInvHCLiq(dbl_m3) #Change in Inventory Oil/Condensate
+  VolChgInvHCLiqGasEq(dbl_m3) #Change in Inventory Gas Equivalent of Oil/Cond
+  VolChgInvWater(dbl_m3) #Change in Inventory Water
+  VolChgInvSand(dbl_m3) #Change in Inventory Sand
+  VolDispSaleHCLiq(dbl_m3) #Disposed Allocated Sales HCLiq
+  VolDispSaleOil(dbl_m3) #Disposed Allocated Sales Oil
+  VolDispSaleCond(dbl_m3) #Disposed Allocated Sales Cond
+  VolDispSaleNGL(dbl_m3) #Disposed Allocated Sales NGL
+  VolDispSaleGas(dbl_m3) #Disposed Allocated Sales Gas
+  VolDispFuelGas(dbl_m3) #Disposed Allocated Fuel Gas
+  VolDispFlareGas(dbl_m3) #Disposed Allocated Flare Gas
+  VolDispIncinerateGas(dbl_m3) #Disposed Allocated Incineration Gas
+  VolDispVentGas(dbl_m3) #Disposed Allocated Vent Gas
+  VolDispInjectGas(dbl_m3) #Disposed Allocated Injected Gas
+  VolDispInjectWater(dbl_m3) #Disposed Allocated Injected Water
+  VolInjectHCLiq(dbl_m3) #Injection Well - Oil/Cond
+  VolInjectGas(dbl_m3) #Injection Well - Gas
+  VolInjectWater(dbl_m3) #Injection Well - Water
+  VolInjectSand(dbl_m3) #Injection Well - Sand
+  VolProdCumHCLiq(dbl_m3) #Cumulated HCLiq
+  VolProdCumOil(dbl_m3) #Cumulated Oil
+  VolProdCumCond(dbl_m3) #Cumulated Cond
+  VolProdCumNGL(dbl_m3) #Cumulated NGL
+  VolProdCumGas(dbl_m3) #Cumulated Gas
+  VolProdCumWater(dbl_m3) #Cumulated Water
+  VolProdCumSand(dbl_m3) #Cumulated Sand
+  HeatProdGath(double, joule) #Gathered Heat
+  FactHeatGath(double, joule per cubic meter) #Gathered Heat Factor
+  HeatProdAlloc(double, joule) #Allocated Heat
+  FactHeatAlloc(double, joule per cubic meter) #Allocated Heat Factor
+  HeatNewProdAlloc(double, joule) #New Production Heat
+  HeatDispSale(double, joule) #Disposed Sales Heat
+  HeatDispFuel(double, joule) #Disposed Fuel Heat
+  HeatDispFlare(double, joule) #Disposed Flare Heat
+  HeatDispVent(double, joule) #Disposed Vent Heat
+  HeatDispIncinerate(double, joule) #Disposed Incinerate Heat
+  DensityAlloc(dbl_kgpm3) #Allocated Density
+  DensitySale(dbl_kgpm3) #Sales Density
+  IDRecMeasMeth(s32) #Last Measurement Method
+  IDRecFluidLevel(s32) #Last Fluid Level
+  IDRecTest(s32) #Last Test
+  IDRecParam(s32) #Last Param
+  IDRecDownTime(s32) #Downtime
+  IDRecGasAnalysis(s32) #Gas Analysis
+  IDRecHCLiqAnalysis(s32) #HC Liquid  Analysis
+  IDRecOilAnalysis(s32) #Oil Properties
+  IDRecWaterAnalysis(s32) #Water Properties
+  IDRecStatus(s32) #Status
+  IDRecPumpEntry(s32) #Last Pump Entry
+  IDRecFacility(s32) #Reporting Facility
+  PumpEff(dbl_pct) #Pump Efficiency
+  IDRecCalcSet(s32) #Calc Settings
+  IDRecDeferment(s32) #Deferment

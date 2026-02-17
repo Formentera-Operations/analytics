@@ -1,0 +1,12 @@
+# wellview / tubing_rods_equipment / wvTubCompPump
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompPump: Tubing pump details including barrel, plunger, seat assembly, standing & traveling valve information. +extension
+  PumpTyp(s2) #API Pump Type
+  SzIDBore(dbl_m) #Pump Bore
+  BarrelTyp(s2) #API Barrel Type
+  BarrelLength(dbl_m) #Barrel Length
+  BarrelMaterial(s50) #API Barrel Material
+  SeatAssyTyp(s2) #Seating Assembly Type
+  SeatAssyDes(s100) #Seating Assembly Description
+  SeatAssySz(dbl_m) #Seating Assembly Size

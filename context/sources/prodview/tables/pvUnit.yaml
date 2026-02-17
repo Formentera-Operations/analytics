@@ -1,0 +1,83 @@
+# prodview / completions / pvUnit
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnit: Units | Units are the building blocks of the flow network. Each flow network is made up of a series of units
+  Name(s100) #Unit Name
+  Typ1(s50) #Unit Type
+  Typ2(s50) #Unit Sub Type
+  NameShort(s50) #Display Name
+  UserTxt2(s50) #Completion Status
+  UserTxt3(s50) #Producing Method
+  Priority(bool) #Cycled?
+  Operated(bool) #Operated?
+  Operator(s50) #Operator
+  OperatorIDA(s50) #Operated Descriptor
+  TypDispNGL(s50) #NGL Inventory Type
+  DtTmStart(dt) #Start Displaying Unit On
+  DtTmEnd(dt) #Stop Displaying Unit After
+  DtTmHide(dt) #Hide Record As Of
+  FieldCode(s50) #Regulatory Field Name
+  DivisionCode(s100) #Company Code
+  IDRecCompStatusCalc(s32_calc) #Current Completion Status
+  StopName(s50) #Stop Name
+  UnitIDPA(s50) #EID
+  UnitIDB(s50) #Property Number
+  Lease(s50) #Lease Name
+  LeaseIDA(s50) #TX - Lease Number, LA - LUW, ND-MS-OK - N/A
+  UnitIDRegulatory(s50) #Regulatory ID
+  UnitIDA(s50) #API 10
+  UnitIDC(s50) #Combo Curve ID
+  TypPA(s50) #Comimingle Permit No.
+  Division(s100) #Division
+  District(s100) #District
+  Area(s50) #AssetCo
+  Field(s50) #Foreman Area
+  FieldOffice(s50) #Field Office
+  FieldOfficeCode(s50) #District Office
+  IDRecRouteSetRouteCalc(s32_calc) #Current Route
+  Platform(s50) #Route
+  PadCode(s50) #Facility Name
+  PadName(s50) #Pad Name
+  IDRecFacilityCalc(s32_calc) #Current Facility
+  CostCenterIDA(s50) #Cost Center
+  County(s50) #County
+  StateProv(s50) #State/Province
+  Country(s50) #Country
+  Slot(s20) #DSU
+  LegalSurfLoc(s100) #Surface Legal Location
+  Latitude(dbl_deg) #Surface Latitude
+  Longitude(dbl_deg) #Surface Longitude
+  LatLongSource(s50) #LatLong Source
+  LatLongDatum(s50) #Lat/Long Datum
+  UserTxt5(s50) #Chemical Provider
+  GovAuthority(s50) #Government Authority
+  Purchaser(bool) #Purchaser?
+  Com(txt2k) #Comment
+  LocationTyp(s50) #SWD System
+  CostCenterIDB(s50) #Gas Gathering System Name
+  SortByUser(s50) #Unit Sort
+  TypDispHCLiq(s50) #HCLiq Inventory Type
+  DispProductName(s50) #HCLiq Disposition Method
+  DisplaySizeFactor(dbl) #Display Size Factor
+  Elevation(double, meter) #Ground Elevation
+  TypRegulatory(s50) #Regulatory Unit Type
+  TypMigrationSource(s100) #Migration Source Type
+  KeyMigrationSource(s100) #Migration Source Key
+  UserTxt1(s50) #UserTxt1
+  UserTxt4(s50) #Stripper Type
+  UserDtTm1(dt) #Stripper Date
+  UserNum1(dbl) #Electric Allocation Meter Number
+  UserNum2(dbl) #Electric Meter ID
+  UserNum3(dbl) #Electric Acct. No.
+  UserNum4(dbl) #Electric Vendor No.
+  UTMGridZone(int) #UTM Grid Zone
+  UTMx(double, meter) #UTM Easting
+  UTMy(double, meter) #UTM Northing
+  UTMSource(s50) #Location
+  UserNum5(dbl) #User Num 5
+  UserDtTm2(dt) #BHA Change 1
+  UserDtTm3(dt) #BHA Change 2
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5
+  IDRecResp1(s32) #Oil Purchaser
+  IDRecResp2(s32) #Gas Purchaser

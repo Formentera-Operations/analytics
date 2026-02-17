@@ -1,0 +1,7 @@
+# prodview / routes / pvRouteSet
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvRouteSet: Route Set | In the Route Set table, enter the date in which a series of routes becomes effective. If you have ch
+  DtTmStart(dt) #Start Date
+  Com(txt255) #Note
+  ActiveTodayCalc(boolean, calculated) #Current?

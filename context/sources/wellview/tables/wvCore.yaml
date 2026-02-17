@@ -1,0 +1,34 @@
+# wellview / geological_evaluations / wvCore
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvCore: Description of bottom hole cores. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  CoreNo(int) #Core #
+  Typ(s100) #Type
+  Des(s100) #Description
+  Purpose(s50) #Purpose
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  Contractor(s50) #Coring Company
+  FluidTyp(s100) #Fluid Type
+  RefNo(s20) #Reference #
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  IDRecGeoEval(s32) #Geological Evaluation
+  Com(txt2k) #Comment
+  LenRecovered(dbl_m) #Recovered
+  PctRecovCalc(dbl_pct_calc) #Percent Recovery
+  Oriented(bool) #Oriented?
+  RQD(dbl_pct) #Rock Quality Designation
+  IDRecDrillStringComp(s32) #Drill String Component
+  SzDiaCore(dbl_m) #Core Diameter
+  BarrelTyp(s100) #Barrel Type
+  BarrelLength(dbl_m) #Barrel Length
+  TreatmentMethod(s50) #Treatment Method
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit

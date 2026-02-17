@@ -1,0 +1,31 @@
+# Peloton WellView: Other
+# Polymorphic tables (attributes, attachments, comments, sign-off, locations), time curves, curve interpretations, AFE summary calcs
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvAttributes: Additional attributes. +parent
+#   wvAttachment: Attach relevant files. +parent
+#   wvComment: Additional comments. +parent
+#   wvSignOff: Sign off the well or specific tables. +parent
+#   wvLocLatLongUTM: Global location (latitude, longitude, UTMx, UTMy) table. The Surface location...
+#   wvTimeCurve: Time based logs. +parent
+#   wvCurveInterp: Interpretation of sensor data. +parent
+#   wvCurveInterpDtl: Interpretation of sensor data - details. +parent
+#   wvAFECalc: Summary of AFE and associated costs for the well (across jobs). +parent
+#   wvAFECostSumCalc: Cumulative costs by AFE for all Jobs in the well. Costs broken down by codes ...

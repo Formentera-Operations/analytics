@@ -1,0 +1,68 @@
+# prodview / completions / pvUnitComp
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitComp: Completions +ext,parent | Licensed producing or injecting interval in a well.
+  DtTmStartAlloc(dt) #Start Allocating Date in ProdView
+  DtTmEnd(dt) #Expiry Date
+  DtTmOnProd(dt) #POP Date
+  DtTmFirstSale(dt) #First Sale Date
+  DtTmFlowBackStart(dt) #Flowback Start Date
+  DtTmFlowBackEnd(dt) #Flowback End Date
+  DtTmAbandon(dt) #Abandon Date
+  DtTmLastProducedCalc(dt_calc) #Last Produced Date
+  DtTmLastProducedHCLiqCalc(dt_calc) #Last Produced Oil Date
+  DtTmLastProducedGasCalc(dt_calc) #Last Produced Gas Date
+  HeldByProductionThreshold(dbl_days) #Held by Production Threshold
+  CompletionName(s50) #Completion Name
+  CompletionCode(s50) #Surface Commingle Number
+  CompIDRegulatory(s50) #GHG Report Basin
+  CompIDPA(s50) #Production Accounting Identifier for Completion
+  CompIDA(s50) #Well Number
+  CompIDB(s50) #Gas POP ID
+  CompIDC(s50) #Gas Meter No.
+  CompIDD(s50) #Gas Alloc Meter No.
+  CompletionIDE(s50) #Gas Alloc Group No.
+  CompletionLicensee(s50) #Completion Licensee
+  CompletionLicenseNo(s50) #Federal Lease #
+  DtTmLicense(dt) #Completion License Date
+  PermanentID(s32) #Permanent Completion ID
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  WellName(s100) #Well Name
+  WellLicenseNo(s50) #LA - Serial #, ND - Well File #, TX-MS-OK- API 14
+  WellIDRegulatory(s50) #Regulatory ID of Well
+  WellIDPA(s50) #Production Accounting Identifier of Well
+  WellIDA(s50) #API10
+  WellIDB(s50) #CostCenter
+  WellIDC(s50) #EID
+  WellIDD(s50) #Producing Formation
+  WellIDE(s50) #Legal Well Name
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  Latitude(dbl_deg) #Bottomhole Latitude
+  Longitude(dbl_deg) #Bottomhole Longitude
+  LatLongSource(s50) #Lat Long Data Source
+  LatLongDatum(s50) #Lat/Long Datum
+  EntryReqPeriodFluidLevel(s50) #Entry Requirement Period Fluid Level
+  EntryReqPeriodParam(s50) #Entry Requirement Period Parameters
+  UserTxt1(s50) #BHA Type PAGA/SAGA/RPGA
+  UserTxt2(s50) #RESCAT
+  UserTxt3(s50) #Electric Vendor Name
+  UserTxt4(s50) #Electric Meter Name
+  UserTxt5(s50) #Working Interest Partner
+  UserNum1(dbl) #Surface Casing
+  UserNum2(dbl) #Prod Casing
+  UserNum3(dbl) #Prod Liner
+  UserNum4(dbl) #Purchaser CTB Lease ID
+  UserNum5(dbl) #Purchaser Well Lease ID
+  UserDtTm1(dt) #Spud Date
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #Rig Release Date
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5

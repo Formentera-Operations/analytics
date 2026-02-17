@@ -1,0 +1,9 @@
+# prodview / fluid_analysis / pvUnitCompGasAnaly
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvUnitCompGasAnaly: Gas Analyses +parent | Link to gas analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecGasAnaly(s32) #Gas Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note

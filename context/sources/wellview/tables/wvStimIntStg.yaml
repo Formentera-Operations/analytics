@@ -1,0 +1,99 @@
+# wellview / perfs_stims / wvStimIntStg
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntStg: Summary of the pumping schedule, also known as 'pumping stages', sub-stages or event level details. +parent
+  StageNum(int) #Sub Stage Number
+  StageTyp1(s100) #Sub Stage Type 1
+  StageTyp2(s100) #Sub Stage Type 2
+  Des(s100) #Stage Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  IDRecFluid(s32) #Link to Fluid System
+  IDRecProp(s32) #Link to Proppant
+  GasDes(s50) #Gas Description
+  Exclude(bool) #Exclude From Calcs?
+  Com(txt2k) #Comment
+  VolClean(dbl_m3) #Clean Volume
+  VolCleanCumCalc(dbl_m3_calc) #Cum Clean Volume
+  VolSlurry(dbl_m3) #Slurry Volume
+  VolSlurryCumCalc(dbl_m3_calc) #Cum Slurry Volume
+  VolRecovered(dbl_m3) #Recovered Volume
+  VolRecoveredCumCalc(dbl_m3_calc) #Cum Recovered Volume
+  VolCO2(dbl_m3) #CO2 Volume
+  VolCO2CumCalc(dbl_m3_calc) #Cum CO2 Volume
+  VolN2(dbl_m3) #N2 Volume
+  VolN2CumCalc(dbl_m3_calc) #Cum N2 Volume
+  VolNetCleanCalc(dbl_m3_calc) #Total Clean - Recovered Volume
+  VolNetSlurryCalc(dbl_m3_calc) #Total Slurry-Recovered Volume
+  PresSurfStart(dbl_kPa) #Surf Pressure Start
+  PresSurfEnd(dbl_kPa) #Surf Pressure End
+  PresSurfAvg(dbl_kPa) #Surf Pressure Avg
+  PresSurfMin(dbl_kPa) #Surf Pressure Min
+  PresSurfMax(dbl_kPa) #Surf Pressure Max
+  PresSurfMaxMinCalc(dbl_kPa_calc) #Surf Pressure Max - Min
+  PresBHStart(dbl_kPa) #BH Pressure Start
+  PresBHEnd(dbl_kPa) #BH Pressure End
+  PresBHAvg(dbl_kPa) #BH Pressure Avg
+  PresBHMin(dbl_kPa) #BH Pressure Min
+  PresBHMax(dbl_kPa) #BH Pressure Max
+  PresBHMaxMinCalc(dbl_kPa_calc) #BH Pressure Max - Min
+  PresZoneMax(dbl_kPa) #Max Pres Allowable for Zone
+  RateCleanStart(dbl_m3pd) #Clean Rate Start
+  RateCleanEnd(dbl_m3pd) #Clean Rate End
+  RateCleanAvg(dbl_m3pd) #Clean Rate Avg
+  RateCleanMin(dbl_m3pd) #Clean Rate Min
+  RateCleanMax(dbl_m3pd) #Clean Rate Max
+  RateSlurryStart(dbl_m3pd) #Slurry Rate Start
+  RateSlurryEnd(dbl_m3pd) #Slurry Rate End
+  RateSlurryAvg(dbl_m3pd) #Slurry Rate Avg
+  RateSlurryMin(dbl_m3pd) #Slurry Rate Min
+  RateSlurryMax(dbl_m3pd) #Slurry Rate Max
+  RateCO2SurfStart(dbl_m3pd) #CO2 Rate Start
+  RateCO2SurfEnd(dbl_m3pd) #CO2 Rate End
+  RateCO2SurfAvg(dbl_m3pd) #CO2 Rate Avg
+  RateCO2Min(dbl_m3pd) #CO2 Rate Min
+  RateCO2Max(dbl_m3pd) #CO2 Rate Max
+  RateCO2FoamStart(dbl_m3pd) #CO2 Foam Rate Start
+  RateCO2FoamEnd(dbl_m3pd) #CO2 Foam Rate End
+  FoamCO2Quality(dbl_pct) #Foam CO2 Quality
+  RateN2SurfStart(dbl_m3pd) #N2 Rate Start
+  RateN2SurfEnd(dbl_m3pd) #N2 Rate End
+  RateN2SurfAvg(dbl_m3pd) #N2 Rate Avg
+  RateN2Min(dbl_m3pd) #N2 Rate Min
+  RateN2Max(dbl_m3pd) #N2 Rate Max
+  RateN2FoamStart(dbl_m3pd) #N2 Foam Rate Start
+  RateN2FoamEnd(dbl_m3pd) #N2 Foam Rate End
+  FoamN2Quality(dbl_pct) #Foam N2 Quality
+  RatePumpSurfAvg(dbl_m3pd) #Surf Pump Rate Avg
+  RatePumpSurfStart(dbl_m3pd) #Surf Pump Rate Start
+  RatePumpSurfEnd(dbl_m3pd) #Surf Pump Rate End
+  RatePumpBHAvg(dbl_m3pd) #BH Pump Rate Avg
+  RatePumpBHStart(dbl_m3pd) #BH Pump Rate Start
+  RatePumpBHEnd(dbl_m3pd) #BH Pump Rate End
+  MassProp(dbl_kg) #Proppant Mass
+  MassPropCumCalc(dbl_kg_calc) #Cum Proppant Mass
+  MassPropWH(dbl_kg) #Proppant Mass @ Wellhead
+  ConcSurfStart(dbl_kgpm3) #Surf Proppant Conc Start
+  ConcSurfEnd(dbl_kgpm3) #Surf Proppant Conc End
+  ConcSurfAvg(dbl_kgpm3) #Surf Proppant Conc Avg
+  ConcSurfMin(dbl_kgpm3) #Surf Proppant Conc Min
+  ConcSurfMax(dbl_kgpm3) #Surf Proppant Conc Max
+  ConcBHStart(dbl_kgpm3) #BH Proppant Conc Start
+  ConcBHEnd(dbl_kgpm3) #BH Proppant Conc End
+  ConcBHAvg(dbl_kgpm3) #BH Proppant Conc Avg
+  ConcBHMin(dbl_kgpm3) #BH Proppant Conc Min
+  ConcBHMax(dbl_kgpm3) #BH Proppant Conc Max
+  DurPumpTotal(dbl_days) #Total Stage Pumping Time
+  PresPumpingMax(dbl_kPa) #Pumping Pressure Max
+  PumpPowerAvg(dbl_W) #Pump Power Avg
+  TempTreatAvg(dbl_degC) #Treatment Temp Avg
+  FrictionFactor(dbl) #Friction Factor
+  SpaceFactor(dbl) #Space Factor
+  BallsNoUsed(int) #Number of Balls Used
+  BallsNoRecov(int) #Number of Balls Recovered
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserTxt1(s50) #User Text 1

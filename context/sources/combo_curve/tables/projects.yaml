@@ -1,0 +1,16 @@
+# combo_curve / wells / PROJECTS
+# Source: context/sources/combo_curve/domains/wells.yaml
+# 6 columns, 242 rows. Project containers.
+# Maps to stg_cc__projects.
+#
+PROJECTS: Project containers. Organizational units that group wells, forecasts, scenarios, and economic runs.
+
+  # -- Identifiers --
+  ID(txt) #ComboCurve project ID (24-char hex, MongoDB ObjectId)
+  NAME(txt) #Project name
+
+  # -- Metadata --
+  CREATEDAT(ts) #Project creation timestamp (ComboCurve)
+  UPDATEDAT(ts) #Project last update timestamp (ComboCurve)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (not a ComboCurve field)
+  _PORTABLE_EXTRACTED(ts) #Portable ingestion timestamp (maps to _loaded_at in staging)

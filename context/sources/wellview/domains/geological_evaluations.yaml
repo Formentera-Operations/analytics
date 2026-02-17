@@ -1,0 +1,42 @@
+# Peloton WellView: Geological Evaluations
+# Geological evaluations (lithology, shows, fluids, grain sizes, porosity), logs, cores, RFTs
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvGeoEval: Geological evaluation of cores, cuttings, logs, etc. +parent
+#   wvGeoEvalSampleDes: General sample descriptions. +parent
+#   wvGeoEvalLith: Interpretation of lithology. +parent
+#   wvGeoEvalQualifier: Sample qualifiers. +parent
+#   wvGeoEvalShowOil: Detailed oil shows. +parent
+#   wvGeoEvalShowGas: Detailed gas shows. +parent
+#   wvGeoEvalShowGasOther: Additional gas component types and associated average, max, min values. +parent
+#   wvGeoEvalFluids: Interpretation of formation fluids. +parent
+#   wvGeoEvalGrainSz: Interpretation of grain size. +parent
+#   wvGeoEvalPorosity: Interpretation of sample porosity. +parent
+#   wvGeoEvalOther: Other annotations to be associated with this geological evaluation that canno...
+#   wvLog: Logging information including log type, depth intervals. +parent
+#   wvLogCurve: Individual log curve details. +parent
+#   wvLogTool: Logging tool details and last calibration date. +parent
+#   wvCore: Description of bottom hole cores. +parent
+#   wvCoreSideWall: Description of sidewall cores. +parent
+#   wvCoreSideWallSample: Description of sidewall core samples. +parent
+#   wvWellTestRFT: Repeat formation tests. +parent
+#   wvWellTestRFTGauge: RFT gauge details. +parent
+#   wvWellTestRFTData: Repeat formation test data. +parent
+#   wvWellTestRFTDataFluid: Description of RFT fluids collected. +parent

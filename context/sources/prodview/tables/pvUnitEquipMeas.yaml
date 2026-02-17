@@ -1,0 +1,8 @@
+# prodview / equipment / pvUnitEquipMeas
+# Source: context/sources/prodview/domains/equipment.yaml
+#
+pvUnitEquipMeas: Related Measurements +parent
+  IDRecMeas(s32) #Measurement
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Com(txt255) #Note

@@ -1,0 +1,53 @@
+# prodview / meters / pvUnitMeterLiquidEntry
+# Source: context/sources/prodview/domains/meters.yaml
+#
+pvUnitMeterLiquidEntry: Oil/Water Meters Readings +parent | In the Liquid Meter Readings table, you record the readings from liquid meters in the network. The m
+  DtTm(dt) #Date
+  ReadingStart(dbl) #Start Reading Override
+  ReadingEnd(dbl) #Meter Volume
+  BSW(dbl_pct) #BS&W
+  SandCut(dbl_pct) #Sand Cut
+  ReasonOR(s100) #Override Reason
+  Com(txt255) #Comments
+  TicketNo(s50) #Ticket Number
+  TicketSubNo(s50) #Ticket Sub Number
+  VolUncorrTotalCalc(dbl_m3_calc) #Total Fluid Volume
+  VolUncorrHCLiqCalc(dbl_m3_calc) #Oil/Condensate Volume
+  TempOfVol(dbl_degC) #Temperature of Volume
+  PresOfVol(dbl_kPa) #Pressure of Volume
+  TempSample(dbl_degC) #Temperature of Sample
+  PresSample(dbl_kPa) #Pressure of Sample
+  DensitySample(dbl_kgpm3) #Density of Sample
+  DensitySample60F(double, kilograms per cubic meter, calculated) #Density of Sample at 60F
+  VolCorrTotalCalc(dbl_m3_calc) #Corrected Total Fluid Volume
+  VolCorrHCLiqCalc(dbl_m3_calc) #Corrected Hydrocarbon Liquid Volume
+  BSWCorrCalc(dbl_pct_calc) #Corrected BS&W
+  SandCutCorrCalc(dbl_pct_calc) #Corrected Sand Cut
+  TempOR(dbl_degC) #Override Temperature
+  PresOR(dbl_kPa) #Override Pressure
+  DensityOR(dbl_kgpm3) #Override Density
+  RefID(s50) #Reference Number
+  OrigStatementID(s50) #Statement Id
+  Source(s50) #Source
+  VolORHCLiq(dbl_m3) #Override Hydrocarbon Liquid Volume
+  VolORWater(dbl_m3) #Override Water Volume
+  VolORSand(dbl_m3) #Override Sand Volume
+  Verified(bool) #Verified
+  VolTotalCalc(dbl_m3_calc) #Final Total Fluid Volume
+  VolHCLiqCalc(dbl_m3_calc) #Final Hydrocarbon Liquid Volume
+  VolWaterCalc(dbl_m3_calc) #Final Water Volume
+  VolSandCalc(dbl_m3_calc) #Final Sand Volume
+  BSWCalc(dbl_pct_calc) #Final BS&W
+  SandCutCalc(dbl_pct_calc) #Final Sand Cut
+  VolHCLiqGasEqCalc(dbl_m3_calc) #Final Gas Equivalent of Oil/Cond Volume
+  IDRecHCLiqAnalysisCalc(s32_calc) #HC Liquid  Analysis
+  IdRecSealEntry(s32) #Seal
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

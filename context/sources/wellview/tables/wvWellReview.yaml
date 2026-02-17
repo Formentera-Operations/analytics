@@ -1,0 +1,64 @@
+# wellview / production_operations / wvWellReview
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvWellReview: Details of well review. +parent
+  DtTm(dt) #Review Date
+  ReviewedBy(s50) #Reviewed By
+  Typ(s100) #Review Type
+  CompliancePriority(s20) #Compliance Priority
+  IDRecZoneCompletion(s32) #Completion/Zone
+  ProductDestination(s50) #Product Destination
+  Com(txt2k) #Comment
+  RateOil(dbl_m3pd) #Avg Oil Rate
+  RateGas(dbl_m3pd) #Avg Gas Rate
+  RateCond(dbl_m3pd) #Avg Cond Rate
+  RateWater(dbl_m3pd) #Avg Water Rate
+  PresCas(dbl_kPa) #Casing Pressure
+  PresLine(dbl_kPa) #Line Pressure
+  PresNote(s255) #Pressure Note
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresBH(dbl_kPa) #Bottom Hole Pressure
+  PresSurfSI(dbl_kPa) #Surface Shut In Pressure
+  TempBH(dbl_degC) #Temp BH
+  ProposedProjTyp(s100) #Proposed Project Type
+  ProposedProjDes(s100) #Proposed Project Des
+  ProposedProjPriority(s20) #Proposed Project Priority
+  ProposedProjStatus(s50) #Proposed Project Status
+  ProposedProjDur(dbl_days) #Proposed Project Duration
+  IDRecJob(s32) #Job
+  RateTargetOil(dbl_m3pd) #Target Oil Rate
+  RateTargetGas(dbl_m3pd) #Target Gas Rate
+  RateTargetCond(dbl_m3pd) #Target Cond Rate
+  RateTargetWater(dbl_m3pd) #Target Water Rate
+  PresTargetLine(dbl_kPa) #Target Line Pressure
+  RateMaxDelivOil(dbl_m3pd) #Max Rate Oil
+  RateMaxDelivGas(dbl_m3pd) #Max Rate Gas
+  RateMaxDelivCond(dbl_m3pd) #Max Rate Cond
+  RateMaxDelivWater(dbl_m3pd) #Max Rate Water
+  RateOptimumOil(dbl_m3pd) #Optimum Rate Oil
+  RateOptimumGas(dbl_m3pd) #Optimum Rate Gas
+  RateOptimumCond(dbl_m3pd) #Optimum Rate Cond
+  RateOptimumWater(dbl_m3pd) #Optimum Rate Water
+  RateIncrOilCalc(dbl_m3pd_calc) #Incremental Oil
+  RateIncrGasCalc(dbl_m3pd_calc) #Incremental Gas
+  RateIncrCondCalc(dbl_m3pd_calc) #Incremental Cond
+  RateIncrWaterCalc(dbl_m3pd_calc) #Incremental Water
+  PresIncrLineCalc(dbl_kPa_calc) #Incremental Line Pressure
+  RateIncrOilBOECalc(dbl_calc) #Incremental Oil BOE
+  RateIncrGasBOECalc(dbl_calc) #Incremental Gas BOE
+  RateIncrCondBOECalc(dbl_calc) #Incremental Cond BOE
+  RateIncrTotalBOEOR(dbl) #Incremental BOE Total OR
+  RateIncrTotalBOECalc(dbl_calc) #Incremental BOE Total
+  DtTmProjEcon(dt) #Project Economics Date
+  ProjRef(s100) #Project Economics Ref
+  ProposedProjCost(dbl_cost) #Estimated Cost of Project
+  ProjWorkingInt(dbl_pct) #Working Interest
+  ProjCostNetCalc(dbl_cost_calc) #Estimated Cost of Project (Net)
+  ProjCostPerBOE(dbl_cpu) #Project Cost per BOE
+  ProjPayoutCalc(dbl_days_calc) #Proposed Project Payout
+  ProjPayoutOR(dbl_days) #Proposed Project Payout OR
+  ProjEffCalc(dbl_calc) #Proposed Project Efficiency
+  ProjCostNPV(dbl_cost) #Net Present Value of Project
+  ProjRateOfReturn(dbl_pct) #Rate of Return
+  UserNum1(dbl) #User Num 1
+  UserTxt1(s50) #User Text 1

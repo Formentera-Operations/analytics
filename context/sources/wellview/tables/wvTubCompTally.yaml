@@ -1,0 +1,22 @@
+# wellview / tubing_rods_equipment / wvTubCompTally
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompTally: Individual joints run for the selected 'Tubing Component'. +parent
+  Length(dbl_m) #Length
+  RefNo(int) #Reference #
+  JointRun(bool) #Run?
+  ExtJewelry(s50) #Ext Jewelry
+  Centralized(bool) #Centralized?
+  CentralizersNo(int) ## Centralizers
+  CentralizersDes(s50) #Centralizer Note
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced
+  VolumeInternalCalc(dbl_m3_calc) #Internal Volume
+  VolumeInternalCumCalc(dbl_m3_calc) #Cum Internal Volume
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  RunNoCalc(dbl_calc) #Run Number
+  RefID(s50) #Reference ID

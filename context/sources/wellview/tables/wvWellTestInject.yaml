@@ -1,0 +1,24 @@
+# wellview / reservoir_tests / wvWellTestInject
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestInject: Injectivity test details. +parent
+  IDRecZoneCompletion(s32) #Completion/Zone
+  DtTmStart(dt) #Start Date
+  DisplayFlag(bool) #Display Flag
+  IDRecJob(s32) #Job
+  Duration(dbl_days) #Duration
+  Purpose(s50) #Purpose
+  TestedBy(s50) #Tested By
+  DataSource(s50) #Data Source
+  TypProduct(s100) #Product Type
+  Com(txt2k) #Comment
+  RateInjectGas(dbl_m3pd) #Rate Inject Gas
+  RateInjectLiquid(dbl_m3pd) #Rate Inject Liquid
+  PresInject(dbl_kPa) #Pressure Injection
+  ConcCuttings(dbl_kgpm3) #Conc Cuttings
+  TempInject(dbl_degC) #Temp Inject
+  DensityGas(dbl_kgpm3) #Gas Density
+  QualitySteam(dbl_pct) #Quality Steam
+  PresCas(dbl_kPa) #Casing Pressure
+  Salinity(dbl_pct) #Salinity
+  FractionOil(dbl_pct) #Fraction Oil

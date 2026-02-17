@@ -1,0 +1,62 @@
+# wellview / geological_evaluations / wvGeoEvalShowGas
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvGeoEvalShowGas: Detailed gas shows. +parent
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DtTmSample(dt) #Sample Date
+  DtTmReport(dt) #Report Date
+  ShowTyp(s100) #Show Type
+  IconName(s255) #Icon
+  GasTrapTyp(s100) #Gas Trap Type
+  ChromatographTyp(s100) #Chromatograph Type
+  ChromatographGasUnit(s50) #Chromatograph Gas Unit
+  ChromatographCycleTime(dbl_days) #Chromatograph Cycle Time
+  ChromatographIntRptTime(dbl_days) #Chromatograph Int Rpt Time
+  FormationCalc(s255_calc) #Formation
+  FormationLayerCalc(s255_calc) #Layer
+  Com(txt2k) #Comment
+  TotalGasAvg(dbl_pct) #Total Gas Avg
+  TotalGasMin(dbl_pct) #Total Gas Min
+  TotalGasMax(dbl_pct) #Total Gas Max
+  C1Avg(dbl_pct) #C1 Avg
+  C1Max(dbl_pct) #C1 Max
+  C1Min(dbl_pct) #C1 Min
+  C2Avg(dbl_pct) #C2 Avg
+  C2Max(dbl_pct) #C2 Max
+  C2Min(dbl_pct) #C2 Min
+  C3Avg(dbl_pct) #C3 Avg
+  C3Max(dbl_pct) #C3 Max
+  C3Min(dbl_pct) #C3 Min
+  nC4Avg(dbl_pct) #nC4 Avg
+  nC4Max(dbl_pct) #nC4 Max
+  nC4Min(dbl_pct) #nC4 Min
+  iC4Avg(dbl_pct) #iC4 Avg
+  iC4Max(dbl_pct) #iC4 Max
+  iC4Min(dbl_pct) #iC4 Min
+  nC5Avg(dbl_pct) #nC5 Avg
+  nC5Max(dbl_pct) #nC5 Max
+  nC5Min(dbl_pct) #nC5 Min
+  iC5Avg(dbl_pct) #iC5 Avg
+  iC5Max(dbl_pct) #iC5 Max
+  iC5Min(dbl_pct) #iC5 Min
+  eC5Avg(dbl_pct) #eC5 Avg
+  eC5Max(dbl_pct) #eC5 Max
+  eC5Min(dbl_pct) #eC5 Min
+  nC6Avg(dbl_pct) #nC6 Avg
+  nC6Max(dbl_pct) #nC6 Max
+  nC6Min(dbl_pct) #nC6 Min
+  iC6Avg(dbl_pct) #iC6 Avg
+  iC6Max(dbl_pct) #iC6 Max
+  iC6Min(dbl_pct) #iC6 Min
+  H2SAvg(dbl_pct) #H2S Avg
+  H2SMax(dbl_pct) #H2S Max
+  H2SMin(dbl_pct) #H2S Min
+  CO2Avg(dbl_pct) #CO2 Avg
+  CO2Max(dbl_pct) #CO2 Max
+  CO2Min(dbl_pct) #CO2 Min
+  AcetyleneAvg(dbl_pct) #Acetylene Avg
+  AcetyleneMax(dbl_pct) #Acetylene Max
+  AcetyleneMin(dbl_pct) #Acetylene Min

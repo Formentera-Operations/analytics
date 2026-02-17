@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobKickPres
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobKickPres: Kick pressure, density, and volume details. +parent
+  DtTm(dt) #Date
+  PresCas(dbl_kPa) #Casing Pressure
+  PresDP(dbl_kPa) #Drill Pipe Pressure
+  DensityIn(dbl_kgpm3) #Density In
+  DensityOut(dbl_kgpm3) #Density Out
+  VolPumped(dbl_m3) #Volume Pumped
+  Added(dbl_m3) #Added

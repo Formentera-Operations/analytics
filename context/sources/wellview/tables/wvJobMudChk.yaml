@@ -1,0 +1,116 @@
+# wellview / operations_jobs / wvJobMudChk
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobMudChk: Mud or completion fluid checks that have occurred during the job. +parent
+  DtTm(dt) #Date
+  MudTyp1(s100) #Type
+  MudTyp2(s100) #Fluid Category
+  Source(s20) #Source
+  DontUse(bool) #Don't Use
+  DontUseReason(s100) #Don't Use Reason
+  CheckedBy(s50) #Checked By
+  Contractor(s50) #Mud Company
+  Com(txt2k) #Comment
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  Density(dbl_kgpm3) #Density
+  IDRecWellbore(s32) #Wellbore
+  WaterPercent(dbl_pct) #Percent Water
+  OilPercent(dbl_pct) #Percent Oil
+  OilWaterRatioCalc(s20_calc) #Oil Water Ratio
+  TempFlowLine(dbl_degC) #Flow Line Temperature
+  TempBottomHole(dbl_degC) #Temp Bottom Hole
+  MBT(dbl_kgpm3) #MBT
+  PH(dbl) #pH
+  pHMethod(s50) #pH Method
+  TemppH(dbl_degC) #Temp pH
+  PmFiltrate(dbl_m3pm3) #Pm Filtrate
+  Pm(dbl_m3pm3) #Pm
+  Alkalinity(dbl_m3pm3) #Alkalinity
+  TempCrystal(dbl_degC) #Temp Crystal
+  ElecStability(dbl_V) #Electric Stab
+  CECCuttings(dbl) #CEC for Cuttings
+  OilOnCuttings(dbl_pct) #Oil on Cuttings
+  CuttingsSzAvg(dbl_m) #Average Cuttings Size
+  StaticSheen(dbl) #Static Sheen
+  OilGrease(dbl) #Oil & Grease
+  WeightMetalRecov(dbl_kg) #Weight Metal Recovered
+  FunnelViscosity(dbl_dpm3) #Funnel Viscosity
+  PlasticVis(dbl_Pas) #PV Override
+  PlasticVisCalc(dbl_Pas_calc) #PV Calc
+  YieldPt(dbl_kPa) #YP Override
+  YieldPtCalc(dbl_kPa_calc) #YP Calc
+  YieldStressCalc(dbl_kPa_calc) #Yield Stress Calc
+  gel10sec(dbl_kPa) #Gel 10 sec
+  gel10min(dbl_kPa) #Gel 10 min
+  gel30min(dbl_kPa) #Gel 30 min
+  NOverRide(dbl) #n Override
+  nCalc(dbl_calc) #n
+  KOverRide(dbl) #K Override
+  Kcalc(dbl_calc) #K
+  ECD(dbl_kgpm3) #ECD - Manual Entry
+  Vis3rpm(dbl) #Vis 3rpm
+  Vis6rpm(dbl) #Vis 6rpm
+  Vis30rpm(dbl) #Vis 30rpm
+  Vis60rpm(dbl) #Vis 60rpm
+  Vis100rpm(dbl) #Vis 100rpm
+  Vis200rpm(dbl) #Vis 200rpm
+  Vis300rpm(dbl) #Vis 300rpm
+  Vis600rpm(dbl) #Vis 600rpm
+  TempVisc(dbl_degC) #Fan Temperature
+  PresVisc(dbl_kPa) #Viscometer Pressure
+  FiltrationSz(dbl_m) #Filtration Size
+  Solids(dbl_pct) #Solids
+  SolidsCorrected(dbl_pct) #Corrected Solids
+  Salt(dbl_pct) #Salt
+  Sands(dbl_pct) #Sand
+  SolidsLowGrav(dbl_pct) #Low Gravity Solids
+  SolidsHighGrav(dbl_pct) #High Gravity Solids
+  SolidsAvgGrav(dbl_kgpm3) #Average Gravity Solids
+  SolidsLowGravWt(dbl_kgpm3) #Low Gravity Solids by Weight
+  SolidsHighGravWt(dbl_kgpm3) #High Gravity Solids by Weight
+  CaCl(dbl_pct) #CaCl
+  Barite(dbl_kgpm3) #Barite
+  Calcium(dbl_kgpm3) #Calcium
+  Magnesium(dbl_kgpm3) #Magnesium
+  Sulfide(dbl_kgpm3) #Sulfide
+  Potassium(dbl_kgpm3) #Potassium
+  Brine(dbl_kgpm3) #Brine
+  Lime(dbl_kgpm3) #Lime
+  LCM(s20) #LCM
+  Chlorides(dbl_kgpm3) #Chlorides
+  Iron(dbl_kgpm3) #Iron
+  HardnessCa(dbl_pct) #Hardness Ca
+  NTU(int) #NTU
+  NTUOut(int) #NTU Out
+  PolymerTyp(s100) #Polymer
+  Polymer(dbl_pct) #Polymer in Mud
+  KCl(dbl_kgpm3) #KCl
+  ZincOxide(dbl_kgpm3) #Zinc Oxide
+  Filtrate(dbl_m3pd) #Filtrate
+  FilterCake(dbl_m) #Filter Cake
+  HTHPFiltrate(dbl_m3pd) #HTHP Filtrate
+  HTHPFilterCake(dbl_m) #HTHP Filter Cake
+  HTHPTemp(dbl_degC) #HTHP Temperature
+  HTHPPres(dbl_kPa) #HTHP Pressure
+  Pf(dbl_m3pm3) #Pf
+  Mf(dbl_m3pm3) #Mf
+  P1(dbl_m3pm3) #P1
+  P2(dbl_m3pm3) #P2
+  VolSpurtLoss(dbl_m3) #Volume Spurt Loss
+  ChlorCaCl2Calc(dbl_kgpm3_calc) #Chlorides from CaCl2
+  ChlorKCLCalc(dbl_kgpm3_calc) #Chlorides from KCl
+  ChlorNaClCalc(dbl_kgpm3_calc) #Chlorides from NaCl
+  ConcCaCl2Calc(dbl_kgpm3_calc) #CaCl2
+  ConcNaClCalc(dbl_kgpm3_calc) #NaCl
+  ConcKClCalc(dbl_kgpm3_calc) #KCl
+  WtPctCaCl2Calc(dbl_pct_calc) #CaCl2 Weight
+  WtPctNaClCalc(dbl_pct_calc) #NaCl Weight
+  WtPctKClCalc(dbl_pct_calc) #KCl Weight
+  ConcPPMCaCl2Calc(dbl_pct_calc) #CaCl2  Conc
+  ConcPPMNaClCalc(dbl_pct_calc) #NaCl  Conc
+  ConcPPMKClCalc(dbl_pct_calc) #KCl  Conc
+  ConcPPMTotalWPSCalc(dbl_pct_calc) #Total WPS
+  WellboreSzCalc(dbl_m_calc) #Wellbore Size
+  PresBHStaticCalc(dbl_kPa_calc) #Bottom Hole Static Pressure
+  OutOfRangeCalc(txt2k_calc) #Out of Planned Range

@@ -1,0 +1,13 @@
+# wellview / zones_completions / wvZoneStatus
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvZoneStatus: Status of the 'Zone' by date. +parent
+  DtTm(dt) #Status Date
+  Status(s50) #Status
+  FluidDes(s100) #Fluid Type
+  Typ(s100) #Zone Type
+  MethodProd(s50) #Production Method
+  IDRecJob(s32) #Job
+  Com(txt2k) #Comment
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

@@ -1,0 +1,28 @@
+# wellview / tubing_rods_equipment / wvTubCompMandrelInsert
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompMandrelInsert: Details of mandrel insert including run and pull date, material, sizes. +parent
+  ValveTyp(s100) #Valve Type
+  ValveDes(s100) #Valve Description
+  DtTmRun(dt) #Run Date
+  DtTmPull(dt) #Pull Date
+  Make(s100) #Make
+  Model(s100) #Model
+  SzOD(dbl_m) #OD
+  SzPort(dbl_m) #Port Size
+  SN(s50) #Serial Number
+  TRORun(dbl_kPa) #TRO Run
+  TROPull(dbl_kPa) #TRO Pull
+  RetrieveMeth(s10) #Retrieval Method
+  PullReason(s100) #Pull Reason
+  Service(s20) #Service Type
+  PresSurfGaugeOpen(dbl_kPa) #Surface Gauge Pressure - Open
+  PresSurfGaugeClose(dbl_kPa) #Surface Gauge Pressure - Closed
+  Temp(dbl_degC) #Temperature
+  ValvePacking(s20) #Valve Packing
+  ValveMaterial(s20) #Valve Material
+  OrificeMaterial(s20) #Orifice Material
+  LatchTyp(s100) #Latch Type
+  LatchMaterial(s20) #Latch Material
+  RefID(s50) #Reference ID
+  Com(txt2k) #Comment

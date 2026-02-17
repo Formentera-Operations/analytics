@@ -1,0 +1,11 @@
+# combo_curve / economics / project_scenarios
+# Source: context/sources/combo_curve/domains/economics.yaml
+#
+PROJECT_SCENARIOS: Economic/forecast scenarios within projects. Each row is a named scenario that groups economic runs and forecasts under a project. 956 rows. -> stg_cc__scenarios
+  _PORTABLE_EXTRACTED(ts) #Portable extraction timestamp
+  CREATEDAT(ts) #Record creation timestamp
+  ID(txt) #Scenario unique identifier (24-char hex)
+  NAME(txt) #Scenario name
+  PROJECT(txt) #Parent project ID (FK to PROJECTS.ID)
+  PROJECTCUSTOMHEADER9(txt) #Portable connector artifact (ignore)
+  UPDATEDAT(ts) #Last update timestamp

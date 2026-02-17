@@ -1,0 +1,25 @@
+# wellview / operations_jobs / wvJRCostCumCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRCostCumCalc: All 'Daily Cost' and 'Daily Recurring Cost' combined for this reporting period; cum of the costs up to the end of the report period. +parent
+  Des(s100_calc) #Cost Description
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Code5(s100_calc) #Code 5
+  Code6(s100_calc) #Code 6
+  CostReportFieldEst(dbl_cost_calc) #Report Field Est
+  CostCumFieldEst(dbl_cost_calc) #Cum Field Est
+  CostAFE(dbl_cost_calc) #AFE Amount
+  CostAFESup(dbl_cost_calc) #AFE Supp Amount
+  CostAFETotal(dbl_cost_calc) #AFE + Supp Amount
+  CostVar(dbl_cost_calc) #Cum Variance
+  CostForecast(dbl_cost_calc) #Forecast Amount
+  CostNormForecast(dbl_cost_calc) #Normalized Forecast Amount
+  CostAFEForecastVar(dbl_cost_calc) #AFE - Forecast
+  CostForecastFieldVar(dbl_cost_calc) #Forecast - Field Est
+  DtTmStart(dt_calc) #Report Start Date
+  IDRecJob(s32_calc) #Job
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

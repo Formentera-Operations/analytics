@@ -1,0 +1,12 @@
+# prodview / reference / pvAttachment
+# Source: context/sources/prodview/domains/reference.yaml
+#
+pvAttachment: Attachments +parent
+  Des(s50) #Description
+  AttachIDA(s50) #Reference #
+  DtTm(dt) #Date
+  Typ1(s50) #Type 1
+  Typ2(s50) #Type 2
+  BatchPrint(bool) #Batch Print?
+  Com(txt2k) #Comment
+  TblKeyParent(string 52) #Table Key

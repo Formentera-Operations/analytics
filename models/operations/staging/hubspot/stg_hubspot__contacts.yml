@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: stg_hubspot__contacts
+    description: >
+      Staged HubSpot contacts — mineral royalty owner contact persons.
+      Contact is the primary entity in the Owner 360 model. Each contact
+      may be associated with a company (legal entity) via associated_company_id.
+      Portable variant: no dedup, archived-based soft delete.
+    columns:
+      - name: contact_sk
+        description: Surrogate key derived from contact_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: contact_id
+        description: HubSpot contact identifier (natural key)
+        data_tests:
+          - unique
+          - not_null
+
+      - name: associated_company_id
+        description: >
+          FK to stg_hubspot__companies.company_id. Links contact to their
+          legal entity. 43.9% populated — many older imports lack association.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_hubspot__companies')
+                field: company_id
+              config:
+                severity: warn
+
+      - name: first_name
+        description: Contact first name (75.7% populated)
+
+      - name: last_name
+        description: Contact last name (72.8% populated)
+
+      - name: email
+        description: Primary email address (94.5% populated)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: email_domain
+        description: Email domain extracted from primary email (94.5% populated)
+
+      - name: phone
+        description: Primary phone number (49.5% populated)
+
+      - name: mobile_phone
+        description: Mobile phone number (5.0% populated)
+
+      - name: job_title
+        description: Job title or role (14.5% populated)
+
+      - name: address
+        description: Full mailing address (15.7% populated)
+
+      - name: city
+        description: City (33.1% populated)
+
+      - name: state
+        description: State (33.0% populated)
+
+      - name: zip
+        description: ZIP or postal code (32.9% populated)
+
+      - name: country
+        description: Country (17.9% populated)
+
+      - name: rev_statement_delivery
+        description: Revenue statement delivery preference (10.6% populated)
+
+      - name: rev_statement_email
+        description: Email for revenue statement delivery (10.5% populated)
+
+      - name: is_archived
+        description: Whether the HubSpot record is archived (always false after filtering)
+
+      - name: is_imported
+        description: Whether the record was imported vs created in HubSpot UI
+
+      - name: hubspot_owner_id
+        description: HubSpot internal owner (sales rep) assigned to this contact (40.8% populated)
+
+      - name: lifecycle_stage
+        description: HubSpot lifecycle stage (27.3% populated)
+
+      - name: created_at
+        description: Contact creation timestamp from HubSpot
+
+      - name: last_modified_at
+        description: Contact last modification timestamp
+
+      - name: _portable_extracted
+        description: Portable extraction timestamp
+
+      - name: _loaded_at
+        description: dbt load timestamp

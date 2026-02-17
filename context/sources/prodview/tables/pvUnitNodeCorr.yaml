@@ -1,0 +1,49 @@
+# prodview / flow_network / pvUnitNodeCorr
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvUnitNodeCorr: Node Corrections +parent | This read-only table takes its information from the Meter Corrections tool.
+  DtTmStart(dt) #Start of Correction
+  DtTmEnd(dt) #End of Correction
+  RefID(s50) #Reference Number
+  Source(s50) #Source
+  Temp(dbl_degC) #Temperature
+  TempSample(dbl_degC) #Temperature of Sample
+  Pres(dbl_kPa) #Pressure
+  PresSample(dbl_kPa) #Pressure of Sample
+  Density(dbl_kgpm3) #Density
+  Density60F(dbl_kgpm3) #Density at 60 F
+  DensitySample(dbl_kgpm3) #Density of Sample
+  VolHCLiq(dbl_m3) #Final Corrected Oil/Condensate
+  VolGas(dbl_m3) #Final Gas
+  VolWater(dbl_m3) #Final Water
+  VolSand(dbl_m3) #Final Sand
+  Heat(double, joule) #Final Corrected Heat
+  FactHeat(double, joule per cubic meter) #Final Corrected Heat Factor
+  Com(txt2k) #Comment
+  OrigStatementID(s50) #Statement Id
+  DurActual(dbl_days) #Actual Meter Time
+  VolEstGas(dbl_m3) #Estimated Gas Volume
+  VolDiffGas(dbl_m3) #Volume Difference Gas
+  PctDiffGas(dbl_pct) #% Correction Gas
+  EstHeat(double, joule) #Estimated Heat
+  DiffHeat(double, joule) #Heat Difference
+  PctDiffHeat(dbl_pct) #% Correction Heat
+  VolEstHCLiq(dbl_m3) #Estimated Volume Oil/Cond
+  VolDiffHCLiq(dbl_m3) #Volume Difference Oil/Cond
+  PctDiffHCLiq(dbl_pct) #% Correction Oil/Cond
+  VolEstWater(dbl_m3) #Estimated Volume Water
+  VolDiffWater(dbl_m3) #Volume Difference Water
+  PctDiffWater(dbl_pct) #% Correction Water
+  VolEstSand(dbl_m3) #Estimated Volume Sand
+  VolDiffSand(dbl_m3) #Volume Differrence Sand
+  PctDiffSand(dbl_pct) #% Correction Sand
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #POP BTU
+  UserNum2(dbl) #POP Gallons
+  UserNum3(dbl) #POP Residue Gas
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl_degC) #Sample Temperature

@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJPPCostCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJPPCostCalc: Calculated breakdown of daily field estimate costs associated with the phase. +parent
+  Des(s100_calc) #Cost Description
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  Code5(s100_calc) #Code 5
+  Code6(s100_calc) #Code 6
+  OpsCategory(s50_calc) #OpsCategory
+  CostFieldEstPhase(dbl_cost_calc) #Field Est
+  CostFieldEstCum(dbl_cost_calc) #Cum Field Est
+  CostNormFieldEstCum(dbl_cost_calc) #Normalized Cum Field Est
+  CostNormFieldEstPhase(dbl_cost_calc) #Normalized Field Est
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

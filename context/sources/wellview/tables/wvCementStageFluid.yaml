@@ -1,0 +1,38 @@
+# wellview / casing_cement / wvCementStageFluid
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvCementStageFluid: Each of the fluids that make up each stage, such as preflush, lead slurry, tail slurry, or displacement. +parent
+  Typ(s100) #Fluid Type
+  DepthTopEst(dbl_m) #Estimated Top
+  DepthBtmEst(dbl_m) #Estimated Bottom Depth
+  DepthTVDBtmEstCalc(dbl_m_calc) #Est Bottom Depth (TVD)
+  DepthTVDTopEstCalc(dbl_m_calc) #Est Top Depth(TVD)
+  Objective(s50) #Objective
+  DtTmMix(dt) #Mixed Date
+  DtTmStartPump(dt) #Pump Start Date
+  DtTmEndPump(dt) #Pump End Date
+  CmtClass(s50) #Class
+  AmtCement(dbl_kg) #Amount
+  MixWaterRatio(dbl_m3pkg) #Mix H20 Ratio
+  WaterSource(s50) #Water Source
+  Yield(dbl_m3pkg) #Yield
+  VolPumped(dbl_m3) #Volume Pumped
+  ExcessPumped(dbl_pct) #Percent Excess Pumped
+  Filtrate(dbl_m3pd) #Filtrate
+  Density(dbl_kgpm3) #Density
+  PlasticVis(dbl_Pas) #Plastic Viscosity
+  YieldPt(dbl_kPa) #Yield Point
+  TempVisc(dbl_degC) #Fan Temperature
+  ThickenTm(dbl_days) #Thickening Time
+  ThickenTemp(dbl_degC) #Thickening Temp
+  ComprStr2(dbl_kPa) #2nd Compressive Strength
+  ComprStr1(dbl_kPa) #1st Compressive Strength
+  ComprStrTm2(dbl_days) #Time of 2nd Compressive Strength Test
+  ComprStrTm1(dbl_days) #Time of 1st Compressive Strength Test
+  ComprStrTemp(dbl_degC) #Temperature for Compressive Strength
+  PresFinal(dbl_kPa) #Final Pressure
+  PresFrictionLoss(dbl_kPa) #Friction Pressure Loss
+  RateAvg(dbl_m3pd) #Average Rate
+  FreeWater(dbl_pct) #Free Water
+  DesFluid(txt2k) #Fluid Description
+  Com(txt2k) #Comment

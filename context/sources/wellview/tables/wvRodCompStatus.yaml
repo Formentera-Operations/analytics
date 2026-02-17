@@ -1,0 +1,8 @@
+# wellview / tubing_rods_equipment / wvRodCompStatus
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvRodCompStatus: Status of component by date. +parent
+  DtTm(dt) #Status Date
+  IconName(s255) #Icon Override
+  Note(s255) #Note
+  Status(s50) #Status

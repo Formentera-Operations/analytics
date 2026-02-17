@@ -1,0 +1,6 @@
+# prodview / routes / pvRouteSetRouteUnit
+# Source: context/sources/prodview/domains/routes.yaml
+#
+pvRouteSetRouteUnit: Route Units +parent | Route units are the locations that an operator travels to for entering readings in ProdView. Select 
+  IDRecUnit(s32) #Unit
+  SortRoute(int) #Route Units Sort Order

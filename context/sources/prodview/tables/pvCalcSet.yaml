@@ -1,0 +1,32 @@
+# prodview / flow_network / pvCalcSet
+# Source: context/sources/prodview/domains/flow_network.yaml
+#
+pvCalcSet: Calculation Settings | Defines how the measurement and allocation calculations are performed for a defined period.
+  DtTmStart(dt) #Effective Date
+  SourcePhysConstants(s50) #Source of Physical Constants
+  BOE(dbl_m3pm3) #BOE
+  ShowSand(bool) #Show Sand
+  Com(txt255) #Note
+  TempBase(dbl_degC) #FN Base Temp
+  PresBase(dbl_kPa) #FN Base Pres
+  PresAtm(dbl_kPa) #Atmospheric Pressure
+  TempBase2(dbl_degC) #Federal Base Temperature
+  PresBase2(dbl_kPa) #Federal Base Pressure
+  TempBase3(dbl_degC) #Corporate Base Temperature
+  PresBase3(dbl_kPa) #Corporate Base Pressure
+  FactBase2Gas(dbl_m3pm3) #Federal Base Fact Gas
+  FactBase2HCLiq(dbl_m3pm3) #Federal Base Fact HCLiq
+  FactBase3Gas(dbl_m3pm3) #Corporate Base Fact Gas
+  FactBase3HCLiq(dbl_m3pm3) #Corporate Base Fact HCLiq
+  TreatHCLiquidAsGas(bool) #Treat Hydrocarbon Liquids as Gas
+  HeatAllocMeth(s50) #Heat Allocation Method
+  GasAllocMeth(s20) #Gas Allocation Method
+  PctBalHCLiq(dbl_pct) #Oil/Condensate Balance Tolerance
+  PctBalGas(dbl_pct) #Gas Balance Tolerance
+  PctBalWater(dbl_pct) #Water Balance Tolerance
+  PctBalSand(dbl_pct) #Sand Balance Tolerance
+  PctRateHCLiq(dbl_pct) #Oil/Condensate Rate Tolerance
+  PctRateGas(dbl_pct) #Gas Rate Tolerance
+  PctRateWater(dbl_pct) #Water Rate Tolerance
+  PctRateSand(dbl_pct) #Sand Rate Tolerance
+  AllowTodayEntry(bool) #Allow Today Entry?

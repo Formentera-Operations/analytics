@@ -1,0 +1,8 @@
+# wellview / asset_management / wvNote
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvNote: General notes that do not fall under another category in the data structure. +parent
+  DtTm(dt) #Date
+  Typ1(s100) #Type 1
+  Typ2(s100) #Type 2
+  Com(txt2k) #Comment

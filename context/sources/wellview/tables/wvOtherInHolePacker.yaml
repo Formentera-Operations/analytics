@@ -1,0 +1,18 @@
+# wellview / tubing_rods_equipment / wvOtherInHolePacker
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvOtherInHolePacker: Detailed 'Other In Hole' packer information. +extension
+  Retrievable(bool) #Retrievable?
+  RetrieveMeth(s50) #Retrieval Method
+  ShearRelease(dbl_N) #Shear Release
+  SzPolishBore(dbl_m) #Polish Bore Size
+  LenPolishBore(dbl_m) #Len Polish Bore
+  ElastomerTyp(s100) #Elastomer Type
+  ElemCenter(dbl_m) #Elem Center
+  PresDiffMax(dbl_kPa) #Max Diff Pressure
+  Slips(s100) #Slips
+  SetMech(s50) #Set Mechanics
+  SetFluidTyp(s100) #Set Fluid Type
+  SetFluidDensity(dbl_kgpm3) #Set Fluid Density
+  SetProcedure(txt2k) #Setting Procedure
+  UnsettingProcedure(txt2k) #Unsetting Procedure

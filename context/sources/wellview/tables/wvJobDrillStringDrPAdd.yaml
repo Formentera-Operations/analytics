@@ -1,0 +1,13 @@
+# wellview / operations_jobs / wvJobDrillStringDrPAdd
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobDrillStringDrPAdd: Additives used for specific frac plug drill out operation +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Sub Type
+  Purpose(s50) #Purpose
+  Des(s100) #Description
+  Mass(dbl_kg) #Mass
+  Volume(dbl_m3) #Volume
+  Com(txt2k) #Comment
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

@@ -1,0 +1,47 @@
+# prodview / artificial_lift / pvUnitCompPump
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPump: Artificial Lifts +parent
+  Name(s50) #Pump Name
+  Make(s50) #Make
+  Model(s50) #Model
+  Size(dbl) #Size
+  Material(s50) #Material
+  Typ(s50) #Type
+  PowerRating(double, watt) #Power Rating
+  Controller(s50) #Controller
+  SerialNum(s50) #Serial Number
+  EngineeringID(s50) #Engineering ID
+  RegulatoryID(s50) #Regulatory ID
+  OtherID(s50) #Other ID
+  EntryReqPeriod(s50) #Entry Requirement Period
+  Com(txt2k) #Comment
+  DtTmStart(dt) #Install Date
+  DtTmEnd(dt) #Removal Date
+  ImportID1(txt2k) #Import ID 1
+  ImportTyp1(s50) #Import Type 1
+  ImportID2(txt2k) #Import ID 2
+  ImportTyp2(s50) #Import Type 2
+  ExportID1(txt2k) #Export ID 1
+  ExportTyp1(s50) #Export Type 1
+  ExportID2(txt2k) #Export ID 2
+  ExportTyp2(s50) #Export Type 2
+  DtTmHide(dt) #Hide Record As Of
+  KeyMigrationSource(s100) #Migration Source Key
+  TypMigrationSource(s100) #Migration Source Type
+  DaysInHoleCalc(dbl_calc) #Days In Hole
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserTxt4(s50) #User Text 4
+  UserTxt5(s50) #User Text 5
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserNum4(dbl) #User Num 4
+  UserNum5(dbl) #User Num 5
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3
+  UserDtTm4(dt) #User Date 4
+  UserDtTm5(dt) #User Date 5

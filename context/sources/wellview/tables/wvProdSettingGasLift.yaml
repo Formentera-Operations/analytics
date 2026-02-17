@@ -1,0 +1,6 @@
+# wellview / production_operations / wvProdSettingGasLift
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProdSettingGasLift: Gas injection rate and choke size for the time interval defined in 'Production Setting'. +extension
+  GasInjRate(dbl_m3pd) #Gas Injection Rate
+  ChokeSz(dbl_m) #Choke Size

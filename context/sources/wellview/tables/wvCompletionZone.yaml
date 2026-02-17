@@ -1,0 +1,8 @@
+# wellview / zones_completions / wvCompletionZone
+# Source: context/sources/wellview/domains/zones_completions.yaml
+#
+wvCompletionZone: Commingled 'Zone' that participate in this completion relationship. +parent
+  IDRecZone(s32) #Zone
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  Note(s255) #Note

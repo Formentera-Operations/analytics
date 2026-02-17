@@ -28,11 +28,11 @@ with combo_curve_wells as (
 
 wellview_wells as (
     select
-        EID as eid,
-        "API 10 Number" as api_10,
+        eid,
+        api_10_number as api_10,
         'wellview' as source_system
     from {{ ref('stg_wellview__well_header') }}
-    where len(EID) = 6
+    where len(eid) = 6
 ),
 
 prodview_wells as (

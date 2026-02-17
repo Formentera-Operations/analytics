@@ -1,0 +1,6 @@
+# wellview / tubing_rods_equipment / wvTubCompSSSV
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompSSSV: SSSV control type and fluid. +extension
+  CtrlTyp(s100) #Control Type
+  CtrlFluid(s20) #Control Fluid

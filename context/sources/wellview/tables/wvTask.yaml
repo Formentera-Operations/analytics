@@ -1,0 +1,13 @@
+# wellview / operations_tasks / wvTask
+# Source: context/sources/wellview/domains/operations_tasks.yaml
+#
+wvTask: Task type, description and recurring pattern. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  TaskCompletedCalc(bool_calc) #All Tasks Completed?
+  Com(txt2k) #Comment
+  DtTmStartRecur(dt) #Recurring Start Date
+  DtTmEndRecur(dt) #Recurring End Date
+  RecurFrequency(dbl_days) #Recurrence Period
+  RecurNote(s255) #Recurring Note

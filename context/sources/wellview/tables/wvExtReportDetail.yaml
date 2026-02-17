@@ -1,0 +1,8 @@
+# wellview / asset_management / wvExtReportDetail
+# Source: context/sources/wellview/domains/asset_management.yaml
+#
+wvExtReportDetail: Define the status and report date. +parent
+  DtTm(dt) #Report Date
+  ReportByName(s50) #Report By Name
+  ReportByCompany(s100) #Report By Company
+  Status(s50) #Status

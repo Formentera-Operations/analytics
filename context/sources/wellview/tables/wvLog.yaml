@@ -1,0 +1,27 @@
+# wellview / geological_evaluations / wvLog
+# Source: context/sources/wellview/domains/geological_evaluations.yaml
+#
+wvLog: Logging information including log type, depth intervals. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  DtTm(dt) #Date
+  RunNo(int) #Run #
+  Typ(s100) #Type
+  Definitive(bool) #Definitive?
+  CasedHole(bool) #Cased?
+  ConveyMeth(s20) #Conveyance Method
+  IDRecString(s32) #String
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DepthIncr(dbl_m) #Depth Increment
+  TempMax(dbl_degC) #Bottom Hole Temperature
+  DurationSinceCirc(dbl_days) #Time Since Circulation
+  IDRecWellBore(s32) #Wellbore
+  IDRecJob(s32) #Job
+  Contractor(s50) #Logging Company
+  Analyst(s50) #Log Analyst
+  Com(txt2k) #Comment
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
+  LengthCalc(dbl_m_calc) #Length

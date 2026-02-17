@@ -1,0 +1,25 @@
+# wellview context index
+# Structure: domains/ (relationships) + tables/ (column definitions)
+#
+# Domain files (load for cross-table context):
+#   domains/asset_management.yaml — 15 tables
+#   domains/casing_cement.yaml — 23 tables
+#   domains/general.yaml — 5 tables
+#   domains/geological_evaluations.yaml — 21 tables
+#   domains/integrity_barriers.yaml — 10 tables
+#   domains/operations_inspections.yaml — 3 tables
+#   domains/operations_jobs.yaml — 246 tables
+#   domains/operations_tasks.yaml — 2 tables
+#   domains/other.yaml — 10 tables
+#   domains/perfs_stims.yaml — 15 tables
+#   domains/production_operations.yaml — 31 tables
+#   domains/reservoir_tests.yaml — 25 tables
+#   domains/surface_equipment.yaml — 10 tables
+#   domains/tubing_rods_equipment.yaml — 46 tables
+#   domains/wellbore_surveys.yaml — 24 tables
+#   domains/zones_completions.yaml — 12 tables
+#
+# Per-table files (load for single-model work):
+#   tables/{table_name}.yaml
+#
+# Total: 16 domains, 498 tables

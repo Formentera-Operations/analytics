@@ -1,0 +1,19 @@
+# wellview / tubing_rods_equipment / wvTubCompPCPStator
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvTubCompPCPStator: Progressive cavity pump stator details. +extension
+  LengthStator(dbl_m) #Stator Elastomer Length
+  Pitch(dbl_m) #Pitch Length
+  SzODMin(dbl_m) #Min OD Size
+  DistanceTagBar(dbl_m) #Distance Tag Bar
+  ElastomerTyp(s100) #Elastomer Type
+  ElastomerModel(s100) #Elastomer Model
+  MaxTemp(dbl_degC) #Max Temp
+  LobeConfig(s10) #Lobe Config
+  Perforated(bool) #Perforated?
+  BenchTestDtTm(dt) #Bench Test Date
+  BenchTestSpeed(dbl_rpm) #Bench Test Speed
+  BenchTestPresDiff(dbl_kPa) #Bench Test Differential Pressure
+  BenchTestVolDPEff(dbl_pct) #Bench Test Volumetric Eff at Ref DP
+  BenchTestVolDPEffZero(dbl_pct) #Bench Test Volumetric Eff at Zero DP
+  BenchTestFrictionTorque(dbl_Nm) #Bench Test Friction Torque

@@ -1,0 +1,6 @@
+# wellview / perfs_stims / wvStimIntPerfCalc
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntPerfCalc: Related Perf(s) are calculated based on depths defined by 'Stim/Frac Stage.Top Depth' - 'Stim/Frac Stage.Bottom Depth'. +parent
+  IDRecPerforation(s32_calc) #Associated Perf Interval
+  ShotsTotalAlt(int_calc) #Shot Total (alt)

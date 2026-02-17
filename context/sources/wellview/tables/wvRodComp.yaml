@@ -1,0 +1,60 @@
+# wellview / tubing_rods_equipment / wvRodComp
+# Source: context/sources/wellview/domains/tubing_rods_equipment.yaml
+#
+wvRodComp: Component details including OD, weight, grade. +parent
+  Des(s100) #Item Description
+  IconName(s255) #Icon
+  SzODNom(dbl_m) #OD Nominal
+  SzIDNom(dbl_m) #ID
+  WtPerLength(dbl_kgpm) #Weight/Length
+  Grade(s20) #Grade
+  Length(dbl_m) #Length
+  Joints(int) #Joints
+  CompSubTyp(s100) #Equipment Type
+  ConnTypTop(s20) #Top Connection Type
+  ConnThrdTop(s20) #Top Coupling
+  ConnSzTop(dbl_m) #Top Coupling Size
+  UpsetTop(s20) #Top Upset
+  ConnTypBtm(s20) #Bottom Connection Type
+  ConnThrdBtm(s20) #Bottom Coupling
+  ConnSzBtm(dbl_m) #Bottom Coupling Size
+  UpsetBtm(s20) #Bottom Upset
+  ConnectCalc(s50_calc) #Connections
+  ConnectAltCalc(s50_calc) #Connections (Alt)
+  LengthCumCalc(dbl_m_calc) #Cum Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtmCalc(dbl_m_calc) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  SzODMax(dbl_m) #Max OD
+  FishNeckOD(dbl_m) #Fishing Neck OD
+  FishNeckLength(dbl_m) #Fishing Neck Length
+  VolumeDispCalc(dbl_m3_calc) #Volume Displaced (Open End)
+  VolumeDispCumCalc(dbl_m3_calc) #Cum Volume Displaced (Open End)
+  WeightCalc(dbl_N_calc) #Weight
+  WeightCumCalc(dbl_N_calc) #Cum Weight
+  InclTopCalc(dbl_deg_calc) #Top Inclination
+  InclBtmCalc(dbl_deg_calc) #Bottom Inclination
+  InclMaxCalc(dbl_deg_calc) #Max Inclination
+  GuideDes(s100) #Scraper Description
+  GuidesPerRod(int) #Scrapers Per Rod
+  GuideSz(dbl_m) #Scraper Size
+  GuideMaterial(s50) #Scraper Material
+  Make(s100) #Make
+  Model(s100) #Model
+  SN(s50) #Serial Number
+  Material(s20) #Material
+  Coating(s20) #Coating
+  DepthTopCorrected(dbl_m) #Corrected Top Depth
+  Com(txt2k) #Comment
+  ItemNoCalc(s10_calc) #Item Number
+  DesJtCalc(s100_calc) #Description-#Jts
+  RefID(s50) #Reference ID
+  DtTmManufacture(dt) #Manufacture Date
+  HoursStart(dbl_days) #Starting Hours
+  UsedClass(s10) #Class
+  ConditionRun(s50) #Condition Run
+  ConditionPull(s50) #Condition Pull
+  TensileMax(dbl_N) #Min Tensile Strength
+  Cost(dbl_cost) #Item Cost
+  CostUnitLabel(s20) #Cost Unit Label

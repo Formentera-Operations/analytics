@@ -1,0 +1,18 @@
+# wellview / integrity_barriers / wvIntegrityItemValue
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvIntegrityItemValue: Values (readings) by date. +parent
+  DtTm(dt) #Date
+  Value(dbl) #Value Number
+  ValueDes(s100) #Value Description
+  ValueVerified(bool) #Verified?
+  StateCalc(s50_calc) #Integrity State
+  StateColorCalc(int_calc) #Integrity State Color
+  StateNoteCalc(txt2k_calc) #Explanation of State
+  IDRecItem(s32) #Reference Item
+  ReportedBy(s50) #Reported By
+  ExcludeDtTmCalcFlag(bool) #Exclude from Date Calcs
+  Com(txt2k) #Comment
+  ActionRqd(bool) #Action Required?
+  ActionRqdTyp(s100) #Action Required Type
+  ActionRqdCom(txt2k) #Action Required Comment

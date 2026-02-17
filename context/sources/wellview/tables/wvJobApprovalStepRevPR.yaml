@@ -1,0 +1,6 @@
+# wellview / operations_jobs / wvJobApprovalStepRevPR
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobApprovalStepRevPR: All 'Approval Process Step Deliverable' that must be completed prior to starting the next deliverable. +parent
+  IDRecStepRev(s32) #Prerequisite
+  Note(s255) #Note

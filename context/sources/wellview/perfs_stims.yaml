@@ -1,0 +1,37 @@
+# Peloton WellView: Perfs, Stims & Swabs
+# Perforations, stimulation/frac summaries/stages/fluids/proppants, swabs
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: stg_wellview__perforations, stg_wellview__stimulations, stg_wellview__stimulation_intervals, stg_wellview__stimulation_fluid_systems,
+#   stg_wellview__stimulation_fluid_additives, stg_wellview__stimulation_proppant, stg_wellview__swabs, stg_wellview__swab_details
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvPerforation: Perforation details. +parent
+#   wvPerforationStatus: Status of perforations by date and depth. +parent
+#   wvStim: Stimulation and treatment data including fractures. +parent
+#   wvStimInt: The Stimulation interval/stage. +parent
+#   wvStimIntFluid: Fluid system details for the stimulation. This is a normalized list of all fl...
+#   wvStimIntFluidAdd: Fluid additive details for the fluid system. +parent
+#   wvStimIntFluidAddComp: Fluid additive ingredients for the fluid system. +parent
+#   wvStimIntProp: Proppant details. This is a normalized list of all proppants designed and\or ...
+#   wvStimIntPerfCalc: Related Perf(s) are calculated based on depths defined by 'Stim/Frac Stage.To...
+#   wvStimIntStg: Summary of the pumping schedule, also known as 'pumping stages', sub-stages o...
+#   wvStimIntStgFluidAdd: Link to fluid additives defined in 'Stim/Frac Fluid Additive'. +parent
+#   wvStimIntPresDtl: Pressure vs. time for tests related to the 'Stim/Frac Stage'. +parent
+#   wvStimPropTypSumCalc: Proppant mass 'Stim/Frac Sub Stage Treatment Details.Proppant Mass' summarize...
+#   wvSwab: Swab description. +parent
+#   wvSwabDetails: Swab details. +parent

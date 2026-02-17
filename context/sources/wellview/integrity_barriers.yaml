@@ -1,0 +1,31 @@
+# Peloton WellView: Integrity & Barriers
+# Integrity programs/items/criteria/values, well barriers/types/links/annotations
+#
+# Types: dt=datetime bool=boolean int=integer dbl=double
+#   s{N}=string(N) txt{N}=stringlong(N)
+#   dbl_m=meter dbl_m_calc=meter(calc) dbl_kPa=kilopascal dbl_degC=degC
+#   dbl_deg=degrees dbl_days=days dbl_hr=hours dbl_sec=seconds dbl_pct=proportion
+#   dbl_kg=kilograms dbl_kgpm3=kg/m3 dbl_kgpm=kg/m dbl_m3=m3 dbl_m3pd=m3/day
+#   dbl_m3pm3=m3/m3 dbl_m2=m2 dbl_mm=millimeter dbl_N=newton dbl_Nm=Nm dbl_J=joule
+#   dbl_A=ampere dbl_V=volt dbl_W=watt dbl_kW=kilowatt dbl_rpm=RPM dbl_Hz=hertz
+#   dbl_ohm=ohm dbl_spm=strokes/min dbl_Pas=pascal_sec dbl_T=tesla dbl_mps=m/s
+#   dbl_calc=double(calc) int_calc=integer(calc) dt_calc=datetime(calc)
+#   s{N}_calc=string(N,calc) bool_calc=boolean(calc)
+#
+# OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
+#   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Staged: none
+
+
+# Tables in this domain (column details in tables/ directory):
+#   wvIntegrity: Well integrity program. +parent
+#   wvIntegrityItem: The items and details that make up the integrity program. The combination of ...
+#   wvIntegrityItemLink: Link the relevant equipment for this integrity item. +parent
+#   wvIntegrityItemCriteria: Well integrity item criteria. +parent
+#   wvIntegrityItemValue: Values (readings) by date. +parent
+#   wvWellBarrier: Definition of well barriers/envelopes and their start and end dates. +parent
+#   wvWellBarrierTyp: Identification of well barriers - Primary, Secondary, etc. +parent
+#   wvWellBarrierTypLink: Link the 'Well Barrier Type' to associated equipment by date. +parent
+#   wvWellBarrierTypAnnot: Annotations for the 'Well Barrier Type'. +parent
+#   wvWellBarrierTypPresRating: Pressure changes over time for the entire barrier. +parent

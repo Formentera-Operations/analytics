@@ -1,0 +1,22 @@
+# wellview / operations_jobs / wvJRProgramPhaseCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRProgramPhaseCalc: Summary of 'Phase' that occur during this reporting period. +parent
+  Code1(s100_calc) #Phase Type 1
+  DurationMLTotal(dbl_days_calc) #Planned Likely Duration
+  DurationMinTotal(dbl_days_calc) #Planned Min Duration
+  DurationMaxTotal(dbl_days_calc) #Planned Max Duration
+  DurationTechLimitTotal(dbl_days_calc) #Planned Tech Limit Duration
+  DurationReport(dbl_days_calc) #Duration this Report
+  DurationReportCum(dbl_days_calc) #Cum Duration to End of Report
+  DurationVarianceML(dbl_days_calc) #Planned ML Dur - Cum Dur to End of Report
+  DurationVarianceTechLimit(dbl_days_calc) #Planned Tech Limit Dur - Cum Dur to End of Report
+  CostMLTotal(dbl_cost_calc) #Planned Likely Phase Cost
+  CostMinTotal(dbl_cost_calc) #Planned Min Phase Cost
+  CostMaxTotal(dbl_cost_calc) #Planned Max Phase Cost
+  CostTechLimitTotal(dbl_cost_calc) #Planned Tech Limit Phase Cost
+  CostReport(dbl_cost_calc) #Field Est this Report
+  CostReportCum(dbl_cost_calc) #Cum Field Est to End of Report
+  CostVariance(dbl_cost_calc) #Cost Variance ML
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

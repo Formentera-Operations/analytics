@@ -1,0 +1,12 @@
+# wellview / operations_jobs / wvJobIntervalLessonAction
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobIntervalLessonAction: Details of the actions taken after or during the 'Interval Lesson'. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s255) #Description
+  Value(s50) #Value
+  ValueUnit(s50) #Value Unit
+  RefNo(s20) #Reference #
+  ActionRqd(bool) #Action Required?
+  Com(txt2k) #Comment

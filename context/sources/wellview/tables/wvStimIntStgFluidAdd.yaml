@@ -1,0 +1,7 @@
+# wellview / perfs_stims / wvStimIntStgFluidAdd
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvStimIntStgFluidAdd: Link to fluid additives defined in 'Stim/Frac Fluid Additive'. +parent
+  IDRecFluidAdd(s32) #Link to Fluid Additive
+  Mass(dbl_kg) #Mass of Additive
+  Volume(dbl_m3) #Volume of Additive

@@ -1,0 +1,10 @@
+# wellview / operations_jobs / wvJRIntervalProblemSumCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJRIntervalProblemSumCalc: Summary of 'Interval Problem (NPT)' that occur during this reporting period. +parent
+  Typ(s100_calc) #Problem Type
+  ProblemDuration(dbl_days_calc) #Problem Duration
+  ProblemDurationCum(dbl_days_calc) #Cum Problem Duration
+  ExcludeFromProblemTime(bool_calc) #Exclude From Problem Time Calcs?
+
+# CALC TABLE — from FORMENTERAOPS_WV120_CALC schema

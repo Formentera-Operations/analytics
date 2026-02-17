@@ -1,0 +1,5 @@
+# prodview / artificial_lift / pvUnitCompPumpRod
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpRod: Rod Pump Details +ext,parent
+  PumpDiameter(double, meter) #Pump Diameter

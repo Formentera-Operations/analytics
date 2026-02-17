@@ -1,0 +1,9 @@
+# wellview / integrity_barriers / wvWellBarrierTypPresRating
+# Source: context/sources/wellview/domains/integrity_barriers.yaml
+#
+wvWellBarrierTypPresRating: Pressure changes over time for the entire barrier. +parent
+  DtTm(dt) #Date
+  Pres(dbl_kPa) #Pressure
+  PresRefMeasure(s50) #Pressure Measurement Location
+  Reason(s100) #Reason for Change
+  Note(s255) #Note

@@ -1,0 +1,10 @@
+# wellview / operations_jobs / wvJobServiceContractEval
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobServiceContractEval: Detailed evaluation of the 'Service Contractor'. +parent
+  Typ(s100) #Criteria Type
+  Des(s100) #Description
+  Score(dbl) #Score
+  ScoreMax(dbl) #Max Possible Score
+  PercentScoreCalc(dbl_pct_calc) #Score/Max
+  Com(txt2k) #Comment

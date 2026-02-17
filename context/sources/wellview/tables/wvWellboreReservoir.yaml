@@ -1,0 +1,18 @@
+# wellview / wellbore_surveys / wvWellboreReservoir
+# Source: context/sources/wellview/domains/wellbore_surveys.yaml
+#
+wvWellboreReservoir: A subsurface pool of hydrocarbons contained in rock formations. +parent
+  ResName(s50) #Reservoir Name
+  ResCode(s50) #Res Code
+  Des(s100) #Reservoir Description
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  DepthResDatum(dbl_m) #Res Datum Depth
+  DepthSSResDatum(dbl_m) #Datum Depth (TVD SS) Override
+  DepthTVDResDatumCalc(dbl_m_calc) #Res Datum Depth (TVD)
+  Com(txt2k) #Comment
+  ResIDA(s50) #Reservoir ID
+  ResIDB(s50) #Res IDB
+  ResIDC(s50) #Res IDC

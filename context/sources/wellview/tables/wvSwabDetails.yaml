@@ -1,0 +1,32 @@
+# wellview / perfs_stims / wvSwabDetails
+# Source: context/sources/wellview/domains/perfs_stims.yaml
+#
+wvSwabDetails: Swab details. +parent
+  SwabNo(int) #Swab Number
+  DtTm(dt) #Start Date
+  TmSwab(dbl_days) #Swabbing Time
+  PresTub(dbl_kPa) #Tubing Pressure
+  PresCas(dbl_kPa) #Casing Pressure
+  TempWH(dbl_degC) #Temp WH
+  DepthFluidLevel(dbl_m) #Tagged Fluid Level
+  DepthPull(dbl_m) #Pull Depth
+  TankGauge(dbl_m) #Tank Gauge
+  VolFluidRec(dbl_m3) #Recovered Fluid Volume
+  VolGas(dbl_m3) #Volume Gas
+  RateGas(dbl_m3pd) #Rate Gas
+  Density(dbl_kgpm3) #Density
+  Salinity(dbl_pct) #Salinity
+  BSW(dbl_pct) #Basic Sediments &  Water
+  SandCut(dbl_pct) #Sand Cut
+  H2S(dbl_pct) #H2S
+  pH(dbl) #pH
+  Com(txt2k) #Comment
+  VolOilCalc(dbl_m3_calc) #Oil Amount
+  VolCumOilCalc(dbl_m3_calc) #Cum Oil
+  OilRateCalc(dbl_m3pd_calc) #Oil Rate
+  VolBSWCalc(dbl_m3_calc) #BSW Amount
+  VolCumBSWCalc(dbl_m3_calc) #Cum BSW
+  VolCumCalc(dbl_m3_calc) #Cum Volume Recovered
+  VolCumGasCalc(dbl_m3_calc) #Cum Gas Volume
+  DepthTVDFluidLevelCalc(dbl_m_calc) #Fluid Level (TVD)
+  DepthTVDPullCalc(dbl_m_calc) #Pull Depth (TVD)

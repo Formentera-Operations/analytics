@@ -1,0 +1,16 @@
+# prodview / completions / pvUnitCompTarget
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompTarget: Production Targets +parent | Defines production forecast/target sets for a completion. Parent table for daily target rates (pvUnitCompTargetDay).
+  DtTmStart(dt) #Start Date
+  Typ(s50) #Type
+  UseCalcDiff(bool) #Use In Diff From Target Calcs
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3
+  UserDtTm1(dt) #User Date 1
+  UserDtTm2(dt) #User Date 2
+  UserDtTm3(dt) #User Date 3

@@ -1,0 +1,17 @@
+# wellview / operations_jobs / wvJobProgramGeoSample
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobProgramGeoSample: Planned geological sampling requirements for this 'Job'. Ex. Open hole log required by government agency. +parent
+  NoteIntervalTop(s255) #Interval Top Description
+  DepthTop(dbl_m) #Interval Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth (TVD)
+  NoteIntervalBtm(s255) #Interval Bottom Description
+  DepthBtm(dbl_m) #Interval Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  IDRecWellbore(s32) #Wellbore
+  DtTmRequired(dt) #Required Date
+  RequiredBy(s50) #Required By
+  SampledBy(s50) #Sampled By
+  Com(txt2k) #Comment
+  DtTmRevision(dt) #Revision Date
+  RevisionNo(s5) #Revision #

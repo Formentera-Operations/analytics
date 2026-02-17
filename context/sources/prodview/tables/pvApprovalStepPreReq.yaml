@@ -1,0 +1,7 @@
+# prodview / admin / pvApprovalStepPreReq
+# Source: context/sources/prodview/domains/admin.yaml
+#
+pvApprovalStepPreReq: Prerequisites +parent | All <avStep>s that must be completed prior to starting activities on this <avStep>
+  IDRecStep(s32) #Prerequisite
+  Com(txt255) #Note
+  sysSeq(int) #Sequence

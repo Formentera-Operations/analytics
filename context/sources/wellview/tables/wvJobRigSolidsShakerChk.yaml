@@ -1,0 +1,11 @@
+# wellview / operations_jobs / wvJobRigSolidsShakerChk
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobRigSolidsShakerChk: Overflow and Underflow density and rate details by date/time. +parent
+  DtTm(dt) #Date
+  DensityOF(dbl_kgpm3) #Density Overflow
+  DensityUF(dbl_kgpm3) #Density Underflow
+  RateOF(dbl_m3pd) #Overflow Rate
+  RateUF(dbl_m3pd) #Underflow Rate
+  RunHours(dbl_days) #Hours
+  Note(s255) #Note

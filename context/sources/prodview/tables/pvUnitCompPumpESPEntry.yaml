@@ -1,0 +1,18 @@
+# prodview / artificial_lift / pvUnitCompPumpESPEntry
+# Source: context/sources/prodview/domains/artificial_lift.yaml
+#
+pvUnitCompPumpESPEntry: ESP Entries +parent | ESP operating parameters for the time interval defined in <wvProdSetting>. To access this folder, se
+  DtTm(dt) #Date
+  ElectricCurrent(double, amp) #Motor Current
+  ElectricFreq(double, hertz) #Operating Frequency
+  ElectricVoltage(dbl_degC) #Motor Temp
+  RPM(dbl_kPa) #PIP
+  PresPumpIn(dbl_kPa) #Pump Intake Pressure
+  VolPerDay(dbl_kPa) #PDP
+  Com(txt2k) #Comment
+  UserTxt1(s50) #User Text 1
+  UserTxt2(s50) #User Text 2
+  UserTxt3(s50) #User Text 3
+  UserNum1(dbl) #User Num 1
+  UserNum2(dbl) #User Num 2
+  UserNum3(dbl) #User Num 3

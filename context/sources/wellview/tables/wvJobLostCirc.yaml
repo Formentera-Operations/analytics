@@ -1,0 +1,25 @@
+# wellview / operations_jobs / wvJobLostCirc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobLostCirc: Lost circulation depths, times, and volumes. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  FluidDes(s100) #Fluid Description
+  DtTmStart(dt) #Start Date
+  DtTmEnd(dt) #End Date
+  DurationCalc(dbl_days_calc) #Duration
+  DtTmOpsResume(dt) #Operation Resume Date
+  IDRecWellBore(s32) #Wellbore
+  DepthStart(dbl_m) #Top Depth
+  DepthTVDStartCalc(dbl_m_calc) #Top Depth (TVD)
+  DepthEnd(dbl_m) #Bottom Depth
+  DepthTVDEndCalc(dbl_m_calc) #Bottom Depth (TVD)
+  OpsInProg(s50) #Operation In Progress
+  VolLossTotal(dbl_m3) #Total Lost Volume
+  VolLossTotalCumCalc(dbl_m3_calc) #Cum Total Lost Volume
+  RateLoss(dbl_m3pd) #Rate Lost
+  ReportNoCalc(dbl_calc) #Report Number
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  Com(txt2k) #Comment
+  MudDensityBeforeCalc(dbl_kgpm3_calc) #Mud Density Before Lost Circ
+  MudDensityAfterCalc(dbl_kgpm3_calc) #Mud Density After Lost Circ

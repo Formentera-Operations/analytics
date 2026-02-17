@@ -1,0 +1,18 @@
+# wellview / operations_jobs / wvJobWellboreGradient
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobWellboreGradient: Pore pressure, frac pressure and temperature gradients by depth during the 'Job'. +parent
+  Depth(dbl_m) #Depth
+  DepthTVDCalc(dbl_m_calc) #Depth (TVD)
+  IDRecWellBore(s32) #Wellbore
+  Temp(dbl_degC) #Temperature
+  PorePresMin(dbl_kPa) #Min Pore Pressure
+  PorePresMax(dbl_kPa) #Max Pore Pressure
+  PorePresML(dbl_kPa) #Pore Pressure
+  FracPresMin(dbl_kPa) #Min Frac Pres
+  FracPresMax(dbl_kPa) #Max Frac Pres
+  FracPresML(dbl_kPa) #Frac Pressure
+  Note(s255) #Note
+  FormationCalc(s255_calc) #Formation
+  ReservoirCalc(s255_calc) #Reservoir
+  ZoneCalc(s255_calc) #Zone(s)

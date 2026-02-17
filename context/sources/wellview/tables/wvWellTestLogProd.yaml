@@ -1,0 +1,29 @@
+# wellview / reservoir_tests / wvWellTestLogProd
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestLogProd: Production log test summary. +parent
+  Typ1(s100) #Type
+  Typ2(s100) #Subtype
+  Des(s100) #Description
+  DtTm(dt) #Date
+  TestedBy(s50) #Production Log Company
+  Analyst(s50) #Analyst
+  ToolDes(s100) #Tool Description
+  IDRecJob(s32) #Job
+  IDRecLog(s32) #Reference Log
+  DurShutIn(dbl_days) #Duration of Shut-In pre Test
+  PresShutIn(dbl_kPa) #Shut-In Pressure
+  OrificeSz(dbl_m) #Orifice Size
+  Com(txt2k) #Comment
+  FluidLevel(dbl_m) #Fluid Level
+  PresFlowingSurf(dbl_kPa) #Surface Flowing Pressure
+  RateOilSurf(dbl_m3pd) #Surface Oil Rate
+  RateGasSurf(dbl_m3pd) #Surface Gas Rate
+  RateCondSurf(dbl_m3pd) #Surface Cond Rate
+  RateWaterSurf(dbl_m3pd) #Surface Water Rate
+  Density(dbl_kgpm3) #Density
+  FlowContributionCalc(dbl_pct_calc) #Flow Contribution
+  RateOilTotalCalc(dbl_m3pd_calc) #Oil Rate Total
+  RateGasTotalCalc(dbl_m3pd_calc) #Gas Rate Total
+  RateCondTotalCalc(dbl_m3pd_calc) #Condensate Rate Total
+  RateWaterTotalCalc(dbl_m3pd_calc) #Water Rate Total

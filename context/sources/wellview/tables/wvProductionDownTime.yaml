@@ -1,0 +1,11 @@
+# wellview / production_operations / wvProductionDownTime
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvProductionDownTime: Start date, duration and reason for down time. +parent
+  DtTmStart(dt) #Start Date
+  Duration(dbl_days) #Duration
+  DtTmEndCalc(dt_calc) #End Date
+  IDRecProblem(s32) #Associated AFE Summary
+  Reason(s50) #Reason
+  Preventable(bool) #Preventable?
+  Com(txt2k) #Comment

@@ -1,0 +1,54 @@
+# wellview / operations_jobs / wvJobReportTimeLogCalc
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportTimeLogCalc: EQN: 'Job Time Log' records for this 'Daily Operation'. +parent
+  DtTmStart(dt_calc) #Start Date
+  Duration(dbl_days_calc) #Duration
+  SumOfDuration(dbl_days_calc) #Cum Duration
+  DtTmEnd(dt_calc) #End Date
+  Code1(s100_calc) #Code 1
+  Code2(s100_calc) #Code 2
+  Code3(s100_calc) #Code 3
+  Code4(s100_calc) #Code 4
+  OpsCategory(s50_calc) #Ops Category
+  Inactive(bool_calc) #Inactive Time?
+  UnschedTyp(s100_calc) #Unscheduled Type
+  DepthStart(dbl_m_calc) #Start Depth
+  DepthTVDStart(dbl_m_calc) #Start Depth (TVD)
+  DepthEnd(dbl_m_calc) #End Depth
+  DepthTVDEnd(dbl_m_calc) #End Depth (TVD)
+  IDRecWellbore(s32_calc) #Wellbore
+  Com(txt2k_calc) #Comment
+  IDRecJobProgramPhase(s32_calc) #Phase
+  Problem(bool_calc) #Problem?
+  DurationProblemTime(dbl_days_calc) #Problem Time
+  RefNoProblem(s50_calc) #Problem Ref #
+  ReportNo(dbl_calc) #Report Number
+  ReportDay(dbl_days_calc) #Job Day
+  DaysFromSpud(dbl_days_calc) #Days From Spud
+  DurationTimeLogCumSpud(dbl_days_calc) #Cum Time Log Days From Spud
+  DurationTimeLogTotCum(dbl_days_calc) #Cum Time Log Days
+  DurationProblemTimeCum(dbl_days_calc) #Cum Problem Time
+  DurationNoProbTime(dbl_days_calc) #Time Log - Problem Hours
+  DurationNoProbTimeCum(dbl_days_calc) #Cum Time Log - Problem
+  DepthStartDP(dbl_m_calc) #Drill Param Start Depth
+  DepthEndDP(dbl_m_calc) #Drill Param End Depth
+  RigDays(dbl_days_calc) #Number of Rig Days
+  RigDaysCum(dbl_days_calc) #Total Rig Days
+  DurOnBtm(dbl_days_calc) #On Bottom
+  DurOffBtm(dbl_days_calc) #Off Bottom
+  DurPipeMoving(dbl_days_calc) #Pipe Moving
+  Formation(s255_calc) #Formation
+  WellboreSz(dbl_m_calc) #Wellbore Size
+  RefDerrick(s50_calc) #Derrick Reference
+  IDRecWSString(s32_calc) #Well Servicing String
+  IDRecLastCas(s32_calc) #Last Casing String
+  IDRecLastRig(s32_calc) #Rig/Service Unit
+  ROP(dbl_mpd_calc) #Interval ROP
+  UserTxt1(s50_calc) #User Text 1
+  UserTxt2(s50_calc) #User Text 2
+  InclStart(dbl_deg_calc) #Top Inclination
+  InclEnd(dbl_deg_calc) #Bottom Inclination
+  InclMax(dbl_deg_calc) #Max Inclination
+  RigCrewName(s50_calc) #Rig Crew Name
+  Code1234(s200_calc) #Code 1 - 2 - 3 - 4

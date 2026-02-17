@@ -1,0 +1,15 @@
+# Source: wellview_calcs — database/schema MUST match all other _src_wellview.yml files.
+# This is a split-source pattern: dbt merges tables from files sharing the same source name.
+version: 2
+
+sources:
+  - name: wellview_calcs
+    database: PELOTON_FORMENTERAOPS_FORMENTERAOPS_WV120
+    schema: FORMENTERAOPS_WV120_CALC
+    tables:
+      - name: WVT_WVWELLTESTTRANS
+        description: "Well tests — test headers with type, dates, zones, and operating conditions"
+      - name: WVT_WVWELLTESTTRANSRESULT
+        description: "Well test results — measured results (rates, pressures, analysis) per test"
+      - name: WVT_WVWELLTESTTRANSFLOWPER
+        description: "Well test flow periods — individual flow/shut-in periods within a test"

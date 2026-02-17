@@ -1,0 +1,32 @@
+# wellview / operations_jobs / wvJobReportCostGen
+# Source: context/sources/wellview/domains/operations_jobs.yaml
+#
+wvJobReportCostGen: Costs for the report period. +parent
+  sysCarryFwdP(bool) #Carry forward to next parent?
+  Des(s100) #Account Name
+  Code1(s100) #Main Account ID
+  Code2(s100) #Sub Account ID
+  Code3(s100) #Spend Category
+  Code4(s100) #Expense Type
+  Code5(s100) #Tangible / Intangible
+  Code6(s100) #AFE Category
+  Cost(dbl_cost) #Field Est
+  CostCumCalc(dbl_cost_calc) #Cum Field Est
+  OpsCategory(s50) #Ops Category
+  UnschedTyp(s100) #Unscheduled Type
+  SN(s50) #Serial Number
+  TicketNo(s50) #Ticket Number
+  Note(s255) #Note
+  Vendor(s100) #Vendor
+  VendorCode(s100) #Vendor Code
+  VendorSubCode(s100) #Vendor Subcode
+  IDRecPhaseCustom(s32) #Custom Phase Allocation
+  IDRecAFECustom(s32) #Custom AFE Allocation
+  IDRecIntervalProblemCustom(s32) #Custom Interval Problem Allocation
+  IntervalProblemPct(dbl_pct) #Interval Problem Allocation %
+  PONo(s50) #Purchase Order Number
+  POLineNo(s50) #Purchase Order Line Number
+  WorkOrderNo(s50) #Work Order Number
+  Status(s50) #Status
+  UserTxt1(s50) #User Text 1
+  UserBoolean1(bool) #User Boolean 1

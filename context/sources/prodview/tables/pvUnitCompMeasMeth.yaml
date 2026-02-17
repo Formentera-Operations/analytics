@@ -1,0 +1,14 @@
+# prodview / completions / pvUnitCompMeasMeth
+# Source: context/sources/prodview/domains/completions.yaml
+#
+pvUnitCompMeasMeth: Measurement Methods +parent | Method used to estimate the volumes from this completion flowing into the unit
+  DtTmStart(dt) #Effective Date
+  FlowDirection(s20) #Flow Direction
+  MethodGas(s50) #Method Gas
+  IDRecNodeGas(s32) #Completion Gas Node
+  MethodHCLiq(s50) #Method Oil/Condensate
+  IDRecNodeHCLiq(s32) #Completion Oil/Cond Node
+  MethodWater(s50) #Method Water
+  IDRecNodeWater(s32) #Completion Water Node
+  IDRecNodeCasingGas(s32) #Casing Gas Node
+  Com(txt2k) #Comment

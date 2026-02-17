@@ -1,0 +1,9 @@
+# prodview / fluid_analysis / pvUnitCompHCLiqAnaly
+# Source: context/sources/prodview/domains/fluid_analysis.yaml
+#
+pvUnitCompHCLiqAnaly: Hydrocarbon Liquid Analyses +parent | Link to hydrocarbon liquid analysis for this 'Completion'.
+  DtTmStart(dt) #Effective Date
+  IDRecHCLiqAnaly(s32) #HC Liquid Analysis Group
+  DurValid(dbl_days) #Duration Valid
+  DtTmNextCalc(dt_calc) #Next Analysis Due
+  Com(stringlong 100) #Note

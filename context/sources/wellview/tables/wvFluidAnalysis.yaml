@@ -1,0 +1,32 @@
+# wellview / production_operations / wvFluidAnalysis
+# Source: context/sources/wellview/domains/production_operations.yaml
+#
+wvFluidAnalysis: General fluid analysis details. +parent
+  AnalysisTyp(s100) #Analysis Type
+  SampleTyp1(s100) #Analysis Subtype
+  Des(s100) #Sample Description
+  LocSample(s50) #Sample Location Point
+  TestedBy(s50) #Sampler Company
+  DtTmSample(dt) #Sample Date
+  DtTmReceived(dt) #Sample Received Date
+  DtTmReport(dt) #Report Date
+  IDRecZoneCompletion(s32) #Completion/Zone
+  DepthTop(dbl_m) #Top Depth
+  DepthTVDTopCalc(dbl_m_calc) #Top Depth(TVD)
+  DepthBtm(dbl_m) #Bottom Depth
+  DepthTVDBtmCalc(dbl_m_calc) #Bottom Depth (TVD)
+  RefNoLaboratory(s50) #Lab Ref #
+  Analyst(s50) #Analyst
+  RefNoTest(s50) #Test Ref #
+  RefNoSample(s50) #Sample Container Ref #
+  Com(txt2k) #Comment
+  PresSeparator(dbl_kPa) #Separator Pressure
+  TempSeparator(dbl_degC) #Separator Temperature
+  PresReservoir(dbl_kPa) #Reservoir Pressure
+  TempReservoir(dbl_degC) #Reservoir Temperature
+  PresGaugeSource(dbl_kPa) #Source Gauge Pressure
+  TempGaugeSource(dbl_degC) #Source Gauge Temperature
+  PresSample(dbl_kPa) #Sample Pressure
+  TempSample(dbl_degC) #Sample Temperature
+  PresSampleRec(dbl_kPa) #Received Sample Pressure
+  TempSampleRec(dbl_degC) #Received Sample Temperature

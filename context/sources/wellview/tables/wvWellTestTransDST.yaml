@@ -1,0 +1,12 @@
+# wellview / reservoir_tests / wvWellTestTransDST
+# Source: context/sources/wellview/domains/reservoir_tests.yaml
+#
+wvWellTestTransDST: Cushion, blow, etc details relating to DST test. +extension
+  CushHeight(dbl_m) #Cush Height
+  CushDensity(dbl_kgpm3) #Cush Density
+  CushDes(s100) #Cushion Description
+  PresInitHydro(dbl_kPa) #Initial Hydrostatic Pressure
+  BlowDes(s100) #Blow Des
+  FluidToSurface(s50) #Fluid To Surface
+  TimeToSurface(dbl_days) #Time To Surface
+  PipeRecDes(s100) #Pipe Rec Des

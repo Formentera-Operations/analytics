@@ -1,0 +1,24 @@
+# wellview / casing_cement / wvRiser
+# Source: context/sources/wellview/domains/casing_cement.yaml
+#
+wvRiser: Riser information including run dates, depths and component details. +parent
+  ProposedOrActual(s100) #Proposed/Actual
+  Des(s100) #Description
+  DtTmRun(dt) #Run Date
+  DepthBtm(dbl_m) #Bottom Depth
+  Tension(dbl_N) #Set Tension
+  Com(txt2k) #Comment
+  LengthCalc(dbl_m_calc) #Length
+  DepthTopCalc(dbl_m_calc) #Top Depth
+  SzODNomMaxCalc(dbl_m_calc) #Riser Nominal OD
+  WtPerLengthCalc(dbl_kgpm_calc) #Weight/Length
+  GradeCalc(s20_calc) #Riser Grade
+  SzIDNomMinCalc(dbl_m_calc) #Riser Min Nominal ID
+  WtCalc(dbl_N_calc) #Calc Riser Weight
+  WtHangPrelatch(dbl_N) #Weight Hang Prelatch
+  WtHangUnlatch(dbl_N) #Weight Hang Unlatch
+  WtHangChangeCalc(dbl_N_calc) #Weight Growth
+  DtTmPull(dt) #Pull Date
+  DtTmPropPull(dt) #Proposed Pull Date
+  IDRecJobProgramPhaseCalc(s32_calc) #Phase
+  IDRecLastRigCalc(s32_calc) #Rig/Service Unit
