@@ -1,0 +1,40 @@
+# ODA: Revenue & Expense Decks
+# Revenue decks, expense decks, and their sets, revisions, and participant allocations
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__revenue_deck_v2, stg_oda__revenue_deck_set, stg_oda__revenue_deck_revision,
+#         stg_oda__revenue_deck_participant, stg_oda__expense_deck_v2, stg_oda__expense_deck_set,
+#         stg_oda__expense_deck_revision, stg_oda__expense_deck_participant
+#
+# Relationships:
+#   ODA_BATCH_ODA_REVENUEDECK_V2 1:many -> ODA_REVENUEDECKSET (via ID -> REVENUEDECKID)
+#   ODA_REVENUEDECKSET 1:many -> ODA_REVENUEDECKREVISION (via ID -> REVENUEDECKSETID)
+#   ODA_REVENUEDECKREVISION 1:many -> ODA_REVENUEDECKPARTICIPANT (via ID -> REVENUEDECKREVISIONID)
+#   ODA_BATCH_ODA_EXPENSEDECK_V2 1:many -> ODA_EXPENSEDECKSET (via ID -> EXPENSEDECKID)
+#   ODA_EXPENSEDECKSET 1:many -> ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW (via ID -> EXPENSEDECKSETID)
+#   ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW 1:many -> ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT (via ID -> EXPENSEDECKREVISIONID)
+#
+# Key patterns:
+#   - Revenue and expense decks have parallel 4-level hierarchy: Deck -> Set -> Revision -> Participant
+#   - All 8 tables are batch (no CDC, no delete filtering needed)
+#   - ODA_REVENUEDECKPARTICIPANT is massive (196M rows, 2nd largest after GL) — each participant gets an allocation per revision
+#   - Revenue decks define ownership interests (WI, NRI, RI) for revenue distribution
+#   - Expense decks define cost-sharing allocations (JIB percentages) among working interest owners
+#   - A "revision" represents a point-in-time snapshot of interest allocations — new revisions supersede old ones
+#   - A "set" groups revisions by product or interest type within a deck
+#   - PARTICIPANT.OWNERID -> ODA_BATCH_ODA_OWNER_V2 (master_data domain)
+#   - DECK.ENTITYID -> ODA_BATCH_ODA_ENTITY_V2 (master_data domain)
+#   - stg_oda__expense_deck_revision sources from ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW (a Quorum convenience view)
+#   - Downstream: int_oda_latest_company_WI and int_oda_latest_company_NRI use revenue deck participants
+
+
+# Tables in this domain (column details in tables/ directory):
+#   ODA_BATCH_ODA_REVENUEDECK_V2: Revenue deck headers. Entity, product, effective dates. Batch (20K rows).
+#   ODA_REVENUEDECKSET: Revenue deck sets grouping revisions by product/interest type. Batch (19K rows).
+#   ODA_REVENUEDECKREVISION: Point-in-time snapshots of revenue interest allocations. Batch (346K rows).
+#   ODA_REVENUEDECKPARTICIPANT: Owner-level revenue interest allocations per revision. Batch (196M rows — 2nd largest table).
+#   ODA_BATCH_ODA_EXPENSEDECK_V2: Expense deck headers. Entity, product, effective dates. Batch (9.7K rows).
+#   ODA_EXPENSEDECKSET: Expense deck sets grouping revisions by cost type. Batch (7.6K rows).
+#   ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW: Point-in-time snapshots of expense interest allocations (Quorum view). Batch (22K rows).
+#   ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT: Owner-level expense interest allocations per revision. Batch (877K rows).

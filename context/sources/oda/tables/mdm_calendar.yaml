@@ -1,0 +1,59 @@
+# oda / supporting / MDM_CALENDAR
+# 35 columns, 36,890 rows. Date dimension/calendar table for time-based analysis.
+# Maps to stg_oda__calendar.
+#
+# NOTE: Not an ODA transactional table — this is a master data management (MDM)
+# calendar dimension shared across the data platform. Covers ~100 years of dates.
+#
+MDM_CALENDAR: Calendar dimension table. Pre-computed date attributes for every calendar date — day, week, month, quarter, year breakdowns with names, first/last boundaries, and weekend flags. Used for date-based joins and time intelligence.
+
+  # -- Primary Key --
+  DATEKEY(int) #Primary key (YYYYMMDD integer format)
+  DATE(date) #Calendar date
+
+  # -- Day Attributes --
+  DAY(int) #Day of month (1-31)
+  DAYSUFFIX(txt) #Day ordinal suffix (st, nd, rd, th)
+  DAYOFYEAR(int) #Day of year (1-366)
+
+  # -- Weekday Attributes --
+  WEEKDAY(int) #Day of week number (1=Sunday, 7=Saturday)
+  WEEKDAYNAME(txt) #Full weekday name (Monday, Tuesday, etc.)
+  WEEKDAYNAME_SHORT(txt) #Abbreviated weekday name (Mon, Tue, etc.)
+  WEEKDAYNAME_FIRSTLETTER(txt) #First letter of weekday (M, T, W, etc.)
+  ISWEEKEND(bool) #Whether this date falls on a weekend
+
+  # -- Week Attributes --
+  WEEK(date) #Start date of the ISO week
+  WEEKNAME(txt) #Week label
+  WEEKOFMONTH(int) #Week number within the month (1-5)
+  WEEKOFYEAR(int) #ISO week number within the year (1-53)
+  FIRSTDATEOFWEEK(date) #First date of the week (Monday)
+  LASTDATEOFWEEK(date) #Last date of the week (Sunday)
+  DOWINMONTH(int) #Day-of-week occurrence in month (e.g., 3rd Tuesday)
+
+  # -- Month Attributes --
+  MONTH(int) #Month number (1-12)
+  MONTHNAME(txt) #Full month name (January, February, etc.)
+  MONTHNAME_SHORT(txt) #Abbreviated month name (Jan, Feb, etc.)
+  MONTHNAME_FIRSTLETTER(txt) #First letter of month
+  MMYYYY(int) #Month-year as integer (MMYYYY)
+  MONTHYEAR(txt) #Month-year string
+  MONTHYEARNAME(txt) #Month-year name (e.g., January 2024)
+  FIRSTDATEOFMONTH(date) #First date of the month
+  LASTDATEOFMONTH(date) #Last date of the month
+
+  # -- Quarter Attributes --
+  QUARTER(int) #Quarter number (1-4)
+  QUARTERNAME(txt) #Quarter label (Q1, Q2, etc.)
+  FIRSTDATEOFQUATER(date) #First date of the quarter (note: typo in source — "QUATER")
+  LASTDATEOFQUATER(date) #Last date of the quarter (note: typo in source — "QUATER")
+
+  # -- Year Attributes --
+  YEAR(int) #Calendar year
+  FIRSTDATEOFYEAR(date) #First date of the year (Jan 1)
+  LASTDATEOFYEAR(date) #Last date of the year (Dec 31)
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

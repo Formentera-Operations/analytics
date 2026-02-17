@@ -1,0 +1,84 @@
+# oda context index
+# Structure: domains/ (relationships) + tables/ (column definitions)
+#
+# Domain files (load for cross-table context):
+#   domains/accounts_payable.yaml — 3 tables (AP invoices, invoice detail, checks)
+#   domains/accounts_receivable.yaml — 9 tables (AR invoices, payments, adjustments, netting, advances)
+#   domains/general_ledger.yaml — 5 tables (GL journal, vouchers, reconciliation types, account types)
+#   domains/decks.yaml — 8 tables (revenue decks, expense decks, sets, revisions, participants)
+#   domains/afe_budgeting.yaml — 4 tables (AFEs, budgets, budget detail, revenue suspense)
+#   domains/master_data.yaml — 10 tables (companies, entities, vendors, owners, purchasers, wells, accounts, lookups)
+#   domains/supporting.yaml — 7 tables (JIB, JIB detail, check revenue, calendar, user fields, revision states, source modules)
+#
+# Per-table files (load for single-model work):
+#   tables/{table_name}.yaml
+#
+# Total: 7 domains, 46 staged tables
+#
+# Ingestion: Estuary CDC + Estuary Batch into ESTUARY_DB.ESTUARY_SCHEMA
+# Two ODA connectors share one Snowflake schema:
+#   CDC connector (FormenteraOps/ODA/oda/*) — 7 tables, requires _operation_type != 'd' filtering
+#   Batch connector (FormenteraOps/ODA_BATCH/oda/*) — 28 tables, no delete filtering needed
+#   Old connector (orphaned) — 2 tables (ODA_APCHECK, ODA_CHECKREVENUE), possibly stale
+#
+# Table catalog:
+#
+# accounts_payable domain (3 tables):
+#   ODA_APINVOICE (58 cols, 334K rows, CDC) -> stg_oda__apinvoice
+#   ODA_APINVOICEDETAIL (33 cols, 6.8M rows, CDC) -> stg_oda__apinvoicedetail
+#   ODA_APCHECK (25 cols, 49.5K rows, old connector) -> stg_oda__apcheck
+#
+# accounts_receivable domain (9 tables):
+#   ODA_ARINVOICE_V2 (39 cols, 436K rows, CDC) -> stg_oda__arinvoice_v2
+#   ODA_ARINVOICEDETAIL (18 cols, 611 rows, CDC) -> stg_oda__arinvoicedetail
+#   ODA_ARINVOICEPAYMENT (20 cols, 37.6K rows, Batch) -> stg_oda__arinvoicepayment
+#   ODA_ARINVOICEPAYMENTDETAIL (12 cols, 172K rows, Batch) -> stg_oda__arinvoicepaymentdetail
+#   ODA_ARINVOICENETTEDDETAIL (19 cols, 531K rows, Batch) -> stg_oda__arinvoicenetteddetail
+#   ODA_BATCH_ODA_ARINVOICEADJUSTMENT (21 cols, 10.7K rows, Batch) -> stg_oda__arinvoiceadjustment
+#   ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL (16 cols, 41K rows, Batch) -> stg_oda__arinvoiceadjustmentdetail
+#   ODA_BATCH_ODA_ARADVANCE (23 cols, 27 rows, Batch) -> stg_oda__aradvance
+#   ODA_BATCH_ODA_ARADVANCECLOSEOUT (14 cols, 0 rows, Batch) -> stg_oda__aradvancecloseout
+#
+# general_ledger domain (5 tables):
+#   GL (80 cols, 180M rows, CDC) -> stg_oda__gl
+#   ODA_VOUCHER_V2 (30 cols, 370K rows, Batch) -> stg_oda__voucher_v2
+#   ODA_GLRECONCILIATIONTYPE (9 cols, 8 rows, Batch) -> stg_oda__gl_reconciliation_type
+#   ODA_ACCOUNTTYPE (9 cols, 2 rows, Batch) -> stg_oda__account_types
+#   ODA_BATCH_ODA_ACCOUNTSUBTYPE (12 cols, 5 rows, Batch) -> stg_oda__account_sub_types
+#
+# decks domain (8 tables):
+#   ODA_BATCH_ODA_REVENUEDECK_V2 (11 cols, 20K rows, Batch) -> stg_oda__revenue_deck_v2
+#   ODA_REVENUEDECKSET (17 cols, 19K rows, Batch) -> stg_oda__revenue_deck_set
+#   ODA_REVENUEDECKREVISION (20 cols, 346K rows, Batch) -> stg_oda__revenue_deck_revision
+#   ODA_REVENUEDECKPARTICIPANT (27 cols, 196M rows, Batch) -> stg_oda__revenue_deck_participant
+#   ODA_BATCH_ODA_EXPENSEDECK_V2 (18 cols, 9.7K rows, Batch) -> stg_oda__expense_deck_v2
+#   ODA_EXPENSEDECKSET (16 cols, 7.6K rows, Batch) -> stg_oda__expense_deck_set
+#   ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW (20 cols, 22K rows, Batch) -> stg_oda__expense_deck_revision
+#   ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT (11 cols, 877K rows, Batch) -> stg_oda__expense_deck_participant
+#
+# afe_budgeting domain (4 tables):
+#   ODA_BATCH_ODA_AFE_V2 (46 cols, 2.2K rows, Batch) -> stg_oda__afe_v2
+#   ODA_AFEBUDGET (18 cols, 1.9K rows, Batch) -> stg_oda__afebudget
+#   ODA_AFEBUDGETDETAIL_V2 (13 cols, 424K rows, Batch) -> stg_oda__afebudgetdetail_v2
+#   ODA_BATCH_ODA_REVENUESUSPENSECATEGORY (10 cols, 24 rows, Batch) -> stg_oda__revenue_suspense_category
+#
+# master_data domain (10 tables):
+#   ODA_BATCH_ODA_COMPANY_V2 (54 cols, 39 rows, Batch) -> stg_oda__company_v2
+#   ODA_BATCH_ODA_ENTITY_V2 (19 cols, 56K rows, Batch) -> stg_oda__entity_v2
+#   ODA_BATCH_ODA_VENDOR_V2 (27 cols, 4K rows, Batch) -> stg_oda__vendor_v2
+#   ODA_BATCH_ODA_OWNER_V2 (44 cols, 42K rows, Batch) -> stg_oda__owner_v2
+#   ODA_BATCH_ODA_PURCHASER_V2 (15 cols, 183 rows, Batch) -> stg_oda__purchaser_v2
+#   ODA_BATCH_ODA_WELL (42 cols, 9.4K rows, Batch) -> stg_oda__wells
+#   ODA_BATCH_ODA_ACCOUNT_V2 (38 cols, 2K rows, Batch) -> stg_oda__account_v2
+#   ODA_BATCH_ODA_INTERESTTYPE (10 cols, 5 rows, Batch) -> stg_oda__interest_type
+#   ODA_BATCH_ODA_PRODUCT (20 cols, 9 rows, Batch) -> stg_oda__product
+#   ODA_BATCH_ODA_PAYMENTTYPE (9 cols, 8 rows, Batch) -> stg_oda__payment_type
+#
+# supporting domain (7 tables):
+#   ODA_JIB (52 cols, 63M rows, CDC) -> stg_oda__jib
+#   ODA_JIBDETAIL (53 cols, 63M rows, CDC) -> stg_oda__jibdetail
+#   ODA_CHECKREVENUE (31 cols, 659K rows, old connector) -> stg_oda__checkrevenue
+#   MDM_CALENDAR (35 cols, 37K rows, Batch) -> stg_oda__calendar
+#   ODA_USERFIELD (13 cols, 4.8M rows, Batch) -> stg_oda__userfield
+#   ODA_REVISIONSTATE (9 cols, 3 rows, Batch) -> stg_oda__revision_state
+#   ODA_BATCH_ODA_SOURCEMODULE (10 cols, 26 rows, Batch) -> stg_oda__source_module

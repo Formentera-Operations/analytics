@@ -1,0 +1,19 @@
+# oda / general_ledger / ODA_GLRECONCILIATIONTYPE
+# Source: context/sources/oda/domains/general_ledger.yaml
+# 9 columns, 8 rows. GL reconciliation type lookup.
+# Maps to stg_oda__gl_reconciliation_type.
+#
+ODA_GLRECONCILIATIONTYPE: GL reconciliation type lookup. Reference table defining the types of reconciliation that can be applied to GL entries (e.g., bank reconciliation, intercompany). Very low volume (8 rows).
+
+  # -- Identifiers --
+  ID(int) #Reconciliation type primary key
+  GLRECONCILIATIONTYPEIDENTITY(int) #ODA internal sequence identity
+  CODE(txt) #Reconciliation type short code
+  NAME(txt) #Reconciliation type name
+  FULLNAME(txt) #Reconciliation type full/display name
+
+  # -- Audit/Metadata --
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

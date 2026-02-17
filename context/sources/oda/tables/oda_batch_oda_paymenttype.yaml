@@ -1,0 +1,20 @@
+# oda / master_data / ODA_BATCH_ODA_PAYMENTTYPE
+# 9 columns, 8 rows. Payment type lookup table (check, ACH, wire, etc.).
+# Maps to stg_oda__payment_type.
+#
+ODA_BATCH_ODA_PAYMENTTYPE: Payment type lookup. Defines the payment methods used for revenue checks and AP payments. Typical values: Check, ACH, Wire Transfer, Hold, etc.
+
+  # -- Identifiers --
+  ID(int) #Primary key (integer, not GUID — small lookup table)
+  PAYMENTTYPEIDENTITY(int) #Numeric identity for the payment type
+  CODE(txt) #Payment type code
+  NAME(txt) #Short payment type name
+  FULLNAME(txt) #Full payment type name
+
+  # -- Audit --
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

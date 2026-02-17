@@ -1,0 +1,24 @@
+# oda / accounts_receivable / ODA_BATCH_ODA_ARADVANCECLOSEOUT
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 14 columns, 0 rows. AR advance closeout records.
+# Maps to stg_oda__aradvancecloseout.
+#
+ODA_BATCH_ODA_ARADVANCECLOSEOUT: Accounts receivable advance closeout records. Each row closes out a previously collected advance by linking the original advance voucher to a target (settlement) voucher. Currently empty (0 rows) — schema exists for future use.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARADVANCECLOSEOUTIDENTITY(int) #ODA internal sequence identity for the closeout
+  VOUCHERID(txt) #Original advance voucher being closed out (FK to ODA_VOUCHER_V2)
+  TARGETVOUCHERID(txt) #Target/settlement voucher (FK to ODA_VOUCHER_V2)
+  WELLID(txt) #Well ID associated with the closeout (FK to ODA_WELL)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  _meta/op(txt) #Estuary CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

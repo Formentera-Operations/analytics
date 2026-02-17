@@ -1,0 +1,32 @@
+# oda / accounts_receivable / ODA_ARINVOICEDETAIL
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 18 columns, 611 rows. AR invoice line items.
+# Maps to stg_oda__arinvoicedetail.
+#
+ODA_ARINVOICEDETAIL: Accounts receivable invoice line items. Each row is a distribution line on an AR invoice, with GL account assignment and volume/amount detail. Low-volume table (611 rows).
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICEDETAILIDENTITY(int) #ODA internal sequence identity for the detail line
+  INVOICEID(txt) #Parent AR invoice ID (FK to ODA_ARINVOICE_V2.ID)
+  ACCOUNTID(txt) #GL account ID for the revenue (FK to ODA_ACCOUNT)
+  DISTRIBUTIONCOMPANYID(txt) #Distribution company ID (entity receiving revenue)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Financial --
+  DISTRIBUTIONAMOUNT(float) #Distribution dollar amount for the line
+  NETVOLUME(float) #Net volume for the line item
+  ORDINAL(int) #Line item sequence/order within the invoice
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Line item description
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  _meta/op(txt) #Estuary CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

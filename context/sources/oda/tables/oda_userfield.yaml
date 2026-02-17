@@ -1,0 +1,33 @@
+# oda / supporting / ODA_USERFIELD
+# 13 columns, 4,777,582 rows. User-defined field values (EAV pattern).
+# Maps to stg_oda__userfield.
+#
+# NOTE: This is an Entity-Attribute-Value (EAV) table. Each row is a single
+# user-defined field value for an entity. To get all custom fields for one
+# entity, filter by ENTITYTYPEID + ID and pivot on USERFIELDNAME.
+# The staging model currently preserves PascalCase column names.
+#
+ODA_USERFIELD: User-defined fields. EAV table storing custom field values attached to various ODA entities (wells, owners, companies, etc.). Each row is one field-value pair for one entity. Used for client-specific extensions to the standard ODA schema.
+
+  # -- Identifiers --
+  USERFIELDIDENTITY(int) #Numeric identity for the user field record
+  ID(txt) #Entity ID this field belongs to (polymorphic — references different tables based on ENTITYTYPEID)
+
+  # -- Entity Reference --
+  ENTITYTYPEID(int) #Type of entity this field belongs to (determines which table ID references)
+  ENTITYCODE(txt) #Code of the parent entity (denormalized)
+  ENTITYNAME(txt) #Name of the parent entity (denormalized)
+
+  # -- Field Data --
+  USERFIELDNAME(txt) #Name of the user-defined field (the "attribute" in EAV)
+  USERFIELDVALUESTRING(txt) #Value of the field as string (the "value" in EAV)
+  USERFIELDTYPE(txt) #Data type of the field value
+  USERFIELDTYPECODE(txt) #Code for the field data type
+
+  # -- Audit --
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

@@ -1,0 +1,35 @@
+# oda / revenue_expense_decks / ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT
+# 18 columns, 876,866 rows. Expense deck participant interest allocations.
+# Maps to stg_oda__expense_deck_participant.
+#
+ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT: Expense deck participants. Each row represents an owner's interest allocation in a specific expense deck revision. Used for JIB billing to determine each owner's share of well expenses.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  EXPENSEDECKPARTICIPANTIDENTITY(int) #Numeric identity for the participant record
+  DECKREVISIONID(txt) #FK to ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW.ID — parent revision
+
+  # -- Entity Details --
+  ENTITYTYPEID(int) #Entity type classifier (company, owner, etc.)
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — company context
+  OWNERID(txt) #FK to ODA_BATCH_ODA_OWNER_V2.ID — the interest owner
+
+  # -- Interest Allocation --
+  INTERESTTYPEID(int) #FK to ODA_BATCH_ODA_INTERESTTYPE.ID — type of interest (WI, NRI, etc.)
+  CUSTOMINTERESTTYPEID(txt) #Custom interest type ID (for non-standard interest types)
+  DECIMALINTEREST(float) #Interest percentage as decimal (e.g., 0.125 = 12.5%)
+
+  # -- Flags --
+  ISMEMO(bool) #Whether this is a memo entry (informational only, not billed)
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

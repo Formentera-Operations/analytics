@@ -1,0 +1,24 @@
+# oda / revenue_expense_decks / ODA_BATCH_ODA_EXPENSEDECK_V2
+# 11 columns, 9,744 rows. Expense deck header records linking deck sets to effective dates.
+# Maps to stg_oda__expense_deck_v2.
+#
+ODA_BATCH_ODA_EXPENSEDECK_V2: Expense deck headers. Each row represents an expense deck instance with an effective date, linking a deck set to a specific time period. Parallel structure to revenue decks for expense-side interest allocations.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  EXPENSEDECKIDENTITY(int) #Numeric identity for the expense deck
+  NID(int) #Numeric identifier
+  DECKSETID(txt) #FK to ODA_EXPENSEDECKSET.ID — parent deck set
+
+  # -- Dates --
+  EFFECTIVEDATE(date) #Date this deck version becomes effective
+
+  # -- Audit --
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)

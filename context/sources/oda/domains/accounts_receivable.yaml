@@ -1,0 +1,42 @@
+# ODA: Accounts Receivable
+# AR invoices, payments, adjustments, netting, and advances
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__arinvoice_v2, stg_oda__arinvoicedetail, stg_oda__arinvoicepayment,
+#         stg_oda__arinvoicepaymentdetail, stg_oda__arinvoicenetteddetail,
+#         stg_oda__arinvoiceadjustment, stg_oda__arinvoiceadjustmentdetail,
+#         stg_oda__aradvance, stg_oda__aradvancecloseout
+#
+# Relationships:
+#   ODA_ARINVOICE_V2 1:many -> ODA_ARINVOICEDETAIL (via ID -> ARINVOICEID)
+#   ODA_ARINVOICE_V2 1:many -> ODA_ARINVOICEPAYMENT (via ID -> ARINVOICEID)
+#   ODA_ARINVOICEPAYMENT 1:many -> ODA_ARINVOICEPAYMENTDETAIL (via ID -> ARINVOICEPAYMENTID)
+#   ODA_ARINVOICE_V2 1:many -> ODA_ARINVOICENETTEDDETAIL (via ID -> ARINVOICEID)
+#   ODA_ARINVOICE_V2 1:many -> ODA_BATCH_ODA_ARINVOICEADJUSTMENT (via ID -> ARINVOICEID)
+#   ODA_BATCH_ODA_ARINVOICEADJUSTMENT 1:many -> ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL (via ID -> ARINVOICEADJUSTMENTID)
+#   ODA_BATCH_ODA_ARADVANCE -> ODA_BATCH_ODA_ARADVANCECLOSEOUT (via ID -> ARADVANCEID)
+#
+# Key patterns:
+#   - Most complex domain — invoice -> detail -> payment -> adjustment -> netting chains
+#   - Only ODA_ARINVOICE_V2 (436K) and ODA_ARINVOICEDETAIL (611) are CDC; rest are batch
+#   - ODA_ARINVOICEDETAIL has surprisingly few rows (611) — most detail is in payment/netting tables
+#   - ODA_ARINVOICENETTEDDETAIL (531K rows) captures revenue netting offsets between owners/entities
+#   - ODA_BATCH_ODA_ARADVANCECLOSEOUT has 0 rows — table exists but no closeout data yet
+#   - ARINVOICE_V2.PURCHASERID -> ODA_BATCH_ODA_PURCHASER_V2 (master_data domain)
+#   - ARINVOICE_V2.COMPANYID -> ODA_BATCH_ODA_COMPANY_V2 (master_data domain)
+#   - ARINVOICE_V2.ENTITYID -> ODA_BATCH_ODA_ENTITY_V2 (master_data domain)
+#   - AR is the revenue side — Formentera invoices purchasers for oil/gas sales
+#   - Downstream: int_oda_ar_* intermediates aggregate payments, adjustments, netting into invoice-level balances
+
+
+# Tables in this domain (column details in tables/ directory):
+#   ODA_ARINVOICE_V2: AR invoice headers. Purchaser, entity, company, dates, amounts, payment status. CDC table (436K rows).
+#   ODA_ARINVOICEDETAIL: AR invoice line items with product and volume detail. CDC table (611 rows).
+#   ODA_ARINVOICEPAYMENT: Payments received against AR invoices. Check numbers, dates, amounts. Batch (37.6K rows).
+#   ODA_ARINVOICEPAYMENTDETAIL: Payment allocation to invoice line items. Batch (172K rows).
+#   ODA_ARINVOICENETTEDDETAIL: Revenue netting offsets between owners/entities on an invoice. Batch (531K rows).
+#   ODA_BATCH_ODA_ARINVOICEADJUSTMENT: Adjustments applied to AR invoices post-issuance. Batch (10.7K rows).
+#   ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL: Line-item detail for AR adjustments. Batch (41K rows).
+#   ODA_BATCH_ODA_ARADVANCE: Revenue advances issued before production settlement. Batch (27 rows).
+#   ODA_BATCH_ODA_ARADVANCECLOSEOUT: Closeout records for settled advances. Batch (0 rows — no data yet).

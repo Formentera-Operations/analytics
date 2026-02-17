@@ -1,0 +1,52 @@
+# oda / general_ledger / ODA_VOUCHER_V2
+# Source: context/sources/oda/domains/general_ledger.yaml
+# 30 columns, 369,823 rows. GL voucher (posting batch) headers.
+# Maps to stg_oda__voucher_v2.
+#
+ODA_VOUCHER_V2: General ledger voucher headers (v2 schema). Each row is a posting batch that groups related GL entries. Vouchers are referenced by AP invoices, AR invoices, checks, and adjustments as the bridge to the GL.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  VOUCHERIDENTITY(int) #ODA internal sequence identity for the voucher
+  CODE(int) #Voucher number/code (sequential)
+  VOUCHERTYPEID(int) #Voucher type ID (e.g., AP, AR, JE, Allocation)
+  ORIGINATINGCOMPANYID(txt) #Company that originated the voucher (FK to ODA_COMPANY)
+  IMPORTDATAID(txt) #Import batch ID (null if manually entered)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Dates --
+  VOUCHERDATE(date) #Voucher date (period the entries belong to)
+  DATEKEY(int) #Date key for voucher date (YYYYMMDD numeric)
+  ACCRUALREVERSALDATE(date) #Date to auto-reverse accrual entries (null if not reversing)
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Voucher description or memo
+
+  # -- Financial --
+  SUBLEDGERTOTAL(float) #Sum of all subledger entries in the voucher (should balance to zero)
+
+  # -- Currency --
+  CURRENCYID(txt) #Currency ID for the voucher
+  CONVERTCURRENCYTYPEID(int) #Currency conversion type ID
+
+  # -- Status Flags --
+  POSTED(bool) #Whether the voucher has been posted to the GL
+  READYTOPOST(bool) #Whether the voucher is ready for posting
+  DELETED(bool) #Whether the voucher has been soft-deleted
+  HISTORICAL(bool) #True if imported from historical data (not created live)
+  ISMANUALJOURNALACCRUAL(bool) #True if this is a manual journal accrual entry
+
+  # -- Posted By --
+  POSTEDDATE(ts) #Date/time the voucher was posted
+  POSTEDBYID(txt) #ID of the user who posted the voucher
+  POSTEDBYUSERID(txt) #User ID of the person who posted
+  POSTEDBYNAME(txt) #Display name of the person who posted
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

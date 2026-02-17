@@ -1,0 +1,80 @@
+# oda / accounts_payable / ODA_APINVOICE
+# Source: context/sources/oda/domains/accounts_payable.yaml
+# 58 columns, 334,335 rows. AP invoice headers.
+# Maps to stg_oda__apinvoice.
+#
+ODA_APINVOICE: Accounts payable invoice headers. Each row is a single vendor invoice with payment status, amounts, and discount terms. Links to detail lines via ODA_APINVOICEDETAIL.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  APINVOICEIDENTITY(int) #ODA internal sequence identity for the AP invoice
+  COMPANYID(txt) #Operating company ID (FK to ODA_COMPANY)
+  VENDORID(txt) #Vendor ID (FK to ODA_VENDOR)
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  CURRENCYID(txt) #Currency ID for the invoice
+  CASHACCOUNTID(txt) #Cash account ID for payment
+  ORIGINALINVOICEID(txt) #Original invoice ID if this is a reversal or correction
+  IMPORTDATAID(txt) #Import batch ID (null if manually entered)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+  NID(int) #Numeric identity (ODA internal)
+
+  # -- Invoice Details --
+  CODE(txt) #Invoice number/code (vendor's invoice reference)
+  CODESORT(txt) #Sortable version of the invoice code
+  DESCRIPTION(txt) #Invoice description or memo
+  EXTERNALID(txt) #External system reference ID
+  INVOICEEXTERNALID(txt) #External invoice identifier
+
+  # -- Dates --
+  ACCEPTANCEDATE(date) #Date the invoice was accepted for processing
+  ACCRUALDATE(date) #Accrual period date for financial reporting
+  DISCOUNTCUTOFFDATE(date) #Last date to take the early payment discount
+  DUEDATE(date) #Payment due date
+  INVOICEDATE(date) #Date on the vendor's invoice
+  INVOICEDATEKEY(float) #Date key for invoice date (YYYYMMDD numeric)
+  MANUALTRANSACTIONDATE(date) #Manual transaction date override
+  RECEIVEDDATE(date) #Date the invoice was received
+
+  # -- Financial --
+  AMOUNTDUE(float) #Remaining amount due on the invoice
+  DISCOUNTALLOWED(float) #Maximum discount amount allowed
+  DISCOUNTPERCENTAGE(float) #Discount percentage for early payment
+  DISCOUNTTAKENAMOUNT(float) #Discount amount already taken
+  INVOICEAMOUNT(float) #Original invoice total amount
+  MANUALPREPAYMENT(float) #Manual prepayment amount applied
+  PAIDAMOUNT(float) #Total amount paid to date
+  PARTIALPAYMENTPENDING(float) #Partial payment amount pending
+  TOBEPAID(float) #Amount remaining to be paid
+
+  # -- Payment Status --
+  PAYMENTSTATUSCODE(txt) #Payment status code (e.g., Open, Paid, Partial)
+  PAYMENTSTATUSID(int) #Payment status ID (lookup)
+  PAYMENTTYPECODE(txt) #Payment type code (e.g., Check, Wire, ACH)
+  PAYMENTTYPEID(int) #Payment type ID (lookup)
+  MANUALTRANSACTIONNUMBER(int) #Manual transaction number
+  MANUALTRANSACTIONTYPEID(int) #Manual transaction type ID
+  CHECKSTUBCOUNT(int) #Number of check stubs generated
+
+  # -- Exchange Rate --
+  GAINLOSSEXCHANGERATEID(txt) #Exchange rate ID for gain/loss calculation
+  GAINLOSSPOSTEDTHRUDATE(date) #Date through which gain/loss has been posted
+  PAYMENTEXCHANGERATEID(txt) #Exchange rate ID used for payment conversion
+  POSTINGEXCHANGERATEID(txt) #Exchange rate ID used for GL posting
+
+  # -- Flags --
+  APPROVEDFORPOSTING(bool) #Whether the invoice is approved for GL posting
+  INCLUDEINACCRUALREPORT(bool) #Whether to include in accrual reporting
+  ISFROMAPHISTORYIMPORT(bool) #True if imported from AP history (not entered live)
+  PAYMENTDETAILINCOMPLETE(bool) #True if payment detail is missing or incomplete
+  POSTED(bool) #Whether the invoice has been posted to the GL
+  READYTOPAY(bool) #Whether the invoice is ready for payment processing
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  _meta/op(txt) #Estuary CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

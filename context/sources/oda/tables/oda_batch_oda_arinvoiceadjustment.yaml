@@ -1,0 +1,39 @@
+# oda / accounts_receivable / ODA_BATCH_ODA_ARINVOICEADJUSTMENT
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 21 columns, 10,716 rows. AR invoice adjustments.
+# Maps to stg_oda__arinvoiceadjustment.
+#
+ODA_BATCH_ODA_ARINVOICEADJUSTMENT: Accounts receivable invoice adjustments. Each row is an adjustment (credit or debit) applied to AR invoices, with posting status and owner assignment. Links to detail lines via ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICEADJUSTMENTIDENTITY(int) #ODA internal sequence identity for the adjustment
+  COMPANYID(txt) #Operating company ID (FK to ODA_COMPANY)
+  OWNERID(txt) #Owner/interest holder the adjustment applies to (FK to ODA_OWNER)
+  ACCOUNTID(txt) #GL account ID for the adjustment (FK to ODA_ACCOUNT)
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  ADJUSTMENTTYPEID(int) #Adjustment type ID (e.g., credit memo, write-off)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Financial --
+  ADJUSTMENTAMOUNT(float) #Dollar amount of the adjustment (positive=debit, negative=credit)
+
+  # -- Dates --
+  ACCRUALDATE(date) #Accrual period date for financial reporting
+  ADJUSTMENTDATE(ts) #Date the adjustment was created/applied
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Adjustment description or memo
+
+  # -- Flags --
+  INCLUDEINACCRUALREPORT(bool) #Whether to include in accrual reporting
+  POSTED(bool) #Whether the adjustment has been posted to the GL
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

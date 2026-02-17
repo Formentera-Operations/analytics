@@ -1,0 +1,19 @@
+# oda / general_ledger / ODA_ACCOUNTTYPE
+# Source: context/sources/oda/domains/general_ledger.yaml
+# 9 columns, 2 rows. Account type lookup (Asset/Liability).
+# Maps to stg_oda__account_types.
+#
+ODA_ACCOUNTTYPE: Account type lookup. Reference table defining the top-level account classification in the chart of accounts. Only 2 rows (typically Asset and Liability or similar). Parent of ODA_BATCH_ODA_ACCOUNTSUBTYPE.
+
+  # -- Identifiers --
+  ID(int) #Account type primary key
+  ACCOUNTTYPEIDENTITY(int) #ODA internal sequence identity
+  CODE(txt) #Account type short code
+  NAME(txt) #Account type name
+  FULLNAME(txt) #Account type full/display name
+
+  # -- Audit/Metadata --
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

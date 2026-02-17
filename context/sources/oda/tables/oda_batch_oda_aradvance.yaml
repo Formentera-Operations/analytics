@@ -1,0 +1,41 @@
+# oda / accounts_receivable / ODA_BATCH_ODA_ARADVANCE
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 23 columns, 27 rows. AR advance (prepayment) records.
+# Maps to stg_oda__aradvance.
+#
+ODA_BATCH_ODA_ARADVANCE: Accounts receivable advance (prepayment) records. Each row is an advance payment collected from a partner/owner before costs are incurred, typically for well drilling AFEs. Very low volume (27 rows).
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARADVANCEIDENTITY(int) #ODA internal sequence identity for the advance
+  COMPANYID(txt) #Operating company ID (FK to ODA_COMPANY)
+  WELLID(txt) #Well ID the advance is associated with (FK to ODA_WELL)
+  AFEID(txt) #AFE ID the advance is collected for (FK to ODA_AFE)
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  CURRENCYID(txt) #Currency ID for the advance
+  EXPENSEDECKID(txt) #Expense deck ID for cost allocation
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Financial --
+  GROSSAMOUNT(float) #Gross advance amount (100% interest)
+  NETAMOUNT(float) #Net advance amount (operator's share after interest)
+  EXPENSEDECKINTERESTTOTAL(float) #Total interest from the expense deck
+
+  # -- Dates --
+  ADVANCEDATE(date) #Date the advance was collected
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Advance description or memo
+
+  # -- Flags --
+  POSTED(bool) #Whether the advance has been posted to the GL
+  ISAFTERCASING(bool) #True if the advance is for post-casing (completion) costs
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

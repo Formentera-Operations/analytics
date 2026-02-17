@@ -1,0 +1,35 @@
+# oda / revenue_expense_decks / ODA_REVENUEDECKREVISION
+# 20 columns, 345,985 rows. Revenue deck revision history with interest totals.
+# Maps to stg_oda__revenue_deck_revision.
+#
+ODA_REVENUEDECKREVISION: Revenue deck revisions. Each row is a specific revision of a revenue deck, tracking changes to interest allocations over time. Revisions can be open, closed, or imported.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  REVENUEDECKREVISIONIDENTITY(int) #Numeric identity for the revision
+  DECKID(txt) #FK to ODA_BATCH_ODA_REVENUEDECK_V2.ID — parent deck
+  NAME(txt) #Revision name/label
+  REVISIONNUMBER(int) #Sequential revision number within the deck
+  IMPORTDATAID(txt) #ID of the import batch if revision was imported
+
+  # -- Financial --
+  TOTALINTERESTEXPECTED(float) #Expected total interest across all participants (should sum to 1.0 for 100%)
+  NRIACTUAL(float) #Actual net revenue interest for this revision
+
+  # -- Status --
+  REVISIONSTATEID(int) #FK to ODA_REVISIONSTATE.ID — revision state (open/closed/etc.)
+  CHANGENOTE(txt) #User-entered note describing the revision change
+  CLOSEDATE(date) #Date revision was closed (NULL if still open)
+  CLOSEBYUSERID(txt) #User who closed the revision
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

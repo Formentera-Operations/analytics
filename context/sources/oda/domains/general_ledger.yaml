@@ -1,0 +1,34 @@
+# ODA: General Ledger
+# GL journal entries, vouchers, reconciliation types, and account classification
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__gl, stg_oda__voucher_v2, stg_oda__gl_reconciliation_type,
+#         stg_oda__account_types, stg_oda__account_sub_types
+#
+# Relationships:
+#   GL many:1 -> ODA_VOUCHER_V2 (via VOUCHERID)
+#   GL many:1 -> ODA_BATCH_ODA_ACCOUNT_V2 (via ACCOUNTID, in master_data domain)
+#   GL many:1 -> ODA_BATCH_ODA_COMPANY_V2 (via COMPANYID, in master_data domain)
+#   GL many:1 -> ODA_BATCH_ODA_ENTITY_V2 (via ENTITYID, in master_data domain)
+#   ODA_ACCOUNTTYPE 1:many -> ODA_BATCH_ODA_ACCOUNTSUBTYPE (via ID -> ACCOUNTTYPEID)
+#   ODA_BATCH_ODA_ACCOUNT_V2 many:1 -> ODA_ACCOUNTTYPE (via ACCOUNTTYPEID, in master_data domain)
+#   ODA_BATCH_ODA_ACCOUNT_V2 many:1 -> ODA_BATCH_ODA_ACCOUNTSUBTYPE (via ACCOUNTSUBTYPEID, in master_data domain)
+#
+# Key patterns:
+#   - GL is the largest table in ODA (180M rows, 80 cols) and the only model with existing 5-CTE + tests + Elementary monitoring
+#   - GL is CDC — requires _operation_type != 'd' filtering (already implemented in stg_oda__gl)
+#   - VOUCHER_V2 links GL entries to their originating transaction (AP posting, AR posting, manual JE, etc.)
+#   - ACCOUNTTYPE (2 rows) and ACCOUNTSUBTYPE (5 rows) are tiny classification lookups
+#   - GLRECONCILIATIONTYPE (8 rows) categorizes reconciliation methods
+#   - GL.POSTED flag (1/0) distinguishes posted vs unposted entries — downstream models typically filter to posted only
+#   - GL.GROSSVALUE is pre-allocation amount; GL.NETVALUE is post-allocation — use NETVALUE for financial reporting
+#   - Downstream: int_oda_gl is the primary consumer, joined with accounts and entities for financial reporting
+
+
+# Tables in this domain (column details in tables/ directory):
+#   GL: General ledger journal entries. Every financial transaction in ODA. CDC table (180M rows, 80 cols).
+#   ODA_VOUCHER_V2: Voucher metadata linking GL entries to source transactions. Batch (370K rows).
+#   ODA_GLRECONCILIATIONTYPE: Lookup table for GL reconciliation method categories. Batch (8 rows).
+#   ODA_ACCOUNTTYPE: Top-level account classification (e.g., Asset, Liability). Batch (2 rows).
+#   ODA_BATCH_ODA_ACCOUNTSUBTYPE: Second-level account classification under account types. Batch (5 rows).

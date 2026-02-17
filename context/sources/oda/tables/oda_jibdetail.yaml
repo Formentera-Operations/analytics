@@ -1,0 +1,88 @@
+# oda / supporting / ODA_JIBDETAIL
+# 53 columns, 63,213,576 rows. Joint Interest Billing normalized detail records.
+# Maps to stg_oda__jibdetail.
+#
+# NOTE: This is the largest ODA CDC table (~63M rows). Contains normalized JIB
+# detail with full FK references. For denormalized summary data with
+# codes/names, use ODA_JIB.
+#
+ODA_JIBDETAIL: JIB detail records. Each row is a normalized Joint Interest Billing line item with full foreign key references to entity, account, well, and voucher tables. Contains billing status, currency, and redistribution tracking.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  JIBDETAILIDENTITY(int) #Numeric identity for the JIB detail record
+  DETAILID(txt) #Detail-level identifier within the JIB
+
+  # -- Relationships (IDs) --
+  ACCOUNTID(txt) #FK to ODA_BATCH_ODA_ACCOUNT_V2.ID — GL account
+  AFEID(txt) #FK to ODA_BATCH_ODA_AFE_V2.ID — associated AFE
+  ARINVOICEID(txt) #FK to AR invoice record
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — operating company
+  OWNERID(txt) #FK to ODA_BATCH_ODA_OWNER_V2.ID — interest owner
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well
+  VOUCHERID(txt) #FK to voucher record
+  EXPENSEDECKREVISIONID(txt) #FK to expense deck revision used for billing
+
+  # -- Entity References --
+  ENTITYTYPEID(int) #Entity type classifier
+  ENTITYCOMPANYID(txt) #FK to entity as company
+  ENTITYPURCHASERID(txt) #FK to entity as purchaser
+  ENTITYVENDORID(txt) #FK to entity as vendor
+  REFERENCEENTITYCOMPANYID(txt) #Reference entity as company
+  REFERENCEENTITYOWNERID(txt) #Reference entity as owner
+  REFERENCEENTITYPURCHASERID(txt) #Reference entity as purchaser
+  REFERENCEENTITYVENDORID(txt) #Reference entity as vendor
+  MEMOCOMPANYID(txt) #Company ID for memo entries
+
+  # -- Dates --
+  ACCRUALDATE(date) #Accrual date for the expense
+  BILLEDDATE(date) #Date the JIB was billed
+  EXPENSEDATE(date) #Date the expense was incurred
+  GAINLOSSPOSTEDTHROUGHDATE(date) #Date through which gain/loss has been posted
+
+  # -- Financial --
+  BILLINGSTATUSID(int) #Billing status classifier
+  EXPENSEDECKINTEREST(float) #Expense deck interest percentage
+  GROSSVALUE(float) #Gross amount before owner interest
+  NETVALUE(float) #Net amount after owner interest
+
+  # -- Currency --
+  CURRENCYID(txt) #Currency for this detail line
+  BILLINGEXCHANGERATEID(txt) #Exchange rate used for billing
+  GAINLOSSEXCHANGERATEID(txt) #Exchange rate used for gain/loss calculation
+  CURRENCYFLUCTUATIONPASSTHROUGH(bool) #Whether currency fluctuations pass through to owner
+  JIBINORIGINALCURRENCY(bool) #Whether JIB is in original transaction currency
+
+  # -- Flags --
+  INCLUDEINACCRUALREPORT(bool) #Whether to include in accrual reports
+  ISAFTERCASING(bool) #Whether expense is after casing point
+  MEMOALSOCODEMISSING(bool) #Whether memo code is also missing
+  SUBTOTALBYSUBACCOUNT(bool) #Whether to subtotal by sub-account on invoices
+  USERPOSTINGMETHOD(bool) #Whether user-defined posting method is used
+
+  # -- Suspense --
+  BILLINGSUSPENSECATEGORYID(txt) #FK to suspense category for billing holds
+
+  # -- Redistribution --
+  PENDINGREDISTRIBUTIONID(txt) #ID of pending redistribution
+  REDISTRIBUTIONVOUCHERID(txt) #Voucher ID for redistribution
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Line item description
+  REFERENCE(txt) #Reference text/number
+
+  # -- Event Tracking --
+  CREATEEVENTID(txt) #Event ID that created this record
+  GROSSEVENTID(txt) #Event ID for gross value posting
+  UPDATEEVENTID(txt) #Event ID of last update
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

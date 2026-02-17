@@ -1,0 +1,30 @@
+# oda / accounts_receivable / ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 16 columns, 41,073 rows. AR invoice adjustment line items.
+# Maps to stg_oda__arinvoiceadjustmentdetail.
+#
+ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL: Accounts receivable invoice adjustment line items. Each row applies a portion of an adjustment to a specific AR invoice, optionally tied to an AFE.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICEADJUSTMENTDETAILIDENTITY(int) #ODA internal sequence identity for the detail line
+  INVOICEADJUSTMENTID(txt) #Parent adjustment ID (FK to ODA_BATCH_ODA_ARINVOICEADJUSTMENT.ID)
+  INVOICEID(txt) #AR invoice being adjusted (FK to ODA_ARINVOICE_V2.ID)
+  AFEID(txt) #AFE ID the adjustment is charged to (FK to ODA_AFE)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Financial --
+  ADJUSTMENTDETAILAMOUNT(float) #Dollar amount of this detail line's adjustment
+  NETVOLUME(int) #Net volume for the adjustment line
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Line item description
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

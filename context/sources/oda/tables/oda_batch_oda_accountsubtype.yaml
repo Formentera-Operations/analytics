@@ -1,0 +1,24 @@
+# oda / general_ledger / ODA_BATCH_ODA_ACCOUNTSUBTYPE
+# Source: context/sources/oda/domains/general_ledger.yaml
+# 12 columns, 5 rows. Account sub-type lookup.
+# Maps to stg_oda__account_sub_types.
+#
+ODA_BATCH_ODA_ACCOUNTSUBTYPE: Account sub-type lookup. Reference table defining sub-classifications under each account type (e.g., Revenue, Expense, Equity under Asset/Liability). Includes normal balance direction. Child of ODA_ACCOUNTTYPE.
+
+  # -- Identifiers --
+  ID(int) #Account sub-type primary key
+  ACCOUNTSUBTYPEIDENTITY(int) #ODA internal sequence identity
+  ACCOUNTTYPEID(int) #Parent account type ID (FK to ODA_ACCOUNTTYPE.ID)
+  CODE(txt) #Account sub-type short code
+  NAME(txt) #Account sub-type name
+  FULLNAME(txt) #Account sub-type full/display name
+
+  # -- Properties --
+  NORMALLYDEBIT(bool) #True if this sub-type normally carries a debit balance
+
+  # -- Audit/Metadata --
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  _meta/op(txt) #Estuary CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

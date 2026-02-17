@@ -1,0 +1,37 @@
+# oda / revenue_expense_decks / ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW
+# 20 columns, 22,245 rows. Expense deck revision history with interest totals.
+# Maps to stg_oda__expense_deck_revision.
+#
+ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW: Expense deck revisions. Each row is a specific revision of an expense deck, tracking changes to JIB interest allocations. Includes before/after casing flags for drilling cost allocation.
+
+  # -- Identifiers --
+  _meta/row_id(int) #Estuary row identifier
+  ID(txt) #Primary key (GUID)
+  DECKID(txt) #FK to ODA_BATCH_ODA_EXPENSEDECK_V2.ID — parent deck
+  NAME(txt) #Revision name/label
+  REVISIONNUMBER(int) #Sequential revision number within the deck
+
+  # -- Financial --
+  TOTALINTERESTACTUAL(float) #Actual total interest across all participants
+  TOTALINTERESTEXPECTED(float) #Expected total interest (should sum to 1.0 for 100%)
+
+  # -- Status --
+  REVISIONSTATEID(int) #FK to ODA_REVISIONSTATE.ID — revision state (open/closed/etc.)
+  CHANGENOTE(txt) #User-entered note describing the revision change
+  CLOSEDATE(date) #Date revision was closed (NULL if still open)
+  CLOSEBYUSERID(txt) #User who closed the revision
+
+  # -- Flags --
+  ISAFTERCASING(bool) #Whether this revision applies after casing point (drilling cost split)
+  USEJIBRATEASOFPAYMENT(bool) #Whether to use JIB rate as of payment date
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

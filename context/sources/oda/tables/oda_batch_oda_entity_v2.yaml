@@ -1,0 +1,34 @@
+# oda / master_data / ODA_BATCH_ODA_ENTITY_V2
+# 19 columns, 56,024 rows. Entity master records (base table for owners, vendors, purchasers).
+# Maps to stg_oda__entity_v2.
+#
+ODA_BATCH_ODA_ENTITY_V2: Entity master records. Base table for all counterparties in ODA — owners, vendors, and purchasers all reference an entity. Contains the shared identity (name, tax ID, contact) while role-specific attributes live in their respective tables.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  ENTITY_V2IDENTITY(int) #Numeric identity for the entity
+  CODE(txt) #Entity code (user-facing identifier)
+  CODESORT(txt) #Sortable version of the code
+  NAME(txt) #Short entity name
+  FULLNAME(txt) #Full entity name
+
+  # -- Tax Information --
+  TAXID(txt) #Federal tax ID (EIN/SSN)
+  TAXIDTYPEID(int) #Tax ID type classifier (EIN vs SSN)
+  NAME1099(txt) #Name to use on 1099 tax forms (may differ from NAME)
+
+  # -- Contact --
+  MAINCONTACTID(txt) #FK to primary contact record
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

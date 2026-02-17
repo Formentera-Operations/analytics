@@ -1,0 +1,24 @@
+# oda / accounts_receivable / ODA_ARINVOICEPAYMENTDETAIL
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 12 columns, 172,313 rows. AR payment application detail.
+# Maps to stg_oda__arinvoicepaymentdetail.
+#
+ODA_ARINVOICEPAYMENTDETAIL: Accounts receivable payment application detail. Each row maps a payment to a specific invoice, recording the amount applied and the balance before posting.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICEPAYMENTDETAILIDENTITY(int) #ODA internal sequence identity for the detail line
+  INVOICEID(txt) #AR invoice this payment is applied to (FK to ODA_ARINVOICE_V2.ID)
+  INVOICEPAYMENTID(txt) #Parent payment ID (FK to ODA_ARINVOICEPAYMENT.ID)
+
+  # -- Financial --
+  AMOUNTAPPLIED(float) #Dollar amount applied from the payment to this invoice
+  AMOUNTDUEBEFOREPOSTING(float) #Invoice balance before this payment was posted
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

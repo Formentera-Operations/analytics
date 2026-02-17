@@ -1,0 +1,75 @@
+# oda / afe_budgeting / ODA_BATCH_ODA_AFE_V2
+# 46 columns, 2,208 rows. Authorization for Expenditure (AFE) master records.
+# Maps to stg_oda__afe_v2.
+#
+ODA_BATCH_ODA_AFE_V2: AFE master records. Each row is an Authorization for Expenditure, the primary cost authorization document in oil and gas. Contains AFE classification, well/field/company associations, and status dates. Denormalized with type/group names for reporting convenience.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  AFE_V2IDENTITY(int) #Numeric identity for the AFE
+  NID(int) #Numeric identifier
+  CODE(txt) #AFE code/number (user-facing)
+  CODESORT(txt) #Sortable version of the code
+  NAME(txt) #Short name/title of the AFE
+  FULLNAME(txt) #Complete name of the AFE
+  FULLDESCRIPTION(txt) #Detailed description of the AFE purpose
+
+  # -- AFE Type --
+  AFETYPEID(txt) #FK to AFE type lookup
+  AFETYPECODE(txt) #Code for the AFE type (denormalized)
+  AFETYPELABEL(txt) #Display label for the AFE type (denormalized)
+  AFETYPEFULLNAME(txt) #Full name of the AFE type (denormalized)
+
+  # -- Application Type --
+  APPLICATIONTYPEID(int) #Application type classifier
+  APPLICATIONTYPECODE(txt) #Application type code (denormalized)
+  APPLICATIONTYPENAME(txt) #Application type name (denormalized)
+
+  # -- Budget Usage --
+  BUDGETUSAGETYPEID(int) #Budget usage type classifier
+  BUDGETUSAGETYPECODE(txt) #Budget usage code (denormalized)
+  BUDGETUSAGETYPENAME(txt) #Budget usage name (denormalized)
+
+  # -- Field --
+  FIELDID(txt) #FK to field/area
+  FIELDCODE(txt) #Field code (denormalized)
+  FIELDCODESORT(txt) #Field code for sorting (denormalized)
+  FIELDNAME(txt) #Field name (denormalized)
+  FIELDDESCRIPTION(txt) #Field description (denormalized)
+
+  # -- Company --
+  DEFAULTCOMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — default company
+  DEFAULTCOMPANYCODE(txt) #Default company code (denormalized)
+  DEFAULTCOMPANYNAME(txt) #Default company name (denormalized)
+  DEFAULTEXPENSEDECKCODE(txt) #Default expense deck code for this AFE
+
+  # -- Operating Group --
+  OPERATINGGROUPID(txt) #FK to operating group
+  OPERATINGGROUPCODE(txt) #Operating group code (denormalized)
+  OPERATINGGROUPNAME(txt) #Operating group name (denormalized)
+
+  # -- Well --
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — associated well
+  WELLCODE(txt) #Well code (denormalized)
+  WELLNAME(txt) #Well name (denormalized)
+
+  # -- Other --
+  ACCOUNTGROUPNAME(txt) #Account group for GL categorization
+  OPERATORREFERENCE(txt) #Operator's reference number
+
+  # -- Dates --
+  CLOSEDATE(ts) #Date the AFE was closed
+  COMPLETIONDATE(ts) #Date the AFE work was completed
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

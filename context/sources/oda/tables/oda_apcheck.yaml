@@ -1,0 +1,41 @@
+# oda / accounts_payable / ODA_APCHECK
+# Source: context/sources/oda/domains/accounts_payable.yaml
+# 25 columns, 49,531 rows. AP payment checks.
+# Maps to stg_oda__apcheck.
+#
+ODA_APCHECK: Accounts payable payment checks. Each row is a single check or payment issued against AP invoices, with reconciliation status and void tracking.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  APCHECKIDENTITY(int) #ODA internal sequence identity for the check
+  COMPANYID(txt) #Operating company ID (FK to ODA_COMPANY)
+  VENDORID(txt) #Vendor ID receiving payment (FK to ODA_VENDOR)
+  ACCOUNTID(txt) #Cash/bank account ID the check is drawn from (FK to ODA_ACCOUNT)
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  TRANSACTIONNUMBER(int) #Check/transaction number
+
+  # -- Payment --
+  PAYMENTAMOUNT(float) #Payment amount on the check
+  PAYMENTTYPECODE(txt) #Payment type code (e.g., Check, Wire, ACH)
+  PAYMENTTYPEID(int) #Payment type ID (lookup)
+
+  # -- Dates --
+  ACCRUALDATE(ts) #Accrual period date for financial reporting
+  ISSUEDDATE(ts) #Date the check was issued
+  ISSUEDDATEKEY(float) #Date key for issued date (YYYYMMDD numeric)
+
+  # -- Flags --
+  RECONCILED(bool) #Whether the check has been reconciled with the bank
+  SYSTEMGENERATED(bool) #True if the check was system-generated (not manual)
+  VOIDED(bool) #Whether the check has been voided
+  VOIDEDDATE(ts) #Date the check was voided
+  VOID1099YEAR(int) #Tax year for 1099 void reporting
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  _meta/op(txt) #Estuary CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

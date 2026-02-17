@@ -1,0 +1,23 @@
+# oda / master_data / ODA_BATCH_ODA_INTERESTTYPE
+# 10 columns, 5 rows. Interest type lookup table (WI, NRI, ORI, etc.).
+# Maps to stg_oda__interest_type.
+#
+ODA_BATCH_ODA_INTERESTTYPE: Interest type lookup. Defines the standard interest types used across revenue and expense decks. Typical values: Working Interest (WI), Net Revenue Interest (NRI), Overriding Royalty Interest (ORI), Royalty Interest (RI), and custom types.
+
+  # -- Identifiers --
+  ID(int) #Primary key (integer, not GUID — small lookup table)
+  INTERESTTYPEIDENTITY(int) #Numeric identity for the interest type
+  CODE(txt) #Interest type code (e.g., WI, NRI, ORI)
+  NAME(txt) #Short interest type name
+  FULLNAME(txt) #Full interest type name
+
+  # -- CDEX --
+  CDEXCODE(txt) #CDEX standard code for electronic data exchange
+
+  # -- Audit --
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

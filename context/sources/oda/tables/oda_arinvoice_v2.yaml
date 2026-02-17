@@ -1,0 +1,59 @@
+# oda / accounts_receivable / ODA_ARINVOICE_V2
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 39 columns, 436,113 rows. AR invoice headers (v2 schema).
+# Maps to stg_oda__arinvoice_v2.
+#
+ODA_ARINVOICE_V2: Accounts receivable invoice headers (v2 schema). Each row is a single revenue invoice sent to an owner/purchaser, with payment status, posting state, and advance invoice linkage.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICE_V2IDENTITY(int) #ODA internal sequence identity for the AR invoice
+  COMPANYID(txt) #Operating company ID (FK to ODA_COMPANY)
+  OWNERID(txt) #Owner/interest holder receiving the invoice (FK to ODA_OWNER)
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  WELLID(txt) #Well ID associated with the invoice (FK to ODA_WELL)
+  ADJUSTMENTID(txt) #Adjustment ID if this invoice was adjusted
+  ADVANCEINVOICEID(txt) #Linked advance invoice ID (for advance recoupment)
+  IMPORTDATAID(txt) #Import batch ID (null if manually entered)
+  CREATEEVENTID(txt) #ODA event ID that created this record
+  UPDATEEVENTID(txt) #ODA event ID that last updated this record
+
+  # -- Invoice Details --
+  CODE(txt) #Invoice number/code
+  CODESORT(txt) #Sortable version of the invoice code
+  DESCRIPTION(txt) #Invoice description or memo
+  INVOICETYPEID(int) #Invoice type ID (e.g., revenue, JIB, advance)
+  STATEMENTSTATUSID(int) #Statement status ID (e.g., draft, sent, reconciled)
+  PAYMENTSTATUSID(int) #Payment status ID (e.g., open, partial, paid)
+
+  # -- Dates --
+  ACCRUALDATE(date) #Accrual period date for financial reporting
+  ADVANCEINVOICEDATE(date) #Date of the linked advance invoice
+  GAINLOSSPOSTEDTHRUDATE(date) #Date through which currency gain/loss has been posted
+  INVOICEDATE(date) #Date on the invoice
+  INVOICEDATEKEY(float) #Date key for invoice date (YYYYMMDD numeric)
+
+  # -- Financial --
+  INVOICEAMOUNT(float) #Total invoice amount
+
+  # -- Exchange Rate --
+  ADVANCEPOSTINGEXCHANGERATEID(txt) #Exchange rate ID for advance posting
+  GAINLOSSEXCHANGERATEID(txt) #Exchange rate ID for gain/loss calculation
+  PAYMENTEXCHANGERATEID(txt) #Exchange rate ID used for payment conversion
+  POSTINGEXCHANGERATEID(txt) #Exchange rate ID used for GL posting
+
+  # -- Flags --
+  FULLYPAID(bool) #Whether the invoice has been fully paid
+  INCLUDEINACCRUALREPORT(bool) #Whether to include in accrual reporting
+  ISOVERAGEINVOICE(bool) #True if this is an overage (excess) invoice
+  POSTED(bool) #Whether the invoice has been posted to the GL
+  PRINTPENDING(bool) #Whether the invoice is queued for printing
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  _meta/op(txt) #Estuary CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

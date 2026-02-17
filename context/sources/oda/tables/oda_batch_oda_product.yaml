@@ -1,0 +1,35 @@
+# oda / master_data / ODA_BATCH_ODA_PRODUCT
+# 20 columns, 9 rows. Product type lookup table (oil, gas, NGL, etc.).
+# Maps to stg_oda__product.
+#
+ODA_BATCH_ODA_PRODUCT: Product lookup. Defines the hydrocarbon and non-hydrocarbon product types used for revenue and production tracking. Includes BOE conversion factors and typical price ranges.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  PRODUCTIDENTITY(int) #Numeric identity for the product
+  CODE(txt) #Product code (e.g., OIL, GAS, NGL)
+  CODESORT(txt) #Sortable version of the code
+  NAME(txt) #Short product name
+  FULLNAME(txt) #Full product name
+
+  # -- Product Configuration --
+  TYPEID(int) #Product type classifier
+  CURRENCYID(txt) #Default currency for pricing
+  LOWESTTYPICALPRICE(int) #Lower bound of typical price range (for validation)
+  HIGHESTTYPICALPRICE(int) #Upper bound of typical price range (for validation)
+  CONVERSIONTOEQUIVALENTBARRELS(int) #BOE conversion factor (e.g., 6 MCF gas = 1 BOE)
+
+  # -- CDEX --
+  CDEXCODE(txt) #CDEX standard code for electronic data exchange
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

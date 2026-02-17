@@ -1,0 +1,31 @@
+# ODA: AFE & Budgeting
+# Authorization for Expenditure (AFE) records, budgets, budget line items, and revenue suspense categories
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__afe_v2, stg_oda__afebudget, stg_oda__afebudgetdetail_v2,
+#         stg_oda__revenue_suspense_category
+#
+# Relationships:
+#   ODA_BATCH_ODA_AFE_V2 1:many -> ODA_AFEBUDGET (via ID -> AFEID)
+#   ODA_AFEBUDGET 1:many -> ODA_AFEBUDGETDETAIL_V2 (via ID -> AFEBUDGETID)
+#   ODA_BATCH_ODA_AFE_V2 many:1 -> ODA_BATCH_ODA_ENTITY_V2 (via ENTITYID, in master_data domain)
+#   ODA_BATCH_ODA_AFE_V2 many:1 -> ODA_BATCH_ODA_COMPANY_V2 (via COMPANYID, in master_data domain)
+#   ODA_AFEBUDGETDETAIL_V2 many:1 -> ODA_BATCH_ODA_ACCOUNT_V2 (via ACCOUNTID, in master_data domain)
+#
+# Key patterns:
+#   - All 4 tables are batch (no CDC, no delete filtering needed)
+#   - AFE (Authorization for Expenditure) is the budgeting mechanism for capital spending in oil & gas
+#   - AFE_V2 is the header (2.2K AFEs, 46 cols) — contains approval status, total amounts, entity/company assignment
+#   - AFEBUDGET groups budget line items by category within an AFE (1.9K budgets)
+#   - AFEBUDGETDETAIL_V2 is the line-item detail (424K rows) — account-coded budget amounts
+#   - REVENUESUSPENSECATEGORY (24 rows) is a lookup table for categorizing suspended revenue
+#   - Revenue suspense tracks revenue that cannot yet be distributed (title issues, missing division orders, etc.)
+#   - Downstream: bridge_job_afe in the drilling mart links WellView jobs to AFEs
+
+
+# Tables in this domain (column details in tables/ directory):
+#   ODA_BATCH_ODA_AFE_V2: AFE headers. Entity, company, approval status, budgeted amounts, dates. Batch (2.2K rows, 46 cols).
+#   ODA_AFEBUDGET: Budget groupings within an AFE (e.g., drilling, completion, facilities). Batch (1.9K rows).
+#   ODA_AFEBUDGETDETAIL_V2: Budget line items with account coding and amounts. Batch (424K rows).
+#   ODA_BATCH_ODA_REVENUESUSPENSECATEGORY: Lookup table for revenue suspense reason categories. Batch (24 rows).
