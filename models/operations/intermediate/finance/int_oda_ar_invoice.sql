@@ -20,60 +20,61 @@
 #}
 
     with ar_invoices as (
-        select 
-        c.code                          as Company_Code,
-        c.name                          as Company_Name,
-        i.owner_id                      as Owner_ID,
-        e.code                          as Owner_Code,
-        e.name                          as Owner_Name,
-        i.well_id                       as Well_ID,
-        w.code                          as Well_Code,
-        w.name                          as Well_Name,
-        i.code                          as Invoice_Number,
-        i.id                            as Invoice_ID,
-        i.invoice_type_id               as Invoice_Type_ID,
-        coalesce(w.hold_all_billing, 0)              as Hold_Billing,
-        i.voucher_id                    as Voucher_ID,
-        Case 
-            When i.invoice_type_id = 5 Then i.description
-            When i.invoice_type_id = 0 Then i.description
-            When i.invoice_type_id = 1 Then i.description
-            Else w.name
-            End As Invoice_Description,
-        Case 
-            When i.invoice_type_id = 5 Then 'Misc'
-            When i.invoice_type_id = 0 Then 'Adv'
-            When i.invoice_type_id = 1 Then 'Cls'
-            Else 'JIB'
-            End As Invoice_Type,
-        i.invoice_date                  as Invoice_Date,
-        i.invoice_amount                as Total_Invoice_Amount,
-        Case
-            When i.invoice_type_id = 5 Then 1
-            When i.invoice_type_id = 0 Then 2
-            Else 1
-            End As Sort_Order        
+       SELECT
+      ar.id                               AS invoice_id
+    , ar.code                             AS invoice_number
+    , ar.voucher_id
+    , ar.invoice_amount
+    , ar.invoice_date
+    , ar.invoice_type_id
+    , ar.description
+    , ar.owner_id
+    , ar.company_id
+    , ar.well_id
+    , vo.posted                           AS voucher_posted
+    , vo.code                             AS voucher_code
+    , c.code                              AS company_code
+    , c.name                              AS company_name
+    , e.code                              AS owner_code
+    , e.name                              AS owner_name
+    , w.code                              AS well_code
+    , w.name                              AS well_name
+    , COALESCE(w.hold_all_billing, 0)       AS hold_billing
+    , CASE
+          WHEN ar.invoice_type_id = 5 THEN 'Misc'
+          WHEN ar.invoice_type_id = 0 THEN 'Adv'
+          WHEN ar.invoice_type_id = 1 THEN 'Cls'
+          ELSE 'JIB'
+      END                                 AS invoice_type
+    , CASE
+          WHEN ar.invoice_type_id IN (5, 0, 1) THEN ar.description
+          ELSE w.name
+      END                                 AS invoice_description
+    , CASE
+          WHEN ar.invoice_type_id = 5 THEN 1
+          WHEN ar.invoice_type_id = 0 THEN 2
+          ELSE 1
+      END                                 AS sort_order
         
-        
-        
-        FROM {{ref('stg_oda__arinvoice_v2') }} i
+        FROM {{ref('stg_oda__arinvoice_v2') }} AS ar
 
-        INNER JOIN {{ref('stg_oda__company_v2')}} c
-        ON c.id = i.company_id
-        
-        INNER JOIN {{ref('stg_oda__owner_v2')}} o
-        ON o.id = i.owner_id
+        INNER JOIN {{ref('stg_oda__voucher_v2')}} AS vo
+            ON vo.id = ar.voucher_id
 
-        INNER JOIN {{ref('stg_oda__entity_v2')}} e
-        ON e.Id = o.entity_id
+        INNER JOIN {{ref('stg_oda__company_v2')}} AS c
+            ON c.id = ar.company_id
 
-       -- LEFT JOIN {{ref('stg_oda__voucher_v2')}} v
-       -- ON v.id = i.voucher_id
+        INNER JOIN {{ref('stg_oda__owner_v2')}} AS o
+            ON o.id = ar.owner_id
 
-        LEFT JOIN {{ref('stg_oda__wells')}} w
-        ON w.id = i.well_id
-        
-        Where i.Posted = 1
+        INNER JOIN {{ref('stg_oda__entity_v2')}} AS e
+            ON e.id = o.entity_id
+
+        LEFT JOIN {{ref('stg_oda__wells')}} AS w
+            ON w.id = ar.well_id
+
+
+
     )
         select * from ar_invoices
 

@@ -15,11 +15,11 @@
 #}
 
     with ar_netting_agg as (
-        select 
-        invoice_id,
-        SUM(Total_Invoice_Amount) as Total_Net,
+        SELECT
+          invoice_id
+        , COALESCE(SUM(netted_amount), 0.00)    AS total_netted
         
-        FROM {{ ref('int_oda_ar_netting') }}
+        FROM {{ref('stg_oda__arinvoicenetteddetail')}} 
 
         GROUP BY
         invoice_id
