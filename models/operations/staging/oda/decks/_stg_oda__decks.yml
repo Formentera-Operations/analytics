@@ -1,0 +1,421 @@
+version: 2
+
+models:
+  - name: stg_oda__revenue_deck_v2
+    description: |
+      Staging model for ODA Revenue Deck Headers.
+      Source: ODA_BATCH_ODA_REVENUEDECK_V2 (Estuary batch, ~20K rows)
+      Grain: One row per revenue deck (id)
+      Note: Revenue deck headers group entity/product/effective date combinations.
+      Hierarchy: revenue_deck_set → revenue_deck_v2 → revenue_deck_revision → participant
+    columns:
+      - name: revenue_deck_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_deck_identity
+        description: Numeric identity for the revenue deck
+      - name: deck_set_id
+        description: FK to ODA_REVENUEDECKSET — parent deck set
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__revenue_deck_set')
+                field: id
+      - name: deck_type_id
+        description: FK to deck type lookup
+      - name: effective_date
+        description: Effective date of this revenue deck version
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__revenue_deck_set
+    description: |
+      Staging model for ODA Revenue Deck Sets.
+      Source: ODA_REVENUEDECKSET (Estuary batch, ~19K rows)
+      Grain: One row per revenue deck set (id)
+      Note: Groups revisions by product/interest type per well/company.
+    columns:
+      - name: revenue_deck_set_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_deck_set_identity
+        description: Numeric identity for the revenue deck set
+      - name: code
+        description: Deck set code (e.g., 1 = primary deck)
+      - name: code_sort
+        description: Sort order for deck set codes
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — operating company
+        data_tests:
+          - not_null
+      - name: well_id
+        description: FK to ODA_BATCH_ODA_WELL — associated well
+      - name: product_id
+        description: FK to ODA_BATCH_ODA_PRODUCT — product type
+      - name: is_default_deck
+        description: Whether this is the default deck set
+      - name: is_gas_entitlement_deck
+        description: Whether this is a gas entitlement deck
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__revenue_deck_revision
+    description: |
+      Staging model for ODA Revenue Deck Revisions.
+      Source: ODA_REVENUEDECKREVISION (Estuary batch, ~346K rows)
+      Grain: One row per revenue deck revision (id)
+      Note: Point-in-time snapshots of revenue interest allocations.
+      Contains NRI actual and total interest expected values.
+    columns:
+      - name: revenue_deck_revision_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_deck_revision_identity
+        description: Numeric identity for the revenue deck revision
+      - name: deck_id
+        description: FK to ODA_BATCH_ODA_REVENUEDECK_V2 — parent revenue deck
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__revenue_deck_v2')
+                field: id
+              config:
+                severity: warn
+      - name: revision_state_id
+        description: FK to ODA_REVISIONSTATE — draft, approved, superseded
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_oda__revision_state')
+                field: id
+      - name: import_data_id
+        description: FK to import data record (NULL for non-imported revisions)
+      - name: name
+        description: Revision display name
+      - name: revision_number
+        description: Sequential revision number within the deck
+      - name: change_note
+        description: User-entered note describing revision changes
+      - name: total_interest_expected
+        description: Expected total interest (should sum to 1.0)
+      - name: nri_actual
+        description: Actual net revenue interest
+      - name: close_date
+        description: Date the revision was closed/locked (NULL if open)
+      - name: close_by_user_id
+        description: User who closed the revision
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__revenue_deck_participant
+    description: |
+      Staging model for ODA Revenue Deck Participants.
+      Source: ODA_REVENUEDECKPARTICIPANT (Estuary batch, ~196M rows)
+      Grain: One row per revenue deck participant (id)
+      Note: 2nd largest ODA table after GL — MUST remain materialized as view.
+      Owner-level revenue interest allocations per revision.
+    columns:
+      - name: revenue_deck_participant_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_deck_participant_identity
+        description: Numeric identity for the participant record
+      - name: deck_revision_id
+        description: FK to ODA_REVENUEDECKREVISION — parent revision
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__revenue_deck_revision')
+                field: id
+              config:
+                severity: warn
+      - name: entity_type_id
+        description: Entity type classifier
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — participating company
+      - name: owner_id
+        description: FK to ODA_BATCH_ODA_OWNER_V2 — participating owner
+      - name: interest_type_id
+        description: FK to ODA_BATCH_ODA_INTERESTTYPE — interest classification
+      - name: decimal_interest
+        description: Interest percentage as decimal (e.g., 0.125 = 12.5%)
+      - name: custom_interest_type_id
+        description: Custom interest type identifier
+      - name: suspend_category_id
+        description: FK to revenue suspense category
+      - name: is_memo
+        description: Whether this is a memo entry (informational only)
+      - name: is_auto_suspend_payment
+        description: Whether payment is automatically suspended
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__expense_deck_v2
+    description: |
+      Staging model for ODA Expense Deck Headers.
+      Source: ODA_BATCH_ODA_EXPENSEDECK_V2 (Estuary batch, ~9.7K rows)
+      Grain: One row per expense deck (id)
+      Note: Expense deck headers group entity/product/effective date combinations.
+      Hierarchy: expense_deck_set → expense_deck_v2 → expense_deck_revision → participant
+    columns:
+      - name: expense_deck_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: expense_deck_identity
+        description: Numeric identity for the expense deck
+      - name: deck_set_id
+        description: FK to ODA_EXPENSEDECKSET — parent deck set
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__expense_deck_set')
+                field: id
+              config:
+                severity: warn
+      - name: n_id
+        description: Numeric identifier
+      - name: effective_date
+        description: Effective date of this expense deck version
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__expense_deck_set
+    description: |
+      Staging model for ODA Expense Deck Sets.
+      Source: ODA_EXPENSEDECKSET (Estuary batch, ~7.6K rows)
+      Grain: One row per expense deck set (id)
+      Note: Groups revisions by cost type per well/company.
+    columns:
+      - name: expense_deck_set_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: expense_deck_set_identity
+        description: Numeric identity for the expense deck set
+      - name: code
+        description: Deck set code (e.g., 1 = primary deck)
+      - name: code_sort
+        description: Sort order for deck set codes
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — operating company
+        data_tests:
+          - not_null
+      - name: well_id
+        description: FK to ODA_BATCH_ODA_WELL — associated well
+      - name: is_default_deck
+        description: Whether this is the default deck set
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__expense_deck_revision
+    description: |
+      Staging model for ODA Expense Deck Revisions.
+      Source: ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW (Estuary batch, ~22K rows)
+      Grain: One row per expense deck revision (id)
+      Note: Point-in-time snapshots of expense interest allocations.
+      Sources from Quorum convenience view (EXPENSEDECKREVISIONVIEW).
+    columns:
+      - name: expense_deck_revision_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: deck_id
+        description: FK to ODA_BATCH_ODA_EXPENSEDECK_V2 — parent expense deck
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__expense_deck_v2')
+                field: id
+      - name: revision_state_id
+        description: FK to ODA_REVISIONSTATE — draft, approved, superseded
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_oda__revision_state')
+                field: id
+      - name: name
+        description: Revision display name
+      - name: revision_number
+        description: Sequential revision number within the deck
+      - name: change_note
+        description: User-entered note describing revision changes
+      - name: total_interest_actual
+        description: Actual total interest allocated
+      - name: total_interest_expected
+        description: Expected total interest (should sum to 1.0)
+      - name: is_after_casing
+        description: Whether this revision applies to after-casing-point expenses
+      - name: is_use_jib_rate_as_of_payment
+        description: Whether to use JIB rate as of payment date
+      - name: close_date
+        description: Date the revision was closed/locked (NULL if open)
+      - name: close_by_user_id
+        description: User who closed the revision
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__expense_deck_participant
+    description: |
+      Staging model for ODA Expense Deck Participants.
+      Source: ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT (Estuary batch, ~877K rows)
+      Grain: One row per expense deck participant (id)
+      Note: Owner-level expense interest allocations per revision.
+    columns:
+      - name: expense_deck_participant_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: expense_deck_participant_identity
+        description: Numeric identity for the participant record
+      - name: deck_revision_id
+        description: FK to expense deck revision — parent revision
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__expense_deck_revision')
+                field: id
+      - name: entity_type_id
+        description: Entity type classifier
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — participating company
+      - name: owner_id
+        description: FK to ODA_BATCH_ODA_OWNER_V2 — participating owner
+      - name: interest_type_id
+        description: FK to ODA_BATCH_ODA_INTERESTTYPE — interest classification
+      - name: decimal_interest
+        description: Interest percentage as decimal (e.g., 0.125 = 12.5%)
+      - name: custom_interest_type_id
+        description: Custom interest type identifier
+      - name: is_memo
+        description: Whether this is a memo entry (informational only)
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp

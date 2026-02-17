@@ -9,410 +9,411 @@
     )
 }}
 
-WITH source_gl AS (
-    SELECT *
-    FROM {{ ref('stg_oda__gl') }}
+with source_gl as (
+    select *
+    from {{ ref('stg_oda__gl') }}
 ),
 
-vouchers AS (
-    SELECT *
-    FROM {{ ref('stg_oda__voucher_v2') }}
+vouchers as (
+    select *
+    from {{ ref('stg_oda__voucher_v2') }}
 ),
 
-accounts AS (
-    SELECT *
-    FROM {{ ref('stg_oda__account_v2') }}
+accounts as (
+    select *
+    from {{ ref('stg_oda__account_v2') }}
 ),
 
-companies AS (
-    SELECT *
-    FROM {{ ref('stg_oda__company_v2') }}
+companies as (
+    select *
+    from {{ ref('stg_oda__company_v2') }}
 ),
 
-entities AS (
-    SELECT *
-    FROM {{ ref('stg_oda__entity_v2') }}
+entities as (
+    select *
+    from {{ ref('stg_oda__entity_v2') }}
 ),
 
-owners AS (
-    SELECT *
-    FROM {{ ref('stg_oda__owner_v2') }}
+owners as (
+    select *
+    from {{ ref('stg_oda__owner_v2') }}
 ),
 
-purchasers AS (
-    SELECT *
-    FROM {{ ref('stg_oda__purchaser_v2') }}
+purchasers as (
+    select *
+    from {{ ref('stg_oda__purchaser_v2') }}
 ),
 
-vendors AS (
-    SELECT *
-    FROM {{ ref('stg_oda__vendor_v2') }}
+vendors as (
+    select *
+    from {{ ref('stg_oda__vendor_v2') }}
 ),
 
-wells AS (
-    SELECT *
-    FROM {{ ref('stg_oda__wells') }}
+wells as (
+    select *
+    from {{ ref('stg_oda__wells') }}
 ),
 
-userfields AS (
-    SELECT 
-        "Id",
-        "UserFieldName",
-        "UserFieldValueString"
-    FROM {{ ref('stg_oda__userfield') }}
-    WHERE "UserFieldName" = 'UF-SEARCH KEY'
-GROUP BY ALL
+userfields as (
+    select
+        id,
+        user_field_name,
+        user_field_value_string
+    from {{ ref('stg_oda__userfield') }}
+    where user_field_name = 'UF-SEARCH KEY'
+    group by all
 ),
 
-source_modules AS (
-    SELECT *
-    FROM {{ ref('stg_oda__source_module') }}
+source_modules as (
+    select *
+    from {{ ref('stg_oda__source_module') }}
 ),
 
-rev_deck_revisions AS (
-    SELECT *
-    FROM {{ ref('stg_oda__revenue_deck_revision') }}
+rev_deck_revisions as (
+    select *
+    from {{ ref('stg_oda__revenue_deck_revision') }}
 ),
 
-rev_decks AS (
-    SELECT *
-    FROM {{ ref('stg_oda__revenue_deck_v2') }}
+rev_decks as (
+    select *
+    from {{ ref('stg_oda__revenue_deck_v2') }}
 ),
 
-rev_deck_sets AS (
-    SELECT *
-    FROM {{ ref('stg_oda__revenue_deck_set') }}
+rev_deck_sets as (
+    select *
+    from {{ ref('stg_oda__revenue_deck_set') }}
 ),
 
-payment_types AS (
-    SELECT *
-    FROM {{ ref('stg_oda__payment_type') }}
+payment_types as (
+    select *
+    from {{ ref('stg_oda__payment_type') }}
 ),
 
-afes AS (
-    SELECT *
-    FROM {{ ref('stg_oda__afe_v2') }}
+afes as (
+    select *
+    from {{ ref('stg_oda__afe_v2') }}
 ),
 
-exp_deck_revisions AS (
-    SELECT *
-    FROM {{ ref('stg_oda__expense_deck_revision') }}
+exp_deck_revisions as (
+    select *
+    from {{ ref('stg_oda__expense_deck_revision') }}
 ),
 
-exp_decks AS (
-    SELECT *
-    FROM {{ ref('stg_oda__expense_deck_v2') }}
+exp_decks as (
+    select *
+    from {{ ref('stg_oda__expense_deck_v2') }}
 ),
 
-exp_deck_sets AS (
-    SELECT *
-    FROM {{ ref('stg_oda__expense_deck_set') }}
+exp_deck_sets as (
+    select *
+    from {{ ref('stg_oda__expense_deck_set') }}
 ),
 
-recon_types AS (
-    SELECT *
-    FROM {{ ref('stg_oda__gl_reconciliation_type') }}
+recon_types as (
+    select *
+    from {{ ref('stg_oda__gl_reconciliation_type') }}
 ),
 
-location_codes AS (
+location_codes as (
     -- Pre-process all location codes to ensure consistent type
-    SELECT
-        gld.id AS gl_id,
-        CAST(loc_company.code AS VARCHAR) AS company_code,
-        CAST(loc_owner_entity.code AS VARCHAR) AS owner_entity_code,
-        CAST(loc_purchaser_entity.code AS VARCHAR) AS purchaser_entity_code,
-        CAST(loc_vendor_entity.code AS VARCHAR) AS vendor_entity_code,
-        CAST(loc_well.code AS VARCHAR) AS well_code
-    FROM source_gl AS gld
-    LEFT OUTER JOIN companies AS loc_company
-        ON gld.location_company_id = loc_company.id
-    LEFT OUTER JOIN owners AS loc_owner
-        ON gld.location_owner_id = loc_owner.id
-    LEFT OUTER JOIN entities AS loc_owner_entity
-        ON loc_owner.entity_id = loc_owner_entity.id
-    LEFT OUTER JOIN purchasers AS loc_purchaser
-        ON gld.location_purchaser_id = loc_purchaser.id
-    LEFT OUTER JOIN entities AS loc_purchaser_entity
-        ON loc_purchaser.entity_id = loc_purchaser_entity.id
-    LEFT OUTER JOIN vendors AS loc_vendor
-        ON gld.location_vendor_id = loc_vendor.id
-    LEFT OUTER JOIN entities AS loc_vendor_entity
-        ON loc_vendor.entity_id = loc_vendor_entity.id
-    LEFT OUTER JOIN wells AS loc_well
-        ON gld.location_well_id = loc_well.id
+    select
+        gld.id as gl_id,
+        cast(loc_company.code as varchar) as company_code,
+        cast(loc_owner_entity.code as varchar) as owner_entity_code,
+        cast(loc_purchaser_entity.code as varchar) as purchaser_entity_code,
+        cast(loc_vendor_entity.code as varchar) as vendor_entity_code,
+        cast(loc_well.code as varchar) as well_code
+    from source_gl as gld
+    left outer join companies as loc_company
+        on gld.location_company_id = loc_company.id
+    left outer join owners as loc_owner
+        on gld.location_owner_id = loc_owner.id
+    left outer join entities as loc_owner_entity
+        on loc_owner.entity_id = loc_owner_entity.id
+    left outer join purchasers as loc_purchaser
+        on gld.location_purchaser_id = loc_purchaser.id
+    left outer join entities as loc_purchaser_entity
+        on loc_purchaser.entity_id = loc_purchaser_entity.id
+    left outer join vendors as loc_vendor
+        on gld.location_vendor_id = loc_vendor.id
+    left outer join entities as loc_vendor_entity
+        on loc_vendor.entity_id = loc_vendor_entity.id
+    left outer join wells as loc_well
+        on gld.location_well_id = loc_well.id
 ),
 
-location_names AS (
+location_names as (
     -- Pre-process all location names to ensure consistent type
-    SELECT
-        gld.id AS gl_id,
-        CAST(loc_company.name AS VARCHAR) AS company_name,
-        CAST(loc_owner_entity.name AS VARCHAR) AS owner_entity_name,
-        CAST(loc_purchaser_entity.name AS VARCHAR) AS purchaser_entity_name,
-        CAST(loc_vendor_entity.name AS VARCHAR) AS vendor_entity_name,
-        CAST(loc_well.name AS VARCHAR) AS well_name
-    FROM source_gl AS gld
-    LEFT OUTER JOIN companies AS loc_company
-        ON gld.location_company_id = loc_company.id
-    LEFT OUTER JOIN owners AS loc_owner
-        ON gld.location_owner_id = loc_owner.id
-    LEFT OUTER JOIN entities AS loc_owner_entity
-        ON loc_owner.entity_id = loc_owner_entity.id
-    LEFT OUTER JOIN purchasers AS loc_purchaser
-        ON gld.location_purchaser_id = loc_purchaser.id
-    LEFT OUTER JOIN entities AS loc_purchaser_entity
-        ON loc_purchaser.entity_id = loc_purchaser_entity.id
-    LEFT OUTER JOIN vendors AS loc_vendor
-        ON gld.location_vendor_id = loc_vendor.id
-    LEFT OUTER JOIN entities AS loc_vendor_entity
-        ON loc_vendor.entity_id = loc_vendor_entity.id
-    LEFT OUTER JOIN wells AS loc_well
-        ON gld.location_well_id = loc_well.id
+    select
+        gld.id as gl_id,
+        cast(loc_company.name as varchar) as company_name,
+        cast(loc_owner_entity.name as varchar) as owner_entity_name,
+        cast(loc_purchaser_entity.name as varchar) as purchaser_entity_name,
+        cast(loc_vendor_entity.name as varchar) as vendor_entity_name,
+        cast(loc_well.name as varchar) as well_name
+    from source_gl as gld
+    left outer join companies as loc_company
+        on gld.location_company_id = loc_company.id
+    left outer join owners as loc_owner
+        on gld.location_owner_id = loc_owner.id
+    left outer join entities as loc_owner_entity
+        on loc_owner.entity_id = loc_owner_entity.id
+    left outer join purchasers as loc_purchaser
+        on gld.location_purchaser_id = loc_purchaser.id
+    left outer join entities as loc_purchaser_entity
+        on loc_purchaser.entity_id = loc_purchaser_entity.id
+    left outer join vendors as loc_vendor
+        on gld.location_vendor_id = loc_vendor.id
+    left outer join entities as loc_vendor_entity
+        on loc_vendor.entity_id = loc_vendor_entity.id
+    left outer join wells as loc_well
+        on gld.location_well_id = loc_well.id
 ),
 
-entity_codes AS (
+entity_codes as (
     -- Pre-process all entity codes to ensure consistent type
-    SELECT
-        gld.id AS gl_id,
-        CAST(ent_company.code AS VARCHAR) AS company_code,
-        CAST(ent_owner_entity.code AS VARCHAR) AS owner_entity_code,
-        CAST(ent_purchaser_entity.code AS VARCHAR) AS purchaser_entity_code,
-        CAST(ent_vendor_entity.code AS VARCHAR) AS vendor_entity_code
-    FROM source_gl AS gld
-    LEFT OUTER JOIN companies AS ent_company
-        ON gld.entity_company_id = ent_company.id
-    LEFT OUTER JOIN owners AS ent_owner
-        ON gld.entity_owner_id = ent_owner.id
-    LEFT OUTER JOIN entities AS ent_owner_entity
-        ON ent_owner.entity_id = ent_owner_entity.id
-    LEFT OUTER JOIN purchasers AS ent_purchaser
-        ON gld.entity_purchaser_id = ent_purchaser.id
-    LEFT OUTER JOIN entities AS ent_purchaser_entity
-        ON ent_purchaser.entity_id = ent_purchaser_entity.id
-    LEFT OUTER JOIN vendors AS ent_vendor
-        ON gld.entity_vendor_id = ent_vendor.id
-    LEFT OUTER JOIN entities AS ent_vendor_entity
-        ON ent_vendor.entity_id = ent_vendor_entity.id
+    select
+        gld.id as gl_id,
+        cast(ent_company.code as varchar) as company_code,
+        cast(ent_owner_entity.code as varchar) as owner_entity_code,
+        cast(ent_purchaser_entity.code as varchar) as purchaser_entity_code,
+        cast(ent_vendor_entity.code as varchar) as vendor_entity_code
+    from source_gl as gld
+    left outer join companies as ent_company
+        on gld.entity_company_id = ent_company.id
+    left outer join owners as ent_owner
+        on gld.entity_owner_id = ent_owner.id
+    left outer join entities as ent_owner_entity
+        on ent_owner.entity_id = ent_owner_entity.id
+    left outer join purchasers as ent_purchaser
+        on gld.entity_purchaser_id = ent_purchaser.id
+    left outer join entities as ent_purchaser_entity
+        on ent_purchaser.entity_id = ent_purchaser_entity.id
+    left outer join vendors as ent_vendor
+        on gld.entity_vendor_id = ent_vendor.id
+    left outer join entities as ent_vendor_entity
+        on ent_vendor.entity_id = ent_vendor_entity.id
 ),
 
-entity_names AS (
+entity_names as (
     -- Pre-process all entity names to ensure consistent type
-    SELECT
-        gld.id AS gl_id,
-        CAST(ent_company.name AS VARCHAR) AS company_name,
-        CAST(ent_owner_entity.name AS VARCHAR) AS owner_entity_name,
-        CAST(ent_purchaser_entity.name AS VARCHAR) AS purchaser_entity_name,
-        CAST(ent_vendor_entity.name AS VARCHAR) AS vendor_entity_name
-    FROM source_gl AS gld
-    LEFT OUTER JOIN companies AS ent_company
-        ON gld.entity_company_id = ent_company.id
-    LEFT OUTER JOIN owners AS ent_owner
-        ON gld.entity_owner_id = ent_owner.id
-    LEFT OUTER JOIN entities AS ent_owner_entity
-        ON ent_owner.entity_id = ent_owner_entity.id
-    LEFT OUTER JOIN purchasers AS ent_purchaser
-        ON gld.entity_purchaser_id = ent_purchaser.id
-    LEFT OUTER JOIN entities AS ent_purchaser_entity
-        ON ent_purchaser.entity_id = ent_purchaser_entity.id
-    LEFT OUTER JOIN vendors AS ent_vendor
-        ON gld.entity_vendor_id = ent_vendor.id
-    LEFT OUTER JOIN entities AS ent_vendor_entity
-        ON ent_vendor.entity_id = ent_vendor_entity.id
+    select
+        gld.id as gl_id,
+        cast(ent_company.name as varchar) as company_name,
+        cast(ent_owner_entity.name as varchar) as owner_entity_name,
+        cast(ent_purchaser_entity.name as varchar) as purchaser_entity_name,
+        cast(ent_vendor_entity.name as varchar) as vendor_entity_name
+    from source_gl as gld
+    left outer join companies as ent_company
+        on gld.entity_company_id = ent_company.id
+    left outer join owners as ent_owner
+        on gld.entity_owner_id = ent_owner.id
+    left outer join entities as ent_owner_entity
+        on ent_owner.entity_id = ent_owner_entity.id
+    left outer join purchasers as ent_purchaser
+        on gld.entity_purchaser_id = ent_purchaser.id
+    left outer join entities as ent_purchaser_entity
+        on ent_purchaser.entity_id = ent_purchaser_entity.id
+    left outer join vendors as ent_vendor
+        on gld.entity_vendor_id = ent_vendor.id
+    left outer join entities as ent_vendor_entity
+        on ent_vendor.entity_id = ent_vendor_entity.id
 )
 
 
-SELECT 
+select
     -- Metadata and timestamps
-    CONVERT_TIMEZONE('UTC', 'America/Chicago', CURRENT_TIMESTAMP())::TIMESTAMP_TZ AS last_refresh_time,
-    gld.id AS gl_id,
-    gld.created_at::TIMESTAMP_NTZ AS created_date,
-    gld.updated_at::TIMESTAMP_NTZ AS updated_date,
-    
-    -- Company and account info
-    c.code AS company_code,
+    gld.id as gl_id,
+    c.code as company_code,
     c.name as company_name,
-    acct.main_account AS main_account,
-    acct.sub_account AS sub_account,
-    acct.account_name AS account_name,
+    acct.main_account as main_account,
+
+    -- Company and account info
+    acct.sub_account as sub_account,
+    acct.account_name as account_name,
+    cast(afes.afe_type_id as varchar) as afe_type_id,
+    cast(afes.afe_type_code as varchar) as afe_type_code,
+    cast(afes.afe_type_label as varchar) as afe_type_label,
 
     -- AFE Type Classification
-    CAST(afes.afe_type_id AS VARCHAR) AS afe_type_id,
-    CAST(afes.afe_type_code AS VARCHAR) AS afe_type_code,
-    CAST(afes.afe_type_label AS VARCHAR) AS afe_type_label,
-    CAST(afes.afe_type_full_name AS VARCHAR) AS afe_type_full_name,
-    
+    cast(afes.afe_type_full_name as varchar) as afe_type_full_name,
+    gld.accrual_date_key as accrual_date_key,
+    gld.journal_date as journal_date_key,
+    cast(gld.source_module_code as varchar) as source_module_code,
+
     -- Location information with CASE logic
-    CASE
-        WHEN lc.company_code IS NOT NULL THEN 'Company'
-        WHEN lc.owner_entity_code IS NOT NULL THEN 'Owner'
-        WHEN lc.purchaser_entity_code IS NOT NULL THEN 'Purchaser'
-        WHEN lc.vendor_entity_code IS NOT NULL THEN 'Vendor'
-        WHEN lc.well_code IS NOT NULL THEN 'Well'
-    END::VARCHAR AS location_type,
-    
+    cast(source_modules.name as varchar) as source_module_name,
+
     -- Use the pre-processed location code and name
-    COALESCE(
+    cast(vouchers.code as varchar) as voucher_code,
+
+    cast(vouchers.voucher_type_id as varchar) as voucher_type_id,
+
+    -- Posted information
+    cast(wells.property_reference_code as varchar) as op_ref,
+    cast(wells.code as varchar) as well_code,
+    wells.id as well_id,
+    cast(wells.name as varchar) as well_name,
+
+    -- Date dimensions - Accrual
+    cast(loc_search.user_field_value_string as varchar) as search_key,
+    gld.is_include_in_journal_report as include_in_journal_report,
+    gld.is_present_in_journal_balance as present_in_journal_balance,
+    gld.is_include_in_cash_report as include_in_cash_report,
+    gld.is_present_in_cash_balance as present_in_cash_balance,
+
+    -- Date dimensions - Cash
+    gld.is_include_in_accrual_report as include_in_accrual_report,
+    gld.is_present_in_accrual_balance as present_in_accrual_balance,
+    cast(rev_deck_revisions.revision_number as varchar) as revenue_deck_change_code,
+    cast(rev_deck_revisions.nri_actual as varchar) as net_revenue_interest_actual,
+
+    -- Date dimensions - Journal
+    cast(rev_deck_revisions.total_interest_expected as varchar) as total_interest_expected,
+    cast(payment_types.code as varchar) as reference_type,
+    cast(gld.reference as varchar) as reference,
+    cast(c.code as varchar) as currency_code,
+    cast(afes.code as varchar) as afe_code,
+
+    -- Source and reference information
+    cast(coalesce(
+        'C: ' || ec.company_code,
+        'O: ' || ec.owner_entity_code,
+        'P: ' || ec.purchaser_entity_code,
+        'V: ' || ec.vendor_entity_code
+    ) as varchar) as entity,
+    cast(coalesce(
+        en.company_name,
+        en.owner_entity_name,
+        en.purchaser_entity_name,
+        en.vendor_entity_name
+    ) as varchar) as entity_name,
+    cast(gld.description as varchar) as gl_description,
+    cast(exp_deck_sets.code as varchar) as expense_deck,
+    cast(exp_deck_revisions.revision_number as varchar) as expense_deck_change_code,
+    cast(recon_types.code as varchar) as reconciliation_type,
+    gld.is_reconciled_trial as reconciled_trial,
+    gld.is_reconciled as reconciled,
+    gld.is_generated_entry as generated_entry,
+
+    -- Report inclusion flags
+    cast(gld.entry_group as varchar) as entry_group,
+    gld.ordinal as entry_seq,
+    cast(convert_timezone('UTC', 'America/Chicago', current_timestamp()) as timestamp_tz) as last_refresh_time,
+    cast(gld.created_at as timestamp_ntz) as created_date,
+    cast(gld.updated_at as timestamp_ntz) as updated_date,
+    cast(case
+        when lc.company_code is not null then 'Company'
+        when lc.owner_entity_code is not null then 'Owner'
+        when lc.purchaser_entity_code is not null then 'Purchaser'
+        when lc.vendor_entity_code is not null then 'Vendor'
+        when lc.well_code is not null then 'Well'
+    end as varchar) as location_type,
+
+    -- Revenue deck information
+    cast(coalesce(
         lc.company_code,
         lc.owner_entity_code,
         lc.purchaser_entity_code,
         lc.vendor_entity_code,
         lc.well_code
-    )::VARCHAR AS location_code,
-    
-    COALESCE(
+    ) as varchar) as location_code,
+    cast(coalesce(
         ln.company_name,
         ln.owner_entity_name,
         ln.purchaser_entity_name,
         ln.vendor_entity_name,
         ln.well_name
-    )::VARCHAR AS location_name,
-    
-    -- Posted information
-    CASE WHEN gld.is_posted THEN 'Y' ELSE 'N' END::VARCHAR AS posted,
-    vouchers.posted_date::TIMESTAMP_NTZ AS posted_date_time,
-    CONVERT_TIMEZONE('UTC', 'America/Chicago', vouchers.posted_date)::TIMESTAMP_TZ AS posted_date_time_cst,
-    TO_CHAR(vouchers.posted_date, 'MM-DD-YYYY')::VARCHAR AS posted_date,
-    
-    -- Date dimensions - Accrual
-    gld.accrual_date::DATE AS accrual_date,
-    TO_CHAR(gld.accrual_date, 'MM')::VARCHAR AS accrual_month,
-    TO_CHAR(gld.accrual_date, 'YYYY')::VARCHAR AS accrual_year,
-    TO_CHAR(gld.accrual_date, 'MM-YYYY')::VARCHAR AS accrual_month_year,
-    gld.accrual_date_key as accrual_date_key,
+    ) as varchar) as location_name,
+    cast(case when gld.is_posted then 'Y' else 'N' end as varchar) as posted,
+    cast(vouchers.posted_date as timestamp_ntz) as posted_date_time,
 
-    -- Date dimensions - Cash
-    gld.cash_date::DATE AS cash_date,
-    TO_CHAR(gld.cash_date, 'MM')::VARCHAR AS cash_month,
-    TO_CHAR(gld.cash_date, 'YYYY')::VARCHAR AS cash_year,
-    TO_CHAR(gld.cash_date, 'MM-YYYY')::VARCHAR AS cash_month_year,
-
-    -- Date dimensions - Journal
-    gld.journal_date::DATE AS journal_date,
-    TO_CHAR(gld.journal_date, 'MM')::VARCHAR AS journal_month,
-    TO_CHAR(gld.journal_date, 'YYYY')::VARCHAR AS journal_year,
-    TO_CHAR(gld.journal_date, 'MM-YYYY')::VARCHAR AS journal_month_year,
-    gld.journal_date as journal_date_key,
-
-    -- Source and reference information
-    CAST(gld.source_module_code AS VARCHAR) AS source_module_code,
-    CAST(source_modules.name AS VARCHAR) AS source_module_name,
-    CAST(vouchers.code AS VARCHAR) AS voucher_code,
-    CAST(vouchers.voucher_type_id AS VARCHAR) AS voucher_type_id,
-    CAST(wells.property_reference_code AS VARCHAR) AS op_ref,
-    CAST(wells.code AS VARCHAR) AS well_code,
-    wells.id as well_id,
-    CAST(wells.name AS VARCHAR) AS well_name,
-    CAST(loc_search."UserFieldValueString" AS VARCHAR) AS search_key,
-    
-    -- Report inclusion flags
-    gld.is_include_in_journal_report AS include_in_journal_report,
-    gld.is_present_in_journal_balance AS present_in_journal_balance,
-    gld.is_include_in_cash_report AS include_in_cash_report,
-    gld.is_present_in_cash_balance AS present_in_cash_balance,
-    gld.is_include_in_accrual_report AS include_in_accrual_report,
-    gld.is_present_in_accrual_balance AS present_in_accrual_balance,
-    
-    -- Revenue deck information
-    CAST(rev_deck_revisions.revision_number AS VARCHAR) AS revenue_deck_change_code,
-    rev_decks.effective_date::DATE AS revenue_deck_version_date,
-    CAST(rev_deck_revisions.nri_actual AS VARCHAR) AS net_revenue_interest_actual,
-    CAST(rev_deck_revisions.total_interest_expected AS VARCHAR) AS total_interest_expected,
-    
     -- Reference and currency
-    CAST(payment_types.code AS VARCHAR) AS reference_type,
-    CAST(gld.reference AS VARCHAR) AS reference,
-    CAST(c.code AS VARCHAR) AS currency_code,
-    CAST(afes.code AS VARCHAR) AS afe_code,
-    
+    cast(convert_timezone('UTC', 'America/Chicago', vouchers.posted_date) as timestamp_tz) as posted_date_time_cst,
+    cast(to_char(vouchers.posted_date, 'MM-DD-YYYY') as varchar) as posted_date,
+    cast(gld.accrual_date as date) as accrual_date,
+    cast(to_char(gld.accrual_date, 'MM') as varchar) as accrual_month,
+
     -- Entity information using pre-processed entity data
-    CAST(COALESCE(
-        'C: ' || ec.company_code,
-        'O: ' || ec.owner_entity_code,
-        'P: ' || ec.purchaser_entity_code,
-        'V: ' || ec.vendor_entity_code                
-    ) AS VARCHAR) AS entity,
-    
-    CAST(COALESCE(
-        en.company_name,
-        en.owner_entity_name,
-        en.purchaser_entity_name,
-        en.vendor_entity_name                
-    ) AS VARCHAR) AS entity_name,
-    
+    cast(to_char(gld.accrual_date, 'YYYY') as varchar) as accrual_year,
+
+    cast(to_char(gld.accrual_date, 'MM-YYYY') as varchar) as accrual_month_year,
+
     -- Transaction values
-    CAST(gld.description AS VARCHAR) AS gl_description,
-    gld.gross_value::FLOAT AS gross_amount,
-    gld.net_value::FLOAT AS net_amount,
-    gld.gross_volume::FLOAT AS gross_volume,
-    gld.net_volume::FLOAT AS net_volume,
-    
+    cast(gld.cash_date as date) as cash_date,
+    cast(to_char(gld.cash_date, 'MM') as varchar) as cash_month,
+    cast(to_char(gld.cash_date, 'YYYY') as varchar) as cash_year,
+    cast(to_char(gld.cash_date, 'MM-YYYY') as varchar) as cash_month_year,
+    cast(gld.journal_date as date) as journal_date,
+
     -- Expense deck information
-    CAST(exp_deck_sets.code AS VARCHAR) AS expense_deck,
-    CAST(exp_deck_revisions.revision_number AS VARCHAR) AS expense_deck_change_code,
-    exp_decks.effective_date::DATE AS expense_deck_version_date,
-    exp_deck_revisions.total_interest_actual::FLOAT AS expense_deck_interest_total,
-    
+    cast(to_char(gld.journal_date, 'MM') as varchar) as journal_month,
+    cast(to_char(gld.journal_date, 'YYYY') as varchar) as journal_year,
+    cast(to_char(gld.journal_date, 'MM-YYYY') as varchar) as journal_month_year,
+    cast(rev_decks.effective_date as date) as revenue_deck_version_date,
+
     -- Reconciliation information
-    CAST(recon_types.code AS VARCHAR) AS reconciliation_type,
-    gld.is_reconciled_trial AS reconciled_trial,
-    gld.is_reconciled AS reconciled,
-    
+    cast(gld.gross_value as float) as gross_amount,
+    cast(gld.net_value as float) as net_amount,
+    cast(gld.gross_volume as float) as gross_volume,
+
     -- Entry metadata
-    gld.is_generated_entry AS generated_entry,
-    CAST(gld.entry_group AS VARCHAR) AS entry_group,
-    gld.ordinal AS entry_seq
+    cast(gld.net_volume as float) as net_volume,
+    cast(exp_decks.effective_date as date) as expense_deck_version_date,
+    cast(exp_deck_revisions.total_interest_actual as float) as expense_deck_interest_total
 
-FROM source_gl AS gld
-LEFT OUTER JOIN companies AS c
-    ON c.id = gld.company_id
-LEFT OUTER JOIN accounts AS acct
-    ON gld.account_id = acct.account_id
-    
+from source_gl as gld
+left outer join companies as c
+    on gld.company_id = c.id
+left outer join accounts as acct
+    on gld.account_id = acct.account_id
+
 -- Use the pre-processed location data
-LEFT OUTER JOIN location_codes lc
-    ON gld.id = lc.gl_id
-LEFT OUTER JOIN location_names ln
-    ON gld.id = ln.gl_id
-    
--- Use the pre-processed entity data
-LEFT OUTER JOIN entity_codes ec
-    ON gld.id = ec.gl_id
-LEFT OUTER JOIN entity_names en
-    ON gld.id = en.gl_id
-    
--- Other joins
-LEFT OUTER JOIN source_modules
-    ON gld.source_module_code = source_modules.code
-LEFT OUTER JOIN vouchers
-    ON gld.voucher_id = vouchers.id
-LEFT OUTER JOIN wells
-    ON gld.well_id = wells.id
-LEFT OUTER JOIN userfields AS loc_search
-        ON gld.location_well_id = loc_search."Id"
-LEFT OUTER JOIN rev_deck_revisions
-    ON gld.source_revenue_deck_revision_id = rev_deck_revisions.id
-LEFT OUTER JOIN rev_decks
-    ON rev_deck_revisions.deck_id = rev_decks.id
-LEFT OUTER JOIN rev_deck_sets
-    ON rev_decks.deck_set_id = rev_deck_sets.id
-LEFT OUTER JOIN payment_types
-    ON gld.payment_type_id = payment_types.id
-LEFT OUTER JOIN afes
-    ON gld.afe_id = afes.id
-LEFT OUTER JOIN exp_deck_revisions
-    ON gld.source_expense_deck_revision_id = exp_deck_revisions.id
-LEFT OUTER JOIN exp_decks
-    ON exp_deck_revisions.deck_id = exp_decks.id
-LEFT OUTER JOIN exp_deck_sets
-    ON exp_decks.deck_set_id = exp_deck_sets.id
-LEFT OUTER JOIN recon_types
-    ON gld.reconciliation_type_id = recon_types.id
+left outer join location_codes lc
+    on gld.id = lc.gl_id
+left outer join location_names ln
+    on gld.id = ln.gl_id
 
-WHERE 1=1
-{% if is_incremental() %}
+-- Use the pre-processed entity data
+left outer join entity_codes ec
+    on gld.id = ec.gl_id
+left outer join entity_names en
+    on gld.id = en.gl_id
+
+-- Other joins
+left outer join source_modules
+    on gld.source_module_code = source_modules.code
+left outer join vouchers
+    on gld.voucher_id = vouchers.id
+left outer join wells
+    on gld.well_id = wells.id
+left outer join userfields as loc_search
+    on gld.location_well_id = loc_search.id
+left outer join rev_deck_revisions
+    on gld.source_revenue_deck_revision_id = rev_deck_revisions.id
+left outer join rev_decks
+    on rev_deck_revisions.deck_id = rev_decks.id
+left outer join rev_deck_sets
+    on rev_decks.deck_set_id = rev_deck_sets.id
+left outer join payment_types
+    on gld.payment_type_id = payment_types.id
+left outer join afes
+    on gld.afe_id = afes.id
+left outer join exp_deck_revisions
+    on gld.source_expense_deck_revision_id = exp_deck_revisions.id
+left outer join exp_decks
+    on exp_deck_revisions.deck_id = exp_decks.id
+left outer join exp_deck_sets
+    on exp_decks.deck_set_id = exp_deck_sets.id
+left outer join recon_types
+    on gld.reconciliation_type_id = recon_types.id
+
+where
+    1 = 1
+    {% if is_incremental() %}
     -- Only process new or updated GL entries since last run
-    AND (
-        gld.created_at > (SELECT MAX(created_date) FROM {{ this }})
-        OR gld.updated_at > (SELECT MAX(updated_date) FROM {{ this }})
-    )
-{% endif %}
+        and (
+            gld.created_at > (select max(created_date) from {{ this }})
+            or gld.updated_at > (select max(updated_date) from {{ this }})
+        )
+    {% endif %}
