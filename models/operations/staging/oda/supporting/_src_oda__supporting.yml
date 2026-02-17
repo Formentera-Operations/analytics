@@ -9,3 +9,13 @@ sources:
         description: "JIB summary records — denormalized joint interest billing with codes/names (CDC, 63M rows)"
       - name: ODA_JIBDETAIL
         description: "JIB detail records — normalized joint interest billing with FK references (CDC, 63M rows)"
+      - name: ODA_CHECKREVENUE
+        description: "Revenue check register — payment tracking for revenue distributions (old connector, 659K rows)"
+      - name: MDM_CALENDAR
+        description: "Shared MDM calendar dimension — date attributes and fiscal periods (batch, 37K rows)"
+      - name: ODA_USERFIELD
+        description: "User-defined fields — EAV key-value pairs for custom entity attributes (batch, 4.8M rows)"
+      - name: ODA_REVISIONSTATE
+        description: "Revision state lookup — draft, approved, superseded states (batch, 3 rows)"
+      - name: ODA_BATCH_ODA_SOURCEMODULE
+        description: "Source module lookup — ODA module identifiers: GL, AP, AR, JIB (batch, 26 rows)"
