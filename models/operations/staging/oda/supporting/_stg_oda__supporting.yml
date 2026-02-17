@@ -242,3 +242,262 @@ models:
         description: "Estuary CDC operation type (c=create, u=update)"
       - name: _flow_published_at
         description: Estuary CDC publication timestamp
+
+  - name: stg_oda__checkrevenue
+    description: |
+      Staging model for ODA Revenue Check Register.
+      Source: ODA_CHECKREVENUE (Estuary old connector, ~659K rows)
+      Grain: One row per revenue check (id)
+      Note: Old connector table — data may be stale (last altered 2026-01-11).
+    columns:
+      - name: checkrevenue_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: check_revenue_identity
+        description: Numeric identity for the revenue check record
+      - name: account_id
+        description: FK to account record
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — operating company
+        data_tests:
+          - not_null
+      - name: currency_id
+        description: FK to currency record
+      - name: import_data_id
+        description: FK to import data record
+      - name: owner_id
+        description: FK to ODA_BATCH_ODA_OWNER_V2 — interest owner
+      - name: payment_type_id
+        description: FK to ODA_BATCH_ODA_PAYMENTTYPE — payment method
+      - name: voucher_id
+        description: FK to voucher record
+      - name: payment_type_code
+        description: Payment type code (ACH, CHECK, etc.)
+      - name: transaction_number
+        description: Check/transaction number
+      - name: check_amount
+        description: Payment amount
+      - name: accrual_date
+        description: Accrual date for the payment
+      - name: issued_date
+        description: Date check was issued
+      - name: issued_date_key
+        description: Integer date key for issued date
+      - name: gl_void_date
+        description: Date check was voided in GL
+      - name: voided_date
+        description: Date check was voided
+      - name: void_1099_year
+        description: Tax year for 1099 void reporting
+      - name: is_include_in_accrual_report
+        description: Whether to include in accrual reports
+      - name: is_reconciled
+        description: Whether the check has been reconciled
+      - name: is_system_generated
+        description: Whether the check was system-generated (vs manual)
+      - name: is_voided
+        description: Whether the check has been voided
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__calendar
+    description: |
+      Staging model for MDM Calendar Dimension.
+      Source: MDM_CALENDAR (Estuary batch, ~37K rows)
+      Grain: One row per calendar date (date_key)
+      Note: Shared MDM table, not ODA-specific.
+    columns:
+      - name: calendar_sk
+        description: Surrogate key derived from date_key
+      - name: date_key
+        description: Primary key — integer date key (YYYYMMDD format)
+        data_tests:
+          - unique
+          - not_null
+      - name: date
+        description: Calendar date
+      - name: day
+        description: Day of month (1-31)
+      - name: day_suffix
+        description: Day suffix (st, nd, rd, th)
+      - name: day_of_year
+        description: Day of year (1-366)
+      - name: weekday
+        description: Day of week number (1=Sunday)
+      - name: weekday_name
+        description: Full weekday name (Monday, Tuesday, etc.)
+      - name: weekday_name_short
+        description: Abbreviated weekday name (Mon, Tue, etc.)
+      - name: weekday_name_first_letter
+        description: First letter of weekday (M, T, W, etc.)
+      - name: is_weekend
+        description: Whether the date falls on a weekend
+      - name: week
+        description: Week number within the year
+      - name: week_name
+        description: Week name identifier
+      - name: week_of_month
+        description: Week number within the month
+      - name: week_of_year
+        description: Week number within the year
+      - name: first_date_of_week
+        description: First date of the week
+      - name: last_date_of_week
+        description: Last date of the week
+      - name: dow_in_month
+        description: Day of week occurrence in month (1st Monday, 2nd Tuesday, etc.)
+      - name: month
+        description: Month number (1-12)
+      - name: month_name
+        description: Full month name (January, February, etc.)
+      - name: month_name_short
+        description: Abbreviated month name (Jan, Feb, etc.)
+      - name: month_name_first_letter
+        description: First letter of month (J, F, M, etc.)
+      - name: mm_yyyy
+        description: Month-year formatted as MM-YYYY
+      - name: month_year
+        description: Month-year identifier
+      - name: month_year_name
+        description: Month-year display name
+      - name: first_date_of_month
+        description: First date of the month
+      - name: last_date_of_month
+        description: Last date of the month
+      - name: quarter
+        description: Quarter number (1-4)
+      - name: quarter_name
+        description: Quarter display name (Q1, Q2, etc.)
+      - name: first_date_of_quarter
+        description: First date of the quarter
+      - name: last_date_of_quarter
+        description: Last date of the quarter
+      - name: year
+        description: Calendar year
+      - name: first_date_of_year
+        description: First date of the year
+      - name: last_date_of_year
+        description: Last date of the year
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__userfield
+    description: |
+      Staging model for ODA User-Defined Fields.
+      Source: ODA_USERFIELD (Estuary batch, ~4.8M rows)
+      Grain: One row per custom field value (id)
+      Note: Generic EAV table for custom entity attributes. Downstream consumers
+      pivot on user_field_name to extract specific values (e.g., UF-SEARCH KEY).
+    columns:
+      - name: userfield_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID (represents the entity ID, e.g., well_id)
+        data_tests:
+          - not_null
+      - name: user_field_identity
+        description: Numeric identity for the userfield record
+      - name: entity_type_id
+        description: "Entity type classifier (2=Well, 3=Company, etc.)"
+      - name: entity_code
+        description: Code of the parent entity
+      - name: entity_name
+        description: Name of the parent entity
+      - name: user_field_name
+        description: Name of the custom field (e.g., UF-SEARCH KEY, UF-PV FIELD)
+        data_tests:
+          - not_null
+      - name: user_field_value_string
+        description: String value of the custom field
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__revision_state
+    description: |
+      Staging model for ODA Revision States.
+      Source: ODA_REVISIONSTATE (Estuary batch, 3 rows)
+      Grain: One row per revision state (id)
+      Note: Tiny lookup table — draft, approved, superseded.
+    columns:
+      - name: revision_state_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revision_state_identity
+        description: Numeric identity for the revision state
+      - name: name
+        description: Short name of the revision state
+      - name: full_name
+        description: Full descriptive name of the revision state
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__source_module
+    description: |
+      Staging model for ODA Source Modules.
+      Source: ODA_BATCH_ODA_SOURCEMODULE (Estuary batch, 26 rows)
+      Grain: One row per source module (id)
+      Note: Tiny lookup for ODA module identifiers (GL, AP, AR, JIB, etc.).
+    columns:
+      - name: source_module_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: source_module_identity
+        description: Numeric identity for the source module
+      - name: code
+        description: Module code (GL, AP, AR, JIB, etc.)
+        data_tests:
+          - not_null
+      - name: name
+        description: Module display name
+      - name: full_name
+        description: Full descriptive name of the module
+      - name: module
+        description: Module category identifier
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp

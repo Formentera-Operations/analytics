@@ -45,7 +45,6 @@ sources:
           - name: POSTED
             description: Flag indicating if the transaction is posted (1=yes, 0=no)
       - name: ODA_VOUCHER_V2
-      - name: MDM_CALENDAR
       - name: ODA_BATCH_ODA_ENTITY
       - name: ODA_BATCH_ODA_ENTITY_V2
       - name: ODA_BATCH_ODA_COMPANY
@@ -71,24 +70,12 @@ sources:
       - name: ODA_BATCH_ODA_VENDOR_V2
       - name: ODA_BATCH_ODA_OWNER_V2
       - name: ODA_BATCH_ODA__OWNER
-      - name: ODA_BATCH_ODA_SOURCEMODULE
-      - name: ODA_BATCH_ODA_REVENUEDECK_V2
-      - name: ODA_REVENUEDECKSET
-      - name: ODA_REVENUEDECKREVISION
-      - name: ODA_REVENUEDECKPARTICIPANT
       - name: ODA_BATCH_ODA_PURCHASER_V2
       - name: ODA_BATCH_ODA_PAYMENTTYPE
       - name: ODA_GLRECONCILIATIONTYPE
-      - name: ODA_BATCH_ODA_EXPENSEDECK_V2
-      - name: ODA_EXPENSEDECKSET
-      - name: ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW
       - name: ODA_BATCH_ODA_AFE_V2
       - name: ODA_BATCH_ODA_WELL
-      - name: ODA_USERFIELD
-      - name: ODA_BATCH_ODA_EXPENSEDECKREVISION
-      - name: ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT
       - name: ODA_BATCH_ODA_INTERESTTYPE
-      - name: ODA_REVISIONSTATE
       - name: ODA_BATCH_ODA_PRODUCT
       - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
       - name: ODA_ARINVOICE_V2
@@ -100,4 +87,3 @@ sources:
       - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL
       - name: ODA_BATCH_ODA_ARADVANCE
       - name: ODA_BATCH_ODA_ARADVANCECLOSEOUT
-      - name: ODA_CHECKREVENUE

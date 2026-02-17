@@ -21,9 +21,9 @@ revenue_checks as (
         c.company_id,
         c.issued_date,
         c.payment_type_code,
-        c.system_generated,
+        c.is_system_generated,
         c.check_amount,
-        c.reconciled,
+        c.is_reconciled,
         c.voided_date,
         c.payment_type_id,
         c.owner_id,
@@ -83,30 +83,30 @@ companies as (
 final as (
 
     select
-        co.code                                                            as company_code,
-        co.name                                                            as company_name,
-        rc.transaction_number                                              as check_number,
-        rc.issued_date                                                     as check_date,
-        rc.payment_type_code                                               as check_type,
-        concat(case when rc.system_generated = 0 then 'Manual ' else 'System ' end, pt.name)       as check_type_name,
+        co.code as company_code,
+        co.name as company_name,
+        rc.transaction_number as check_number,
+        rc.issued_date as check_date,
+        rc.payment_type_code as check_type,
         rc.check_amount,
-        vo.code                                                            as voucher_code,
-        e.code                                                             as entity_code,
-        e.name                                                             as entity_name,
-        case when rc.reconciled = '1' then 'YES' else '' end              as reconciled,
-        case when rc.voided_date is null then 'NO' else 'YES' end         as voided,
-        cast(rc.voided_date as date)                           as void_date
+        vo.code as voucher_code,
+        e.code as entity_code,
+        e.name as entity_name,
+        cast(rc.voided_date as date) as void_date,
+        concat(case when not rc.is_system_generated then 'Manual ' else 'System ' end, pt.name) as check_type_name,
+        case when rc.is_reconciled then 'YES' else '' end as reconciled,
+        case when rc.voided_date is null then 'NO' else 'YES' end as voided
     from revenue_checks as rc
     inner join companies as co
         on rc.company_id = co.id
     inner join payment_types as pt
-        on pt.id = rc.payment_type_id
+        on rc.payment_type_id = pt.id
     left join owners as o
-        on o.id = rc.owner_id
+        on rc.owner_id = o.id
     left join vouchers as vo
-        on vo.id = rc.voucher_id
+        on rc.voucher_id = vo.id
     inner join entities as e
-        on e.id = o.entity_id
+        on o.entity_id = e.id
 
 )
 

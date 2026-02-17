@@ -22,8 +22,8 @@
     - stg_oda__userfield (for search_key, field)
 #}
 
-WITH wells_base AS (
-    SELECT 
+with wells_base as (
+    select
         id,
         code,
         code_sort,
@@ -51,42 +51,42 @@ WITH wells_base AS (
         shut_in_date,
         inactive_date,
         n_id
-    FROM {{ ref('stg_oda__wells') }}
+    from {{ ref('stg_oda__wells') }}
 ),
 
 -- Pivot userfields to get search_key and field
-userfields AS (
-    SELECT 
-        "Id" AS well_id,
-        MAX(CASE WHEN "UserFieldName" = 'UF-SEARCH KEY' THEN "UserFieldValueString" END) AS search_key,
-        MAX(CASE WHEN "UserFieldName" = 'UF-PV FIELD' THEN "UserFieldValueString" END) AS pv_field,
-        MAX(CASE WHEN "UserFieldName" = 'UF-OPERATED?' THEN "UserFieldValueString" END) AS uf_operated,
-        MAX(CASE WHEN "UserFieldName" = 'UF-OPERATOR' THEN "UserFieldValueString" END) AS uf_operator
-    FROM {{ ref('stg_oda__userfield') }}
-    WHERE "UserFieldName" IN ('UF-SEARCH KEY', 'UF-PV FIELD', 'UF-OPERATED?', 'UF-OPERATOR')
-    GROUP BY "Id"
+userfields as (
+    select
+        id as well_id,
+        max(case when user_field_name = 'UF-SEARCH KEY' then user_field_value_string end) as search_key,
+        max(case when user_field_name = 'UF-PV FIELD' then user_field_value_string end) as pv_field,
+        max(case when user_field_name = 'UF-OPERATED?' then user_field_value_string end) as uf_operated,
+        max(case when user_field_name = 'UF-OPERATOR' then user_field_value_string end) as uf_operator
+    from {{ ref('stg_oda__userfield') }}
+    where user_field_name in ('UF-SEARCH KEY', 'UF-PV FIELD', 'UF-OPERATED?', 'UF-OPERATOR')
+    group by id
 ),
 
-final AS (
-    SELECT
+final as (
+    select
         -- =================================================================
         -- Well Identity
         -- =================================================================
-        w.id AS well_id,
-        w.code AS well_code,
+        w.id as well_id,
+        w.code as well_code,
         w.code_sort,
-        w.name AS well_name,
+        w.name as well_name,
         w.api_number,
         w.legal_description,
         w.n_id,
-        
+
         -- =================================================================
         -- Userfield Attributes
         -- =================================================================
         uf.search_key,
         uf.pv_field,
-    
-        
+
+
         -- =================================================================
         -- Geography
         -- =================================================================
@@ -94,168 +94,168 @@ final AS (
         w.state_code,
         w.state_name,
         w.county_name,
-        
+
         -- Basin classification based on state/county
-        CASE 
-            -- Permian Basin (Texas)
-            WHEN w.state_name = 'Texas' AND w.county_name IN (
-                'ECTOR', 'CRANE', 'WINKLER', 'ANDREWS', 'MARTIN', 'GLASSCOCK', 
-                'GAINES', 'PECOS', 'REEVES', 'COCHRAN', 'HOCKLEY', 'CROCKETT', 
-                'STERLING', 'UPTON', 'MIDLAND', 'HOWARD', 'WARD', 'LOVING'
-            ) THEN 'Permian Basin'
-            
-            -- Eagle Ford / South Texas
-            WHEN w.state_name = 'Texas' AND w.county_name IN (
-                'FRIO', 'ZAVALA', 'DIMMIT', 'KARNES', 'DEWITT', 'GONZALES', 
-                'LAVACA', 'MCMULLEN', 'LASALLE', 'ATASCOSA', 'WILSON'
-            ) THEN 'Eagle Ford'
-            
-            -- Texas Panhandle / Anadarko
-            WHEN w.state_name = 'Texas' AND w.county_name IN (
-                'WHEELER', 'HEMPHILL', 'ROBERTS', 'GRAY', 'HUTCHINSON'
-            ) THEN 'Texas Panhandle'
-            
-            -- SCOOP/STACK / Anadarko Basin (Oklahoma)
-            WHEN w.state_name = 'Oklahoma' AND w.county_name IN (
-                'OKLAHOMA', 'CANADIAN', 'GRADY', 'MCCLAIN', 'LOGAN',
-                'GARFIELD', 'KINGFISHER', 'GRANT', 'NOBLE', 'BLAINE',
-                'CUSTER', 'CADDO', 'DEWEY', 'MAJOR'
-            ) THEN 'SCOOP/STACK'
-            
-            -- Williston Basin / Bakken (North Dakota)
-            WHEN w.state_name = 'North Dakota' AND w.county_name IN (
-                'DIVIDE', 'BURKE', 'BOTTINEAU', 'WILLIAMS', 'MOUNTRAIL',
-                'MCKENZIE', 'DUNN', 'STARK'
-            ) THEN 'Williston Basin'
-            
-            -- Mississippi Interior Salt Basin
-            WHEN w.state_name = 'Mississippi' THEN 'Mississippi'
-            
-            -- Louisiana Onshore
-            WHEN w.state_name = 'Louisiana' THEN 'Louisiana'
-            
-            -- Marcellus/Utica (Pennsylvania)
-            WHEN w.state_name = 'Pennsylvania' THEN 'Appalachian Basin'
-            
-            -- Arkansas
-            WHEN w.state_name = 'Arkansas' THEN 'Arkansas'
-            
-            ELSE 'Other'
-        END AS basin_name,
-        
+        w.operating_group_code,
+
         -- =================================================================
         -- Operating Group
         -- =================================================================
-        w.operating_group_code,
         w.operating_group_name,
         w.operator_id,
-        
+        w.property_reference_code,
+
         -- =================================================================
         -- Operated Status (from property reference code)
         -- =================================================================
-        w.property_reference_code,
-        
-        CASE
-            WHEN w.property_reference_code = 'NON-OPERATED' THEN 'NON-OPERATED'
-            WHEN w.property_reference_code IN ('OPERATED', 'Operated') THEN 'OPERATED'
-            WHEN w.property_reference_code = 'CONTRACT_OP' THEN 'CONTRACT OPERATED'
-            WHEN w.property_reference_code IN ('DNU', 'ACCOUNTING', 'Accounting') THEN 'NON-WELL'
-            WHEN w.property_reference_code IN ('OTHER', 'Other') THEN 'OTHER'
-            WHEN w.property_reference_code = 'MIDSTREAM' THEN 'MIDSTREAM'
-            ELSE 'UNKNOWN'
-        END AS op_ref,
-        
-        COALESCE(
-            -- First: check userfield UF-OPERATED?
-            CASE 
-                WHEN UPPER(uf.uf_operated) IN ('YES', 'Y', 'TRUE', '1') THEN TRUE
-                WHEN UPPER(uf.uf_operated) IN ('NO', 'N', 'FALSE', '0') THEN FALSE
-            END,
-            -- Fallback: derive from property_reference_code
-            w.property_reference_code IN ('OPERATED', 'Operated', 'CONTRACT_OP')
-        ) AS is_operated,
-        
+        w.cost_center_type_code,
+
+        w.cost_center_type_name,
+
+        w.well_status_type_code,
+
         -- =================================================================
         -- Cost Center Classification
         -- =================================================================
-        w.cost_center_type_code,
-        w.cost_center_type_name,
-        
-        CASE 
-            WHEN w.cost_center_type_name = 'Well' THEN TRUE
-            ELSE FALSE
-        END AS is_well,
-        
+        w.well_status_type_name,
+        w.production_status_name,
+
+        w.stripper_well as is_stripper_well,
+
         -- =================================================================
         -- Well Status
         -- =================================================================
-        w.well_status_type_code,
-        w.well_status_type_name,
-        w.production_status_name,
-        
+        w.hold_all_billing as is_hold_billing,
+        w.suspend_all_revenue as is_suspend_revenue,
+        w.spud_date,
+
         -- Simplified activity status
-        CASE 
-            WHEN w.well_status_type_name = 'Producing' AND w.production_status_name = 'Active' THEN 'Producing'
-            WHEN w.well_status_type_name = 'Shut In' OR w.production_status_name = 'Shutin' THEN 'Shut In'
-            WHEN w.well_status_type_name = 'Plugged and Abandoned' OR w.production_status_name = 'Plugged' THEN 'Plugged & Abandoned'
-            WHEN w.well_status_type_name = 'Temp Abandoned' OR w.production_status_name = 'Temporarily Abandoned' THEN 'Temporarily Abandoned'
-            WHEN w.well_status_type_name = 'Planned' THEN 'Planned'
-            WHEN w.well_status_type_name = 'Injector' THEN 'Injector'
-            WHEN w.well_status_type_name = 'Sold' THEN 'Sold'
-            ELSE 'Other'
-        END AS activity_status,
-        
+        w.first_production_date,
+
         -- =================================================================
         -- Well Type (from naming patterns)
         -- =================================================================
-        CASE 
-            -- Saltwater disposal
-            WHEN UPPER(w.name) LIKE '%SWD%' OR UPPER(w.name) LIKE '%DISPOSAL%' THEN 'SWD'
-            -- Injection well
-            WHEN w.well_status_type_name = 'Injector' OR UPPER(w.name) LIKE '%INJ%' THEN 'Injector'
-            -- Horizontal (ends in H, MXH, WXH, MH, etc.)
-            WHEN REGEXP_LIKE(UPPER(w.name), '.*[0-9]+[MW]?X?H(-[A-Z0-9]+)?$') THEN 'Horizontal'
-            WHEN UPPER(w.name) LIKE '%H-LL%' OR UPPER(w.name) LIKE '%H-SL%' THEN 'Horizontal'
-            -- Unit wells
-            WHEN UPPER(w.name) LIKE '%UNIT%' THEN 'Unit Well'
-            -- Default for actual wells
-            WHEN w.cost_center_type_name = 'Well' THEN 'Vertical/Conventional'
-            ELSE 'Other'
-        END AS well_type,
-        
+        w.shut_in_date,
+
         -- =================================================================
         -- Operational Flags
         -- =================================================================
-        w.stripper_well AS is_stripper_well,
-        w.hold_all_billing AS is_hold_billing,
-        w.suspend_all_revenue AS is_suspend_revenue,
-        
+        w.inactive_date,
+        case
+            -- Permian Basin (Texas)
+            when w.state_name = 'Texas' and w.county_name in (
+                'ECTOR', 'CRANE', 'WINKLER', 'ANDREWS', 'MARTIN', 'GLASSCOCK',
+                'GAINES', 'PECOS', 'REEVES', 'COCHRAN', 'HOCKLEY', 'CROCKETT',
+                'STERLING', 'UPTON', 'MIDLAND', 'HOWARD', 'WARD', 'LOVING'
+            ) then 'Permian Basin'
+
+            -- Eagle Ford / South Texas
+            when w.state_name = 'Texas' and w.county_name in (
+                'FRIO', 'ZAVALA', 'DIMMIT', 'KARNES', 'DEWITT', 'GONZALES',
+                'LAVACA', 'MCMULLEN', 'LASALLE', 'ATASCOSA', 'WILSON'
+            ) then 'Eagle Ford'
+
+            -- Texas Panhandle / Anadarko
+            when w.state_name = 'Texas' and w.county_name in (
+                'WHEELER', 'HEMPHILL', 'ROBERTS', 'GRAY', 'HUTCHINSON'
+            ) then 'Texas Panhandle'
+
+            -- SCOOP/STACK / Anadarko Basin (Oklahoma)
+            when w.state_name = 'Oklahoma' and w.county_name in (
+                'OKLAHOMA', 'CANADIAN', 'GRADY', 'MCCLAIN', 'LOGAN',
+                'GARFIELD', 'KINGFISHER', 'GRANT', 'NOBLE', 'BLAINE',
+                'CUSTER', 'CADDO', 'DEWEY', 'MAJOR'
+            ) then 'SCOOP/STACK'
+
+            -- Williston Basin / Bakken (North Dakota)
+            when w.state_name = 'North Dakota' and w.county_name in (
+                'DIVIDE', 'BURKE', 'BOTTINEAU', 'WILLIAMS', 'MOUNTRAIL',
+                'MCKENZIE', 'DUNN', 'STARK'
+            ) then 'Williston Basin'
+
+            -- Mississippi Interior Salt Basin
+            when w.state_name = 'Mississippi' then 'Mississippi'
+
+            -- Louisiana Onshore
+            when w.state_name = 'Louisiana' then 'Louisiana'
+
+            -- Marcellus/Utica (Pennsylvania)
+            when w.state_name = 'Pennsylvania' then 'Appalachian Basin'
+
+            -- Arkansas
+            when w.state_name = 'Arkansas' then 'Arkansas'
+
+            else 'Other'
+        end as basin_name,
+        case
+            when w.property_reference_code = 'NON-OPERATED' then 'NON-OPERATED'
+            when w.property_reference_code in ('OPERATED', 'Operated') then 'OPERATED'
+            when w.property_reference_code = 'CONTRACT_OP' then 'CONTRACT OPERATED'
+            when w.property_reference_code in ('DNU', 'ACCOUNTING', 'Accounting') then 'NON-WELL'
+            when w.property_reference_code in ('OTHER', 'Other') then 'OTHER'
+            when w.property_reference_code = 'MIDSTREAM' then 'MIDSTREAM'
+            else 'UNKNOWN'
+        end as op_ref,
+
         -- Revenue generating (active, producing, not held)
-        CASE 
-            WHEN w.well_status_type_name = 'Producing' 
-                AND w.production_status_name = 'Active'
-                AND COALESCE(w.hold_all_billing, FALSE) = FALSE
-                AND COALESCE(w.suspend_all_revenue, FALSE) = FALSE
-            THEN TRUE
-            ELSE FALSE
-        END AS is_revenue_generating,
-        
+        coalesce(
+            -- First: check userfield UF-OPERATED?
+            case
+                when upper(uf.uf_operated) in ('YES', 'Y', 'TRUE', '1') then true
+                when upper(uf.uf_operated) in ('NO', 'N', 'FALSE', '0') then false
+            end,
+            -- Fallback: derive from property_reference_code
+            w.property_reference_code in ('OPERATED', 'Operated', 'CONTRACT_OP')
+        ) as is_operated,
+
         -- =================================================================
         -- Key Dates
         -- =================================================================
-        w.spud_date,
-        w.first_production_date,
-        w.shut_in_date,
-        w.inactive_date,
-        
+        coalesce(w.cost_center_type_name = 'Well', false) as is_well,
+        case
+            when w.well_status_type_name = 'Producing' and w.production_status_name = 'Active' then 'Producing'
+            when w.well_status_type_name = 'Shut In' or w.production_status_name = 'Shutin' then 'Shut In'
+            when
+                w.well_status_type_name = 'Plugged and Abandoned' or w.production_status_name = 'Plugged'
+                then 'Plugged & Abandoned'
+            when
+                w.well_status_type_name = 'Temp Abandoned' or w.production_status_name = 'Temporarily Abandoned'
+                then 'Temporarily Abandoned'
+            when w.well_status_type_name = 'Planned' then 'Planned'
+            when w.well_status_type_name = 'Injector' then 'Injector'
+            when w.well_status_type_name = 'Sold' then 'Sold'
+            else 'Other'
+        end as activity_status,
+        case
+            -- Saltwater disposal
+            when upper(w.name) like '%SWD%' or upper(w.name) like '%DISPOSAL%' then 'SWD'
+            -- Injection well
+            when w.well_status_type_name = 'Injector' or upper(w.name) like '%INJ%' then 'Injector'
+            -- Horizontal (ends in H, MXH, WXH, MH, etc.)
+            when regexp_like(upper(w.name), '.*[0-9]+[MW]?X?H(-[A-Z0-9]+)?$') then 'Horizontal'
+            when upper(w.name) like '%H-LL%' or upper(w.name) like '%H-SL%' then 'Horizontal'
+            -- Unit wells
+            when upper(w.name) like '%UNIT%' then 'Unit Well'
+            -- Default for actual wells
+            when w.cost_center_type_name = 'Well' then 'Vertical/Conventional'
+            else 'Other'
+        end as well_type,
+        coalesce(
+            w.well_status_type_name = 'Producing'
+            and w.production_status_name = 'Active'
+            and coalesce(w.hold_all_billing, false) = false
+            and coalesce(w.suspend_all_revenue, false) = false,
+            false
+        ) as is_revenue_generating,
+
         -- =================================================================
         -- Metadata
         -- =================================================================
-        CURRENT_TIMESTAMP() AS _refreshed_at
+        current_timestamp() as _refreshed_at
 
-    FROM wells_base w
-    LEFT JOIN userfields uf
-        ON w.id = uf.well_id
+    from wells_base w
+    left join userfields uf
+        on w.id = uf.well_id
 )
 
-SELECT * FROM final
+select * from final

@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_BATCH_ODA_REVENUEDECK_V2
+        description: "Revenue deck headers — entity/product/effective date groupings (batch, 20K rows)"
+      - name: ODA_REVENUEDECKSET
+        description: "Revenue deck sets — group revisions by product/interest type per well/company (batch, 19K rows)"
+      - name: ODA_REVENUEDECKREVISION
+        description: "Revenue deck revisions — point-in-time snapshots of revenue interest allocations (batch, 346K rows)"
+      - name: ODA_REVENUEDECKPARTICIPANT
+        description: "Revenue deck participants — owner-level revenue interest allocations per revision (batch, 196M rows)"
+      - name: ODA_BATCH_ODA_EXPENSEDECK_V2
+        description: "Expense deck headers — entity/product/effective date groupings (batch, 9.7K rows)"
+      - name: ODA_EXPENSEDECKSET
+        description: "Expense deck sets — group revisions by cost type per well/company (batch, 7.6K rows)"
+      - name: ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW
+        description: "Expense deck revisions — point-in-time snapshots of expense interest allocations (batch, 22K rows, Quorum view)"
+      - name: ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT
+        description: "Expense deck participants — owner-level expense interest allocations per revision (batch, 877K rows)"
