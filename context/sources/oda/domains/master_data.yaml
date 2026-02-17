@@ -1,0 +1,43 @@
+# ODA: Master Data
+# Core reference tables: companies, entities, vendors, owners, purchasers, wells, accounts, and lookups
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__company_v2, stg_oda__entity_v2, stg_oda__vendor_v2, stg_oda__owner_v2,
+#         stg_oda__purchaser_v2, stg_oda__wells, stg_oda__account_v2, stg_oda__interest_type,
+#         stg_oda__product, stg_oda__payment_type
+#
+# Relationships:
+#   ODA_BATCH_ODA_COMPANY_V2 1:many -> ODA_BATCH_ODA_ENTITY_V2 (via ID -> COMPANYID)
+#   ODA_BATCH_ODA_ENTITY_V2 references -> ODA_BATCH_ODA_OWNER_V2 (entities have associated owners)
+#   ODA_BATCH_ODA_ENTITY_V2 references -> ODA_BATCH_ODA_VENDOR_V2 (entities reference vendors for AP)
+#   ODA_BATCH_ODA_ENTITY_V2 references -> ODA_BATCH_ODA_PURCHASER_V2 (entities reference purchasers for AR)
+#   ODA_BATCH_ODA_ACCOUNT_V2 many:1 -> ODA_ACCOUNTTYPE (via ACCOUNTTYPEID, in general_ledger domain)
+#   ODA_BATCH_ODA_ACCOUNT_V2 many:1 -> ODA_BATCH_ODA_ACCOUNTSUBTYPE (via ACCOUNTSUBTYPEID, in general_ledger domain)
+#   ODA_BATCH_ODA_WELL many:1 -> ODA_BATCH_ODA_ENTITY_V2 (wells belong to entities)
+#
+# Key patterns:
+#   - All 10 tables are batch (no CDC, no delete filtering needed)
+#   - Highest downstream impact — most-referenced tables across all finance intermediates and marts
+#   - COMPANY_V2 (39 rows) is the top of the hierarchy — Formentera's operating companies
+#   - ENTITY_V2 (56K rows) represents wells/properties/cost centers — the primary organizational unit in ODA
+#   - OWNER_V2 (42K rows) = mineral/royalty/working interest owners (distinct from HubSpot owners)
+#   - VENDOR_V2 (4K rows) = service providers, suppliers, JIB partners
+#   - PURCHASER_V2 (183 rows) = oil/gas buyers who pay for production
+#   - WELL (9.4K rows) = well master data in ODA (separate from WellView well_header)
+#   - ACCOUNT_V2 (2K rows) = chart of accounts with GL account coding
+#   - INTERESTTYPE (5 rows), PRODUCT (9 rows), PAYMENTTYPE (8 rows) are small lookup tables
+#   - Downstream: dim_companies, dim_vendors, dim_accounts, int_well__oda, wiserock_app__companies
+
+
+# Tables in this domain (column details in tables/ directory):
+#   ODA_BATCH_ODA_COMPANY_V2: Operating company records. Name, address, tax IDs, fiscal year settings. Batch (39 rows, 54 cols).
+#   ODA_BATCH_ODA_ENTITY_V2: Properties/wells/cost centers — primary organizational unit. Name, company, type, status. Batch (56K rows).
+#   ODA_BATCH_ODA_VENDOR_V2: Service providers and JIB partners. Name, address, tax ID, payment terms. Batch (4K rows).
+#   ODA_BATCH_ODA_OWNER_V2: Mineral, royalty, and working interest owners. Name, address, tax ID, payment info. Batch (42K rows, 44 cols).
+#   ODA_BATCH_ODA_PURCHASER_V2: Oil/gas buyers. Name, address, payment terms. Batch (183 rows).
+#   ODA_BATCH_ODA_WELL: Well master data in ODA. API number, name, entity assignment, status. Batch (9.4K rows, 42 cols).
+#   ODA_BATCH_ODA_ACCOUNT_V2: Chart of accounts. Code, name, account type/subtype classification. Batch (2K rows, 38 cols).
+#   ODA_BATCH_ODA_INTERESTTYPE: Lookup for interest types (WI, NRI, RI, ORRI, etc.). Batch (5 rows).
+#   ODA_BATCH_ODA_PRODUCT: Lookup for product types (oil, gas, NGL, water, etc.). Batch (9 rows).
+#   ODA_BATCH_ODA_PAYMENTTYPE: Lookup for payment method types (check, ACH, wire, etc.). Batch (8 rows).

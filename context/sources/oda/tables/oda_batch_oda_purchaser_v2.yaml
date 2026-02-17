@@ -1,0 +1,30 @@
+# oda / master_data / ODA_BATCH_ODA_PURCHASER_V2
+# 15 columns, 183 rows. Purchaser role records extending the entity base table.
+# Maps to stg_oda__purchaser_v2.
+#
+ODA_BATCH_ODA_PURCHASER_V2: Purchaser records. Each row extends an entity with purchaser-specific attributes. Purchasers are buyers of production (oil/gas purchasers, midstream companies). Relatively simple — most configuration lives on the entity.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  PURCHASERV2IDENTITY(int) #Numeric identity for the purchaser
+  ENTITYID(txt) #FK to ODA_BATCH_ODA_ENTITY_V2.ID — base entity record
+
+  # -- Status --
+  ACTIVE(bool) #Whether purchaser is currently active
+
+  # -- Configuration --
+  BYWELLREVENUERECEIVABLE(bool) #Whether revenue receivables are tracked by well
+  CDEXCODE(txt) #CDEX (Council for Data Exchange) identifier
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

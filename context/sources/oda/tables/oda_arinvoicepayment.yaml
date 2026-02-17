@@ -1,0 +1,38 @@
+# oda / accounts_receivable / ODA_ARINVOICEPAYMENT
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 20 columns, 37,645 rows. AR payment headers.
+# Maps to stg_oda__arinvoicepayment.
+#
+ODA_ARINVOICEPAYMENT: Accounts receivable payment headers. Each row is a single payment received from an owner/purchaser against AR invoices, with payment method and posting status. Links to detail lines via ODA_ARINVOICEPAYMENTDETAIL.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICEPAYMENTIDENTITY(int) #ODA internal sequence identity for the payment
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  CASHACCOUNTID(txt) #Cash/bank account ID receiving the payment (FK to ODA_ACCOUNT)
+  OWNERID(txt) #Owner/interest holder making the payment (FK to ODA_OWNER)
+
+  # -- Payment Details --
+  PAYMENTAMOUNT(float) #Total payment amount received
+  PAYMENTTYPEID(int) #Payment type ID (lookup)
+  PAYMENTTYPECODE(txt) #Payment type code (e.g., Check, Wire, ACH)
+  PAYMENTTYPENAME(txt) #Payment type display name
+  PAYEECHECKNUMBER(txt) #Check number from the payee
+
+  # -- Dates --
+  ACCRUALDATE(date) #Accrual period date for financial reporting
+  PAYMENTDATE(date) #Date the payment was received
+
+  # -- Flags --
+  POSTED(bool) #Whether the payment has been posted to the GL
+
+  # -- Descriptive --
+  DESCRIPTION(txt) #Payment description or memo
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

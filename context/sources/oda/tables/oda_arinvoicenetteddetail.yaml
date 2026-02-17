@@ -1,0 +1,37 @@
+# oda / accounts_receivable / ODA_ARINVOICENETTEDDETAIL
+# Source: context/sources/oda/domains/accounts_receivable.yaml
+# 19 columns, 530,531 rows. AR netting detail (AP/AR offset).
+# Maps to stg_oda__arinvoicenetteddetail.
+#
+ODA_ARINVOICENETTEDDETAIL: Accounts receivable netting detail. Each row records the netting (offset) of AP costs against AR revenue for a specific well and owner, splitting working vs non-working interest values.
+
+  # -- Identifiers --
+  ID(txt) #Estuary CDC primary key (composite key hash)
+  ARINVOICENETTEDDETAILIDENTITY(int) #ODA internal sequence identity for the netted detail
+  INVOICEID(txt) #Parent AR invoice ID (FK to ODA_ARINVOICE_V2.ID)
+  OWNERREVENUEDETAILID(txt) #Owner revenue detail ID being netted against
+  VOUCHERID(txt) #Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+  WELLID(txt) #Well ID for the netting transaction (FK to ODA_WELL)
+
+  # -- Financial (Working Interest) --
+  NETVALUEWORKING(float) #Net dollar value for working interest portion
+  NETVOLUMEWORKING(float) #Net volume for working interest portion
+
+  # -- Financial (Non-Working Interest) --
+  NETVALUENONWORKING(float) #Net dollar value for non-working interest portion (royalty, ORRI)
+  NETVOLUMENONWORKING(float) #Net volume for non-working interest portion
+
+  # -- Financial (Total) --
+  NETTEDAMOUNT(float) #Total netted (offset) amount (working + non-working)
+
+  # -- Dates --
+  ACCRUALDATE(date) #Accrual period date for financial reporting
+  NETTINGDATE(date) #Date the netting was applied
+
+  # -- Audit/Metadata --
+  CREATEDATE(ts) #Record creation timestamp (ODA)
+  UPDATEDATE(ts) #Record last update timestamp (ODA)
+  RECORDINSERTDATE(ts) #Estuary CDC insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary CDC update timestamp
+  FLOW_PUBLISHED_AT(ts) #Estuary Flow publication timestamp
+  FLOW_DOCUMENT(variant) #Full CDC document as JSON

@@ -1,0 +1,26 @@
+# ODA: Accounts Payable
+# AP invoices, invoice line items, and check payments
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__apinvoice, stg_oda__apinvoicedetail, stg_oda__apcheck
+#
+# Relationships:
+#   ODA_APINVOICE 1:many -> ODA_APINVOICEDETAIL (via ID -> APINVOICEID)
+#   ODA_APCHECK many:1 -> ODA_APINVOICE (via APINVOICEID)
+#
+# Key patterns:
+#   - ODA_APINVOICE and ODA_APINVOICEDETAIL are CDC (require _operation_type != 'd' filtering)
+#   - ODA_APCHECK is from an old/orphaned Estuary connector — data may be stale or incomplete
+#   - APINVOICE.VENDORID -> ODA_BATCH_ODA_VENDOR_V2 (master_data domain)
+#   - APINVOICE.COMPANYID -> ODA_BATCH_ODA_COMPANY_V2 (master_data domain)
+#   - APINVOICE.ENTITYID -> ODA_BATCH_ODA_ENTITY_V2 (master_data domain)
+#   - APINVOICEDETAIL.ACCOUNTID -> ODA_BATCH_ODA_ACCOUNT_V2 (master_data domain)
+#   - AP is the expenditure side — vendors submit invoices, Formentera cuts checks
+#   - ODA_APINVOICEDETAIL is the largest AP table (6.8M rows) with GL account coding per line item
+
+
+# Tables in this domain (column details in tables/ directory):
+#   ODA_APINVOICE: AP invoice headers. Vendor, entity, company, dates, amounts, approval status. CDC table (334K rows).
+#   ODA_APINVOICEDETAIL: AP invoice line items. Account coding, amounts, JIB references, entity allocation. CDC table (6.8M rows).
+#   ODA_APCHECK: Check payment records linked to AP invoices. Old connector — may be stale (49.5K rows).

@@ -1,0 +1,22 @@
+# oda / afe_budgeting / ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
+# 11 columns, 24 rows. Revenue suspense category lookup table.
+# Maps to stg_oda__revenue_suspense_category.
+#
+ODA_BATCH_ODA_REVENUESUSPENSECATEGORY: Revenue suspense categories. Lookup table defining reasons why revenue payments may be held in suspense (e.g., title issues, missing tax ID, disputed interest).
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  REVENUESUSPENSECATEGORYIDENTITY(int) #Numeric identity for the category
+  CODE(txt) #Category code (user-facing)
+  NAME(txt) #Short category name
+  FULLNAME(txt) #Full category name/description
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

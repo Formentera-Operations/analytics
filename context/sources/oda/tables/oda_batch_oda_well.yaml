@@ -1,0 +1,65 @@
+# oda / master_data / ODA_BATCH_ODA_WELL
+# 42 columns, 9,421 rows. Well master records with location, status, and classification.
+# Maps to stg_oda__wells.
+#
+ODA_BATCH_ODA_WELL: Well master records. Each row is a well (or property/unit) in the ODA system. Contains well identification (API number), geographic location, operating group, production status, and billing/revenue hold flags. Core reference table — most transactional tables reference a well.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  WELLIDENTITY(int) #Numeric identity for the well
+  NID(int) #Numeric identifier
+  CODE(txt) #Well code (user-facing identifier)
+  CODESORT(txt) #Sortable version of the code
+  NAME(txt) #Well name
+  APINUMBER(txt) #API well number (state-assigned unique well identifier)
+  PROPERTYREFERENCECODE(txt) #Property reference code for cross-system matching
+
+  # -- Location --
+  COUNTRYISOALPHA2CODE(txt) #ISO 3166-1 alpha-2 country code (e.g., US)
+  COUNTRYISOALPHA3CODE(txt) #ISO 3166-1 alpha-3 country code (e.g., USA)
+  COUNTRYISONUMERICCODE(int) #ISO 3166-1 numeric country code
+  COUNTRYNAME(txt) #Country name
+  STATECODE(txt) #State/province code (e.g., TX)
+  STATENAME(txt) #State/province name
+  COUNTYNAME(txt) #County/parish name
+  LEGALDESCRIPTION(txt) #Legal land description (section, township, range)
+
+  # -- Operating Group --
+  OPERATINGGROUPCODE(txt) #Operating group code (business unit)
+  OPERATINGGROUPNAME(txt) #Operating group name
+  OPERATORID(txt) #FK to operator entity
+
+  # -- Classification --
+  COSTCENTERTYPECODE(txt) #Cost center type code (well, unit, facility, etc.)
+  COSTCENTERTYPENAME(txt) #Cost center type name
+  STRIPPERWELL(bool) #Whether well qualifies as a stripper well (low production)
+  AFEUSAGETYPE(txt) #How AFEs are used for this well
+  AFEUSAGETYPEID(int) #AFE usage type classifier
+
+  # -- Well Status --
+  WELLSTATUSTYPECODE(txt) #Current well status code (active, shut-in, P&A, etc.)
+  WELLSTATUSTYPENAME(txt) #Current well status name
+  WELLSTATUSEFFECTIVEDATE(ts) #Date the current status became effective
+  PRODUCTIONSTATUSNAME(txt) #Production status (producing, shut-in, etc.)
+
+  # -- Key Dates --
+  SPUDDATE(ts) #Date well was spudded (drilling started)
+  FIRSTPRODUCTIONDATE(ts) #Date of first production
+  SHUTINDATE(ts) #Date well was shut in
+  INACTIVEDATE(ts) #Date well was marked inactive
+
+  # -- Billing/Revenue Holds --
+  HOLDALLBILLING(bool) #Whether all billing is held for this well
+  HOLDBILLINGCATEGORYNAME(txt) #Category name if billing is partially held
+  SUSPENDALLREVENUE(bool) #Whether all revenue is suspended
+  SUSPENDREVENUETYPENAME(txt) #Revenue suspension type if partially suspended
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

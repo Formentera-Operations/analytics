@@ -1,0 +1,52 @@
+# oda / supporting / ODA_CHECKREVENUE
+# 31 columns, 658,795 rows. Revenue check/payment records issued to owners.
+# Maps to stg_oda__checkrevenue.
+#
+ODA_CHECKREVENUE: Revenue checks. Each row is a revenue payment issued to an owner, tracking check amounts, payment types, void status, and reconciliation. Links to owners, accounts, and vouchers for full payment audit trail.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  CHECKREVENUEIDENTITY(int) #Numeric identity for the check record
+  TRANSACTIONNUMBER(int) #Sequential transaction/check number
+
+  # -- Relationships --
+  ACCOUNTID(txt) #FK to ODA_BATCH_ODA_ACCOUNT_V2.ID — bank/cash account
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — paying company
+  CURRENCYID(txt) #Currency of the payment
+  OWNERID(txt) #FK to ODA_BATCH_ODA_OWNER_V2.ID — payee owner
+  VOUCHERID(txt) #FK to voucher record
+  IMPORTDATAID(txt) #ID of the import batch (if imported)
+
+  # -- Payment --
+  PAYMENTTYPEID(int) #FK to ODA_BATCH_ODA_PAYMENTTYPE.ID — payment method
+  PAYMENTTYPECODE(txt) #Payment type code (denormalized)
+  CHECKAMOUNT(float) #Payment amount
+
+  # -- Dates --
+  ISSUEDDATE(ts) #Date the check was issued
+  ISSUEDDATEKEY(float) #Date key for the issued date (YYYYMMDD numeric)
+  ACCRUALDATE(ts) #Accrual date for the payment
+
+  # -- Status Flags --
+  RECONCILED(bool) #Whether payment has been reconciled with bank
+  SYSTEMGENERATED(bool) #Whether payment was system-generated (vs manual)
+  INCLUDEINACCRUALREPORT(bool) #Whether to include in accrual reports
+
+  # -- Void Information --
+  VOIDED(bool) #Whether the check has been voided
+  VOIDEDDATE(ts) #Date the check was voided
+  GLVOIDDATE(ts) #Date the void was posted to GL
+  VOID1099YEAR(int) #Tax year for 1099 void reporting
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

@@ -1,0 +1,69 @@
+# oda / master_data / ODA_BATCH_ODA_OWNER_V2
+# 44 columns, 42,040 rows. Owner role records extending the entity base table.
+# Maps to stg_oda__owner_v2.
+#
+ODA_BATCH_ODA_OWNER_V2: Owner records. Each row extends an entity with owner-specific attributes for revenue distribution and JIB billing. Owners are mineral/royalty/working interest holders who receive revenue checks and JIB invoices. Contains AR, JIB, and revenue email/payment configuration.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  OWNERV2IDENTITY(int) #Numeric identity for the owner
+  NID(int) #Numeric identifier
+  ENTITYID(txt) #FK to ODA_BATCH_ODA_ENTITY_V2.ID — base entity record
+
+  # -- Status --
+  ACTIVE(bool) #Whether owner is currently active
+
+  # -- Tax --
+  EXEMPTSTATETAX(bool) #Whether owner is exempt from state tax withholding
+  FEDERALWITHHOLDING(bool) #Whether federal tax withholding applies
+  PRINT1099(bool) #Whether to issue 1099 for this owner
+  SECONDTINNOTICESENT(bool) #Whether second TIN notice has been sent (B-notice)
+  K1TYPEID(int) #K-1 form type for partnership tax reporting
+
+  # -- AR Configuration --
+  ARCROSSCLEAR(bool) #Whether to cross-clear AR balances across companies
+  DEFAULTARCURRENCYID(txt) #Default currency for AR transactions
+  PRINTSTATEMENT(bool) #Whether to print AR statements
+  AREMAIL(txt) #Email address for AR correspondence
+  AREMAILPREFERENCES(int) #AR email delivery preferences bitmask
+  HASAREMAIL(bool) #Whether AR email is configured
+  CREATEARFROMREVENUECREDITS(bool) #Whether to auto-create AR from revenue credits
+  CREATEREVENUEFROMARCREDITS(bool) #Whether to auto-create revenue from AR credits
+
+  # -- JIB Configuration --
+  JIBEMAIL(txt) #Email address for JIB correspondence
+  JIBEMAILPREFERENCES(int) #JIB email delivery preferences bitmask
+  HASJIBEMAIL(bool) #Whether JIB email is configured
+  JIBLINKRECIPIENT(bool) #Whether owner receives JIB link notifications
+  MINIMUMJIBINVOICE(int) #Minimum amount for JIB invoice issuance
+
+  # -- Revenue Configuration --
+  REVENUEEMAIL(txt) #Email address for revenue correspondence
+  REVENUEEMAILPREFERENCES(int) #Revenue email delivery preferences bitmask
+  HASREVENUEEMAIL(bool) #Whether revenue email is configured
+  REVENUECHECKSTUBREFERENCE(bool) #Whether to include reference on revenue check stubs
+  MINIMUMREVENUECHECK(float) #Minimum amount for revenue check issuance
+  WORKINGINTERESTONLY(bool) #Whether owner only holds working interest
+  PAYOUTHISTORY(bool) #Whether to track payout history
+  NETTINGRULEID(int) #Netting rule for offsetting AR/revenue
+
+  # -- Suspense and Holds --
+  HOLDBILLING(bool) #Whether JIB billing is held for this owner
+  HOLDREVENUE(bool) #Whether revenue payments are held
+  DEFAULTBILLINGSUSPENSECATEGORYID(txt) #Default suspense category for billing holds
+  DEFAULTREVENUESUSPENSECATEGORYID(txt) #Default suspense category for revenue holds
+
+  # -- CDEX --
+  CDEXRECIPIENTID(int) #CDEX electronic delivery recipient ID
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

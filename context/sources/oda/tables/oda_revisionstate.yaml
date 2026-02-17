@@ -1,0 +1,20 @@
+# oda / supporting / ODA_REVISIONSTATE
+# 9 columns, 3 rows. Revision state lookup table (open, closed, etc.).
+# Maps to stg_oda__revision_state.
+#
+ODA_REVISIONSTATE: Revision state lookup. Defines the lifecycle states for deck revisions (revenue and expense). Typically: Open, Closed, and possibly Pending. Referenced by both revenue and expense deck revision tables.
+
+  # -- Identifiers --
+  ID(int) #Primary key (integer, not GUID — small lookup table)
+  REVISIONSTATEIDENTITY(int) #Numeric identity for the revision state
+  CODE(txt) #State code
+  NAME(txt) #Short state name (e.g., Open, Closed)
+  FULLNAME(txt) #Full state name
+
+  # -- Audit --
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

@@ -1,0 +1,31 @@
+# oda / revenue_expense_decks / ODA_EXPENSEDECKSET
+# 16 columns, 7,598 rows. Expense deck set definitions per well/company.
+# Maps to stg_oda__expense_deck_set.
+#
+ODA_EXPENSEDECKSET: Expense deck sets. Defines an expense interest deck for a specific well and company combination. Parallel to revenue deck sets but for JIB/expense-side interest allocations.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  EXPENSEDECKSETIDENTITY(int) #Numeric identity for the deck set
+  CODE(txt) #Deck set code (user-facing identifier)
+  CODESORT(txt) #Sortable version of the code
+
+  # -- Relationships --
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — operating company
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well this deck applies to
+
+  # -- Flags --
+  ISDEFAULTDECK(bool) #Whether this is the default expense deck for the well
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

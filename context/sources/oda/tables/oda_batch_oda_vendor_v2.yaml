@@ -1,0 +1,46 @@
+# oda / master_data / ODA_BATCH_ODA_VENDOR_V2
+# 27 columns, 4,006 rows. Vendor role records extending the entity base table.
+# Maps to stg_oda__vendor_v2.
+#
+ODA_BATCH_ODA_VENDOR_V2: Vendor records. Each row extends an entity with vendor-specific attributes for AP processing — payment terms, check configuration, 1099 settings, and AP currency defaults. Vendors are counterparties that receive payments (operators, service companies).
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  VENDORV2IDENTITY(int) #Numeric identity for the vendor
+  NID(int) #Numeric identifier
+  ENTITYID(txt) #FK to ODA_BATCH_ODA_ENTITY_V2.ID — base entity record
+
+  # -- Status --
+  ACTIVE(bool) #Whether vendor is currently active
+
+  # -- AP Configuration --
+  APPAYMENTTYPEID(int) #FK to payment type for AP checks
+  APDUEDATECALCULATEDBASEDON(int) #How AP due date is calculated (invoice date, receipt date, etc.)
+  APCHECKSTUBREFERENCE(bool) #Whether to include reference on AP check stubs
+  ONEINVOICEPERCHECK(bool) #Whether to limit one invoice per check
+  TAKEALLDISCOUNTS(bool) #Whether to automatically take all available discounts
+  TERMS(txt) #Payment terms (e.g., Net 30, Net 60)
+  HOLDAPCHECKS(bool) #Whether AP checks are held for this vendor
+
+  # -- Currency and Minimums --
+  DEFAULTAPCURRENCYID(txt) #Default currency for AP transactions
+  DEFAULTEXPENSEACCOUNTID(txt) #FK to default expense GL account
+  MINIMUMAPCHECK(int) #Minimum amount for AP check issuance
+  MINIMUMCURRENCYID(txt) #Currency for minimum check amount
+
+  # -- Tax --
+  PRINT1099(bool) #Whether to issue 1099 for this vendor
+  SECONDTINNOTICESENT(bool) #Whether second TIN notice has been sent (B-notice)
+  CHANGEDSINCEPRINTED(int) #Change tracking since last 1099 print
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

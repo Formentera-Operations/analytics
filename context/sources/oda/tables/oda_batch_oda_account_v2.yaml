@@ -1,0 +1,65 @@
+# oda / master_data / ODA_BATCH_ODA_ACCOUNT_V2
+# 38 columns, 1,998 rows. Chart of accounts master records.
+# Maps to stg_oda__account_v2.
+#
+# NOTE: The staging model (stg_oda__account_v2) uses the 5-CTE pattern with
+# typed casts and derived fields (is_accrual). It excludes RECORDINSERTDATE,
+# RECORDUPDATEDATE, CREATEEVENTID, UPDATEEVENTID, and FLOW_DOCUMENT.
+#
+ODA_BATCH_ODA_ACCOUNT_V2: Chart of accounts. Each row is a GL account used across the ODA system. Contains account classification, usage type controls, and reporting flags. Referenced by JIB, AP, AR, GL, and revenue transactions.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  ACCOUNTV2IDENTITY(int) #Numeric identity for the account
+  NID(int) #Numeric identifier
+  CODE(txt) #Account code (user-facing, e.g., 6100-000)
+  NAME(txt) #Short account name
+  FULLNAME(txt) #Full account name with hierarchy
+  MAINACCOUNT(int) #Main account number (first segment)
+  SUBACCOUNT(txt) #Sub-account code (second segment)
+
+  # -- Sorting --
+  ACCOUNTSORT(txt) #Sortable account key
+  KEYSORT(txt) #Additional sort key
+
+  # -- Classification --
+  ACCOUNTTYPEID(int) #Account type (asset, liability, equity, revenue, expense)
+  ACCOUNTSUBTYPEID(int) #Account subtype within the main type
+
+  # -- Status and Properties --
+  ACTIVE(bool) #Whether account is currently active
+  NORMALLYDEBIT(bool) #Whether account normally has a debit balance
+  BANKRECONPERFORMED(bool) #Whether bank reconciliation is performed on this account
+  CHANGEDSINCEPRINTED(int) #Change tracking since last report print
+  GENERATEFIXEDASSETCANDIDATES(bool) #Whether to generate fixed asset candidates from entries
+  REMEASUREATCURRENT(bool) #Whether to remeasure at current exchange rate (multi-currency)
+  TRANSLATEATCURRENT(bool) #Whether to translate at current exchange rate
+
+  # -- Reporting Flags --
+  SUMMARIZEINGLREPORTS(bool) #Whether to summarize in GL reports
+  SUMMARIZEINJIBINVOICE(bool) #Whether to summarize on JIB invoices
+  JIBSUMMARYID(txt) #FK to JIB summary grouping
+
+  # -- Usage Type Controls --
+  AFEUSAGETYPEID(int) #AFE usage type (controls which AFE types can use this account)
+  ALTERNATEREFERENCEUSAGETYPEID(int) #Alternate reference usage type
+  ENTRYCLASSIFICATIONUSAGETYPEID(int) #Entry classification usage type
+  EXPENSEDISTRIBUTIONUSAGETYPEID(int) #Expense distribution usage type
+  MANUALENTRYUSAGETYPEID(int) #Manual entry usage type
+  WELLUSAGETYPEID(int) #Well usage type (controls which well types can use this account)
+
+  # -- Other --
+  LOCATIONGROUPINGID(int) #Location grouping for reporting
+  LASTCHANGECODE(int) #Last change tracking code
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

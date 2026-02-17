@@ -1,0 +1,51 @@
+# oda / revenue_expense_decks / ODA_REVENUEDECKPARTICIPANT
+# 27 columns, 196,069,668 rows. Revenue deck participant interest allocations.
+# Maps to stg_oda__revenue_deck_participant.
+#
+# NOTE: This is the largest ODA table (~196M rows). Each row is an owner's
+# interest allocation within a specific deck revision. High cardinality because
+# every owner x deck revision x interest type combination creates a row.
+#
+ODA_REVENUEDECKPARTICIPANT: Revenue deck participants. Each row represents an owner's interest allocation in a specific revenue deck revision. Links owners to wells via interest types and decimal interest percentages.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  REVENUEDECKPARTICIPANTIDENTITY(int) #Numeric identity for the participant record
+  DECKREVISIONID(txt) #FK to ODA_REVENUEDECKREVISION.ID — parent revision
+
+  # -- Entity Details --
+  ENTITYTYPEID(int) #Entity type classifier (company, owner, etc.)
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — company context
+  OWNERID(txt) #FK to ODA_BATCH_ODA_OWNER_V2.ID — the interest owner
+
+  # -- Interest Allocation --
+  INTERESTTYPEID(int) #FK to ODA_BATCH_ODA_INTERESTTYPE.ID — type of interest (WI, NRI, ORI, etc.)
+  CUSTOMINTERESTTYPEID(txt) #Custom interest type ID (for non-standard interest types)
+  DECIMALINTEREST(float) #Interest percentage as decimal (e.g., 0.125 = 12.5%)
+  GROSSWORKINGINTEREST(float) #Gross working interest percentage
+
+  # -- Flags --
+  ISMEMO(bool) #Whether this is a memo entry (informational only, not paid)
+  AUTOSUSPENDPAYMENT(bool) #Whether payments are automatically suspended
+
+  # -- Suspense --
+  MARKETEXEMPTIONGROUPID(txt) #Market exemption group for tax purposes
+  MEMOCOMPANYID(txt) #Company ID for memo entries
+  SUSPENSECATEGORYID(txt) #FK to ODA_BATCH_ODA_REVENUESUSPENSECATEGORY.ID — suspense reason
+
+  # -- Effective Dates --
+  EFFECTIVEDATE(ts) #Date this interest allocation becomes effective
+  EXPIRYDATE(ts) #Date this interest allocation expires (NULL if no expiry)
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

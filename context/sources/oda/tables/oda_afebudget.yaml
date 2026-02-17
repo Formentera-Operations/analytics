@@ -1,0 +1,33 @@
+# oda / afe_budgeting / ODA_AFEBUDGET
+# 18 columns, 1,940 rows. AFE budget header records linking AFEs to wells and companies.
+# Maps to stg_oda__afebudget.
+#
+ODA_AFEBUDGET: AFE budget headers. Each row represents a budget entry for an AFE, linking it to a specific well, company, and fiscal year. Contains budget basis and currency configuration.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  AFEBUDGETIDENTITY(int) #Numeric identity for the budget record
+  NID(int) #Numeric identifier
+
+  # -- Relationships --
+  AFEID(txt) #FK to ODA_BATCH_ODA_AFE_V2.ID — parent AFE
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — company context
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well this budget applies to
+  CURRENCYID(txt) #Currency for budget amounts
+
+  # -- Budget Configuration --
+  BASISID(int) #Accounting basis (cash vs accrual)
+  FISCALYEAR(int) #Fiscal year this budget applies to
+  ISVALUE(bool) #Whether budget entries are value-based (vs volume-based)
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

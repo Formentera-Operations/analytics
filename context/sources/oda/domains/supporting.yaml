@@ -1,0 +1,35 @@
+# ODA: Supporting
+# JIB (Joint Interest Billing), check revenue, calendar, user fields, revision states, and source modules
+#
+# Types: txt=string num=number(38,6) int=integer ts=timestamp_ntz bool=boolean
+#
+# Staged: stg_oda__jib, stg_oda__jibdetail, stg_oda__checkrevenue, stg_oda__calendar,
+#         stg_oda__userfield, stg_oda__revision_state, stg_oda__source_module
+#
+# Relationships:
+#   ODA_JIB 1:many -> ODA_JIBDETAIL (via ID -> JIBID)
+#   ODA_JIB many:1 -> ODA_BATCH_ODA_ENTITY_V2 (via ENTITYID, in master_data domain)
+#   ODA_JIB many:1 -> ODA_BATCH_ODA_VENDOR_V2 (via VENDORID, in master_data domain)
+#   ODA_JIBDETAIL many:1 -> ODA_BATCH_ODA_ACCOUNT_V2 (via ACCOUNTID, in master_data domain)
+#   ODA_CHECKREVENUE many:1 -> ODA_APCHECK (via APCHECKID, in accounts_payable domain)
+#
+# Key patterns:
+#   - ODA_JIB and ODA_JIBDETAIL are CDC (63M rows each — require _operation_type != 'd' filtering)
+#   - JIB (Joint Interest Billing) tracks cost-sharing between working interest owners on a well
+#   - JIB header has the billing period, entity, vendor; JIBDetail has account-coded line items
+#   - ODA_CHECKREVENUE (659K rows) is from an old/orphaned Estuary connector — data may be stale
+#   - MDM_CALENDAR (37K rows) is a shared MDM reference table with fiscal/calendar date dimensions
+#   - ODA_USERFIELD (4.8M rows) is a generic key-value table for custom fields across ODA entities
+#   - ODA_REVISIONSTATE (3 rows) is a tiny lookup for revision lifecycle states (draft, approved, etc.)
+#   - ODA_BATCH_ODA_SOURCEMODULE (26 rows) is a lookup for ODA module identifiers
+#   - Downstream: int_oda_calendar provides fiscal period lookups; userfield is joined for custom metadata
+
+
+# Tables in this domain (column details in tables/ directory):
+#   ODA_JIB: Joint Interest Billing headers. Entity, vendor, billing period, amounts. CDC table (63M rows, 52 cols).
+#   ODA_JIBDETAIL: JIB line items with account coding, amounts, and allocation detail. CDC table (63M rows, 53 cols).
+#   ODA_CHECKREVENUE: Revenue allocated to check payments. Old connector — may be stale (659K rows, 31 cols).
+#   MDM_CALENDAR: Shared MDM calendar dimension. Fiscal periods, holidays, date attributes. Batch (37K rows, 35 cols).
+#   ODA_USERFIELD: Generic key-value custom fields across ODA entities. Batch (4.8M rows).
+#   ODA_REVISIONSTATE: Lookup for revision lifecycle states (draft, approved, superseded). Batch (3 rows).
+#   ODA_BATCH_ODA_SOURCEMODULE: Lookup for ODA module identifiers (GL, AP, AR, JIB, etc.). Batch (26 rows).

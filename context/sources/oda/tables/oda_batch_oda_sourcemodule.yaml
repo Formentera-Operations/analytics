@@ -1,0 +1,21 @@
+# oda / supporting / ODA_BATCH_ODA_SOURCEMODULE
+# 10 columns, 26 rows. Source module lookup table (AP, AR, GL, Revenue, JIB, etc.).
+# Maps to stg_oda__source_module.
+#
+ODA_BATCH_ODA_SOURCEMODULE: Source module lookup. Defines the ODA modules that generate transactions (AP, AR, GL, Revenue, JIB, etc.). Used to tag transactions back to their originating module for audit and reporting.
+
+  # -- Identifiers --
+  ID(int) #Primary key (integer, not GUID — small lookup table)
+  SOURCEMODULEIDENTITY(int) #Numeric identity for the source module
+  CODE(txt) #Module code (e.g., AP, AR, GL, REV, JIB)
+  NAME(txt) #Short module name
+  FULLNAME(txt) #Full module name
+  MODULE(txt) #Module category/group
+
+  # -- Audit --
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

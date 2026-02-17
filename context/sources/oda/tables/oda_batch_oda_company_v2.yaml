@@ -1,0 +1,81 @@
+# oda / master_data / ODA_BATCH_ODA_COMPANY_V2
+# 54 columns, 39 rows. Operating company master records with full accounting configuration.
+# Maps to stg_oda__company_v2.
+#
+ODA_BATCH_ODA_COMPANY_V2: Company master records. Each row is an operating company (operator) in Quorum. Contains accounting configuration, current period settings, default interest types, retention policies, and fiscal year settings. Core master data — most ODA tables reference a company.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  COMPANYV2IDENTITY(int) #Numeric identity for the company
+  NID(int) #Numeric identifier
+  CODE(int) #Company code (numeric, user-facing)
+  CODESORT(txt) #Sortable version of the code
+  NAME(txt) #Short company name
+  FULLNAME(txt) #Full company name
+  COMMENT(txt) #Free-text comment/notes
+
+  # -- Tax Information --
+  TAXID(txt) #Federal tax ID (EIN/SSN)
+  TAXIDTYPEID(int) #Tax ID type classifier (EIN vs SSN)
+  ISPARTNERSHIP(bool) #Whether the company is a partnership entity
+  K1TYPEID(int) #K-1 form type for tax reporting
+
+  # -- Contact --
+  MAINCONTACTID(txt) #FK to primary contact record
+  URL(txt) #Company website URL
+
+  # -- Fiscal Configuration --
+  BASISID(int) #Accounting basis (1=cash, 2=accrual)
+  FISCALYEARENDMONTH(int) #Month number when fiscal year ends (1-12)
+  CURRENTFISCALYEAR(int) #Current fiscal year
+
+  # -- Current Periods --
+  CURRENTAPMONTH(ts) #Current AP processing month
+  CURRENTARMONTH(ts) #Current AR processing month
+  CURRENTGLMONTH(ts) #Current GL processing month
+  CURRENTJIBMONTH(ts) #Current JIB processing month
+  CURRENTREVENUEMONTH(ts) #Current revenue processing month
+
+  # -- AR/AP Configuration --
+  ARINVOICESEQUENCEID(txt) #AR invoice numbering sequence
+  APINVOICESEQUENCEID(txt) #AP invoice numbering sequence
+  ARSTATEMENTPRINTPENDING(bool) #Whether AR statements are pending print
+  ACCEPTMEMOENTRIES(bool) #Whether memo entries are accepted
+  ACHID(txt) #ACH banking identifier
+  ISACHCORPORATION(bool) #Whether ACH is set up as corporate
+
+  # -- Default Interest Settings --
+  DEFAULTACCRUALITEMSID(int) #Default accrual items configuration
+  DEFAULTEXPENSEINTERESTTYPEID(int) #Default interest type for expense decks
+  DEFAULTEXPENSECUSTOMINTERESTTYPEID(txt) #Default custom interest type for expenses
+  DEFAULTEXPENSEENTITLEMENTINTEREST(int) #Default expense entitlement interest setting
+  DEFAULTREVENUEINTERESTTYPEID(int) #Default interest type for revenue decks
+  DEFAULTREVENUECUSTOMINTERESTTYPEID(txt) #Default custom interest type for revenue
+  DEFAULTREVENUEENTITLEMENTINTEREST(int) #Default revenue entitlement interest setting
+
+  # -- Retention Policies --
+  APDETAILRETENTIONMONTHS(int) #Months to retain AP detail records
+  ARDETAILRETENTIONMONTHS(int) #Months to retain AR detail records
+  GLDETAILRETENTIONMONTHS(int) #Months to retain GL detail records
+  GLBALANCERETENTIONDATE(ts) #GL balance retention cutoff date
+  GLBALANCERETENTIONYEARS(int) #Years to retain GL balance records
+  JIBDETAILRETENTIONYEARS(int) #Years to retain JIB detail records
+  REVENUEDETAILRETENTIONMONTHS(int) #Months to retain revenue detail records
+
+  # -- Other --
+  CDEXCODE(txt) #CDEX (Council for Data Exchange) identifier
+  INACTIVEDATE(ts) #Date company was deactivated (NULL if active)
+  SUMMARIZERCHUNKSIZE(int) #Batch size for summarizer processing
+  TENANTID(txt) #Multi-tenant identifier
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

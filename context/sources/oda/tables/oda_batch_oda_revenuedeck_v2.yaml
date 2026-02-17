@@ -1,0 +1,23 @@
+# oda / revenue_expense_decks / ODA_BATCH_ODA_REVENUEDECK_V2
+# 10 columns, 20,470 rows. Revenue deck header records linking deck sets to effective dates.
+# Maps to stg_oda__revenue_deck_v2.
+#
+ODA_BATCH_ODA_REVENUEDECK_V2: Revenue deck headers. Each row represents a revenue deck instance with an effective date, linking a deck set to a specific time period. One deck set can have multiple decks over time.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  REVENUEDECKIDENTITY(int) #Numeric identity for the revenue deck
+  DECKSETID(txt) #FK to ODA_REVENUEDECKSET.ID — parent deck set
+  DECKTYPEID(int) #Deck type classifier
+
+  # -- Dates --
+  EFFECTIVEDATE(date) #Date this deck version becomes effective
+
+  # -- Audit --
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)

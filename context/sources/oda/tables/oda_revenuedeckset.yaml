@@ -1,0 +1,32 @@
+# oda / revenue_expense_decks / ODA_REVENUEDECKSET
+# 17 columns, 18,953 rows. Revenue deck set definitions per well/product/company.
+# Maps to stg_oda__revenue_deck_set.
+#
+ODA_REVENUEDECKSET: Revenue deck sets. Defines a revenue interest deck for a specific well, product, and company combination. Each deck set contains one or more deck revisions over time.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  REVENUEDECKSETIDENTITY(int) #Numeric identity for the deck set
+  CODE(txt) #Deck set code (user-facing identifier)
+  CODESORT(txt) #Sortable version of the code
+
+  # -- Relationships --
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — operating company
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well this deck applies to
+  PRODUCTID(txt) #FK to ODA_BATCH_ODA_PRODUCT.ID — product (oil, gas, NGL, etc.)
+
+  # -- Flags --
+  ISDEFAULTDECK(bool) #Whether this is the default deck for the well/product
+  ISGASENTITLEMENTDECK(bool) #Whether this deck is used for gas entitlement calculations
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC

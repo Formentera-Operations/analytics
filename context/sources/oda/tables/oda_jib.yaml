@@ -1,0 +1,76 @@
+# oda / supporting / ODA_JIB
+# 52 columns, 63,210,996 rows. Joint Interest Billing summary-level records.
+# Maps to stg_oda__jib.
+#
+# NOTE: This is the second-largest ODA table (~63M rows). Contains denormalized
+# summary-level JIB data with codes/names for reporting convenience. For
+# normalized detail with full FK references, use ODA_JIBDETAIL.
+#
+ODA_JIB: JIB summary records. Each row is a Joint Interest Billing line item at the summary level, representing an expense charged to a well owner. Contains denormalized entity/account/well names and codes. Used for JIB reporting and reconciliation.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  JIBIDENTITY(int) #Numeric identity for the JIB record
+
+  # -- Relationships (IDs) --
+  AFEID(txt) #FK to ODA_BATCH_ODA_AFE_V2.ID — associated AFE
+  APINVOICEID(txt) #FK to AP invoice record
+  ARINVOICEID(txt) #FK to AR invoice record
+  ACCOUNTID(txt) #FK to ODA_BATCH_ODA_ACCOUNT_V2.ID — GL account
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — operating company
+  OWNERID(txt) #FK to ODA_BATCH_ODA_OWNER_V2.ID — interest owner
+  VOUCHERID(txt) #FK to voucher record
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well
+
+  # -- Dates --
+  BILLEDDATE(ts) #Date the JIB was billed
+  EFFECTIVEDATE(ts) #Effective date of the expense
+  EXPENSEDATE(ts) #Date the expense was incurred
+  INVOICEDATE(ts) #Date of the related invoice
+
+  # -- Denormalized Codes/Names --
+  ACCOUNTSORT(txt) #Account sort key (denormalized)
+  AFECODE(txt) #AFE code (denormalized)
+  AFTERCASEPOINT(txt) #After-casing-point indicator
+  APINVOICECODE(txt) #AP invoice code (denormalized)
+  ARINVOICECODE(txt) #AR invoice code (denormalized)
+  BILLINGSTATUS(txt) #Current billing status
+  COMPANYCODE(txt) #Company code (denormalized)
+  COMPANYNAME(txt) #Company name (denormalized)
+  ENTITYCODE(txt) #Entity code (denormalized)
+  ENTITYNAME(txt) #Entity name (denormalized)
+  ENTITYTYPE(txt) #Entity type (company, owner, vendor)
+  EXCHANGERATECODE(txt) #Exchange rate code for multi-currency
+  EXPENSEDECKCODE(txt) #Expense deck code (denormalized)
+  MAINACCOUNT(txt) #Main GL account number (denormalized)
+  OWNERCODE(txt) #Owner code (denormalized)
+  OWNERNAME(txt) #Owner name (denormalized)
+  REFERENCEENTITYCODE(txt) #Reference entity code (operator reference)
+  REFERENCEENTITYTYPE(txt) #Reference entity type
+  SUBACCOUNT(txt) #Sub-account code (denormalized)
+  WELLCODE(txt) #Well code (denormalized)
+  WELLNAME(txt) #Well name (denormalized)
+  DESCRIPTION(txt) #Line item description
+
+  # -- Financial --
+  EXPENSEDECKCHANGECODE(int) #Expense deck change tracking code
+  EXPENSEDECKINTEREST(float) #Expense deck interest percentage
+  GROSSVALUE(float) #Gross amount before owner interest applied
+  NETVALUE(float) #Net amount after owner interest applied
+  VOUCHERCODE(int) #Voucher code number
+
+  # -- Suspense --
+  OWNERSUSPENSE(txt) #Owner-level suspense status
+  SUSPENSE(txt) #Line-level suspense status
+  WELLSUSPENSE(txt) #Well-level suspense status
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #CDC operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary CDC publication timestamp (maps to _loaded_at)
+  FLOW_DOCUMENT(variant) #Full JSON document from Estuary CDC
