@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_JIB
+        description: "JIB summary records — denormalized joint interest billing with codes/names (CDC, 63M rows)"
+      - name: ODA_JIBDETAIL
+        description: "JIB detail records — normalized joint interest billing with FK references (CDC, 63M rows)"

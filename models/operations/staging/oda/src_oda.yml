@@ -7,8 +7,6 @@ sources:
     tables:
       - name: ODA_AFEBUDGET
       - name: ODA_AFEBUDGETDETAIL_V2
-      - name: ODA_APINVOICE
-      - name: ODA_APINVOICEDETAIL
       - name: GL
         description: |
           Raw general ledger entries from Quorum OnDemand Accounting system containing all financial transactions.
@@ -46,8 +44,6 @@ sources:
             description: Final transaction amount after allocations
           - name: POSTED
             description: Flag indicating if the transaction is posted (1=yes, 0=no)
-      - name: ODA_JIB
-      - name: ODA_JIBDETAIL
       - name: ODA_VOUCHER_V2
       - name: MDM_CALENDAR
       - name: ODA_BATCH_ODA_ENTITY
@@ -104,5 +100,4 @@ sources:
       - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL
       - name: ODA_BATCH_ODA_ARADVANCE
       - name: ODA_BATCH_ODA_ARADVANCECLOSEOUT
-      - name: ODA_APCHECK
       - name: ODA_CHECKREVENUE

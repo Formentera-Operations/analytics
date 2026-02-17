@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_APINVOICE
+        description: "AP invoices — vendor invoices with payment status, amounts, discount terms (CDC)"
+      - name: ODA_APINVOICEDETAIL
+        description: "AP invoice line items — cost allocations with well/AFE assignment (CDC)"
+      - name: ODA_APCHECK
+        description: "AP checks — payments issued against invoices (old connector, batch-like)"

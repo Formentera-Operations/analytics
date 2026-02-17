@@ -28,9 +28,9 @@ ap_checks as (
         a.company_id,
         a.issued_date,
         a.payment_type_code,
-        a.system_generated,
+        a.is_system_generated,
         a.payment_amount,
-        a.reconciled,
+        a.is_reconciled,
         a.voided_date,
         a.payment_type_id,
         a.vendor_id,
@@ -90,30 +90,30 @@ companies as (
 final as (
 
     select
-        c.code                                                             as company_code,
-        c.name                                                             as company_name,
-        ac.transaction_number                                              as check_number,
-        ac.issued_date                                                     as check_date,
-        ac.payment_type_code                                               as check_type,
-        concat(case when ac.system_generated = 0 then 'Manual ' else 'System ' end, pt.name)       as check_type_name,
-        ac.payment_amount                                                  as check_amount,
-        vo.code                                                            as voucher_code,
-        e.code                                                             as entity_code,
-        e.name                                                             as entity_name,
-        case when ac.reconciled = '1' then 'YES' else '' end              as reconciled,
-        case when ac.voided_date is null then 'NO' else 'YES' end         as voided,
-        cast(ac.voided_date as date)                           as void_date
+        c.code as company_code,
+        c.name as company_name,
+        ac.transaction_number as check_number,
+        ac.issued_date as check_date,
+        ac.payment_type_code as check_type,
+        ac.payment_amount as check_amount,
+        vo.code as voucher_code,
+        e.code as entity_code,
+        e.name as entity_name,
+        cast(ac.voided_date as date) as void_date,
+        concat(case when not ac.is_system_generated then 'Manual ' else 'System ' end, pt.name) as check_type_name,
+        case when ac.is_reconciled then 'YES' else '' end as reconciled,
+        case when ac.voided_date is null then 'NO' else 'YES' end as voided
     from ap_checks as ac
     inner join companies as c
         on ac.company_id = c.id
     inner join payment_types as pt
-        on pt.id = ac.payment_type_id
+        on ac.payment_type_id = pt.id
     left join vendors as v
-        on v.id = ac.vendor_id
+        on ac.vendor_id = v.id
     left join vouchers as vo
-        on vo.id = ac.voucher_id
-    inner join entities as e
-        on e.id = v.entity_id
+        on ac.voucher_id = vo.id
+    left join entities as e
+        on v.entity_id = e.id
 
 )
 

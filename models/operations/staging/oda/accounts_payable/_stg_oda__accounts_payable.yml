@@ -1,0 +1,290 @@
+version: 2
+
+models:
+  - name: stg_oda__apinvoice
+    description: |
+      Staging model for ODA Accounts Payable Invoices.
+      Source: ODA_APINVOICE (Estuary CDC, ~334K rows)
+      Grain: One row per AP invoice (id)
+    columns:
+      - name: apinvoice_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — Estuary CDC composite key hash
+        data_tests:
+          - unique
+          - not_null
+      - name: ap_invoice_identity
+        description: ODA internal sequence identity for the invoice
+      - name: company_id
+        description: Operating company ID (FK to ODA_COMPANY)
+        data_tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor ID submitting the invoice (FK to ODA_VENDOR)
+        data_tests:
+          - not_null
+      - name: voucher_id
+        description: Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+      - name: currency_id
+        description: Currency ID for the invoice
+      - name: cash_account_id
+        description: Cash/bank account ID for payment
+      - name: original_invoice_id
+        description: ID of the original invoice (for credit memos/adjustments)
+      - name: import_data_id
+        description: ID linking to import batch data
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: n_id
+        description: Numeric identifier from source system
+      - name: code
+        description: Invoice code/number
+      - name: code_sort
+        description: Sortable invoice code
+      - name: description
+        description: Invoice description text
+      - name: external_id
+        description: External system identifier
+      - name: invoice_external_id
+        description: External invoice identifier
+      - name: acceptance_date
+        description: Date the invoice was accepted
+      - name: accrual_date
+        description: Accrual period date for financial reporting
+      - name: discount_cutoff_date
+        description: Last date to take discount
+      - name: due_date
+        description: Invoice payment due date
+      - name: invoice_date
+        description: Date on the invoice
+      - name: invoice_date_key
+        description: Date key for invoice date (YYYYMMDD numeric)
+      - name: manual_transaction_date
+        description: Date of manual transaction entry
+      - name: received_date
+        description: Date the invoice was received
+      - name: amount_due
+        description: Current amount due on the invoice
+      - name: discount_allowed
+        description: Maximum discount amount allowed
+      - name: discount_percentage
+        description: Discount percentage for early payment
+      - name: discount_taken_amount
+        description: Amount of discount actually taken
+      - name: invoice_amount
+        description: Original invoice amount
+      - name: manual_prepayment
+        description: Manual prepayment amount applied
+      - name: paid_amount
+        description: Total amount paid against the invoice
+      - name: partial_payment_pending
+        description: Amount of partial payment pending
+      - name: to_be_paid
+        description: Amount scheduled to be paid
+      - name: payment_status_code
+        description: Payment status code
+      - name: payment_status_id
+        description: Payment status ID (lookup)
+      - name: payment_type_code
+        description: Payment type code (e.g., Check, Wire, ACH)
+      - name: payment_type_id
+        description: Payment type ID (lookup)
+      - name: manual_transaction_number
+        description: Manual transaction reference number
+      - name: manual_transaction_type_id
+        description: Manual transaction type ID
+      - name: check_stub_count
+        description: Number of check stubs generated
+      - name: gain_loss_exchange_rate_id
+        description: Exchange rate ID for gain/loss calculation
+      - name: gain_loss_posted_thru_date
+        description: Date through which gain/loss has been posted
+      - name: payment_exchange_rate_id
+        description: Exchange rate ID used for payment
+      - name: posting_exchange_rate_id
+        description: Exchange rate ID used for GL posting
+      - name: is_approved_for_posting
+        description: Whether the invoice is approved for GL posting
+      - name: is_include_in_accrual_report
+        description: Whether to include in accrual reports
+      - name: is_from_ap_history_import
+        description: Whether imported from AP history
+      - name: is_payment_detail_incomplete
+        description: Whether payment details are incomplete
+      - name: is_posted
+        description: Whether the invoice is posted to GL
+      - name: is_ready_to_pay
+        description: Whether the invoice is ready for payment
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary CDC insert timestamp
+      - name: record_updated_at
+        description: Estuary CDC update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _operation_type
+        description: "Estuary CDC operation type (c=create, u=update)"
+      - name: _flow_published_at
+        description: Estuary Flow publication timestamp
+
+  - name: stg_oda__apinvoicedetail
+    description: |
+      Staging model for ODA Accounts Payable Invoice Detail Lines.
+      Source: ODA_APINVOICEDETAIL (Estuary CDC, ~6.8M rows)
+      Grain: One row per AP invoice line item (id)
+    columns:
+      - name: apinvoicedetail_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — Estuary CDC composite key hash
+        data_tests:
+          - unique
+          - not_null
+      - name: ap_invoice_detail_identity
+        description: ODA internal sequence identity for the detail line
+      - name: invoice_id
+        description: FK to parent AP invoice (stg_oda__apinvoice.id)
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref("stg_oda__apinvoice")
+                field: id
+      - name: company_id
+        description: Operating company ID (FK to ODA_COMPANY)
+        data_tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor ID for the line item
+      - name: account_id
+        description: GL account ID for cost allocation
+        data_tests:
+          - not_null
+      - name: distribution_company_id
+        description: Company ID for distribution/allocation
+      - name: well_id
+        description: Well ID for cost assignment
+      - name: afe_id
+        description: AFE ID for cost assignment
+      - name: serial
+        description: Line item serial number within the invoice
+      - name: expense_deck_id
+        description: Expense deck ID for interest calculation
+      - name: expense_deck_interest
+        description: Expense deck interest percentage
+      - name: expense_deck_revision_id
+        description: Expense deck revision ID
+      - name: expense_deck_set_id
+        description: Expense deck set ID
+      - name: gross_88ths_value
+        description: Gross value in 88ths (standard oil & gas decimal interest format)
+      - name: gross_88ths_volume
+        description: Gross volume in 88ths
+      - name: net_value
+        description: Net value after interest allocation
+      - name: net_volume
+        description: Net volume after interest allocation
+      - name: description
+        description: Line item description
+      - name: allocation_parent_id
+        description: Parent allocation ID for split allocations
+      - name: is_allocation_generated
+        description: Whether this line was auto-generated by allocation
+      - name: is_allocation_parent
+        description: Whether this is the parent line of an allocation
+      - name: source_well_allocation_deck_revision_id
+        description: Source well allocation deck revision
+      - name: well_allocation_deck_id
+        description: Well allocation deck ID
+      - name: is_currency_fluctuation_passthrough
+        description: Whether currency fluctuations pass through
+      - name: transaction_date
+        description: Transaction date for the line item
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary CDC insert timestamp
+      - name: record_updated_at
+        description: Estuary CDC update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _operation_type
+        description: "Estuary CDC operation type (c=create, u=update)"
+      - name: _flow_published_at
+        description: Estuary Flow publication timestamp
+
+  - name: stg_oda__apcheck
+    description: |
+      Staging model for ODA Accounts Payable Checks.
+      Source: ODA_APCHECK (Estuary old connector, batch-like, ~49.5K rows)
+      Grain: One row per AP check/payment (id)
+    columns:
+      - name: apcheck_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — Estuary composite key hash
+        data_tests:
+          - unique
+          - not_null
+      - name: ap_check_identity
+        description: ODA internal sequence identity for the check
+      - name: company_id
+        description: Operating company ID (FK to ODA_COMPANY)
+        data_tests:
+          - not_null
+      - name: vendor_id
+        description: Vendor ID receiving payment (FK to ODA_VENDOR). ~2.2% NULL — system-generated checks may lack vendor.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: account_id
+        description: Cash/bank account ID the check is drawn from (FK to ODA_ACCOUNT)
+        data_tests:
+          - not_null
+      - name: voucher_id
+        description: Voucher ID linking to GL posting (FK to ODA_VOUCHER_V2)
+      - name: transaction_number
+        description: Check/transaction number
+      - name: payment_amount
+        description: Payment amount on the check
+      - name: payment_type_code
+        description: Payment type code (e.g., Check, Wire, ACH)
+      - name: payment_type_id
+        description: Payment type ID (lookup)
+      - name: accrual_date
+        description: Accrual period date for financial reporting
+      - name: issued_date
+        description: Date the check was issued
+      - name: issued_date_key
+        description: Date key for issued date (YYYYMMDD numeric)
+      - name: is_reconciled
+        description: Whether the check has been reconciled with the bank
+      - name: is_system_generated
+        description: Whether the check was system-generated (not manual)
+      - name: is_voided
+        description: Whether the check has been voided
+      - name: voided_date
+        description: Date the check was voided (null if not voided)
+      - name: void_1099_year
+        description: Tax year for 1099 void reporting
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary Flow publication timestamp

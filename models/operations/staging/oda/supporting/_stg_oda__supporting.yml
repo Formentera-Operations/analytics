@@ -1,0 +1,244 @@
+version: 2
+
+models:
+  - name: stg_oda__jib
+    description: |
+      Staging model for ODA Joint Interest Billing (Summary).
+      Source: ODA_JIB (Estuary CDC, ~63M rows)
+      Grain: One row per JIB summary line item (id)
+      Note: Denormalized summary view with codes/names. No direct FK to JIBDETAIL.
+    columns:
+      - name: jib_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: jib_identity
+        description: Numeric identity for the JIB record
+      - name: afe_id
+        description: FK to ODA_BATCH_ODA_AFE_V2 — associated AFE
+      - name: ap_invoice_id
+        description: FK to AP invoice record
+      - name: ar_invoice_id
+        description: FK to AR invoice record
+      - name: account_id
+        description: FK to ODA_BATCH_ODA_ACCOUNT_V2 — GL account
+        data_tests:
+          - not_null
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — operating company
+        data_tests:
+          - not_null
+      - name: owner_id
+        description: FK to ODA_BATCH_ODA_OWNER_V2 — interest owner
+      - name: voucher_id
+        description: FK to voucher record
+      - name: well_id
+        description: FK to ODA_BATCH_ODA_WELL — well
+      - name: billed_date
+        description: Date the JIB was billed
+      - name: effective_date
+        description: Effective date of the expense
+      - name: expense_date
+        description: Date the expense was incurred
+      - name: invoice_date
+        description: Date of the related invoice
+      - name: account_sort
+        description: Account sort key (denormalized from account)
+      - name: afe_code
+        description: AFE code (denormalized from AFE)
+      - name: after_case_point
+        description: After-casing-point indicator
+      - name: ap_invoice_code
+        description: AP invoice code (denormalized)
+      - name: ar_invoice_code
+        description: AR invoice code (denormalized)
+      - name: billing_status
+        description: Current billing status
+      - name: company_code
+        description: Company code (denormalized from company)
+      - name: company_name
+        description: Company name (denormalized from company)
+      - name: description
+        description: Line item description
+      - name: entity_code
+        description: Entity code (denormalized)
+      - name: entity_name
+        description: Entity name (denormalized)
+      - name: entity_type
+        description: Entity type (company, owner, vendor)
+      - name: exchange_rate_code
+        description: Exchange rate code for multi-currency
+      - name: expense_deck_code
+        description: Expense deck code (denormalized)
+      - name: main_account
+        description: Main GL account number (denormalized)
+      - name: owner_code
+        description: Owner code (denormalized)
+      - name: owner_name
+        description: Owner name (denormalized)
+      - name: reference_entity_code
+        description: Reference entity code (operator reference)
+      - name: reference_entity_type
+        description: Reference entity type
+      - name: sub_account
+        description: Sub-account code (denormalized)
+      - name: well_code
+        description: Well code (denormalized)
+      - name: well_name
+        description: Well name (denormalized)
+      - name: expense_deck_change_code
+        description: Expense deck change tracking code
+      - name: expense_deck_interest
+        description: Expense deck interest percentage
+      - name: gross_value
+        description: Gross amount before owner interest applied
+      - name: net_value
+        description: Net amount after owner interest applied
+      - name: voucher_code
+        description: Voucher code number
+      - name: owner_suspense
+        description: Owner-level suspense status
+      - name: suspense
+        description: Line-level suspense status
+      - name: well_suspense
+        description: Well-level suspense status
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _operation_type
+        description: "Estuary CDC operation type (c=create, u=update)"
+      - name: _flow_published_at
+        description: Estuary CDC publication timestamp
+
+  - name: stg_oda__jibdetail
+    description: |
+      Staging model for ODA Joint Interest Billing (Detail).
+      Source: ODA_JIBDETAIL (Estuary CDC, ~63M rows)
+      Grain: One row per JIB detail line item (id)
+      Note: Normalized detail view with FK references. No direct FK to JIB.
+    columns:
+      - name: jibdetail_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: jib_detail_identity
+        description: Numeric identity for the JIB detail record
+      - name: detail_id
+        description: Detail-level identifier within the JIB
+      - name: account_id
+        description: FK to ODA_BATCH_ODA_ACCOUNT_V2 — GL account
+        data_tests:
+          - not_null
+      - name: afe_id
+        description: FK to ODA_BATCH_ODA_AFE_V2 — associated AFE
+      - name: ar_invoice_id
+        description: FK to AR invoice record
+      - name: company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — operating company
+        data_tests:
+          - not_null
+      - name: owner_id
+        description: FK to ODA_BATCH_ODA_OWNER_V2 — interest owner
+      - name: well_id
+        description: FK to ODA_BATCH_ODA_WELL — well
+      - name: voucher_id
+        description: FK to voucher record
+      - name: expense_deck_revision_id
+        description: FK to expense deck revision used for billing
+      - name: entity_type_id
+        description: Entity type classifier
+      - name: entity_company_id
+        description: FK to entity as company
+      - name: entity_purchaser_id
+        description: FK to entity as purchaser
+      - name: entity_vendor_id
+        description: FK to entity as vendor
+      - name: reference_entity_company_id
+        description: Reference entity as company
+      - name: reference_entity_owner_id
+        description: Reference entity as owner
+      - name: reference_entity_purchaser_id
+        description: Reference entity as purchaser
+      - name: reference_entity_vendor_id
+        description: Reference entity as vendor
+      - name: memo_company_id
+        description: Company ID for memo entries
+      - name: accrual_date
+        description: Accrual date for the expense
+      - name: billed_date
+        description: Date the JIB was billed
+      - name: expense_date
+        description: Date the expense was incurred
+      - name: gain_loss_posted_through_date
+        description: Date through which gain/loss has been posted
+      - name: billing_status_id
+        description: Billing status classifier
+      - name: expense_deck_interest
+        description: Expense deck interest percentage
+      - name: gross_value
+        description: Gross amount before owner interest
+      - name: net_value
+        description: Net amount after owner interest
+      - name: currency_id
+        description: Currency for this detail line
+      - name: billing_exchange_rate_id
+        description: Exchange rate used for billing
+      - name: gain_loss_exchange_rate_id
+        description: Exchange rate used for gain/loss calculation
+      - name: is_currency_fluctuation_passthrough
+        description: Whether currency fluctuations pass through to owner
+      - name: is_jib_in_original_currency
+        description: Whether JIB is in original transaction currency
+      - name: is_include_in_accrual_report
+        description: Whether to include in accrual reports
+      - name: is_after_casing
+        description: Whether expense is after casing point
+      - name: is_memo_also_code_missing
+        description: Whether memo code is also missing
+      - name: is_subtotal_by_sub_account
+        description: Whether to subtotal by sub-account on invoices
+      - name: is_user_posting_method
+        description: Whether user-defined posting method is used
+      - name: billing_suspense_category_id
+        description: FK to suspense category for billing holds
+      - name: pending_redistribution_id
+        description: ID of pending redistribution
+      - name: redistribution_voucher_id
+        description: Voucher ID for redistribution
+      - name: description
+        description: Line item description
+      - name: reference
+        description: Reference text/number
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: gross_event_id
+        description: Event ID for gross value posting
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _operation_type
+        description: "Estuary CDC operation type (c=create, u=update)"
+      - name: _flow_published_at
+        description: Estuary CDC publication timestamp
