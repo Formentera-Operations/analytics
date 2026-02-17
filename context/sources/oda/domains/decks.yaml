@@ -8,15 +8,15 @@
 #         stg_oda__expense_deck_revision, stg_oda__expense_deck_participant
 #
 # Relationships:
-#   ODA_BATCH_ODA_REVENUEDECK_V2 1:many -> ODA_REVENUEDECKSET (via ID -> REVENUEDECKID)
-#   ODA_REVENUEDECKSET 1:many -> ODA_REVENUEDECKREVISION (via ID -> REVENUEDECKSETID)
+#   ODA_REVENUEDECKSET 1:many -> ODA_BATCH_ODA_REVENUEDECK_V2 (via ID -> DECKSETID)
+#   ODA_BATCH_ODA_REVENUEDECK_V2 1:many -> ODA_REVENUEDECKREVISION (via ID -> DECKID)
 #   ODA_REVENUEDECKREVISION 1:many -> ODA_REVENUEDECKPARTICIPANT (via ID -> REVENUEDECKREVISIONID)
-#   ODA_BATCH_ODA_EXPENSEDECK_V2 1:many -> ODA_EXPENSEDECKSET (via ID -> EXPENSEDECKID)
-#   ODA_EXPENSEDECKSET 1:many -> ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW (via ID -> EXPENSEDECKSETID)
+#   ODA_EXPENSEDECKSET 1:many -> ODA_BATCH_ODA_EXPENSEDECK_V2 (via ID -> DECKSETID)
+#   ODA_BATCH_ODA_EXPENSEDECK_V2 1:many -> ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW (via ID -> DECKID)
 #   ODA_BATCH_ODA_EXPENSEDECKREVISIONVIEW 1:many -> ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT (via ID -> EXPENSEDECKREVISIONID)
 #
 # Key patterns:
-#   - Revenue and expense decks have parallel 4-level hierarchy: Deck -> Set -> Revision -> Participant
+#   - Revenue and expense decks have parallel 4-level hierarchy: Set -> Deck -> Revision -> Participant
 #   - All 8 tables are batch (no CDC, no delete filtering needed)
 #   - ODA_REVENUEDECKPARTICIPANT is massive (196M rows, 2nd largest after GL) — each participant gets an allocation per revision
 #   - Revenue decks define ownership interests (WI, NRI, RI) for revenue distribution

@@ -7,7 +7,7 @@
 #         stg_oda__userfield, stg_oda__revision_state, stg_oda__source_module
 #
 # Relationships:
-#   ODA_JIB 1:many -> ODA_JIBDETAIL (via ID -> JIBID)
+#   ODA_JIB and ODA_JIBDETAIL are parallel denormalized views (no FK between them — both 63M rows)
 #   ODA_JIB many:1 -> ODA_BATCH_ODA_ENTITY_V2 (via ENTITYID, in master_data domain)
 #   ODA_JIB many:1 -> ODA_BATCH_ODA_VENDOR_V2 (via VENDORID, in master_data domain)
 #   ODA_JIBDETAIL many:1 -> ODA_BATCH_ODA_ACCOUNT_V2 (via ACCOUNTID, in master_data domain)
