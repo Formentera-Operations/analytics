@@ -65,17 +65,17 @@ Companies [ODA_BATCH_ODA_COMPANY_V2]           <- top-level organizational unit 
   |
   +-- Joint Interest Billing
   |     +-- JIB [ODA_JIB]                      <- joint interest billings (63M, CDC)
-  |     |     +-- JIB Details [ODA_JIBDETAIL]  <- line items (63M, CDC)
+  |     +-- JIB Details [ODA_JIBDETAIL]        <- parallel denormalized view (63M, CDC, no FK to JIB)
   |
   +-- Revenue & Expense Decks
-  |     +-- Revenue Decks [ODA_BATCH_ODA_REVENUEDECK_V2] <- deck definitions (20K)
-  |     |     +-- Revenue Deck Sets [ODA_REVENUEDECKSET] <- set groupings (19K)
-  |     |     +-- Revenue Deck Revisions [ODA_REVENUEDECKREVISION] <- version history (346K)
-  |     |     +-- Revenue Deck Participants [ODA_REVENUEDECKPARTICIPANT] <- owner interests (196M)
-  |     +-- Expense Decks [ODA_BATCH_ODA_EXPENSEDECK_V2] <- deck definitions (10K)
-  |     |     +-- Expense Deck Sets [ODA_EXPENSEDECKSET] <- set groupings (8K)
-  |     |     +-- Expense Deck Revisions [ODA_BATCH_ODA_EXPENSEDECKREVISION] <- version history (24K)
-  |     |     +-- Expense Deck Participants [ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT] <- owner interests (877K)
+  |     +-- Revenue Deck Sets [ODA_REVENUEDECKSET] <- per well/product/company (19K)
+  |     |     +-- Revenue Decks [ODA_BATCH_ODA_REVENUEDECK_V2] <- effective-date instances (20K)
+  |     |           +-- Revenue Deck Revisions [ODA_REVENUEDECKREVISION] <- version history (346K)
+  |     |                 +-- Revenue Deck Participants [ODA_REVENUEDECKPARTICIPANT] <- owner interests (196M)
+  |     +-- Expense Deck Sets [ODA_EXPENSEDECKSET] <- per well/product/company (8K)
+  |     |     +-- Expense Decks [ODA_BATCH_ODA_EXPENSEDECK_V2] <- effective-date instances (10K)
+  |     |           +-- Expense Deck Revisions [ODA_BATCH_ODA_EXPENSEDECKREVISION] <- version history (24K)
+  |     |                 +-- Expense Deck Participants [ODA_BATCH_ODA_EXPENSEDECKPARTICIPANT] <- owner interests (877K)
   |
   +-- AFE/Budgeting
   |     +-- AFEs [ODA_BATCH_ODA_AFE_V2]        <- authorization for expenditure (2.2K)
@@ -104,17 +104,19 @@ Companies [ODA_BATCH_ODA_COMPANY_V2]           <- top-level organizational unit 
 | Entity | Well | `EntityId` | 1:many |
 | Company | Account | `CompanyId` | 1:many |
 | AP Invoice | AP Invoice Detail | `APInvoiceId` | 1:many |
-| AR Invoice | AR Invoice Detail | `ARInvoiceId` | 1:many |
-| AR Invoice | AR Payment | `ARInvoiceId` | 1:many |
-| AR Payment | AR Payment Detail | `ARInvoicePaymentId` | 1:many |
-| AR Invoice | AR Netted Detail | `ARInvoiceId` | 1:many |
-| JIB | JIB Detail | `JIBId` | 1:many |
-| Revenue Deck | Revenue Deck Set | `RevenueDeckId` | 1:many |
-| Revenue Deck | Revenue Deck Revision | `RevenueDeckId` | 1:many |
-| Revenue Deck | Revenue Deck Participant | `RevenueDeckId` | 1:many |
-| Expense Deck | Expense Deck Set | `ExpenseDeckId` | 1:many |
-| Expense Deck | Expense Deck Revision | `ExpenseDeckId` | 1:many |
-| Expense Deck | Expense Deck Participant | `ExpenseDeckId` | 1:many |
+| AR Invoice | AR Invoice Detail | `InvoiceId` | 1:many |
+| AR Invoice | AR Payment Detail | `InvoiceId` | 1:many (payment links through detail) |
+| AR Payment | AR Payment Detail | `InvoicePaymentId` | 1:many |
+| AR Invoice | AR Netted Detail | `InvoiceId` | 1:many |
+| AR Invoice | AR Adjustment Detail | `InvoiceId` | 1:many (adjustment links through detail) |
+| AR Adjustment | AR Adjustment Detail | `ARInvoiceAdjustmentId` | 1:many |
+| JIB | JIB Detail | _(no FK — parallel denormalized views)_ | — |
+| Revenue Deck Set | Revenue Deck | `DeckSetId` | 1:many |
+| Revenue Deck | Revenue Deck Revision | `DeckId` | 1:many |
+| Revenue Deck Revision | Revenue Deck Participant | `RevenueDeckRevisionId` | 1:many |
+| Expense Deck Set | Expense Deck | `DeckSetId` | 1:many |
+| Expense Deck | Expense Deck Revision | `DeckId` | 1:many |
+| Expense Deck Revision | Expense Deck Participant | `ExpenseDeckRevisionId` | 1:many |
 | AFE | AFE Budget | `AFEId` | 1:many |
 | AFE Budget | AFE Budget Detail | `AFEBudgetId` | 1:many |
 | GL Entry | Voucher | `VoucherId` | many:1 |
