@@ -1,6 +1,42 @@
 version: 2
 
 models:
+  - name: dim_accounts
+    description: >
+      Dimension table mapping GL accounts to LOS categories, report hierarchy, and interest type.
+      Categories are derived from the SharePoint LOS MAPPING MASTER Excel via stg_sharepoint__los_account_map.
+      Any new los_report_header added to the mapping must also be added to the los_category CASE statement.
+    data_tests:
+      # Catch any future los_report_header values missing from the los_category CASE (severity: warn to not block CI)
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "los_category is not null"
+          config:
+            where: "is_los_account = true and los_report_header is not null"
+            severity: warn
+      # Guard against los_category_line_number diverging from los_category (structural invariant — error is appropriate)
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "los_category_line_number is not null"
+          config:
+            where: "los_category is not null"
+            severity: error
+
+  - name: fct_los
+    description: >
+      Incremental fact table of posted LOS GL transactions, filtered to is_los_account = true.
+      Clusters on [company_code, journal_date, los_category, los_section].
+      NOTE: Changes to los_category in dim_accounts require dbt run --select fct_los --full-refresh
+      to backfill historical rows — the _loaded_at watermark does not re-process existing rows.
+    data_tests:
+      # Monitor for NULL los_category on new rows post-fix (pre-2026-02-18 rows may be NULL until full-refresh)
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "los_category is not null"
+          config:
+            where: "los_section is not null and los_section != '' and _loaded_at >= '2026-02-18'"
+            severity: warn
+
   - name: wells
     description: Unified wells data combining project wells and company wells.
     columns:
