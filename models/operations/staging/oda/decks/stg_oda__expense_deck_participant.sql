@@ -38,7 +38,7 @@ renamed as (
 
         -- interest information
         INTERESTTYPEID::int as interest_type_id,
-        DECIMALINTEREST::float as decimal_interest,
+        try_to_double(DECIMALINTEREST) as decimal_interest,
         CUSTOMINTERESTTYPEID::int as custom_interest_type_id,
 
         -- flags

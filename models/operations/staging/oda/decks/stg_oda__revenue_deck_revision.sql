@@ -26,7 +26,7 @@ source as (
 ),
 
 renamed as (
-    select
+    select -- noqa: ST06
         -- identifiers
         ID::varchar as id,
         REVENUEDECKREVISIONIDENTITY::int as revenue_deck_revision_identity,
@@ -40,8 +40,8 @@ renamed as (
         trim(CHANGENOTE)::varchar as change_note,
 
         -- interest calculations
-        TOTALINTERESTEXPECTED::float as total_interest_expected,
-        NRIACTUAL::float as nri_actual,
+        try_to_double(TOTALINTERESTEXPECTED) as total_interest_expected,
+        try_to_double(NRIACTUAL) as nri_actual,
 
         -- status and close
         CLOSEDATE::date as close_date,

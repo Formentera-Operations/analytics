@@ -41,8 +41,8 @@ renamed as (
         trim(CHANGENOTE)::varchar as change_note,
 
         -- interest calculations
-        TOTALINTERESTACTUAL::float as total_interest_actual,
-        TOTALINTERESTEXPECTED::float as total_interest_expected,
+        try_to_double(TOTALINTERESTACTUAL) as total_interest_actual,
+        try_to_double(TOTALINTERESTEXPECTED) as total_interest_expected,
 
         -- flags
         coalesce(ISAFTERCASING = 1, false) as is_after_casing,
