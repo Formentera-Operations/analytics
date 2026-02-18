@@ -13,3 +13,4 @@ prod-artifacts/
 
 # Local Claude Code prompt scripts (not the harness tooling)
 scripts/sprint*-prompt.md
+dbt_internal_packages/
