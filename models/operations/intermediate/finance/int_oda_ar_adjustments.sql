@@ -41,7 +41,7 @@ with ar_adjustments as (
         2 as sort_order,
         case
             when aria.adjustment_type_id = 0 then 'Application of Advance'
-            when aria.adjustment_type_id = 1 then replace(ariad.Description, 'XClear with Inv#', 'Cross Clear Inv #')
+            when aria.adjustment_type_id = 1 then replace(ariad.description, 'XClear with Inv#', 'Cross Clear Inv #')
             else 'Adjustment'
         end as invoice_description,
         case
@@ -75,7 +75,7 @@ with ar_adjustments as (
         on i.well_id = w.id
 
     where
-        i.Posted = 1
+        i.is_posted
         and v.is_posted
 
 )

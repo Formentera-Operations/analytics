@@ -1,57 +1,10 @@
 version: 2
 
-sources:
-  - name: oda
-    database: ESTUARY_DB
-    schema: ESTUARY_SCHEMA
-    tables:
-      - name: GL
-        description: |
-          Raw general ledger entries from Quorum OnDemand Accounting system containing all financial transactions.
-          This table is the source of truth for all financial transactions and includes:
-          - Journal entries
-          - Accounts payable/receivable transactions
-          - Automated postings
-          - Accrual and cash-basis accounting entries
-        data_tests:
-          - dbt_utils.unique_combination_of_columns:
-              arguments:
-                combination_of_columns:
-                  - ID
-                  - '"_meta/op"'
-        columns:
-          - name: ID
-            description: Unique identifier for each GL entry
-            data_tests:
-              - not_null
-          - name: '"_meta/op"'
-            description: >
-              Estuary-specific operation type indicator: "c" indicates a create,
-              "d" indicates a soft-delete.
-            data_tests:
-              - not_null
-          - name: COMPANYID
-            description: Identifier for the company associated with the transaction
-          - name: ACCOUNTID
-            description: Foreign key to the Chart of Accounts
-          - name: JOURNALDATE
-            description: Date when the transaction was recorded in the general ledger
-          - name: GROSSVALUE
-            description: Original transaction amount before allocations
-          - name: NETVALUE
-            description: Final transaction amount after allocations
-          - name: POSTED
-            description: Flag indicating if the transaction is posted (1=yes, 0=no)
-      - name: ODA_BATCH_ODA_ENTITY
-      - name: ODA_BATCH_ODA_COMPANY
-      - name: ODA_BATCH_ODA_ACCOUNT
-      - name: ODA_BATCH_ODA__OWNER
-      - name: ODA_ARINVOICE_V2
-      - name: ODA_ARINVOICEDETAIL
-      - name: ODA_ARINVOICEPAYMENT
-      - name: ODA_ARINVOICEPAYMENTDETAIL
-      - name: ODA_ARINVOICENETTEDDETAIL
-      - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENT
-      - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL
-      - name: ODA_BATCH_ODA_ARADVANCE
-      - name: ODA_BATCH_ODA_ARADVANCECLOSEOUT
+# All 46 ODA source table declarations have been migrated to domain-specific YAML files.
+# See domain directories: accounts_payable/, afe_budgeting/, decks/, general_ledger/,
+# master_data/, supporting/, accounts_receivable/
+#
+# This file is intentionally empty — do not add new source declarations here.
+# Add new sources to the appropriate domain _src_oda__*.yml file instead.
+
+sources: []

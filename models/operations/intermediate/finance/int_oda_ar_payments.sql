@@ -68,7 +68,7 @@ with ar_payments as (
         on i.well_id = w.id
 
     where
-        i.Posted = 1
+        i.is_posted
         and v.is_posted
 )
 

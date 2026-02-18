@@ -14,14 +14,15 @@
     - int_oda_ar_payments
 #}
 
-    with ar_payments_agg as (
-        select 
+with ar_payments_agg as (
+    select
         invoice_id,
-        SUM(Total_Invoice_Amount) as Total_Payments,
-        
-        FROM {{ ref('int_oda_ar_payments') }}
+        sum(Total_Invoice_Amount) as total_payments
 
-        GROUP BY
+    from {{ ref('int_oda_ar_payments') }}
+
+    group by
         invoice_id
-    )
-        select * from ar_payments_agg
+)
+
+select * from ar_payments_agg

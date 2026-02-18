@@ -1,0 +1,726 @@
+version: 2
+
+models:
+  - name: stg_oda__arinvoice_v2
+    description: |
+      Staging model for ODA Accounts Receivable invoice headers.
+      Source: ODA_ARINVOICE_V2 (Estuary CDC, 436K rows)
+      Grain: One row per AR invoice (id)
+      Note: Soft deletes filtered via _operation_type != 'd'
+    columns:
+      - name: arinvoice_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: arinvoice_v2_identity
+        description: Numeric identity sequence for the AR invoice record
+      - name: owner_id
+        description: FK to stg_oda__owner_v2 — revenue owner receiving this invoice
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__owner_v2')
+                field: id
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to stg_oda__company_v2 — company context for this invoice
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__company_v2')
+                field: id
+              config:
+                severity: warn
+      - name: well_id
+        description: FK to stg_oda__wells — well associated with this invoice
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__wells')
+                field: id
+              config:
+                severity: warn
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2 — revenue voucher backing this invoice
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__voucher_v2')
+                field: id
+              config:
+                severity: warn
+      - name: invoice_type_id
+        description: Integer classifier for the invoice type
+      - name: payment_status_id
+        description: Integer status code for payment state
+      - name: statement_status_id
+        description: Integer status code for statement processing state
+      - name: adjustment_id
+        description: FK to an adjustment record if this invoice has been adjusted
+      - name: advance_invoice_id
+        description: FK to the advance invoice that generated this invoice, if applicable
+      - name: advance_posting_exchange_rate_id
+        description: FK to the exchange rate used when posting the advance
+      - name: gain_loss_exchange_rate_id
+        description: FK to the exchange rate used for FX gain/loss calculations
+      - name: import_data_id
+        description: FK to the import batch that created this record, if applicable
+      - name: payment_exchange_rate_id
+        description: FK to the exchange rate used at payment time
+      - name: posting_exchange_rate_id
+        description: FK to the exchange rate used when posting this invoice
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of the last update to this record
+      - name: invoice_date
+        description: Date of the invoice
+      - name: invoice_date_key
+        description: Numeric key representation of the invoice date (float)
+      - name: accrual_date
+        description: Accrual period date for accounting
+      - name: advance_invoice_date
+        description: Date of the advance invoice, if applicable
+      - name: gain_loss_posted_thru_date
+        description: Date through which FX gain/loss has been posted
+      - name: code
+        description: Invoice code/number (user-facing, trimmed)
+        data_tests:
+          - not_null
+      - name: code_sort
+        description: Sortable version of the invoice code
+      - name: description
+        description: Free-text description of the invoice
+      - name: invoice_amount
+        description: Total invoice amount in decimal(18,2); NULL coalesced to 0
+      - name: is_posted
+        description: True if the invoice has been posted to the GL
+      - name: is_fully_paid
+        description: True if the invoice has been fully paid
+      - name: is_include_in_accrual_report
+        description: True if this invoice should be included in accrual reports
+      - name: is_overage_invoice
+        description: True if this is an overage (excess billing) invoice
+      - name: is_print_pending
+        description: True if the invoice is pending printing/distribution
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _operation_type
+        description: CDC operation type — 'c' create, 'd' delete (all 'd' filtered out)
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+
+  - name: stg_oda__arinvoicedetail
+    description: |
+      Staging model for ODA Accounts Receivable invoice line items.
+      Source: ODA_ARINVOICEDETAIL (Estuary CDC, 611 rows)
+      Grain: One row per AR invoice detail line (id)
+      Note: Soft deletes filtered via _operation_type != 'd'. INVOICEID is the FK to arinvoice_v2.
+    columns:
+      - name: arinvoicedetail_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: arinvoicedetail_identity
+        description: Numeric identity sequence for the AR invoice detail record
+      - name: invoice_id
+        description: FK to stg_oda__arinvoice_v2 — parent invoice header
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__arinvoice_v2')
+                field: id
+              config:
+                severity: warn
+      - name: account_id
+        description: FK to stg_oda__account_v2 — GL account for this line
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: distribution_company_id
+        description: FK to stg_oda__company_v2 — company receiving this distribution line
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of the last update to this record
+      - name: description
+        description: Free-text description of the detail line
+      - name: ordinal
+        description: Ordering position of this line within the invoice
+      - name: distribution_amount
+        description: Amount distributed on this line in decimal(18,2); NULL coalesced to 0
+      - name: net_volume
+        description: Net volume associated with this line in decimal(19,4) for BOE/MCF precision
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _operation_type
+        description: CDC operation type — 'c' create, 'd' delete (all 'd' filtered out)
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+
+  - name: stg_oda__arinvoicepayment
+    description: |
+      Staging model for ODA AR invoice payment headers.
+      Source: ODA_ARINVOICEPAYMENT (Estuary batch, 37.6K rows)
+      Grain: One row per AR payment (id)
+      Note: Batch table — no CDC soft delete filtering needed.
+    columns:
+      - name: arinvoicepayment_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: arinvoicepayment_identity
+        description: Numeric identity sequence for the AR payment record
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2 — voucher this payment applies against
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__voucher_v2')
+                field: id
+              config:
+                severity: warn
+      - name: owner_id
+        description: FK to stg_oda__owner_v2 — owner making the payment
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__owner_v2')
+                field: id
+              config:
+                severity: warn
+      - name: cash_account_id
+        description: FK to the cash GL account used for this payment
+      - name: payment_type_id
+        description: Integer classifier for the payment type
+      - name: accrual_date
+        description: Accrual period date for accounting
+      - name: payment_date
+        description: Date payment was received
+      - name: description
+        description: Free-text description of the payment
+      - name: payee_check_number
+        description: Check or reference number for the payment
+      - name: payment_type_code
+        description: Payment type code (denormalized from payment_type lookup)
+      - name: payment_type_name
+        description: Payment type name (denormalized from payment_type lookup)
+      - name: payment_amount
+        description: Total payment amount in decimal(18,2); NULL coalesced to 0
+      - name: is_posted
+        description: True if the payment has been posted to the GL
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__arinvoicepaymentdetail
+    description: |
+      Staging model for ODA AR invoice payment line details.
+      Source: ODA_ARINVOICEPAYMENTDETAIL (Estuary batch, 172K rows)
+      Grain: One row per payment-to-invoice application (id)
+      Note: Batch table — no CDC soft delete filtering needed. Links payments to invoices with amount applied.
+    columns:
+      - name: arinvoicepaymentdetail_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: arinvoicepaymentdetail_identity
+        description: Numeric identity sequence for the payment detail record
+      - name: invoice_id
+        description: FK to stg_oda__arinvoice_v2 — invoice this payment detail applies to
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__arinvoice_v2')
+                field: id
+              config:
+                severity: warn
+      - name: invoice_payment_id
+        description: FK to stg_oda__arinvoicepayment — parent payment header
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__arinvoicepayment')
+                field: id
+              config:
+                severity: warn
+      - name: amount_applied
+        description: Amount of the payment applied to this invoice in decimal(18,2); NULL coalesced to 0
+      - name: amount_due_before_posting
+        description: Invoice balance outstanding before this payment was applied in decimal(18,2); NULL coalesced to 0
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__arinvoicenetteddetail
+    description: |
+      Staging model for ODA AR invoice netted detail records.
+      Source: ODA_ARINVOICENETTEDDETAIL (Estuary batch, 531K rows)
+      Grain: One row per netted revenue detail (id)
+      Note: Batch table — links invoices to wells and owner revenue details with netting amounts.
+      Volume columns use decimal(19,4) for BOE/MCF precision.
+    columns:
+      - name: arinvoicenetteddetail_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: arinvoicenetteddetail_identity
+        description: Numeric identity sequence for the netted detail record
+      - name: invoice_id
+        description: FK to stg_oda__arinvoice_v2 — parent AR invoice
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__arinvoice_v2')
+                field: id
+              config:
+                severity: warn
+      - name: owner_revenue_detail_id
+        description: FK to the owner revenue detail record from which this netting originates
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2 — voucher associated with this netting
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__voucher_v2')
+                field: id
+              config:
+                severity: warn
+      - name: well_id
+        description: FK to stg_oda__wells — well producing the netted revenue
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__wells')
+                field: id
+              config:
+                severity: warn
+      - name: accrual_date
+        description: Accrual period date for this netting record
+      - name: netting_date
+        description: Date the netting was applied
+      - name: net_value_non_working
+        description: Net value attributable to non-working interest in decimal(18,2); NULL coalesced to 0
+      - name: net_value_working
+        description: Net value attributable to working interest in decimal(18,2); NULL coalesced to 0
+      - name: netted_amount
+        description: Total netted amount for this detail in decimal(18,2); NULL coalesced to 0
+      - name: net_volume_non_working
+        description: Net volume attributable to non-working interest in decimal(19,4); NULL coalesced to 0
+      - name: net_volume_working
+        description: Net volume attributable to working interest in decimal(19,4); NULL coalesced to 0
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__arinvoiceadjustment
+    description: |
+      Staging model for ODA AR invoice adjustment records.
+      Source: ODA_BATCH_ODA_ARINVOICEADJUSTMENT (Estuary batch, 10.7K rows)
+      Grain: One row per invoice adjustment (id)
+      Note: Batch table — no CDC soft-delete filtering. Links adjustments to accounts, companies, owners, and vouchers.
+    columns:
+      - name: arinvoiceadjustment_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: ar_invoice_adjustment_identity
+        description: Numeric identity sequence for the adjustment record
+      - name: account_id
+        description: FK to stg_oda__account_v2 — GL account for this adjustment
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to stg_oda__company_v2 — company context for this adjustment
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__company_v2')
+                field: id
+              config:
+                severity: warn
+      - name: owner_id
+        description: FK to stg_oda__owner_v2 — owner whose invoice is being adjusted
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__owner_v2')
+                field: id
+              config:
+                severity: warn
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2 — voucher associated with this adjustment
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__voucher_v2')
+                field: id
+              config:
+                severity: warn
+      - name: adjustment_type_id
+        description: Integer classifier for the adjustment type
+      - name: accrual_date
+        description: Accrual period date for this adjustment
+      - name: adjustment_date
+        description: Timestamp when the adjustment was made
+      - name: description
+        description: Free-text description of the adjustment
+      - name: adjustment_amount
+        description: Adjustment amount in decimal(18,2)
+      - name: is_include_in_accrual_report
+        description: True if this adjustment should be included in accrual reports
+      - name: is_posted
+        description: True if the adjustment has been posted to the GL
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of the last update to this record
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__arinvoiceadjustmentdetail
+    description: |
+      Staging model for ODA AR invoice adjustment detail records.
+      Source: ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL (Estuary batch, 41K rows)
+      Grain: One row per adjustment detail line (id)
+      Note: Batch table — no CDC soft-delete filtering. AFEID references ODA_AFE which is not synced by Estuary;
+      no relationships test on afe_id. NETVOLUME cast as int (source is NUMBER scale 0).
+    columns:
+      - name: arinvoiceadjustmentdetail_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: ar_invoice_adjustment_detail_identity
+        description: Numeric identity sequence for the adjustment detail record
+      - name: invoice_adjustment_id
+        description: FK to stg_oda__arinvoiceadjustment — parent adjustment header
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__arinvoiceadjustment')
+                field: id
+              config:
+                severity: warn
+      - name: invoice_id
+        description: FK to stg_oda__arinvoice_v2 — invoice being adjusted
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__arinvoice_v2')
+                field: id
+              config:
+                severity: warn
+      - name: afe_id
+        description: >
+          FK to ODA AFE table. ODA_AFE is not synced to Snowflake by Estuary — no relationships
+          test. Add not_null only; validate orphan rate when AFE sync is added.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: adjustment_detail_amount
+        description: Amount for this detail line in decimal(18,2)
+      - name: net_volume
+        description: Net volume associated with this line (integer; source is NUMBER scale 0)
+      - name: description
+        description: Free-text description of the adjustment detail line
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of the last update to this record
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__aradvance
+    description: |
+      Staging model for ODA AR advance records.
+      Source: ODA_BATCH_ODA_ARADVANCE (Estuary batch, 27 rows)
+      Grain: One row per advance (id)
+      Note: Batch table — no CDC soft-delete filtering. Represents AFE cash advances billed to owners.
+      AFEID references ODA_AFE which is not synced by Estuary — no relationships test on afe_id.
+    columns:
+      - name: aradvance_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: ar_advance_identity
+        description: Numeric identity sequence for the advance record
+      - name: afe_id
+        description: >
+          FK to ODA AFE table. ODA_AFE is not synced to Snowflake by Estuary — no relationships
+          test. Add not_null only; validate orphan rate when AFE sync is added.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to stg_oda__company_v2 — company billing this advance
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__company_v2')
+                field: id
+              config:
+                severity: warn
+      - name: currency_id
+        description: FK to currency reference — currency of the advance amounts
+      - name: expense_deck_id
+        description: FK to the expense deck associated with this advance
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2 — voucher backing this advance
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__voucher_v2')
+                field: id
+              config:
+                severity: warn
+      - name: well_id
+        description: FK to stg_oda__wells — well this advance relates to
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__wells')
+                field: id
+              config:
+                severity: warn
+      - name: advance_date
+        description: Date the advance was issued
+      - name: description
+        description: Free-text description of the advance
+      - name: expense_deck_interest_total
+        description: Total interest from the associated expense deck in decimal(18,2)
+      - name: gross_amount
+        description: Gross advance amount before deductions in decimal(18,2)
+      - name: net_amount
+        description: Net advance amount after deductions in decimal(18,2)
+      - name: is_after_casing
+        description: True if this advance is for work performed after casing was set
+      - name: is_posted
+        description: True if the advance has been posted to the GL
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of the last update to this record
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__aradvancecloseout
+    description: |
+      Staging model for ODA AR advance closeout records.
+      Source: ODA_BATCH_ODA_ARADVANCECLOSEOUT (Estuary batch, 0 rows — schema only)
+      Grain: One row per advance closeout (id)
+      Note: Table currently has 0 rows; schema exists for future data. VOUCHERID is the original
+      advance voucher being closed out. TARGETVOUCHERID is the settlement voucher. Join direction
+      in downstream models must be verified when rows arrive. Batch table — no soft delete filtering.
+    columns:
+      - name: aradvancecloseout_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: ar_advance_closeout_identity
+        description: Numeric identity sequence for the advance closeout record
+      - name: voucher_id
+        description: >
+          FK to stg_oda__voucher_v2 — original advance voucher being closed out.
+          Verify join direction in downstream when rows arrive.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: target_voucher_id
+        description: >
+          FK to stg_oda__voucher_v2 — target/settlement voucher for this closeout.
+          Verify join direction in downstream when rows arrive.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: FK to stg_oda__wells — well this closeout relates to
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of the last update to this record
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
