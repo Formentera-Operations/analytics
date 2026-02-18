@@ -37,15 +37,15 @@ with ar_payments as (
         i.code as invoice_number,
         i.id as invoice_id,
         i.invoice_type_id as invoice_type_id,
-        w.is_hold_all_billing as hold_billing,
         p.voucher_id as voucher_id,
         'Pymt' as invoice_type,
         p.payment_date as invoice_date,
         pd.amount_applied as total_invoice_amount,
         2 as sort_order,
         i.is_posted as is_invoice_posted,
-        -- Posting status flags — used by payments_agg for posted/unposted splits
         v.is_posted as is_voucher_posted,
+        -- Posting status flags — used by payments_agg for posted/unposted splits
+        coalesce(w.is_hold_all_billing, false) as hold_billing,
         concat('Payment, Check # ', p.payee_check_number) as invoice_description
 
     from {{ ref('stg_oda__arinvoicepaymentdetail') }} pd

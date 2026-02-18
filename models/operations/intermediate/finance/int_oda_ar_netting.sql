@@ -41,14 +41,13 @@ with ar_netting as (
         i.code as invoice_number,
         i.id as invoice_id,
         i.invoice_type_id as invoice_type_id,
-        w.is_hold_all_billing as hold_billing,
         nd.voucher_id as voucher_id,
         'Net' as invoice_type,
         nd.netting_date as invoice_date,
         2 as sort_order,
         i.is_posted as is_invoice_posted,
-        -- netted_amount is positive in ODA — negated here so balance is additive
         v.is_posted as is_voucher_posted,
+        coalesce(w.is_hold_all_billing, false) as hold_billing,
         -- Posting status flags — used by netting_agg for posted/unposted splits
         concat(
             'Netted Against Revenue ',
@@ -56,6 +55,7 @@ with ar_netting as (
             '/',
             year(v.voucher_date)
         ) as invoice_description,
+        -- netted_amount is positive in ODA — negated here so balance is additive
         -nd.netted_amount as total_invoice_amount
 
     from {{ ref('stg_oda__arinvoicenetteddetail') }} nd

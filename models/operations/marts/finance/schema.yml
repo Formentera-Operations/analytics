@@ -37,11 +37,22 @@ models:
         data_tests:
           - not_null
       - name: remaining_balance
-        description: Total remaining balance on the parent invoice (posted + unposted)
+        description: Total remaining balance on the parent invoice (all transactions, posted and unposted)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
       - name: remaining_balance_posted
-        description: Posted-only balance component — use for JIB comparison
+        description: >
+          Balance comprising only posted invoice amount and posted transaction components.
+          NOTE: remaining_balance_posted + remaining_balance_unposted does NOT equal
+          remaining_balance when transactions span posted/unposted boundaries (e.g. a
+          payment applied to a posted invoice before it posts). These are independent
+          views, not a partition of remaining_balance.
       - name: remaining_balance_unposted
-        description: Unposted-only balance — use for pre-JIB preview
+        description: >
+          Balance comprising only unposted invoice amount and unposted transaction components.
+          See remaining_balance_posted for important note about additivity.
       - name: exclude_pair
         description: "1 when the parent invoice is part of an advance/closeout pair"
       - name: balance_due
@@ -94,11 +105,19 @@ models:
         data_tests:
           - not_null
       - name: remaining_balance_posted
-        description: Posted-only remaining balance component
+        description: >
+          Balance comprising only posted invoice amount and posted transaction components.
+          Does NOT partition remaining_balance — cross-posted transactions make the two
+          split columns non-additive. Use as an independent view, not a decomposition.
       - name: remaining_balance_unposted
-        description: Unposted-only remaining balance component
+        description: >
+          Balance comprising only unposted invoice amount and unposted transaction components.
+          See remaining_balance_posted for important note about additivity.
       - name: include_record
-        description: "1 when remaining_balance != 0 AND exclude_pair = 0"
+        description: >
+          1 when remaining_balance != 0 AND exclude_pair = 0.
+          Bucket columns (current_balance, balance_1_30_days, etc.) populate for ALL invoices
+          regardless of this flag. Always filter WHERE include_record = 1 before summing buckets.
         data_tests:
           - not_null
       - name: exclude_pair

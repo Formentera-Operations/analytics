@@ -37,13 +37,13 @@ with ar_adjustments as (
         i.code as invoice_number,
         i.id as invoice_id,
         i.invoice_type_id as invoice_type_id,
-        w.is_hold_all_billing as hold_billing,
         aria.voucher_id as voucher_id,
         aria.adjustment_date as invoice_date,
         ariad.adjustment_detail_amount as total_invoice_amount,
         2 as sort_order,
         i.is_posted as is_invoice_posted,
         v.is_posted as is_voucher_posted,
+        coalesce(w.is_hold_all_billing, false) as hold_billing,
         -- Posting status flags — used by adjustments_agg for posted/unposted splits
         case
             when aria.adjustment_type_id = 0

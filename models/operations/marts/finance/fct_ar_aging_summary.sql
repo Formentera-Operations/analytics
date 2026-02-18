@@ -59,7 +59,6 @@ with invoice_base as (
 remaining_balances as (
     select
         invoice_id,
-        is_invoice_posted,
         remaining_balance,
         remaining_balance_posted,
         remaining_balance_unposted,
