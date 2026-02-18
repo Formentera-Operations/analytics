@@ -27,9 +27,9 @@ source as (
 
 ),
 
-renamed as (  -- noqa: ST06
+renamed as (
 
-    select
+    select  -- noqa: ST06
         -- identifiers
         ID::varchar as id,
         COMPANYID::varchar as company_id,
@@ -67,13 +67,16 @@ renamed as (  -- noqa: ST06
         UPDATEEVENTID::varchar as update_event_id,
 
         -- dates
+        date(convert_timezone('UTC', JOURNALDATE)) as journal_date,
         ACCRUALDATEKEY::float as accrual_date_key,
+        date(convert_timezone('UTC', ACCRUALDATE)) as accrual_date,
         CASHDATEKEY::float as cash_date_key,
+        date(convert_timezone('UTC', CASHDATE)) as cash_date,
+
+        -- descriptive
         trim(DESCRIPTION)::varchar as description,
         trim(SOURCEMODULE)::varchar as source_module,
         trim(SOURCEMODULECODE)::varchar as source_module_code,
-
-        -- descriptive
         SOURCEMODULEID::int as source_module_id,
         trim(SOURCEMODULENAME)::varchar as source_module_name,
         trim(LOCATIONTYPE)::varchar as location_type,
@@ -88,17 +91,17 @@ renamed as (  -- noqa: ST06
         MANUALENTRYREFERENCETYPEID::int as manual_entry_reference_type_id,
         CONVERTCURRENCYTYPEID::int as convert_currency_type_id,
         trim(CURRENCYID)::varchar as currency_id,
+
+        -- financial
         coalesce(GROSSVALUE, 0)::decimal(19, 4) as gross_value,
         coalesce(GROSSVOLUME, 0)::decimal(19, 4) as gross_volume,
         coalesce(NETVALUE, 0)::decimal(19, 4) as net_value,
-
-        -- financial
         coalesce(NETVOLUME, 0)::decimal(19, 4) as net_volume,
+
+        -- flags
         POSTED::boolean as is_posted,
         GENERATEDENTRY::boolean as is_generated_entry,
         CONVERTCURRENCY::boolean as is_convert_currency,
-
-        -- flags
         INCLUDEINACCRUALREPORT::boolean as is_include_in_accrual_report,
         INCLUDEINCASHREPORT::boolean as is_include_in_cash_report,
         INCLUDEINJOURNALREPORT::boolean as is_include_in_journal_report,
@@ -109,19 +112,16 @@ renamed as (  -- noqa: ST06
         PRESENTINJOURNALBALANCE::boolean as is_present_in_journal_balance,
         RECONCILED::boolean as is_reconciled,
         RECONCILEDTRIAL::boolean as is_reconciled_trial,
+
+        -- audit
         CREATEDATE::timestamp_ntz as created_at,
         UPDATEDATE::timestamp_ntz as updated_at,
         RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
-
-        -- audit
         RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
-        "_meta/op" as _operation_type,
-        FLOW_PUBLISHED_AT::timestamp_ntz as _flow_published_at,
-        date(convert_timezone('UTC', JOURNALDATE)) as journal_date,
 
         -- ingestion metadata
-        date(convert_timezone('UTC', ACCRUALDATE)) as accrual_date,
-        date(convert_timezone('UTC', CASHDATE)) as cash_date
+        "_meta/op"::varchar as _operation_type,
+        FLOW_PUBLISHED_AT::timestamp_ntz as _flow_published_at
 
         -- FLOW_DOCUMENT excluded (large VARIANT column, unnecessary at staging layer)
 

@@ -373,9 +373,10 @@ models:
       - name: convert_currency_type_id
         description: FK to currency conversion type
       - name: currency_id
-        description: Currency code for the transaction (trimmed)
-        data_tests:
-          - not_null
+        description: >
+          Currency code for the transaction (trimmed). NULL when currency is not specified —
+          tracked by is_currency_defaulted flag. Not tested for not_null since nulls are expected
+          and intentionally tracked.
       - name: gross_value
         description: Original transaction amount before allocations (decimal(19,4), defaults to 0)
         data_tests:
