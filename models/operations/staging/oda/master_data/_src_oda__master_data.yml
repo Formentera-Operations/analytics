@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_BATCH_ODA_COMPANY_V2
+        description: "Company dimension — operating entities with fiscal, tax, and AP/AR configuration (batch, 39 rows)"
+      - name: ODA_BATCH_ODA_ENTITY_V2
+        description: "Entity dimension — base record for owners, vendors, purchasers with tax and contact info (batch, 56K rows)"
+      - name: ODA_BATCH_ODA_VENDOR_V2
+        description: "Vendor dimension — AP vendor records linked to entities with payment and 1099 config (batch, 4K rows)"
+      - name: ODA_BATCH_ODA_OWNER_V2
+        description: "Owner dimension — interest holders with AR, revenue, JIB, and suspense configuration (batch, 42K rows)"
+      - name: ODA_BATCH_ODA_PURCHASER_V2
+        description: "Purchaser dimension — oil/gas purchasers linked to entities (batch, 183 rows)"
+      - name: ODA_BATCH_ODA_WELL
+        description: "Well/cost center dimension — well master data with location, status, and billing flags (batch, 9.4K rows)"
+      - name: ODA_BATCH_ODA_ACCOUNT_V2
+        description: "Chart of accounts — account codes with type/subtype classification and accrual flags (batch, 2K rows)"
+      - name: ODA_BATCH_ODA_INTERESTTYPE
+        description: "Interest type lookup — WI, NRI, ORR, etc. classification for ownership interests (batch, 5 rows)"
+      - name: ODA_BATCH_ODA_PRODUCT
+        description: "Product type lookup — oil, gas, NGL with pricing and BOE conversion factors (batch, 9 rows)"
+      - name: ODA_BATCH_ODA_PAYMENTTYPE
+        description: "Payment type lookup — check, EFT, wire, etc. classification for disbursements (batch, 8 rows)"

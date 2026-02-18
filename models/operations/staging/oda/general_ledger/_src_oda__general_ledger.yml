@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_VOUCHER_V2
+        description: "Voucher headers — posting batches, dates, types, and approval status (batch, 370K rows)"
+      - name: ODA_GLRECONCILIATIONTYPE
+        description: "GL reconciliation type lookup — categorization for reconciliation entries (batch, 8 rows)"
+      - name: ODA_ACCOUNTTYPE
+        description: "Account type lookup — top-level account classification: Asset, Liability, etc. (batch, 2 rows)"
+      - name: ODA_BATCH_ODA_ACCOUNTSUBTYPE
+        description: "Account subtype lookup — second-level account classification within types (batch, 5 rows)"

@@ -366,7 +366,7 @@ from source_gl as gld
 left outer join companies as c
     on gld.company_id = c.id
 left outer join accounts as acct
-    on gld.account_id = acct.account_id
+    on gld.account_id = acct.id
 
 -- Use the pre-processed location data
 left outer join location_codes lc

@@ -22,63 +22,63 @@
     - stg_oda__entity_v2
 #}
 
-WITH vendors AS (
-    SELECT
+with vendors as (
+    select
         -- =================================================================
         -- Vendor Identity
         -- =================================================================
-        v.id AS vendor_id,
+        v.id as vendor_id,
         v.entity_id,
-        e.code AS vendor_code,
-        e.name AS vendor_name,
-        e.full_name AS vendor_full_name,
-        
+        e.code as vendor_code,
+        e.name as vendor_name,
+        e.full_name as vendor_full_name,
+
         -- =================================================================
         -- Tax & Legal
         -- =================================================================
         e.tax_id,
         e.name_1099,
-        v.print_1099,
-        
+        v.is_print_1099,
+
         -- =================================================================
         -- Status Flags
         -- =================================================================
-        v.active AS is_active,
-        v.hold_ap_checks AS is_hold_ap_checks,
-        
+        v.is_active,
+        v.is_hold_ap_checks,
+
         -- =================================================================
         -- Payment Settings
         -- =================================================================
-        v.terms AS payment_terms,
+        v.terms as payment_terms,
         v.minimum_ap_check,
-        
+
         -- =================================================================
         -- Classification
         -- =================================================================
-        CASE 
-            WHEN v.hold_ap_checks THEN 'Held'
-            WHEN NOT v.active THEN 'Inactive'
-            ELSE 'Active'
-        END AS payment_status,
-        
-        CASE 
-            WHEN TRIM(v.terms) IN ('0D', '0M') THEN 'Due Immediately'
-            WHEN TRIM(v.terms) IN ('7D', '10D', '14D', '15D') THEN 'Net 15 or Less'
-            WHEN TRIM(v.terms) IN ('20D', '25D', '30D', '1M') THEN 'Net 30'
-            WHEN TRIM(v.terms) IN ('35D', '45D') THEN 'Net 45'
-            WHEN TRIM(v.terms) = '60D' THEN 'Net 60'
-            WHEN v.terms IS NULL OR TRIM(v.terms) = '' THEN 'No Terms'
-            ELSE 'Other'
-        END AS payment_terms_category,
-        
+        case
+            when v.is_hold_ap_checks then 'Held'
+            when not v.is_active then 'Inactive'
+            else 'Active'
+        end as payment_status,
+
+        case
+            when trim(v.terms) in ('0D', '0M') then 'Due Immediately'
+            when trim(v.terms) in ('7D', '10D', '14D', '15D') then 'Net 15 or Less'
+            when trim(v.terms) in ('20D', '25D', '30D', '1M') then 'Net 30'
+            when trim(v.terms) in ('35D', '45D') then 'Net 45'
+            when trim(v.terms) = '60D' then 'Net 60'
+            when v.terms is null or trim(v.terms) = '' then 'No Terms'
+            else 'Other'
+        end as payment_terms_category,
+
         -- =================================================================
         -- Metadata
         -- =================================================================
-        CURRENT_TIMESTAMP() AS _refreshed_at
+        current_timestamp() as _refreshed_at
 
-    FROM {{ ref('stg_oda__vendor_v2') }} v
-    INNER JOIN {{ ref('stg_oda__entity_v2') }} e
-        ON v.entity_id = e.id
+    from {{ ref('stg_oda__vendor_v2') }} v
+    inner join {{ ref('stg_oda__entity_v2') }} e
+        on v.entity_id = e.id
 )
 
-SELECT * FROM vendors
+select * from vendors

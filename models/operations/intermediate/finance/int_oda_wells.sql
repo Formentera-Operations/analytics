@@ -39,13 +39,13 @@ rename as (
         w.STATE_CODE as "StateCode", -- noqa: RF01
         w.STATE_NAME as "StateName", -- noqa: RF01
         w.COUNTY_NAME as "CountyName", -- noqa: RF01
-        w.STRIPPER_WELL as "StripperWell", -- noqa: RF01
+        w.IS_STRIPPER_WELL as "StripperWell", -- noqa: RF01
         w.PROPERTY_REFERENCE_CODE as "PropertyReferenceCode", -- noqa: RF01
         w.API_NUMBER as "ApiNumber", -- noqa: RF01
         w.OPERATING_GROUP_CODE as "OperatingGroupCode", -- noqa: RF01
         w.OPERATING_GROUP_NAME as "OperatingGroupName", -- noqa: RF01
         w.PRODUCTION_STATUS_NAME as "ProductionStatusName", -- noqa: RF01
-        w.N_ID as "NId", -- noqa: RF01
+        w.NID as "NId", -- noqa: RF01
         w.COST_CENTER_TYPE_CODE as "CostCenterTypeCode", -- noqa: RF01
         w.COST_CENTER_TYPE_NAME as "CostCenterTypeName", -- noqa: RF01
         w.OPERATOR_ID as "OperatorId", -- noqa: RF01
@@ -54,8 +54,8 @@ rename as (
         g.code as "CompanyCode",
         g.name as "CompanyName",
         g.full_name as company_full_name,
-        cast(w.create_date as date) as "Created Date",
-        cast(w.update_date as date) as "Last Mod Date (UTC)",
+        cast(w.created_at as date) as "Created Date",
+        cast(w.updated_at as date) as "Last Mod Date (UTC)",
         case
             when w.PROPERTY_REFERENCE_CODE = 'NON-OPERATED' then 'NON-OPERATED'
             else 'OPERATED'

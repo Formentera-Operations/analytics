@@ -1,134 +1,167 @@
+-- noqa: disable=RF01
 {{ config(
     enabled=true,
     materialized='view'
 ) }}
 
 --VOLUMES--
-SELECT 
-       --GL.Id
-       CAST(C.CODE AS VARCHAR) AS "Company Code"
-	  ,CAST(C.NAME AS VARCHAR) AS "Company Name"
-      ,CAST(A.MAIN_ACCOUNT AS VARCHAR) AS "MainAccount"
-	  ,CAST(A.SUB_ACCOUNT AS VARCHAR) AS "SubAccount"
-	  ,CAST(A.MAIN_ACCOUNT AS VARCHAR) || '-' || CAST(A.SUB_ACCOUNT AS VARCHAR) AS "Combined Account"
-	  ,CAST(A.MAIN_ACCOUNT AS VARCHAR) || '-' || CAST(A.SUB_ACCOUNT AS VARCHAR) || '-Vol' AS "Account Key"
-      ,CAST(GL.IS_POSTED AS VARCHAR) AS "Posted"
+select
+    --GL.Id
+    cast(C.CODE as varchar) as "Company Code",
+    cast(C.NAME as varchar) as "Company Name",
+    cast(A.MAIN_ACCOUNT as varchar) as "MainAccount",
+    cast(A.SUB_ACCOUNT as varchar) as "SubAccount",
+    cast(A.MAIN_ACCOUNT as varchar) || '-' || cast(A.SUB_ACCOUNT as varchar) as "Combined Account",
+    cast(A.MAIN_ACCOUNT as varchar) || '-' || cast(A.SUB_ACCOUNT as varchar) || '-Vol' as "Account Key",
+    cast(GL.IS_POSTED as varchar) as "Posted",
 
-      ,GL.JOURNAL_DATE AS "JE Date"
+    GL.JOURNAL_DATE as "JE Date",
 
-      ,GL.ACCRUAL_DATE AS "Accrual Date"
+    GL.ACCRUAL_DATE as "Accrual Date",
 
-      ,CAST(GL.SOURCE_MODULE_CODE AS VARCHAR) AS "SourceModuleCode"
-      ,CAST(GL.SOURCE_MODULE_NAME AS VARCHAR) AS "SourceModuleName"
-      ,CAST(GL.SOURCE_MODULE AS VARCHAR) AS "SourceModule"
-      ,CAST(V.Code AS VARCHAR) AS "Voucher Code"
-      ,CAST(GL.DESCRIPTION AS VARCHAR) AS "Description"
-      ,CAST(GL.PAYMENT_TYPE_CODE AS VARCHAR) AS "PaymentTypeCode"
-	  ,CAST(GL.WELL_ID AS VARCHAR) AS "WellId"
-      ,CAST(GL.REFERENCE AS VARCHAR) AS "Reference"
-      ,CAST(GL.AFE_ID AS VARCHAR) AS "AfeId"
-	  --,E.EntityType AS EntityType
-	  ,CAST(E.CODE AS VARCHAR) AS "Enity Code"
-	  ,CAST(E.Name AS VARCHAR) AS "Entity Name"
-      ,CAST(GL.ENTITY_COMPANY_ID AS VARCHAR) AS "EntityCompanyId"
-      ,CAST(GL.ENTITY_OWNER_ID AS VARCHAR) AS "EntityOwnerId"
-      ,CAST (GL.ENTITY_VENDOR_ID AS VARCHAR) AS "EntityVendorId"
-      ,CAST(GL.GROSS_VOLUME AS VARCHAR) AS "Gross Value"
-      ,CAST(GL.NET_VOLUME AS VARCHAR) AS "Net Value"
-      ,CAST(GL.LOCATION_TYPE AS VARCHAR) AS "LocationType"
-      ,CAST(GL.AP_INVOICE_ID AS VARCHAR) AS "ApInvoiceId"
-      ,CAST(GL.AR_INVOICE_ID AS VARCHAR) AS "ArInvoiceId"
-      ,CAST(GL.AP_CHECK_ID AS VARCHAR) AS "ApCheckId"
-      ,CAST(GL.CHECK_REVENUE_ID AS VARCHAR) AS "CheckRevenueId"
-      ,CAST(GL.ENTRY_GROUP AS VARCHAR) AS "EntryGroup"
-      ,CAST(GL.ORDINAL AS VARCHAR) AS "Ordinal"
-      ,CAST(GL.IS_RECONCILED AS VARCHAR) AS "Reconciled"
-  FROM {{ ref('stg_oda__gl') }} GL
-  
-  INNER JOIN {{ ref('stg_oda__account_v2') }} A
-  ON CAST(GL.ACCOUNT_ID AS VARCHAR) = CAST(A.ACCOUNT_ID AS VARCHAR)
-  
-  INNER JOIN {{ ref('stg_oda__company_v2') }} C
-  ON CAST(GL.COMPANY_ID AS VARCHAR) = CAST(C.ID AS VARCHAR)
+    cast(GL.SOURCE_MODULE_CODE as varchar) as "SourceModuleCode",
+    cast(GL.SOURCE_MODULE_NAME as varchar) as "SourceModuleName",
+    cast(GL.SOURCE_MODULE as varchar) as "SourceModule",
+    cast(V.Code as varchar) as "Voucher Code",
+    cast(GL.DESCRIPTION as varchar) as "Description",
+    cast(GL.PAYMENT_TYPE_CODE as varchar) as "PaymentTypeCode",
+    cast(GL.WELL_ID as varchar) as "WellId",
+    cast(GL.REFERENCE as varchar) as "Reference",
+    cast(GL.AFE_ID as varchar) as "AfeId",
+    --,E.EntityType AS EntityType
+    cast(E.CODE as varchar) as "Enity Code",
+    cast(E.Name as varchar) as "Entity Name",
+    cast(GL.ENTITY_COMPANY_ID as varchar) as "EntityCompanyId",
+    cast(GL.ENTITY_OWNER_ID as varchar) as "EntityOwnerId",
+    cast(GL.ENTITY_VENDOR_ID as varchar) as "EntityVendorId",
+    cast(GL.GROSS_VOLUME as varchar) as "Gross Value",
+    cast(GL.NET_VOLUME as varchar) as "Net Value",
+    cast(GL.LOCATION_TYPE as varchar) as "LocationType",
+    cast(GL.AP_INVOICE_ID as varchar) as "ApInvoiceId",
+    cast(GL.AR_INVOICE_ID as varchar) as "ArInvoiceId",
+    cast(GL.AP_CHECK_ID as varchar) as "ApCheckId",
+    cast(GL.CHECK_REVENUE_ID as varchar) as "CheckRevenueId",
+    cast(GL.ENTRY_GROUP as varchar) as "EntryGroup",
+    cast(GL.ORDINAL as varchar) as "Ordinal",
+    cast(GL.IS_RECONCILED as varchar) as "Reconciled"
+from {{ ref('stg_oda__gl') }} gl
 
-  INNER JOIN {{ ref('stg_oda__voucher_v2') }} V
-  ON CAST(GL.VOUCHER_ID AS VARCHAR) = CAST(V.ID AS VARCHAR)
+inner join {{ ref('stg_oda__account_v2') }} a
+    on cast(GL.ACCOUNT_ID as varchar) = cast(A.ID as varchar)
 
-  LEFT JOIN {{ ref('stg_oda__entity_v2') }} E
-  ON CAST(GL.ENTITY_ID AS VARCHAR) = CAST(E.ID AS VARCHAR)
+inner join {{ ref('stg_oda__company_v2') }} c
+    on cast(GL.COMPANY_ID as varchar) = cast(C.ID as varchar)
 
+inner join {{ ref('stg_oda__voucher_v2') }} v
+    on cast(GL.VOUCHER_ID as varchar) = cast(V.ID as varchar)
 
-
-WHERE
-	(GL.IS_POSTED = 1)
-	AND
-	(CAST(A.MAIN_ACCOUNT AS VARCHAR) IN ('701','702','703'))
-	AND
-	(CAST(A.SUB_ACCOUNT AS VARCHAR) IN ('1', '2', '3', '4', '5'))
+left join {{ ref('stg_oda__entity_v2') }} e
+    on cast(GL.ENTITY_ID as varchar) = cast(E.ID as varchar)
 
 
 
+where
+    (GL.IS_POSTED = 1)
+    and
+    (cast(A.MAIN_ACCOUNT as varchar) in ('701', '702', '703'))
+    and
+    (cast(A.SUB_ACCOUNT as varchar) in ('1', '2', '3', '4', '5'))
 
-UNION ALL
+
+
+
+union all
 
 --VALUES--
-SELECT 
-       --GL.Id
-       CAST(C.CODE AS VARCHAR) AS "Company Code"
-	  ,CAST(C.NAME AS VARCHAR) AS "Company Name"
-      ,CAST(A.MAIN_ACCOUNT AS VARCHAR) AS "MainAccount"
-	  ,CAST(A.SUB_ACCOUNT AS VARCHAR) AS "SubAccount"
-	  ,CAST(A.MAIN_ACCOUNT AS VARCHAR) || '-' || CAST(A.SUB_ACCOUNT AS VARCHAR) AS "Combined Account"
-	  ,CAST(A.MAIN_ACCOUNT AS VARCHAR) || '-' || CAST(A.SUB_ACCOUNT AS VARCHAR) AS "Account Key"
-      ,CAST(GL.IS_POSTED AS VARCHAR) AS "Posted"
+select
+    --GL.Id
+    cast(C.CODE as varchar) as "Company Code",
+    cast(C.NAME as varchar) as "Company Name",
+    cast(A.MAIN_ACCOUNT as varchar) as "MainAccount",
+    cast(A.SUB_ACCOUNT as varchar) as "SubAccount",
+    cast(A.MAIN_ACCOUNT as varchar) || '-' || cast(A.SUB_ACCOUNT as varchar) as "Combined Account",
+    cast(A.MAIN_ACCOUNT as varchar) || '-' || cast(A.SUB_ACCOUNT as varchar) as "Account Key",
+    cast(GL.IS_POSTED as varchar) as "Posted",
 
-      ,GL.JOURNAL_DATE AS "JE Date"
+    GL.JOURNAL_DATE as "JE Date",
 
-      ,GL.ACCRUAL_DATE AS "Accrual Date"
+    GL.ACCRUAL_DATE as "Accrual Date",
 
-      ,CAST(GL.SOURCE_MODULE_CODE AS VARCHAR) AS "SourceModuleCode"
-      ,CAST(GL.SOURCE_MODULE_NAME AS VARCHAR) AS "SourceModuleName"
-      ,CAST(GL.SOURCE_MODULE AS VARCHAR) AS "SourceModule"
-      ,CAST(V.Code AS VARCHAR) AS "Voucher Code"
-      ,CAST(GL.DESCRIPTION AS VARCHAR) AS "Description"
-      ,CAST(GL.PAYMENT_TYPE_CODE AS VARCHAR) AS "PaymentTypeCode"
-	  ,CAST(GL.WELL_ID AS VARCHAR) AS "WellId"
-      ,CAST(GL.REFERENCE AS VARCHAR) AS "Reference"
-      ,CAST(GL.AFE_ID AS VARCHAR) AS "AfeId"
-	  --,E.EntityType AS EntityType
-	  ,CAST(E.CODE AS VARCHAR) AS "Enity Code"
-	  ,CAST(E.Name AS VARCHAR) AS "Entity Name"
-      ,CAST(GL.ENTITY_COMPANY_ID AS VARCHAR) AS "EntityCompanyId"
-      ,CAST(GL.ENTITY_OWNER_ID AS VARCHAR) AS "EntityOwnerId"
-      ,CAST (GL.ENTITY_VENDOR_ID AS VARCHAR) AS "EntityVendorId"
-      ,CAST(GL.GROSS_VALUE AS VARCHAR) AS "Gross Value"
-      ,CAST(GL.NET_VALUE AS VARCHAR) AS "Net Value"
-      ,CAST(GL.LOCATION_TYPE AS VARCHAR) AS "LocationType"
-      ,CAST(GL.AP_INVOICE_ID AS VARCHAR) AS "ApInvoiceId"
-      ,CAST(GL.AR_INVOICE_ID AS VARCHAR) AS "ArInvoiceId"
-      ,CAST(GL.AP_CHECK_ID AS VARCHAR) AS "ApCheckId"
-      ,CAST(GL.CHECK_REVENUE_ID AS VARCHAR) AS "CheckRevenueId"
-      ,CAST(GL.ENTRY_GROUP AS VARCHAR) AS "EntryGroup"
-      ,CAST(GL.ORDINAL AS VARCHAR) AS "Ordinal"
-      ,CAST(GL.IS_RECONCILED AS VARCHAR) AS "Reconciled"
-  FROM {{ ref('stg_oda__gl') }} GL
-  
-  INNER JOIN {{ ref('stg_oda__account_v2') }} A
-  ON CAST(GL.ACCOUNT_ID AS VARCHAR) = CAST(A.ACCOUNT_ID AS VARCHAR)
-  
-  INNER JOIN {{ ref('stg_oda__company_v2') }} C
-  ON CAST(GL.COMPANY_ID AS VARCHAR) = CAST(C.ID AS VARCHAR)
+    cast(GL.SOURCE_MODULE_CODE as varchar) as "SourceModuleCode",
+    cast(GL.SOURCE_MODULE_NAME as varchar) as "SourceModuleName",
+    cast(GL.SOURCE_MODULE as varchar) as "SourceModule",
+    cast(V.Code as varchar) as "Voucher Code",
+    cast(GL.DESCRIPTION as varchar) as "Description",
+    cast(GL.PAYMENT_TYPE_CODE as varchar) as "PaymentTypeCode",
+    cast(GL.WELL_ID as varchar) as "WellId",
+    cast(GL.REFERENCE as varchar) as "Reference",
+    cast(GL.AFE_ID as varchar) as "AfeId",
+    --,E.EntityType AS EntityType
+    cast(E.CODE as varchar) as "Enity Code",
+    cast(E.Name as varchar) as "Entity Name",
+    cast(GL.ENTITY_COMPANY_ID as varchar) as "EntityCompanyId",
+    cast(GL.ENTITY_OWNER_ID as varchar) as "EntityOwnerId",
+    cast(GL.ENTITY_VENDOR_ID as varchar) as "EntityVendorId",
+    cast(GL.GROSS_VALUE as varchar) as "Gross Value",
+    cast(GL.NET_VALUE as varchar) as "Net Value",
+    cast(GL.LOCATION_TYPE as varchar) as "LocationType",
+    cast(GL.AP_INVOICE_ID as varchar) as "ApInvoiceId",
+    cast(GL.AR_INVOICE_ID as varchar) as "ArInvoiceId",
+    cast(GL.AP_CHECK_ID as varchar) as "ApCheckId",
+    cast(GL.CHECK_REVENUE_ID as varchar) as "CheckRevenueId",
+    cast(GL.ENTRY_GROUP as varchar) as "EntryGroup",
+    cast(GL.ORDINAL as varchar) as "Ordinal",
+    cast(GL.IS_RECONCILED as varchar) as "Reconciled"
+from {{ ref('stg_oda__gl') }} gl
 
-  INNER JOIN {{ ref('stg_oda__voucher_v2') }} V
-  ON CAST(GL.VOUCHER_ID AS VARCHAR) = CAST(V.ID AS VARCHAR)
+inner join {{ ref('stg_oda__account_v2') }} a
+    on cast(GL.ACCOUNT_ID as varchar) = cast(A.ID as varchar)
 
-  LEFT JOIN {{ ref('stg_oda__entity_v2') }} E
-  ON CAST(GL.ENTITY_ID AS VARCHAR) = CAST(E.ID AS VARCHAR)
+inner join {{ ref('stg_oda__company_v2') }} c
+    on cast(GL.COMPANY_ID as varchar) = cast(C.ID as varchar)
+
+inner join {{ ref('stg_oda__voucher_v2') }} v
+    on cast(GL.VOUCHER_ID as varchar) = cast(V.ID as varchar)
+
+left join {{ ref('stg_oda__entity_v2') }} e
+    on cast(GL.ENTITY_ID as varchar) = cast(E.ID as varchar)
 
 
 
-WHERE
-	(GL.IS_POSTED = 1)
-	AND
-	(CAST( A.MAIN_ACCOUNT AS VARCHAR) IN ('310','311','312','313','314','315','316','317','328','701','702','703','840','850','860','870','704','900','715','901','807','903','830','806','802','318','935','704','705'))
-  AND NOT "Company Code" IN (705, 801, 900)
+where
+    (GL.IS_POSTED = 1)
+    and
+    (
+        cast(A.MAIN_ACCOUNT as varchar) in (
+            '310',
+            '311',
+            '312',
+            '313',
+            '314',
+            '315',
+            '316',
+            '317',
+            '328',
+            '701',
+            '702',
+            '703',
+            '840',
+            '850',
+            '860',
+            '870',
+            '704',
+            '900',
+            '715',
+            '901',
+            '807',
+            '903',
+            '830',
+            '806',
+            '802',
+            '318',
+            '935',
+            '704',
+            '705'
+        )
+    )
+    and not "Company Code" in (705, 801, 900)

@@ -22,60 +22,62 @@
     - stg_oda__wells
 #}
 with ar_adjustments as (
-        select 
-        c.code                          as Company_Code,
-        c.name                          as Company_Name,
-        i.owner_id                      as Owner_ID,
-        e.code                          as Owner_Code,
-        e.name                          as Owner_Name,
-        i.well_id                       as Well_ID,
-        w.code                          as Well_Code,
-        w.name                          as Well_Name,
-        i.code                          as Invoice_Number,
-        i.id                            as Invoice_ID,
-        i.invoice_type_id               as Invoice_Type_ID,
-        w.hold_all_billing              as Hold_Billing,
-        aria.voucher_id                 as Voucher_ID,
-        Case 
-            When aria.adjustment_type_id = 0 Then 'Application of Advance'
-            When aria.adjustment_type_id = 1 Then REPLACE(ariad.Description, 'XClear with Inv#', 'Cross Clear Inv #')
-            Else 'Adjustment'
-            End As Invoice_Description,
-        Case 
-            When aria.adjustment_type_id = 0 Then 'AAdv'
-            When aria.adjustment_type_id = 1 Then 'Xclear'
-            Else 'Adj.'
-            End As Invoice_Type,
-        aria.adjustment_date                  as Invoice_Date,
-        ariad.adjustment_detail_amount        as Total_Invoice_Amount,
-        2                                     as Sort_Order
-        
-        
-        FROM {{ref('stg_oda__arinvoiceadjustmentdetail')}} ariad
-        
-        INNER JOIN {{ref('stg_oda__arinvoiceadjustment') }} aria
-        ON aria.id = ariad.invoice_adjustment_id
+    select
+        c.code as company_code,
+        c.name as company_name,
+        i.owner_id as owner_id,
+        e.code as owner_code,
+        e.name as owner_name,
+        i.well_id as well_id,
+        w.code as well_code,
+        w.name as well_name,
+        i.code as invoice_number,
+        i.id as invoice_id,
+        i.invoice_type_id as invoice_type_id,
+        w.is_hold_all_billing as hold_billing,
+        aria.voucher_id as voucher_id,
+        aria.adjustment_date as invoice_date,
+        ariad.adjustment_detail_amount as total_invoice_amount,
+        2 as sort_order,
+        case
+            when aria.adjustment_type_id = 0 then 'Application of Advance'
+            when aria.adjustment_type_id = 1 then replace(ariad.Description, 'XClear with Inv#', 'Cross Clear Inv #')
+            else 'Adjustment'
+        end as invoice_description,
+        case
+            when aria.adjustment_type_id = 0 then 'AAdv'
+            when aria.adjustment_type_id = 1 then 'Xclear'
+            else 'Adj.'
+        end as invoice_type
 
-        INNER JOIN {{ref('stg_oda__voucher_v2')}} v
-        ON v.id = aria.voucher_id
 
-        INNER JOIN {{ref('stg_oda__arinvoice_v2')}} i
-        ON i.id = ariad.invoice_id
+    from {{ ref('stg_oda__arinvoiceadjustmentdetail') }} ariad
 
-        INNER JOIN {{ref('stg_oda__company_v2')}} c
-        ON c.id = i.company_id
-        
-        INNER JOIN {{ref('stg_oda__owner_v2')}} o
-        ON o.id = i.owner_id
+    inner join {{ ref('stg_oda__arinvoiceadjustment') }} aria
+        on ariad.invoice_adjustment_id = aria.id
 
-        INNER JOIN {{ref('stg_oda__entity_v2')}} e
-        ON e.Id = o.entity_id
+    inner join {{ ref('stg_oda__voucher_v2') }} v
+        on aria.voucher_id = v.id
 
-        LEFT JOIN {{ref('stg_oda__wells')}} w
-        ON w.id = i.well_id
-        
-        Where i.Posted = 1
-        and v.Posted = 1
-        
-    )
-        select * from ar_adjustments
+    inner join {{ ref('stg_oda__arinvoice_v2') }} i
+        on ariad.invoice_id = i.id
+
+    inner join {{ ref('stg_oda__company_v2') }} c
+        on i.company_id = c.id
+
+    inner join {{ ref('stg_oda__owner_v2') }} o
+        on i.owner_id = o.id
+
+    inner join {{ ref('stg_oda__entity_v2') }} e
+        on o.entity_id = e.Id
+
+    left join {{ ref('stg_oda__wells') }} w
+        on i.well_id = w.id
+
+    where
+        i.Posted = 1
+        and v.is_posted
+
+)
+
+select * from ar_adjustments

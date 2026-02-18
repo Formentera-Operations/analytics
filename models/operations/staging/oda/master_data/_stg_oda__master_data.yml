@@ -1,0 +1,695 @@
+version: 2
+
+models:
+  - name: stg_oda__company_v2
+    description: |
+      Staging model for ODA Company configuration.
+      Source: ODA_BATCH_ODA_COMPANY_V2 (Estuary batch, 39 rows)
+      Grain: One row per company (id)
+    columns:
+      - name: company_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Company code identifier
+        data_tests:
+          - not_null
+      - name: code_sort
+        description: Sort key for company code
+      - name: name
+        description: Company short name
+      - name: full_name
+        description: Company full descriptive name
+      - name: comment
+        description: Free-text comment on the company
+      - name: company_v2_identity
+        description: Numeric identity for the company record
+      - name: tax_id
+        description: Company tax identification number
+      - name: tax_id_type_id
+        description: FK to tax ID type classifier
+      - name: is_partnership
+        description: Whether the company is structured as a partnership
+      - name: k1_type_id
+        description: FK to K-1 tax reporting type
+      - name: main_contact_id
+        description: FK to primary contact for this company
+      - name: url
+        description: Company website URL
+      - name: basis_id
+        description: FK to accounting basis (cash vs accrual)
+      - name: fiscal_year_end_month
+        description: Month number when fiscal year ends (1-12)
+      - name: current_fiscal_year
+        description: Current fiscal year for the company
+      - name: current_ap_month
+        description: Current open AP accounting month
+      - name: current_ar_month
+        description: Current open AR accounting month
+      - name: current_gl_month
+        description: Current open GL accounting month
+      - name: current_jib_month
+        description: Current open JIB accounting month
+      - name: current_revenue_month
+        description: Current open revenue accounting month
+      - name: ar_invoice_sequence_id
+        description: FK to AR invoice sequence generator
+      - name: ap_invoice_sequence_id
+        description: FK to AP invoice sequence generator
+      - name: is_ar_statement_print_pending
+        description: Whether AR statements are queued for printing
+      - name: is_accept_memo_entries
+        description: Whether the company accepts memo journal entries
+      - name: ach_id
+        description: ACH identifier for electronic payments
+      - name: is_ach_corporation
+        description: Whether the entity is an ACH-enrolled corporation
+      - name: default_accrual_items_id
+        description: FK to default accrual items configuration
+      - name: default_expense_interest_type_id
+        description: FK to default interest type for expenses
+      - name: default_expense_custom_interest_type_id
+        description: FK to default custom interest type for expenses
+      - name: default_expense_entitlement_interest
+        description: Default expense entitlement interest percentage
+      - name: default_revenue_interest_type_id
+        description: FK to default interest type for revenue
+      - name: default_revenue_custom_interest_type_id
+        description: FK to default custom interest type for revenue
+      - name: default_revenue_entitlement_interest
+        description: Default revenue entitlement interest percentage
+      - name: ap_detail_retention_months
+        description: Number of months to retain AP detail records
+      - name: ar_detail_retention_months
+        description: Number of months to retain AR detail records
+      - name: gl_detail_retention_months
+        description: Number of months to retain GL detail records
+      - name: gl_balance_retention_date
+        description: Date through which GL balances are retained
+      - name: gl_balance_retention_years
+        description: Number of years to retain GL balance records
+      - name: jib_detail_retention_years
+        description: Number of years to retain JIB detail records
+      - name: revenue_detail_retention_months
+        description: Number of months to retain revenue detail records
+      - name: cdex_code
+        description: CDEX standard exchange code for the company
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: inactive_date
+        description: Date the company was marked inactive
+      - name: summarizer_chunk_size
+        description: Chunk size for GL summarizer processing
+      - name: tenant_id
+        description: FK to tenant for multi-tenant configuration
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__entity_v2
+    description: |
+      Staging model for ODA Entity master data.
+      Source: ODA_BATCH_ODA_ENTITY_V2 (Estuary batch, ~56K rows)
+      Grain: One row per entity (id)
+      Note: CODE is NUMBER type — downstream models cast to VARCHAR.
+    columns:
+      - name: entity_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Entity numeric code
+        data_tests:
+          - not_null
+      - name: code_sort
+        description: Sort key for entity code
+      - name: name
+        description: Entity short name
+      - name: full_name
+        description: Entity full descriptive name
+      - name: entity_v2_identity
+        description: Numeric identity for the entity record
+      - name: tax_id
+        description: Entity tax identification number
+      - name: tax_id_type_id
+        description: FK to tax ID type classifier
+      - name: name_1099
+        description: Name used for 1099 tax reporting
+      - name: main_contact_id
+        description: FK to primary contact for this entity
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__vendor_v2
+    description: |
+      Staging model for ODA Vendor master data.
+      Source: ODA_BATCH_ODA_VENDOR_V2 (Estuary batch, ~4K rows)
+      Grain: One row per vendor (id)
+    columns:
+      - name: vendor_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: entity_id
+        description: FK to stg_oda__entity_v2 — parent entity
+        data_tests:
+          - not_null
+      - name: vendor_v2_identity
+        description: Numeric identity for the vendor record
+      - name: is_active
+        description: Whether the vendor is currently active
+      - name: changed_since_printed
+        description: Counter of changes since last print
+      - name: is_hold_ap_checks
+        description: Whether AP checks are on hold for this vendor
+      - name: is_print_1099
+        description: Whether to print a 1099 for this vendor
+      - name: is_second_tin_notice_sent
+        description: Whether a second TIN notice has been sent
+      - name: ap_due_date_calculated_based_on
+        description: Basis for calculating AP due dates
+      - name: ap_check_stub_reference
+        description: Reference type for AP check stubs
+      - name: ap_payment_type_id
+        description: FK to stg_oda__payment_type — default AP payment method
+      - name: is_one_invoice_per_check
+        description: Whether to pay one invoice per check
+      - name: is_take_all_discounts
+        description: Whether to automatically take all available discounts
+      - name: terms
+        description: Payment terms in days
+      - name: default_ap_currency_id
+        description: FK to default currency for AP transactions
+      - name: default_expense_account_id
+        description: FK to stg_oda__account_v2 — default expense account
+      - name: minimum_ap_check
+        description: Minimum amount for issuing an AP check
+      - name: minimum_currency_id
+        description: FK to currency for minimum check amount
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__owner_v2
+    description: |
+      Staging model for ODA Owner master data.
+      Source: ODA_BATCH_ODA_OWNER_V2 (Estuary batch, ~42K rows)
+      Grain: One row per owner (id)
+    columns:
+      - name: owner_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: entity_id
+        description: FK to stg_oda__entity_v2 — parent entity
+        data_tests:
+          - not_null
+      - name: owner_v2_identity
+        description: Numeric identity for the owner record
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: is_active
+        description: Whether the owner is currently active
+      - name: is_exempt_state_tax
+        description: Whether the owner is exempt from state tax withholding
+      - name: is_federal_withholding
+        description: Whether federal withholding applies to this owner
+      - name: is_print_1099
+        description: Whether to print a 1099 for this owner
+      - name: is_second_tin_notice_sent
+        description: Whether a second TIN notice has been sent
+      - name: k1_type_id
+        description: FK to K-1 tax reporting type
+      - name: is_ar_cross_clear
+        description: Whether AR cross-clearing is enabled
+      - name: default_ar_currency_id
+        description: FK to default currency for AR transactions
+      - name: is_print_statement
+        description: Whether to print statements for this owner
+      - name: ar_email
+        description: Email address for AR correspondence
+      - name: ar_email_preferences
+        description: AR email delivery preferences
+      - name: has_ar_email
+        description: Whether an AR email address is on file
+      - name: is_create_ar_from_revenue_credits
+        description: Whether to create AR entries from revenue credits
+      - name: is_create_revenue_from_ar_credits
+        description: Whether to create revenue entries from AR credits
+      - name: jib_email
+        description: Email address for JIB correspondence
+      - name: jib_email_preferences
+        description: JIB email delivery preferences
+      - name: has_jib_email
+        description: Whether a JIB email address is on file
+      - name: is_jib_link_recipient
+        description: Whether this owner receives JIB link notifications
+      - name: minimum_jib_invoice
+        description: Minimum amount for issuing a JIB invoice
+      - name: revenue_email
+        description: Email address for revenue correspondence
+      - name: revenue_email_preferences
+        description: Revenue email delivery preferences
+      - name: has_revenue_email
+        description: Whether a revenue email address is on file
+      - name: revenue_check_stub_reference
+        description: Reference type for revenue check stubs
+      - name: minimum_revenue_check
+        description: Minimum amount for issuing a revenue check
+      - name: is_working_interest_only
+        description: Whether the owner holds only working interest
+      - name: payout_history
+        description: Payout history tracking reference
+      - name: netting_rule_id
+        description: FK to netting rule for cross-module offsets
+      - name: is_hold_billing
+        description: Whether billing is on hold for this owner
+      - name: is_hold_revenue
+        description: Whether revenue distribution is on hold
+      - name: default_billing_suspense_category_id
+        description: FK to default suspense category for billing holds
+      - name: default_revenue_suspense_category_id
+        description: FK to default suspense category for revenue holds
+      - name: cdex_recipient_id
+        description: CDEX recipient identifier for electronic data exchange
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__purchaser_v2
+    description: |
+      Staging model for ODA Purchaser master data.
+      Source: ODA_BATCH_ODA_PURCHASER_V2 (Estuary batch, 183 rows)
+      Grain: One row per purchaser (id)
+    columns:
+      - name: purchaser_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: entity_id
+        description: FK to stg_oda__entity_v2 — parent entity
+        data_tests:
+          - not_null
+      - name: is_active
+        description: Whether the purchaser is currently active
+      - name: is_by_well_revenue_receivable
+        description: Whether revenue receivables are tracked by well
+      - name: cdex_code
+        description: CDEX standard exchange code for the purchaser
+      - name: purchaser_v2_identity
+        description: Numeric identity for the purchaser record
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__wells
+    description: |
+      Staging model for ODA Wells (Cost Centers).
+      Source: ODA_BATCH_ODA_WELL (Estuary batch, ~9.4K rows)
+      Grain: One row per well/cost center (id)
+      Note: No create/update event IDs in this source.
+    columns:
+      - name: wells_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Well/cost center code
+        data_tests:
+          - not_null
+      - name: code_sort
+        description: Sort key for well code
+      - name: name
+        description: Well short name
+      - name: api_number
+        description: API well number (state + county + unique)
+      - name: property_reference_code
+        description: Property reference code linking to external systems
+      - name: well_identity
+        description: Numeric identity for the well record
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: country_iso_alpha2_code
+        description: ISO 3166-1 alpha-2 country code (e.g., US)
+      - name: country_iso_alpha3_code
+        description: ISO 3166-1 alpha-3 country code (e.g., USA)
+      - name: country_iso_numeric_code
+        description: ISO 3166-1 numeric country code
+      - name: country_name
+        description: Full country name
+      - name: state_code
+        description: State or province code
+      - name: state_name
+        description: Full state or province name
+      - name: county_name
+        description: County or parish name
+      - name: legal_description
+        description: Legal land description (section, township, range)
+      - name: operating_group_code
+        description: Operating group code for organizational grouping
+      - name: operating_group_name
+        description: Operating group display name
+      - name: operator_id
+        description: FK to operator entity
+      - name: cost_center_type_code
+        description: Cost center type code (well, facility, etc.)
+      - name: cost_center_type_name
+        description: Cost center type display name
+      - name: is_stripper_well
+        description: Whether the well qualifies as a stripper well
+      - name: afe_usage_type
+        description: AFE usage type description
+      - name: afe_usage_type_id
+        description: AFE usage type classifier
+      - name: well_status_type_code
+        description: Current well status type code
+      - name: well_status_type_name
+        description: Current well status type display name
+      - name: well_status_effective_date
+        description: Date the current well status became effective
+      - name: production_status_name
+        description: Current production status description
+      - name: spud_date
+        description: Date the well was spudded
+      - name: first_production_date
+        description: Date of first production
+      - name: shut_in_date
+        description: Date the well was shut in
+      - name: inactive_date
+        description: Date the well was marked inactive
+      - name: is_hold_all_billing
+        description: Whether all billing is on hold for this well
+      - name: hold_billing_category_name
+        description: Category name for billing hold reason
+      - name: is_suspend_all_revenue
+        description: Whether all revenue distribution is suspended
+      - name: suspend_revenue_type_name
+        description: Type name for revenue suspension reason
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__account_v2
+    description: |
+      Staging model for ODA Chart of Accounts (V2).
+      Source: ODA_BATCH_ODA_ACCOUNT_V2 (Estuary batch, ~2K rows)
+      Grain: One row per account (id)
+      Note: Has derived is_accrual flag in enhanced CTE.
+    columns:
+      - name: account_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: account_v2_identity
+        description: Numeric identity for the account record
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: account_code
+        description: GL account code
+      - name: account_name
+        description: GL account display name
+      - name: account_full_name
+        description: Full descriptive name of the account
+      - name: main_account
+        description: Main GL account number
+      - name: sub_account
+        description: Sub-account code within the main account
+      - name: account_sort
+        description: Sort key for account ordering
+      - name: key_sort
+        description: Secondary sort key
+      - name: account_type_id
+        description: FK to stg_oda__account_types — account type classification
+        data_tests:
+          - not_null
+      - name: account_subtype_id
+        description: FK to stg_oda__account_sub_types — account subtype classification
+      - name: is_active
+        description: Whether the account is currently active
+      - name: is_normally_debit
+        description: Whether the account normally carries a debit balance
+      - name: is_accrual
+        description: Whether the account is an accrual account (derived from name pattern)
+      - name: is_summarize_in_gl_reports
+        description: Whether to summarize this account in GL reports
+      - name: is_summarize_in_jib_invoice
+        description: Whether to summarize this account on JIB invoices
+      - name: jib_summary_id
+        description: FK to JIB summary grouping
+      - name: is_bank_recon_performed
+        description: Whether bank reconciliation is performed for this account
+      - name: changed_since_printed
+        description: Counter of changes since last print
+      - name: is_generate_fixed_asset_candidates
+        description: Whether to generate fixed asset candidates from this account
+      - name: is_remeasure_at_current
+        description: Whether to remeasure at current exchange rate
+      - name: is_translate_at_current
+        description: Whether to translate at current exchange rate
+      - name: afe_usage_type_id
+        description: AFE usage type classifier for this account
+      - name: alternate_reference_usage_type_id
+        description: Alternate reference usage type classifier
+      - name: entry_classification_usage_type_id
+        description: Entry classification usage type classifier
+      - name: expense_distribution_usage_type_id
+        description: Expense distribution usage type classifier
+      - name: manual_entry_usage_type_id
+        description: Manual entry usage type classifier
+      - name: well_usage_type_id
+        description: Well usage type classifier for this account
+      - name: location_grouping_id
+        description: FK to location grouping configuration
+      - name: last_change_code
+        description: Code identifying the last change made
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__interest_type
+    description: |
+      Staging model for ODA Interest Types.
+      Source: ODA_BATCH_ODA_INTERESTTYPE (Estuary batch, 5 rows)
+      Grain: One row per interest type (id)
+    columns:
+      - name: interest_type_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Interest type code (WI, RI, ORI, etc.)
+        data_tests:
+          - not_null
+      - name: name
+        description: Interest type short name
+      - name: full_name
+        description: Full descriptive name of the interest type
+      - name: interest_type_identity
+        description: Numeric identity for the interest type
+      - name: cdex_code
+        description: CDEX standard exchange code for the interest type
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__product
+    description: |
+      Staging model for ODA Products.
+      Source: ODA_BATCH_ODA_PRODUCT (Estuary batch, 9 rows)
+      Grain: One row per product (id)
+    columns:
+      - name: product_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Product code (OIL, GAS, NGL, etc.)
+        data_tests:
+          - not_null
+      - name: code_sort
+        description: Sort key for product code
+      - name: name
+        description: Product short name
+      - name: full_name
+        description: Full descriptive name of the product
+      - name: product_identity
+        description: Numeric identity for the product record
+      - name: type_id
+        description: FK to product type classifier
+      - name: currency_id
+        description: FK to default currency for this product
+      - name: lowest_typical_price
+        description: Low end of typical price range for this product
+      - name: highest_typical_price
+        description: High end of typical price range for this product
+      - name: conversion_to_equivalent_barrels
+        description: Conversion factor to BOE (barrels of oil equivalent)
+      - name: cdex_code
+        description: CDEX standard exchange code for the product
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__payment_type
+    description: |
+      Staging model for ODA Payment Types.
+      Source: ODA_BATCH_ODA_PAYMENTTYPE (Estuary batch, 8 rows)
+      Grain: One row per payment type (id)
+    columns:
+      - name: payment_type_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Payment type code (CHECK, ACH, WIRE, etc.)
+        data_tests:
+          - not_null
+      - name: name
+        description: Payment type short name
+      - name: full_name
+        description: Full descriptive name of the payment type
+      - name: payment_type_identity
+        description: Numeric identity for the payment type
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
