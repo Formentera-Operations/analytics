@@ -17,6 +17,9 @@ selectors:
         - +fct_los
         - +dim_los_acct_map
         - +general_ledger+
+        - +dim_ar_summary
+        - +fct_ar_aging
+        - +dim_oda_check_register
 
   - name: marts-finance-combo-curve
     definition:
@@ -35,6 +38,19 @@ selectors:
   - name: marts-griffin
     definition: +path:models/operations/marts/griffin
 
+  - name: marts-drilling
+    definition: +path:models/operations/marts/drilling
+
+  - name: marts-well-360
+    definition:
+      union:
+        - +well_360
+        - +well_360__conflicts
+        - +well_360__data_quality_summary
+
+  - name: marts-orm
+    definition: +path:models/operations/marts/orm
+
   - name: default
     default: true
     definition:
@@ -44,3 +60,6 @@ selectors:
         - {method: "selector", value: "marts-finance-combo-curve"}
         - {method: "selector", value: "marts-production"}
         - {method: "selector", value: "marts-griffin"}
+        - {method: "selector", value: "marts-drilling"}
+        - {method: "selector", value: "marts-well-360"}
+        - {method: "selector", value: "marts-orm"}
