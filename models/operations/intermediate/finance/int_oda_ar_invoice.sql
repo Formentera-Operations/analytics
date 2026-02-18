@@ -6,13 +6,16 @@
 {#
     Dimension: Company AR Invoice Summary
     Core Invoice Data (JIB, Advances, Closeout, Misc Invoices)
-    
+
     -- Layer 1: Base Invoice Model
-    -- Purpose: Extract and standardize AR invoice data
+    -- Purpose: Extract and standardize AR invoice data. Unfiltered — includes
+    --          both posted and unposted invoices. Downstream models filter on
+    --          is_invoice_posted for posted-only analysis.
     -- Dependencies: Base tables only
-    
+
     Sources:
     - stg_oda__arinvoice_v2
+    - stg_oda__voucher_v2
     - stg_oda__company_v2
     - stg_oda__owner_v2
     - stg_oda__entity_v2
@@ -35,6 +38,10 @@ with ar_invoices as (
         i.voucher_id as voucher_id,
         i.invoice_date as invoice_date,
         i.invoice_amount as total_invoice_amount,
+        i.is_posted as is_invoice_posted,
+        -- Posting status flags — consumers filter here rather than relying on
+        -- a hard filter in this base model.
+        v.is_posted as is_voucher_posted,
         coalesce(w.is_hold_all_billing, false) as hold_billing,
         case
             when i.invoice_type_id = 5 then i.description
@@ -54,8 +61,6 @@ with ar_invoices as (
             else 1
         end as sort_order
 
-
-
     from {{ ref('stg_oda__arinvoice_v2') }} i
 
     inner join {{ ref('stg_oda__company_v2') }} c
@@ -65,15 +70,16 @@ with ar_invoices as (
         on i.owner_id = o.id
 
     inner join {{ ref('stg_oda__entity_v2') }} e
-        on o.entity_id = e.Id
+        on o.entity_id = e.id
 
-    -- LEFT JOIN {{ ref('stg_oda__voucher_v2') }} v
-    -- ON v.id = i.voucher_id
+    left join {{ ref('stg_oda__voucher_v2') }} v
+        on i.voucher_id = v.id
 
     left join {{ ref('stg_oda__wells') }} w
         on i.well_id = w.id
 
-    where i.is_posted
+-- NOTE: No WHERE i.is_posted filter — all invoices exposed.
+-- Use is_invoice_posted flag to filter posted-only views downstream.
 )
 
 select * from ar_invoices

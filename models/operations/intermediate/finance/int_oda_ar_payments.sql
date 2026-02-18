@@ -6,14 +6,16 @@
 {#
     Dimension: Company AR Invoice Payment Summary
     Payment Transactions applied to invoices
-    
+
     -- Layer 1: Payment Details Model
-    -- Purpose: Extract and standardize payment transaction data
+    -- Purpose: Extract and standardize payment transaction data. Unfiltered —
+    --          exposes is_invoice_posted and is_voucher_posted flags so downstream
+    --          agg models can split posted vs. unposted payment totals.
     -- Dependencies: Base tables only
-    
+
     Sources:
-    - stg_oda__arinvoicepayment
     - stg_oda__arinvoicepaymentdetail
+    - stg_oda__arinvoicepayment
     - stg_oda__arinvoice_v2
     - stg_oda__voucher_v2
     - stg_oda__company_v2
@@ -41,8 +43,10 @@ with ar_payments as (
         p.payment_date as invoice_date,
         pd.amount_applied as total_invoice_amount,
         2 as sort_order,
+        i.is_posted as is_invoice_posted,
+        -- Posting status flags — used by payments_agg for posted/unposted splits
+        v.is_posted as is_voucher_posted,
         concat('Payment, Check # ', p.payee_check_number) as invoice_description
-
 
     from {{ ref('stg_oda__arinvoicepaymentdetail') }} pd
 
@@ -62,14 +66,13 @@ with ar_payments as (
         on i.owner_id = o.id
 
     inner join {{ ref('stg_oda__entity_v2') }} e
-        on o.entity_id = e.Id
+        on o.entity_id = e.id
 
     left join {{ ref('stg_oda__wells') }} w
         on i.well_id = w.id
 
-    where
-        i.is_posted
-        and v.is_posted
+-- NOTE: No WHERE posted filter — all payment transactions exposed.
+-- Use is_invoice_posted / is_voucher_posted flags for filtering.
 )
 
 select * from ar_payments

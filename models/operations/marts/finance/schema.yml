@@ -1,6 +1,121 @@
 version: 2
 
 models:
+  - name: fct_ar_aging_detail
+    description: >
+      Transaction-level AR aging fact. One row per AR transaction (invoice, payment,
+      adjustment, or netting). Replaces fct_ar_aging (retired 2026-02-18).
+
+      Includes is_invoice_posted and is_voucher_posted flags enabling pre-JIB
+      analysis (unposted invoices) alongside standard posted AR aging. The parent
+      invoice's remaining_balance and include_record are repeated on every
+      transaction row for consumer convenience — no additional join needed.
+
+      Use cases:
+      - Drill-down to individual transactions for an invoice
+      - Pre-JIB preview: WHERE is_invoice_posted = false
+      - Posted AR aging: WHERE is_invoice_posted = true AND include_record = 1
+    columns:
+      - name: invoice_id
+        description: FK to stg_oda__arinvoice_v2 — identifies the parent invoice
+        data_tests:
+          - not_null
+      - name: transaction_source
+        description: "One of: invoice, payment, adjustment, netting"
+        data_tests:
+          - not_null
+      - name: is_invoice_posted
+        description: True when the parent invoice is posted in ODA
+        data_tests:
+          - not_null
+      - name: is_voucher_posted
+        description: True when the voucher for this specific transaction is posted
+      - name: include_record
+        description: >
+          1 when remaining_balance != 0 AND exclude_pair = 0. Filter on this for
+          actionable outstanding AR transactions.
+        data_tests:
+          - not_null
+      - name: remaining_balance
+        description: Total remaining balance on the parent invoice (posted + unposted)
+      - name: remaining_balance_posted
+        description: Posted-only balance component — use for JIB comparison
+      - name: remaining_balance_unposted
+        description: Unposted-only balance — use for pre-JIB preview
+      - name: exclude_pair
+        description: "1 when the parent invoice is part of an advance/closeout pair"
+      - name: balance_due
+        description: Transaction amount (positive for invoices, negative for payments/netting)
+
+  - name: fct_ar_aging_summary
+    description: >
+      Invoice-level AR aging summary with standard aging bucket columns.
+      One row per invoice. Replaces fct_ar_aging (retired 2026-02-18).
+
+      Aging bucket definition (based on DATEDIFF(day, invoice_date, CURRENT_DATE())):
+      - current_balance: <= 0 days (future-dated or today)
+      - balance_1_30_days: 1-30 days past due
+      - balance_31_60_days: 31-60 days past due
+      - balance_61_90_days: 61-90 days past due
+      - balance_90_plus_days: > 90 days past due
+
+      Pre-JIB unposted invoices with future billing dates land in current_balance.
+      This is intentional — they represent upcoming billing.
+
+      Use cases:
+      - Standard AR aging report: WHERE include_record = 1
+      - Posted-only aging: WHERE is_invoice_posted = true AND include_record = 1
+      - Pre-JIB treasury preview: WHERE is_invoice_posted = false
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "remaining_balance is not null"
+          config:
+            severity: error
+            error_msg: >
+              Every invoice must have a remaining_balance. NULL indicates a missing
+              row in int_oda_ar_invoice_remaining_balances — investigate join integrity.
+    columns:
+      - name: invoice_id
+        description: PK — unique per invoice
+        data_tests:
+          - unique
+          - not_null
+      - name: is_invoice_posted
+        description: True when the invoice is posted in ODA
+        data_tests:
+          - not_null
+      - name: is_voucher_posted
+        description: True when the invoice's voucher is posted
+      - name: remaining_balance
+        description: >
+          Invoice amount + payments + adjustments + netting (additive formula,
+          E2E validated against Snowflake data). Negative = credit balance.
+        data_tests:
+          - not_null
+      - name: remaining_balance_posted
+        description: Posted-only remaining balance component
+      - name: remaining_balance_unposted
+        description: Unposted-only remaining balance component
+      - name: include_record
+        description: "1 when remaining_balance != 0 AND exclude_pair = 0"
+        data_tests:
+          - not_null
+      - name: exclude_pair
+        description: "1 when invoice is part of an advance/closeout pair (excluded from aging)"
+      - name: days_past_due
+        description: DATEDIFF(day, invoice_date, CURRENT_DATE()). Negative for future-dated invoices.
+      - name: current_balance
+        description: Balance for invoices not yet past due (days_past_due <= 0)
+      - name: balance_1_30_days
+        description: Balance for invoices 1-30 days past due (BETWEEN 1 AND 30, inclusive)
+      - name: balance_31_60_days
+        description: Balance for invoices 31-60 days past due
+      - name: balance_61_90_days
+        description: Balance for invoices 61-90 days past due
+      - name: balance_90_plus_days
+        description: Balance for invoices more than 90 days past due (> 90, no upper bound)
+
   - name: wells
     description: Unified wells data combining project wells and company wells.
     columns:

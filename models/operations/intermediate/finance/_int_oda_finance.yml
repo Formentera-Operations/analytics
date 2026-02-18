@@ -1,0 +1,177 @@
+version: 2
+
+models:
+  - name: int_oda_ar_invoice
+    description: >
+      Unfiltered AR invoice base model. All invoices exposed (posted and unposted).
+      Use is_invoice_posted and is_voucher_posted flags to filter downstream.
+      Previously filtered WHERE i.is_posted — that filter was removed to support
+      pre-JIB AR preview (upcoming billing not yet posted to GL).
+    columns:
+      - name: invoice_id
+        description: Natural key — ODA ARINVOICE_V2.ID
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2. May be NULL for invoices without an assigned voucher.
+      - name: is_invoice_posted
+        description: True when the invoice itself is posted in ODA.
+      - name: is_voucher_posted
+        description: >
+          True when the voucher (batch run) that generated this invoice is posted.
+          NULL when voucher_id is NULL (no voucher assigned to invoice).
+      - name: total_invoice_amount
+        description: Invoice face value in USD (positive for charges billed to owner).
+      - name: hold_billing
+        description: True when the associated well has billing on hold.
+
+  - name: int_oda_ar_payments
+    description: >
+      AR payment transactions applied to invoices. Unfiltered — exposes
+      is_invoice_posted and is_voucher_posted flags for posted/unposted splitting
+      in the payments_agg model. Payment amounts (amount_applied) are already
+      negative in ODA — no negation needed.
+    columns:
+      - name: invoice_id
+        description: FK to parent invoice in stg_oda__arinvoice_v2
+      - name: voucher_id
+        description: The payment's own voucher_id (independent from the invoice's voucher)
+      - name: is_invoice_posted
+        description: True when the parent invoice is posted
+      - name: is_voucher_posted
+        description: True when the payment's voucher is posted
+      - name: total_invoice_amount
+        description: amount_applied — NEGATIVE in ODA (reduces invoice balance)
+
+  - name: int_oda_ar_adjustments
+    description: >
+      AR adjustment transactions (advance applications, cross-clears, etc.).
+      Unfiltered — exposes is_invoice_posted and is_voucher_posted flags.
+      Adjustment amounts are mixed sign in ODA — passed through unchanged.
+    columns:
+      - name: invoice_id
+        description: FK to parent invoice in stg_oda__arinvoice_v2
+      - name: voucher_id
+        description: The adjustment's own voucher_id (independent from the invoice's voucher)
+      - name: is_invoice_posted
+        description: True when the parent invoice is posted
+      - name: is_voucher_posted
+        description: True when the adjustment's voucher is posted
+      - name: total_invoice_amount
+        description: adjustment_detail_amount — mixed sign (negative for advance applications)
+
+  - name: int_oda_ar_netting
+    description: >
+      Revenue netting transactions applied to AR invoices. Unfiltered — exposes
+      is_invoice_posted and is_voucher_posted flags. netted_amount in ODA is
+      POSITIVE — it is NEGATED here (-nd.netted_amount) to make it additive in
+      the balance formula. DO NOT change this sign convention.
+    columns:
+      - name: invoice_id
+        description: FK to parent invoice in stg_oda__arinvoice_v2
+      - name: voucher_id
+        description: The netting detail's own voucher_id
+      - name: is_invoice_posted
+        description: True when the parent invoice is posted
+      - name: is_voucher_posted
+        description: True when the netting voucher is posted
+      - name: total_invoice_amount
+        description: -netted_amount — NEGATIVE (negated from positive ODA value to reduce invoice balance)
+
+  - name: int_oda_ar_invoice_payments_agg
+    description: >
+      Total payments per invoice. One row per invoice_id (GROUP BY invoice_id only).
+      Uses conditional SUM to produce posted vs. unposted split columns without
+      creating multiple rows per invoice (which would fan-out JOIN in balance model).
+    columns:
+      - name: invoice_id
+        description: Aggregation key — one row per invoice
+      - name: total_payments
+        description: Total payments applied (negative — reduces balance)
+      - name: posted_payments
+        description: Sum of payments where is_invoice_posted = true
+      - name: unposted_payments
+        description: Sum of payments where is_invoice_posted = false
+
+  - name: int_oda_ar_invoice_adjustments_agg
+    description: >
+      Total adjustments per invoice. One row per invoice_id (GROUP BY invoice_id only).
+      Conditional SUM produces posted vs. unposted split. Adjustment amounts are
+      mixed sign — no negation applied.
+    columns:
+      - name: invoice_id
+        description: Aggregation key — one row per invoice
+      - name: total_adjustments
+        description: Total adjustments applied (mixed sign)
+      - name: posted_adjustments
+        description: Sum of adjustments where is_invoice_posted = true
+      - name: unposted_adjustments
+        description: Sum of adjustments where is_invoice_posted = false
+
+  - name: int_oda_ar_invoice_netting_agg
+    description: >
+      Total netting offsets per invoice. One row per invoice_id (GROUP BY invoice_id only).
+      Conditional SUM produces posted vs. unposted split. Values are already
+      negated from int_oda_ar_netting — do NOT negate again.
+    columns:
+      - name: invoice_id
+        description: Aggregation key — one row per invoice
+      - name: total_net
+        description: Total netting applied (negative — reduces balance)
+      - name: posted_net
+        description: Sum of netting where is_invoice_posted = true
+      - name: unposted_net
+        description: Sum of netting where is_invoice_posted = false
+
+  - name: int_oda_ar_invoice_balances
+    description: >
+      Balance arithmetic model. Joins invoice base with 3 agg models to compute
+      combined and posted/unposted balance components. One row per invoice_id.
+      Does NOT include advance/closeout pair exclusion — that is applied in
+      int_oda_ar_invoice_remaining_balances.
+    columns:
+      - name: invoice_id
+        description: One row per invoice — same grain as int_oda_ar_invoice
+      - name: is_invoice_posted
+        description: Carried through from int_oda_ar_invoice
+      - name: invoice_amount
+        description: Original invoice face value (positive)
+      - name: remaining_balance
+        description: "invoice_amount + total_payments + total_adjustments + total_net"
+      - name: remaining_balance_posted
+        description: Balance including only posted invoice and posted transaction components
+      - name: remaining_balance_unposted
+        description: Balance including only unposted invoice and unposted transaction components
+
+  - name: int_oda_ar_invoice_remaining_balances
+    description: >
+      Final remaining balance model with advance/closeout pair exclusion applied.
+      Materialized as view (not ephemeral) so it can be independently inspected
+      during validation via dbt show. Two materialized table facts consume this model.
+
+      Advance/closeout pairs flagged exclude_pair = 1 are fully-netted invoice
+      pairs that represent no real AR outstanding balance. They are excluded from
+      aging reports via include_record = 0.
+
+      NOTE: stg_oda__aradvancecloseout currently has 0 rows. When data appears,
+      verify the pairing logic with the unfiltered invoice base.
+    columns:
+      - name: invoice_id
+        description: One row per invoice
+        data_tests:
+          - not_null
+          - unique
+      - name: is_invoice_posted
+        description: Carried through from int_oda_ar_invoice_balances
+      - name: remaining_balance
+        description: Combined (posted + unposted) remaining balance
+        data_tests:
+          - not_null
+      - name: remaining_balance_posted
+        description: Posted-only remaining balance component
+      - name: remaining_balance_unposted
+        description: Unposted-only remaining balance component
+      - name: exclude_pair
+        description: "1 when this invoice is part of an advance/closeout pair (should be excluded from aging)"
+      - name: include_record
+        description: "1 when remaining_balance != 0 AND exclude_pair = 0"
+        data_tests:
+          - not_null
