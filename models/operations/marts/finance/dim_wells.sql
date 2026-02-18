@@ -43,14 +43,14 @@ with wells_base as (
         well_status_type_name,
         production_status_name,
         property_reference_code,
-        stripper_well,
-        hold_all_billing,
-        suspend_all_revenue,
+        is_stripper_well,
+        is_hold_all_billing,
+        is_suspend_all_revenue,
         spud_date,
         first_production_date,
         shut_in_date,
         inactive_date,
-        n_id
+        nid
     from {{ ref('stg_oda__wells') }}
 ),
 
@@ -78,7 +78,7 @@ final as (
         w.name as well_name,
         w.api_number,
         w.legal_description,
-        w.n_id,
+        w.nid,
 
         -- =================================================================
         -- Userfield Attributes
@@ -120,13 +120,13 @@ final as (
         w.well_status_type_name,
         w.production_status_name,
 
-        w.stripper_well as is_stripper_well,
+        w.is_stripper_well,
 
         -- =================================================================
         -- Well Status
         -- =================================================================
-        w.hold_all_billing as is_hold_billing,
-        w.suspend_all_revenue as is_suspend_revenue,
+        w.is_hold_all_billing as is_hold_billing,
+        w.is_suspend_all_revenue as is_suspend_revenue,
         w.spud_date,
 
         -- Simplified activity status
@@ -243,8 +243,8 @@ final as (
         coalesce(
             w.well_status_type_name = 'Producing'
             and w.production_status_name = 'Active'
-            and coalesce(w.hold_all_billing, false) = false
-            and coalesce(w.suspend_all_revenue, false) = false,
+            and not w.is_hold_all_billing
+            and not w.is_suspend_all_revenue,
             false
         ) as is_revenue_generating,
 

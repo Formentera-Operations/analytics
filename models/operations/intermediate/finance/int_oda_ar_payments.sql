@@ -22,52 +22,54 @@
     - stg_oda__wells
 #}
 
-  with ar_payments as (
-        select 
-        c.code                          as Company_Code,
-        c.name                          as Company_Name,
-        i.owner_id                      as Owner_ID,
-        e.code                          as Owner_Code,
-        e.name                          as Owner_Name,
-        i.well_id                       as Well_ID,
-        w.code                          as Well_Code,
-        w.name                          as Well_Name,
-        i.code                          as Invoice_Number,
-        i.id                            as Invoice_ID,
-        i.invoice_type_id               as Invoice_Type_ID,
-        w.hold_all_billing              as Hold_Billing,
-        p.voucher_id                    as Voucher_ID,
-        CONCAT('Payment, Check # ', p.payee_check_number) as Invoice_Description,
-        'Pymt'                          as Invoice_Type,
-        p.payment_date                  as Invoice_Date,
-        pd.amount_applied               as Total_Invoice_Amount,
-        2                               as Sort_Order
-        
-        
-        FROM {{ref('stg_oda__arinvoicepaymentdetail')}} pd
-        
-        INNER JOIN {{ref('stg_oda__arinvoicepayment')}} p
-        ON p.id = pd.invoice_payment_id
+with ar_payments as (
+    select
+        c.code as company_code,
+        c.name as company_name,
+        i.owner_id as owner_id,
+        e.code as owner_code,
+        e.name as owner_name,
+        i.well_id as well_id,
+        w.code as well_code,
+        w.name as well_name,
+        i.code as invoice_number,
+        i.id as invoice_id,
+        i.invoice_type_id as invoice_type_id,
+        w.is_hold_all_billing as hold_billing,
+        p.voucher_id as voucher_id,
+        'Pymt' as invoice_type,
+        p.payment_date as invoice_date,
+        pd.amount_applied as total_invoice_amount,
+        2 as sort_order,
+        concat('Payment, Check # ', p.payee_check_number) as invoice_description
 
-        INNER JOIN {{ref('stg_oda__voucher_v2')}} v
-        ON v.id = p.voucher_id
 
-        INNER JOIN {{ref('stg_oda__arinvoice_v2') }} i
-        ON i.id = pd.invoice_id
+    from {{ ref('stg_oda__arinvoicepaymentdetail') }} pd
 
-        INNER JOIN {{ref('stg_oda__company_v2')}} c
-        ON c.id = i.company_id
-        
-        INNER JOIN {{ref('stg_oda__owner_v2')}} o
-        ON o.id = i.owner_id
+    inner join {{ ref('stg_oda__arinvoicepayment') }} p
+        on pd.invoice_payment_id = p.id
 
-        INNER JOIN {{ref('stg_oda__entity_v2')}} e
-        ON e.Id = o.entity_id
+    inner join {{ ref('stg_oda__voucher_v2') }} v
+        on p.voucher_id = v.id
 
-        LEFT JOIN {{ref('stg_oda__wells')}} w
-        ON w.id = i.well_id
-        
-        Where i.Posted = 1
-        AND v.posted = 1
-    )
-        select * from ar_payments
+    inner join {{ ref('stg_oda__arinvoice_v2') }} i
+        on pd.invoice_id = i.id
+
+    inner join {{ ref('stg_oda__company_v2') }} c
+        on i.company_id = c.id
+
+    inner join {{ ref('stg_oda__owner_v2') }} o
+        on i.owner_id = o.id
+
+    inner join {{ ref('stg_oda__entity_v2') }} e
+        on o.entity_id = e.Id
+
+    left join {{ ref('stg_oda__wells') }} w
+        on i.well_id = w.id
+
+    where
+        i.Posted = 1
+        and v.is_posted
+)
+
+select * from ar_payments

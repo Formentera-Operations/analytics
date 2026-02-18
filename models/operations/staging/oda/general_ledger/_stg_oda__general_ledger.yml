@@ -1,0 +1,172 @@
+version: 2
+
+models:
+  - name: stg_oda__voucher_v2
+    description: |
+      Staging model for ODA Vouchers (V2).
+      Source: ODA_VOUCHER_V2 (Estuary batch, ~370K rows)
+      Grain: One row per voucher (id)
+    columns:
+      - name: voucher_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Voucher code identifier
+      - name: voucher_identity
+        description: Numeric identity for the voucher record
+      - name: voucher_type_id
+        description: Voucher type classifier
+      - name: voucher_date
+        description: Date the voucher was created
+      - name: accrual_reversal_date
+        description: Date the accrual reversal is scheduled
+      - name: date_key
+        description: Integer date key (YYYYMMDD format)
+      - name: description
+        description: Voucher description text
+      - name: is_deleted
+        description: Whether the voucher has been deleted
+      - name: is_historical
+        description: Whether the voucher is historical (archived)
+      - name: is_posted
+        description: Whether the voucher has been posted to GL
+      - name: is_ready_to_post
+        description: Whether the voucher is ready for posting
+      - name: is_manual_journal_accrual
+        description: Whether the voucher is a manual journal accrual entry
+      - name: currency_id
+        description: FK to currency record
+      - name: convert_currency_type_id
+        description: FK to currency conversion type
+      - name: originating_company_id
+        description: FK to ODA_BATCH_ODA_COMPANY_V2 — originating company
+      - name: subledger_total
+        description: Total amount across all subledger entries
+      - name: import_data_id
+        description: FK to import data record
+      - name: posted_date
+        description: Date the voucher was posted
+      - name: posted_by_id
+        description: FK to user who posted the voucher
+      - name: posted_by_user_id
+        description: FK to user record for poster
+      - name: posted_by_name
+        description: Display name of user who posted
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: update_event_id
+        description: Event ID of last update
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__gl_reconciliation_type
+    description: |
+      Staging model for ODA GL Reconciliation Types.
+      Source: ODA_GLRECONCILIATIONTYPE (Estuary batch, 8 rows)
+      Grain: One row per reconciliation type (id)
+    columns:
+      - name: gl_reconciliation_type_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: code
+        description: Reconciliation type code
+        data_tests:
+          - not_null
+      - name: name
+        description: Short name of the reconciliation type
+      - name: full_name
+        description: Full descriptive name of the reconciliation type
+      - name: gl_reconciliation_type_identity
+        description: Numeric identity for the reconciliation type
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__account_types
+    description: |
+      Staging model for ODA Account Types.
+      Source: ODA_ACCOUNTTYPE (Estuary batch, 2 rows)
+      Grain: One row per account type (id)
+    columns:
+      - name: account_types_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: type_code
+        description: Account type code
+        data_tests:
+          - not_null
+      - name: type_name
+        description: Account type display name
+      - name: type_full_name
+        description: Full descriptive name of the account type
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__account_sub_types
+    description: |
+      Staging model for ODA Account Sub Types.
+      Source: ODA_BATCH_ODA_ACCOUNTSUBTYPE (Estuary batch, 5 rows)
+      Grain: One row per account subtype (id)
+    columns:
+      - name: account_sub_types_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: account_type_id
+        description: FK to stg_oda__account_types — parent account type
+        data_tests:
+          - not_null
+      - name: subtype_code
+        description: Account subtype code
+        data_tests:
+          - not_null
+      - name: subtype_name
+        description: Account subtype display name
+      - name: subtype_full_name
+        description: Full descriptive name of the account subtype
+      - name: is_normally_debit
+        description: Whether this subtype normally carries a debit balance
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp

@@ -277,7 +277,7 @@ final as (
 
         -- Company
         c.name as company_name,
-        acct.account_id as account_id,
+        acct.id as account_id,
 
         -- Account
         acct.main_account,
@@ -388,7 +388,7 @@ final as (
     left join companies as c
         on gld.company_id = c.id
     left join accounts as acct
-        on gld.account_id = acct.account_id
+        on gld.account_id = acct.id
     left join vouchers
         on gld.voucher_id = vouchers.id
     left join wells

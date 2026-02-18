@@ -19,61 +19,61 @@
     - stg_oda__wells
 #}
 
-    with ar_invoices as (
-        select 
-        c.code                          as Company_Code,
-        c.name                          as Company_Name,
-        i.owner_id                      as Owner_ID,
-        e.code                          as Owner_Code,
-        e.name                          as Owner_Name,
-        i.well_id                       as Well_ID,
-        w.code                          as Well_Code,
-        w.name                          as Well_Name,
-        i.code                          as Invoice_Number,
-        i.id                            as Invoice_ID,
-        i.invoice_type_id               as Invoice_Type_ID,
-        coalesce(w.hold_all_billing, 0)              as Hold_Billing,
-        i.voucher_id                    as Voucher_ID,
-        Case 
-            When i.invoice_type_id = 5 Then i.description
-            When i.invoice_type_id = 0 Then i.description
-            When i.invoice_type_id = 1 Then i.description
-            Else w.name
-            End As Invoice_Description,
-        Case 
-            When i.invoice_type_id = 5 Then 'Misc'
-            When i.invoice_type_id = 0 Then 'Adv'
-            When i.invoice_type_id = 1 Then 'Cls'
-            Else 'JIB'
-            End As Invoice_Type,
-        i.invoice_date                  as Invoice_Date,
-        i.invoice_amount                as Total_Invoice_Amount,
-        Case
-            When i.invoice_type_id = 5 Then 1
-            When i.invoice_type_id = 0 Then 2
-            Else 1
-            End As Sort_Order        
-        
-        
-        
-        FROM {{ref('stg_oda__arinvoice_v2') }} i
+with ar_invoices as (
+    select
+        c.code as company_code,
+        c.name as company_name,
+        i.owner_id as owner_id,
+        e.code as owner_code,
+        e.name as owner_name,
+        i.well_id as well_id,
+        w.code as well_code,
+        w.name as well_name,
+        i.code as invoice_number,
+        i.id as invoice_id,
+        i.invoice_type_id as invoice_type_id,
+        i.voucher_id as voucher_id,
+        i.invoice_date as invoice_date,
+        i.invoice_amount as total_invoice_amount,
+        coalesce(w.is_hold_all_billing, false) as hold_billing,
+        case
+            when i.invoice_type_id = 5 then i.description
+            when i.invoice_type_id = 0 then i.description
+            when i.invoice_type_id = 1 then i.description
+            else w.name
+        end as invoice_description,
+        case
+            when i.invoice_type_id = 5 then 'Misc'
+            when i.invoice_type_id = 0 then 'Adv'
+            when i.invoice_type_id = 1 then 'Cls'
+            else 'JIB'
+        end as invoice_type,
+        case
+            when i.invoice_type_id = 5 then 1
+            when i.invoice_type_id = 0 then 2
+            else 1
+        end as sort_order
 
-        INNER JOIN {{ref('stg_oda__company_v2')}} c
-        ON c.id = i.company_id
-        
-        INNER JOIN {{ref('stg_oda__owner_v2')}} o
-        ON o.id = i.owner_id
 
-        INNER JOIN {{ref('stg_oda__entity_v2')}} e
-        ON e.Id = o.entity_id
 
-       -- LEFT JOIN {{ref('stg_oda__voucher_v2')}} v
-       -- ON v.id = i.voucher_id
+    from {{ ref('stg_oda__arinvoice_v2') }} i
 
-        LEFT JOIN {{ref('stg_oda__wells')}} w
-        ON w.id = i.well_id
-        
-        Where i.Posted = 1
-    )
-        select * from ar_invoices
+    inner join {{ ref('stg_oda__company_v2') }} c
+        on i.company_id = c.id
 
+    inner join {{ ref('stg_oda__owner_v2') }} o
+        on i.owner_id = o.id
+
+    inner join {{ ref('stg_oda__entity_v2') }} e
+        on o.entity_id = e.Id
+
+    -- LEFT JOIN {{ ref('stg_oda__voucher_v2') }} v
+    -- ON v.id = i.voucher_id
+
+    left join {{ ref('stg_oda__wells') }} w
+        on i.well_id = w.id
+
+    where i.Posted = 1
+)
+
+select * from ar_invoices
