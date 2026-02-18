@@ -44,9 +44,7 @@ with ar_invoices as (
         v.is_posted as is_voucher_posted,
         coalesce(w.is_hold_all_billing, false) as hold_billing,
         case
-            when i.invoice_type_id = 5 then i.description
-            when i.invoice_type_id = 0 then i.description
-            when i.invoice_type_id = 1 then i.description
+            when i.invoice_type_id in (5, 0, 1) then i.description
             else w.name
         end as invoice_description,
         case
