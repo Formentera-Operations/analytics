@@ -640,6 +640,62 @@ Based on the entity models above, these are the marts that should eventually exi
 
 ---
 
+## Recommended Staging Sprints
+
+Row counts verified against Snowflake `information_schema.tables` (2026-02-18). Tables with 0 rows or <10 rows are excluded — operators are not populating those fields.
+
+### Priority 1 — Asset Management / Ownership
+
+Unblocks the WellView chapter of `dim_owner`. Portfolio-wide agreements ARE populated despite HOOEY N731H showing 0 (newer wells don't have agreements entered; legacy wells do).
+
+| Source Table | Rows | Target Model | Enables |
+|---|---|---|---|
+| `wvOperatorHistory` | 2,561 | `stg_wellview__operator_history` | Acquisition/divestiture history per well |
+| `wvAgreementInt` | 814 | `stg_wellview__agreement_interests` | WI/NRI/ORRI by partner — feeds `dim_owner` |
+| `wvAgreement` | 519 | `stg_wellview__agreements` | Agreement header (type, dates, description) |
+| `wvLegalStatus` | 346 | `stg_wellview__legal_status` | Well legal status history |
+
+**Skip:** `wvAgreementDate` (0 rows), `wvAgreementLink` (0 rows), `wvExtReport` (6 rows).
+
+### Priority 2 — Production Operations Depth
+
+Extends the existing `production_failures` staging and adds fluid properties for reservoir engineering.
+
+| Source Table | Rows | Target Model | Enables |
+|---|---|---|---|
+| `wvProblemDetail` | 4,283 | `stg_wellview__production_failure_details` | Equipment-level failure linkage |
+| `wvProblemDetailAnalysis` | 1,326 | `stg_wellview__production_failure_analysis` | Root cause per equipment failure |
+| `wvFluidAnalysis` | 1,190 | `stg_wellview__fluid_analysis` | PVT header (sample date, type, source) |
+| `wvFluidAnalysisGas` | 516 | `stg_wellview__fluid_analysis_gas` | Gas properties (GOR, specific gravity, H2S) |
+| `wvFluidAnalysisWater` | 476 | `stg_wellview__fluid_analysis_water` | Water properties (salinity, density) |
+| `wvFluidAnalysisOil` | 194 | `stg_wellview__fluid_analysis_oil` | Oil properties (API, GOR, viscosity) |
+| `wvAnnulus` | 51 | `stg_wellview__annuli` | Annulus configuration |
+| `wvAnnulusFluid` | 83 | `stg_wellview__annulus_fluids` | Annulus fluid type and pressure |
+
+**Skip:** `wvChemicalInjection` (14 rows — not being used), `wvFluidAnalysisLiquid` (0 rows).
+
+### Priority 3 — Job Lessons Learned
+
+Single model, standalone value. All NPT/safety cause-action sub-tables (`wvJobIntervalProblemCause`, `wvJobSafetyIncidentAction`, etc.) are 0–1 rows — operators are not filling in those fields. `wvJobKick` has only 2 records.
+
+| Source Table | Rows | Target Model | Enables |
+|---|---|---|---|
+| `wvJobIntervalLesson` | 1,957 | `stg_wellview__job_interval_lessons` | Lessons-learned records by job/depth interval |
+
+**Skip:** `wvJobIntervalProblemCause` (0), `wvJobIntervalProblemAction` (1), `wvJobSafetyIncidentCause/Action/Vict` (1 each), `wvJobKick` (2), `wvJobLostCirc` (75 — low priority), all `*Cause`/`*Action` sub-tables.
+
+### Priority 4 — Zone Status
+
+Single model extending the existing `stg_wellview__zones`. Completions domain is a confirmed skip based on data.
+
+| Source Table | Rows | Target Model | Enables |
+|---|---|---|---|
+| `wvZoneStatus` | 645 | `stg_wellview__zone_statuses` | Zone lifecycle (Flowing → Abandoned → Gas Lift) for vertical/legacy wells |
+
+**Skip:** `wvZoneAlloc` (0 rows), `wvCompletion` (23 rows — entity model already documents as low priority), `wvCompletionZone/Status/Link` (0–13 rows).
+
+---
+
 ## Appendix: Calc Table Mapping to Entity Model
 
 The 144 calc tables map to entities in this model as follows:
