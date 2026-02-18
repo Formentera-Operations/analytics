@@ -5,8 +5,6 @@ sources:
     database: ESTUARY_DB
     schema: ESTUARY_SCHEMA
     tables:
-      - name: ODA_AFEBUDGET
-      - name: ODA_AFEBUDGETDETAIL_V2
       - name: GL
         description: |
           Raw general ledger entries from Quorum OnDemand Accounting system containing all financial transactions.
@@ -48,8 +46,6 @@ sources:
       - name: ODA_BATCH_ODA_COMPANY
       - name: ODA_BATCH_ODA_ACCOUNT
       - name: ODA_BATCH_ODA__OWNER
-      - name: ODA_BATCH_ODA_AFE_V2
-      - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
       - name: ODA_ARINVOICE_V2
       - name: ODA_ARINVOICEDETAIL
       - name: ODA_ARINVOICEPAYMENT

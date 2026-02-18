@@ -3,50 +3,49 @@
     materialized='view'
 ) }}
 
-Select 
-    ID AS "Id"
-    , AFE_V2_IDENTITY AS "Afe_V2Identity"
-    , N_ID  AS "NId"
-    , CODE AS "Code"
-    , CODE_SORT AS "CodeSort"
-    , NAME AS "Name"
-    , FULL_NAME AS "FullName"
-    , FULL_DESCRIPTION AS "FullDescription"
-    , AFE_TYPE_ID AS "AfeTypeId"
-    , AFE_TYPE_CODE AS "AfeTypeCode"
-    , AFE_TYPE_LABEL AS "AfeTypeLabel"
-    , AFE_TYPE_FULL_NAME AS "AfeTypeFullName"
-    , APPLICATION_TYPE_ID AS "ApplicationTypeId"
-    , APPLICATION_TYPE_CODE AS "ApplicationTypeCode"
-    , APPLICATION_TYPE_NAME AS "ApplicationTypeName"
-    , BUDGET_USAGE_TYPE_ID AS "BudgetUsageTypeId"
-    , BUDGET_USAGE_TYPE_CODE AS "BudgetUsageTypeCode"
-    , BUDGET_USAGE_TYPE_NAME AS "BudgetUsageTypeName"
-    , FIELD_ID AS "FieldId"
-    , FIELD_CODE AS "FieldCode"
-    , FIELD_CODE_SORT AS "FieldCodeSort"
-    , FIELD_NAME AS "FieldName"
-    , FIELD_DESCRIPTION AS "FieldDescription"
-    , DEFAULT_COMPANY_CODE AS "DefaultCompanyCode"
-    , DEFAULT_COMPANY_NAME AS "DefaultCompanyName"
-    , DEFAULT_EXPENSE_DECK_CODE AS "DefaultExpenseDeckCode"
-    , OPERATING_GROUP_ID AS "OperatingGroupId"
-    , OPERATING_GROUP_CODE AS "OperatingGroupCode"
-    , OPERATING_GROUP_NAME AS "OperatingGroupName"
-    , WELL_ID AS "WellId"
-    , WELL_CODE AS "WellCode"
-    , WELL_NAME AS "WellName"
-    , ACCOUNT_GROUP_NAME AS "AccountGroupName"
-    , OPERATOR_REFERENCE AS "OperatorReference"
-    , CLOSE_DATE AS "CloseDate"
-    , COMPLETION_DATE AS "CompletionDate"
-    , CREATE_DATE AS "CreateDate"
-    , CREATE_EVENT_ID AS "CreateEventId"
-    , UPDATE_DATE AS "UpdateDate"
-    , UPDATE_EVENT_ID AS "UpdateEventId"
-    , RECORD_INSERT_DATE AS "RecordInsertDate"
-    , RECORD_UPDATE_DATE AS "RecordUpdateDate"
-    , FLOW_PUBLISHED_AT
-    , FLOW_DOCUMENT
+select
+    ID as "Id",
+    AFE_V2_IDENTITY as "Afe_V2Identity",
+    N_ID as "NId",
+    CODE as "Code",
+    CODE_SORT as "CodeSort",
+    NAME as "Name",
+    FULL_NAME as "FullName",
+    FULL_DESCRIPTION as "FullDescription",
+    AFE_TYPE_ID as "AfeTypeId",
+    AFE_TYPE_CODE as "AfeTypeCode",
+    AFE_TYPE_LABEL as "AfeTypeLabel",
+    AFE_TYPE_FULL_NAME as "AfeTypeFullName",
+    APPLICATION_TYPE_ID as "ApplicationTypeId",
+    APPLICATION_TYPE_CODE as "ApplicationTypeCode",
+    APPLICATION_TYPE_NAME as "ApplicationTypeName",
+    BUDGET_USAGE_TYPE_ID as "BudgetUsageTypeId",
+    BUDGET_USAGE_TYPE_CODE as "BudgetUsageTypeCode",
+    BUDGET_USAGE_TYPE_NAME as "BudgetUsageTypeName",
+    FIELD_ID as "FieldId",
+    FIELD_CODE as "FieldCode",
+    FIELD_CODE_SORT as "FieldCodeSort",
+    FIELD_NAME as "FieldName",
+    FIELD_DESCRIPTION as "FieldDescription",
+    DEFAULT_COMPANY_CODE as "DefaultCompanyCode",
+    DEFAULT_COMPANY_NAME as "DefaultCompanyName",
+    DEFAULT_EXPENSE_DECK_CODE as "DefaultExpenseDeckCode",
+    OPERATING_GROUP_ID as "OperatingGroupId",
+    OPERATING_GROUP_CODE as "OperatingGroupCode",
+    OPERATING_GROUP_NAME as "OperatingGroupName",
+    WELL_ID as "WellId",
+    WELL_CODE as "WellCode",
+    WELL_NAME as "WellName",
+    ACCOUNT_GROUP_NAME as "AccountGroupName",
+    OPERATOR_REFERENCE as "OperatorReference",
+    CLOSE_DATE as "CloseDate",
+    COMPLETION_DATE as "CompletionDate",
+    CREATED_AT as "CreateDate",
+    CREATE_EVENT_ID as "CreateEventId",
+    UPDATED_AT as "UpdateDate",
+    UPDATE_EVENT_ID as "UpdateEventId",
+    RECORD_INSERTED_AT as "RecordInsertDate",
+    RECORD_UPDATED_AT as "RecordUpdateDate",
+    _FLOW_PUBLISHED_AT as "FlowPublishedAt"
 from
-{{ ref('stg_oda__afe_v2') }}
+    {{ ref('stg_oda__afe_v2') }}

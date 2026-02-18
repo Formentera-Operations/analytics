@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_BATCH_ODA_AFE_V2
+        description: "AFE master records — authorization for expenditure headers with type, field, company, and well associations (batch, 2.2K rows)"
+      - name: ODA_AFEBUDGET
+        description: "AFE budget headers — budget groupings within an AFE linking to wells and companies (batch, 1.9K rows)"
+      - name: ODA_AFEBUDGETDETAIL_V2
+        description: "AFE budget detail lines — monthly budget amounts for budget entries (batch, 424K rows)"
+      - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
+        description: "Revenue suspense category lookup — reasons for holding revenue in suspense (batch, 24 rows)"

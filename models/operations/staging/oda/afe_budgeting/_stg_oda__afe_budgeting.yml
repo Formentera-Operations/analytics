@@ -1,0 +1,242 @@
+version: 2
+
+models:
+  - name: stg_oda__afe_v2
+    description: |
+      Staging model for ODA Authorization for Expenditure (AFE) master records.
+      Source: ODA_BATCH_ODA_AFE_V2 (Estuary batch, 2.2K rows)
+      Grain: One row per AFE (id)
+      Note: Heavily denormalized with type/group names inline for reporting convenience.
+    columns:
+      - name: afe_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: afe_v2_identity
+        description: Numeric identity for the AFE record
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: code
+        description: AFE code/number (user-facing)
+        data_tests:
+          - not_null
+      - name: code_sort
+        description: Sortable version of the AFE code
+      - name: name
+        description: Short name/title of the AFE
+      - name: full_name
+        description: Complete name of the AFE
+      - name: full_description
+        description: Detailed description of the AFE purpose
+      - name: afe_type_id
+        description: FK to AFE type lookup
+      - name: afe_type_code
+        description: Code representing the type of AFE (denormalized)
+      - name: afe_type_label
+        description: Display label for the AFE type (denormalized)
+      - name: afe_type_full_name
+        description: Full name of the AFE type (denormalized)
+      - name: application_type_id
+        description: Application type classifier
+      - name: application_type_code
+        description: Application type code (denormalized)
+      - name: application_type_name
+        description: Application type name (denormalized)
+      - name: budget_usage_type_id
+        description: Budget usage type classifier
+      - name: budget_usage_type_code
+        description: Budget usage type code (denormalized)
+      - name: budget_usage_type_name
+        description: Budget usage type name (denormalized)
+      - name: field_id
+        description: FK to field/area
+      - name: field_code
+        description: Field code (denormalized)
+      - name: field_code_sort
+        description: Field code for sorting (denormalized)
+      - name: field_name
+        description: Field name (denormalized)
+      - name: field_description
+        description: Field description (denormalized)
+      - name: default_company_id
+        description: FK to stg_oda__company_v2 — default company for this AFE
+      - name: default_company_code
+        description: Default company code (denormalized)
+      - name: default_company_name
+        description: Default company name (denormalized)
+      - name: default_expense_deck_code
+        description: Default expense deck code for this AFE
+      - name: operating_group_id
+        description: FK to operating group
+      - name: operating_group_code
+        description: Operating group code (denormalized)
+      - name: operating_group_name
+        description: Operating group name (denormalized)
+      - name: well_id
+        description: FK to stg_oda__wells — associated well
+      - name: well_code
+        description: Well code (denormalized)
+      - name: well_name
+        description: Well name (denormalized)
+      - name: account_group_name
+        description: Account group for GL categorization
+      - name: operator_reference
+        description: Operator's reference number
+      - name: close_date
+        description: Date the AFE was closed
+      - name: completion_date
+        description: Date the AFE work was completed
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__afebudget
+    description: |
+      Staging model for ODA AFE Budget headers.
+      Source: ODA_AFEBUDGET (Estuary batch, 1.9K rows)
+      Grain: One row per AFE budget entry (id)
+      Note: Links AFEs to wells and companies with fiscal year and budget basis.
+    columns:
+      - name: afebudget_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: afe_budget_identity
+        description: Numeric identity for the budget record
+      - name: n_id
+        description: Legacy numeric identifier
+      - name: afe_id
+        description: FK to stg_oda__afe_v2 — parent AFE
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_oda__afe_v2')
+                field: id
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to stg_oda__company_v2 — company context
+      - name: well_id
+        description: FK to stg_oda__wells — well this budget applies to
+      - name: currency_id
+        description: Currency for budget amounts
+      - name: basis_id
+        description: Accounting basis (cash vs accrual)
+      - name: fiscal_year
+        description: Fiscal year this budget applies to
+      - name: is_value
+        description: Whether budget entries are value-based (vs volume-based)
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__afebudgetdetail_v2
+    description: |
+      Staging model for ODA AFE Budget Detail lines.
+      Source: ODA_AFEBUDGETDETAIL_V2 (Estuary batch, 424K rows)
+      Grain: One row per budget detail line item (id)
+      Note: MONTH column renamed to budget_month to avoid Snowflake reserved word.
+    columns:
+      - name: afebudgetdetail_v2_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: afe_budget_detail_v2_identity
+        description: Numeric identity for the detail record
+      - name: afe_budget_entry_id
+        description: FK to ODA AFE Budget Entry table (not synced to Snowflake — 35K distinct entries)
+        data_tests:
+          - not_null
+      - name: amount
+        description: Budget amount for this month
+      - name: budget_month
+        description: Month number (1-12) this amount applies to
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: create_event_id
+        description: Event ID that created this record
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: update_event_id
+        description: Event ID of last update
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+
+  - name: stg_oda__revenue_suspense_category
+    description: |
+      Staging model for ODA Revenue Suspense Categories.
+      Source: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY (Estuary batch, 24 rows)
+      Grain: One row per suspense category (id)
+      Note: Lookup table for reasons revenue payments are held in suspense.
+    columns:
+      - name: revenue_suspense_category_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_suspense_category_identity
+        description: Numeric identity for the category
+      - name: code
+        description: Category code (user-facing)
+        data_tests:
+          - not_null
+      - name: name
+        description: Short category name
+      - name: full_name
+        description: Full category name/description
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
