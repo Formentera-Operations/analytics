@@ -235,12 +235,12 @@ Load `_index.yaml` to find the right domain file for your task.
 | **Wellbore & Surveys** | `wellbore_surveys.yaml` | 24 | 4 | `wellbores`, `wellbore_depths`, `wellbore_directional_surveys`, `wellbore_directional_survey_data` |
 | **Casing, Cement & Wellheads** | `casing_cement.yaml` | 23 | 8 | `casing_strings`, `casing_components`, `casing_tally`, `cement_activities`, `cement_stages`, `cement_stage_fluids`, `wellheads`, `wellhead_components` |
 | **Geological Evaluations** | `geological_evaluations.yaml` | 21 | 0 | — |
-| **Perfs, Stims & Swabs** | `perfs_stims.yaml` | 15 | 8 | `perforations`, `stimulations`, `stimulation_intervals`, `stimulation_fluid_systems`, `stimulation_fluid_additives`, `stimulation_proppant`, `swabs`, `swab_details` |
+| **Perfs, Stims & Swabs** | `perfs_stims.yaml` | 15 | 9 | `perforations`, `stimulations`, `stimulation_intervals`, `stimulation_interval_stages`, `stimulation_fluid_systems`, `stimulation_fluid_additives`, `stimulation_proppant`, `swabs`, `swab_details` |
 | **Zones & Completions** | `zones_completions.yaml` | 12 | 1 | `zones` |
 | **Tubing, Rods & Equipment** | `tubing_rods_equipment.yaml` | 46 | 8 | `tubing_strings`, `tubing_components`, `tubing_component_mandrels`, `tubing_component_mandrel_inserts`, `tubing_run_tallies`, `rod_strings`, `rod_components`, `other_in_hole_equipment` |
 | **Surface Equipment** | `surface_equipment.yaml` | 10 | 0 | — |
 | **Reservoir & Equipment Tests** | `reservoir_tests.yaml` | 25 | 3 | `well_tests`, `well_test_flow_periods`, `well_test_results` |
-| **Production Ops & Failures** | `production_operations.yaml` | 31 | 1 | `production_failures` |
+| **Production Ops & Failures** | `production_operations.yaml` | 31 | 2 | `production_failures`, `production_settings` |
 | **Asset Management** | `asset_management.yaml` | 15 | 0 | — |
 | **Integrity & Barriers** | `integrity_barriers.yaml` | 10 | 0 | — |
 | **Other** | `other.yaml` | 10 | 0 | — |
@@ -249,7 +249,7 @@ Load `_index.yaml` to find the right domain file for your task.
 | **Operations: Inspections** | `operations_inspections.yaml` | 3 | 0 | — |
 | **Cross-system** | (in `src_wellview.yml`) | 1 | 1 | `system_integrations` |
 
-**Total: 60 staging models covering 51 unique source tables out of ~496 total.**
+**Total: 62 staging models covering 53 unique source tables out of ~496 total.**
 
 ### Wiserock Staging Models (17)
 

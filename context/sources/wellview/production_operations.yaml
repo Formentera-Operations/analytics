@@ -15,7 +15,7 @@
 # OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
 #
-# Staged: stg_wellview__production_failures
+# Staged: stg_wellview__production_failures, stg_wellview__production_settings
 
 
 # Tables in this domain (column details in tables/ directory):

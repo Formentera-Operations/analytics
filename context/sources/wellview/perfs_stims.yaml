@@ -15,8 +15,9 @@
 # OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
 #
-# Staged: stg_wellview__perforations, stg_wellview__stimulations, stg_wellview__stimulation_intervals, stg_wellview__stimulation_fluid_systems,
-#   stg_wellview__stimulation_fluid_additives, stg_wellview__stimulation_proppant, stg_wellview__swabs, stg_wellview__swab_details
+# Staged: stg_wellview__perforations, stg_wellview__stimulations, stg_wellview__stimulation_intervals, stg_wellview__stimulation_interval_stages,
+#   stg_wellview__stimulation_fluid_systems, stg_wellview__stimulation_fluid_additives, stg_wellview__stimulation_proppant,
+#   stg_wellview__swabs, stg_wellview__swab_details
 
 
 # Tables in this domain (column details in tables/ directory):
