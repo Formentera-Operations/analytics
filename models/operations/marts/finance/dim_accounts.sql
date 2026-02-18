@@ -195,12 +195,15 @@ final as (
                 'COPAS OVERHEAD', 'NON-OP LOE', 'MIDSTREAM GL INJECTION', 'OTHER'
             ) then 'Lease Operating Expenses'
             when lm.los_line_item_name = 'ACCRUED LOE' then 'Lease Operating Expenses'
+            -- G&A: standard overhead categories + Daly Waters Energy allocations (LOS MAPPING MASTER line 82)
             when lm.los_report_header in (
                 'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'HARDWR & SOFTWR', 'OFFICE RENT',
                 'CORP FEES', 'CORP INSURANCE', 'AUDIT', 'LEGAL', 'REAL PROP TAX',
-                'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS'
+                'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS',
+                'DALY WATERS'
             ) then 'G&A'
             when lm.los_report_header = 'INVENTORY' then 'Inventory'
+            -- unmapped los_report_header values return null; add new headers here when LOS MAPPING MASTER is updated
         end as los_category,
 
         -- Detail section (direct from SharePoint report header)

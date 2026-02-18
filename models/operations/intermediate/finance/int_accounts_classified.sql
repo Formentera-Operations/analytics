@@ -173,12 +173,14 @@ classified as (
                 'LEASE MAINTENANCE', 'SERVICES & REPAIRS', 'SURFACE EQUIPMENT', 'WELL SERVICING & DH EQUIP',
                 'COMPANY LABOR', 'CONTRACT LABOR & SUPERVISION', 'CHEMICALS & TREATING', 'RENTAL EQUIPMENT',
                 '3RD PTY WTR & DSPL', 'COMPANY WTR & DISPOSAL', 'FUEL & POWER', 'WEATHER',
-                'COPAS OVERHEAD', 'NON-OP LOE', 'DALY WATERS'
+                'COPAS OVERHEAD', 'NON-OP LOE'
             ) then 'Lease Operating Expenses'
+            -- G&A: standard overhead categories + Daly Waters Energy allocations (LOS MAPPING MASTER line 82)
             when lm.los_report_header in (
                 'CMPNY PR & BNFT', 'CNSL & CNTR EMP', 'HARDWR & SOFTWR', 'OFFICE RENT',
                 'CORP FEES', 'CORP INSURANCE', 'AUDIT', 'LEGAL', 'REAL PROP TAX',
-                'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS'
+                'TRAVEL', 'UTIL & INTERNET', 'VEHICLES', 'SUPPLIES & EQP', 'MISCELLANEOUS',
+                'DALY WATERS'
             ) then 'G&A'
             when lm.los_report_header = 'INVENTORY' then 'Inventory'
             when lm.los_report_header in ('OTHER', 'ACCRUAL') then 'Other'
