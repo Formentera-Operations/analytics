@@ -63,7 +63,10 @@ with ar_adjustments as (
     inner join {{ ref('stg_oda__arinvoiceadjustment') }} aria
         on ariad.invoice_adjustment_id = aria.id
 
-    inner join {{ ref('stg_oda__voucher_v2') }} v
+    -- LEFT JOIN: voucher_id is nullable on unposted adjustments (severity: warn in staging).
+    -- INNER JOIN would silently drop adjustment records not yet assigned a voucher,
+    -- contradicting the unfiltered design. is_voucher_posted = NULL when no voucher.
+    left join {{ ref('stg_oda__voucher_v2') }} v
         on aria.voucher_id = v.id
 
     inner join {{ ref('stg_oda__arinvoice_v2') }} i

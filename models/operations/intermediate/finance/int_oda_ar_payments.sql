@@ -53,7 +53,10 @@ with ar_payments as (
     inner join {{ ref('stg_oda__arinvoicepayment') }} p
         on pd.invoice_payment_id = p.id
 
-    inner join {{ ref('stg_oda__voucher_v2') }} v
+    -- LEFT JOIN: voucher_id is nullable on unposted payments (severity: warn in staging).
+    -- INNER JOIN would silently drop payment records not yet assigned a voucher,
+    -- contradicting the unfiltered design. is_voucher_posted = NULL when no voucher.
+    left join {{ ref('stg_oda__voucher_v2') }} v
         on p.voucher_id = v.id
 
     inner join {{ ref('stg_oda__arinvoice_v2') }} i

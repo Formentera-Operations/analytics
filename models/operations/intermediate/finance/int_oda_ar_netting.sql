@@ -72,7 +72,11 @@ with ar_netting as (
     inner join {{ ref('stg_oda__entity_v2') }} e
         on o.entity_id = e.id
 
-    inner join {{ ref('stg_oda__voucher_v2') }} v
+    -- LEFT JOIN: voucher_id is nullable on netting detail records (severity: warn in staging).
+    -- INNER JOIN would silently drop netting records without a voucher assignment.
+    -- is_voucher_posted = NULL when no voucher; invoice_description will also be NULL
+    -- since it references v.voucher_date — acceptable for voucherless netting records.
+    left join {{ ref('stg_oda__voucher_v2') }} v
         on nd.voucher_id = v.id
 
     left join {{ ref('stg_oda__wells') }} w
