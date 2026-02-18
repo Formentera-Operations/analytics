@@ -58,7 +58,7 @@
         
         FROM {{ref('stg_oda__arinvoice_v2') }} AS ar
 
-        INNER JOIN {{ref('stg_oda__voucher_v2')}} AS vo
+        LEFT JOIN {{ref('stg_oda__voucher_v2')}} AS vo
             ON vo.id = ar.voucher_id
 
         INNER JOIN {{ref('stg_oda__company_v2')}} AS c
@@ -73,8 +73,7 @@
         LEFT JOIN {{ref('stg_oda__wells')}} AS w
             ON w.id = ar.well_id
 
-
-
     )
         select * from ar_invoices
+       
 

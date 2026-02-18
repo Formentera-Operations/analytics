@@ -22,48 +22,37 @@
 #}
 
 with ar_netting as (
-        select 
-        c.code                          as Company_Code,
-        c.name                          as Company_Name,
-        i.owner_id                      as Owner_ID,
-        e.code                          as Owner_Code,
-        e.name                          as Owner_Name,
-        i.well_id                       as Well_ID,
-        w.code                          as Well_Code,
-        w.name                          as Well_Name,
-        i.code                          as Invoice_Number,
-        i.id                            as Invoice_ID,
-        i.invoice_type_id               as Invoice_Type_ID,
-        w.hold_all_billing              as Hold_Billing,
-        nd.voucher_id                   as Voucher_ID,
-        CONCAT('Netted Against Revenue ', MONTH(v.voucher_date), '/', YEAR(v.voucher_date)) as Invoice_Description,
-        'Net'                           as Invoice_Type,
-        nd.netting_date                 as Invoice_Date,
-        -nd.netted_amount               as Total_Invoice_Amount,
-        2                               as Sort_Order
-        
-        
-        FROM {{ref('stg_oda__arinvoicenetteddetail')}} nd
-        
-        INNER JOIN {{ref('stg_oda__arinvoice_v2') }} i
-        ON i.id = nd.invoice_id
+       SELECT
+      i.company_code
+    , i.company_name
+    , i.owner_id
+    , i.owner_code
+    , i.owner_name
+    , i.well_id
+    , i.well_code
+    , i.well_name
+    , i.invoice_number
+    , i.invoice_id
+    , i.invoice_type_id
+    , i.hold_billing
+    , nd.voucher_id
+    , CONCAT('Netted Against Revenue '
+           , MONTH(vn.voucher_date), '/'
+           , YEAR(vn.voucher_date))       AS invoice_description
+    , 'Net'                               AS invoice_type
+    , nd.netting_date                     AS invoice_date
+    , -nd.netted_amount                   AS total_invoice_amount
+    , 2                                   AS sort_order
 
-        INNER JOIN {{ref('stg_oda__company_v2')}} c
-        ON c.id = i.company_id
-        
-        INNER JOIN {{ref('stg_oda__owner_v2')}} o
-        ON o.id = i.owner_id
+        FROM {{ ref('stg_oda__arinvoicenetteddetail') }} AS nd
 
-        INNER JOIN {{ref('stg_oda__entity_v2')}} e
-        ON e.Id = o.entity_id
+        INNER JOIN {{ ref('stg_oda__voucher_v2') }} AS vn
+            ON vn.id = nd.voucher_id
 
-        INNER JOIN {{ref('stg_oda__voucher_v2')}} v
-        ON v.id = nd.voucher_id
+        INNER JOIN {{ ref('int_oda_ar_invoice') }} AS i
+            ON i.invoice_id = nd.invoice_id
 
-        LEFT JOIN {{ref('stg_oda__wells')}} w
-        ON w.id = i.well_id
-        
-        Where i.Posted = 1
+        WHERE i.voucher_posted = 1
         
     )
         select * from ar_netting

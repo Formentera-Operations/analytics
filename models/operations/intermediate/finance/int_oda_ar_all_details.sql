@@ -22,9 +22,28 @@
     - int_ar_adjustments
 #}
   with ar_all_details as (
-        SELECT  *
+                SELECT
+            company_code
+            , company_name
+            , owner_id
+            , owner_code
+            , owner_name
+            , well_id
+            , well_code
+            , well_name
+            , invoice_number
+            , invoice_id
+            , invoice_type_id
+            , hold_billing
+            , voucher_id
+            , invoice_description
+            , invoice_type
+            , invoice_date
+            , invoice_amount                      AS total_invoice_amount
+            , sort_order
         FROM {{ ref('int_oda_ar_invoice') }}
-
+        WHERE voucher_posted = 1
+        
         UNION All
 
         SELECT  *
