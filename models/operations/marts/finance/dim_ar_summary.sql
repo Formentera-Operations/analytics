@@ -20,23 +20,23 @@
 
 with ar_summary as (
     select
-        c.Code as company_code,
-        c.Name as company_name,
-        i.Code as invoice_code,
+        c.code as company_code,
+        c.name as company_name,
+        i.code as invoice_code,
         i.invoice_date as invoice_date,
         i.invoice_amount as invoice_amount,
-        i.Posted as posted,
+        i.is_posted as posted,
         i.is_overage_invoice as is_overage_invoice,
         i.accrual_date as accrual_date,
-        i.include_in_accrual_report as include_in_accrual_report,
+        i.is_include_in_accrual_report as include_in_accrual_report,
         e.code as owner_code,
         e.name as owner_name,
         o.is_hold_billing as hold_billing,
         v.code as voucher_code,
-        w.Code as well_code,
+        w.code as well_code,
         i.advance_invoice_date as advance_date,
-        i.create_date as create_date,
-        i.update_date as update_date,
+        i.created_at as create_date,
+        i.updated_at as update_date,
         case
             when i.invoice_type_id = 0 then 'ADVANCE'
             when i.invoice_type_id = 1 then 'CLOSEOUT'

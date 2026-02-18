@@ -170,3 +170,293 @@ models:
         description: Timestamp when record was loaded by dbt
       - name: _flow_published_at
         description: Estuary publication timestamp
+
+  - name: stg_oda__gl
+    config:
+      meta:
+        elementary:
+          timestamp_column: _flow_published_at
+    description: |
+      Staging model for ODA General Ledger.
+      Source: GL (Estuary CDC, 180M rows)
+      Grain: One row per GL entry (id)
+
+      Source of truth for all financial transactions across the organization:
+      journal entries, AP/AR postings, automated postings, accrual and cash-basis
+      accounting entries.
+
+      No surrogate key — view over 180M rows; MD5 at query time is unacceptable.
+      Downstream joins use natural key id.
+
+      Key transformations:
+      - Soft deletes filtered out (_operation_type = 'd')
+      - Currency defaults tracked via is_currency_defaulted flag
+      - Financial values default to 0 when null (decimal(19,4))
+      - Description normalized to 'No Description' when empty/null (description_normalized)
+      - Boolean columns cast via ::boolean (native BOOLEAN in source)
+      - Date columns converted to UTC via convert_timezone
+    data_tests:
+      - elementary.volume_anomalies:
+          arguments:
+            time_bucket:
+              period: day
+              count: 1
+            where_expression: "journal_date >= current_date - 30"
+            anomaly_sensitivity: 4
+      - elementary.freshness_anomalies:
+          arguments:
+            anomaly_sensitivity: 3
+      - elementary.column_anomalies:
+          column_name: net_value
+          arguments:
+            column_anomalies:
+              - sum
+              - zero_count
+            where_expression: "is_posted = true and journal_date >= current_date - 14"
+    columns:
+      - name: id
+        description: Primary key — GUID for each GL entry (Estuary CDC key)
+        data_tests:
+          - unique
+          - not_null
+      - name: company_id
+        description: FK to stg_oda__company_v2 — company associated with the transaction
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref("stg_oda__company_v2")
+                field: id
+      - name: account_id
+        description: FK to stg_oda__account_v2 — Chart of Accounts entry
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref("stg_oda__account_v2")
+                field: id
+              config:
+                severity: warn
+      - name: journal_date_key
+        description: Date key for the journal entry (varchar, used for date-based lookups)
+        data_tests:
+          - not_null
+      - name: gl_identity
+        description: Numeric identity for the GL record
+      - name: n_id
+        description: Numeric ID within the GL system
+      - name: afe_id
+        description: FK to stg_oda__afe_v2 — Authorization for Expenditure
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref("stg_oda__afe_v2")
+                field: id
+      - name: allocation_parent_id
+        description: FK to parent GL entry for allocation-generated rows
+      - name: ap_check_id
+        description: FK to stg_oda__apcheck — AP check that generated this entry
+      - name: ap_invoice_id
+        description: FK to stg_oda__apinvoice — AP invoice that generated this entry
+      - name: ar_invoice_id
+        description: FK to AR invoice that generated this entry
+      - name: check_revenue_id
+        description: FK to stg_oda__checkrevenue — check revenue record
+      - name: entity_company_id
+        description: FK to entity company record
+      - name: entity_id
+        description: FK to stg_oda__entity_v2 — entity (property/well) for the transaction
+      - name: entity_owner_id
+        description: FK to entity-level owner record
+      - name: entity_purchaser_id
+        description: FK to entity-level purchaser record
+      - name: entity_vendor_id
+        description: FK to entity-level vendor record
+      - name: exchange_rate_id
+        description: FK to exchange rate record for currency conversion
+      - name: location_company_id
+        description: FK to location-level company record
+      - name: location_owner_id
+        description: FK to location-level owner record
+      - name: location_purchaser_id
+        description: FK to location-level purchaser record
+      - name: location_vendor_id
+        description: FK to location-level vendor record
+      - name: location_well_id
+        description: FK to location-level well record
+      - name: pending_expense_deck_id
+        description: FK to pending expense deck
+      - name: pending_expense_deck_set_id
+        description: FK to pending expense deck set
+      - name: purchaser_revenue_receipt_id
+        description: FK to purchaser revenue receipt
+      - name: source_expense_deck_revision_id
+        description: FK to source expense deck revision
+      - name: source_revenue_deck_revision_id
+        description: FK to source revenue deck revision
+      - name: source_well_allocation_deck_id
+        description: FK to source well allocation deck
+      - name: source_well_allocation_deck_revision_id
+        description: FK to source well allocation deck revision
+      - name: voucher_id
+        description: FK to stg_oda__voucher_v2 — posting batch voucher
+      - name: well_id
+        description: FK to stg_oda__wells — well associated with the transaction
+      - name: create_event_id
+        description: Event ID that created this GL record
+      - name: update_event_id
+        description: Event ID of last update to this GL record
+      - name: journal_date
+        description: Date when the transaction was recorded in the general ledger (UTC)
+        data_tests:
+          - not_null
+      - name: accrual_date_key
+        description: Float date key for accrual date lookups
+      - name: accrual_date
+        description: Date when the transaction should be recognized for accrual accounting (UTC)
+      - name: cash_date_key
+        description: Float date key for cash date lookups
+      - name: cash_date
+        description: Date when the cash transaction occurred or is expected (UTC)
+      - name: description
+        description: Raw description of the transaction (trimmed, may be null)
+      - name: description_normalized
+        description: >
+          Normalized description — 'No Description' when raw is null, empty, or '.'.
+          Use this column for display; use description for raw audit trail.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      - name: source_module
+        description: >
+          System module that generated the transaction.
+          Distribution: GL (62M), AP (48.6M), Revenue (40.3M), AR (185K)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["GL", "AP", "Revenue", "AR"]
+      - name: source_module_code
+        description: Code representing the source module
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref("stg_oda__source_module")
+                field: code
+      - name: source_module_id
+        description: Integer ID of the source module
+      - name: source_module_name
+        description: Display name of the source module
+      - name: location_type
+        description: Type of location for the transaction (e.g., Well, Company)
+      - name: reference
+        description: Free-text reference field for the transaction
+      - name: reconciled_type_code
+        description: Code for the reconciliation type
+      - name: reconciliation_type_id
+        description: FK to stg_oda__gl_reconciliation_type — reconciliation category
+      - name: payment_type_code
+        description: Code for the payment type
+      - name: payment_type_id
+        description: FK to stg_oda__payment_type — payment method
+      - name: entry_group
+        description: Group number for related GL entries
+      - name: ordinal
+        description: Order position within an entry group
+      - name: fluctuation_type_id
+        description: FK to fluctuation type for currency adjustments
+      - name: manual_entry_reference_type_id
+        description: FK to manual entry reference type
+      - name: convert_currency_type_id
+        description: FK to currency conversion type
+      - name: currency_id
+        description: Currency code for the transaction (trimmed)
+        data_tests:
+          - not_null
+      - name: gross_value
+        description: Original transaction amount before allocations (decimal(19,4), defaults to 0)
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -10000000000
+                max_value: 10000000000
+      - name: gross_volume
+        description: Original transaction volume before allocations (decimal(19,4), defaults to 0)
+        data_tests:
+          - not_null
+      - name: net_value
+        description: Final transaction amount after allocations (decimal(19,4), defaults to 0)
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -10000000000
+                max_value: 10000000000
+      - name: net_volume
+        description: Final transaction volume after allocations (decimal(19,4), defaults to 0)
+        data_tests:
+          - not_null
+      - name: is_posted
+        description: Whether the transaction has been posted to the general ledger
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+      - name: is_generated_entry
+        description: Whether this entry was system-generated (vs. manual)
+      - name: is_convert_currency
+        description: Whether currency conversion was applied
+      - name: is_currency_defaulted
+        description: >
+          True when currency_id was null in source — indicates the row had
+          no explicit currency assignment. Downstream models should default to USD.
+      - name: is_include_in_accrual_report
+        description: Whether to include in accrual-basis reporting
+      - name: is_include_in_cash_report
+        description: Whether to include in cash-basis reporting
+      - name: is_include_in_journal_report
+        description: Whether to include in journal reporting
+      - name: is_allocation_generated
+        description: Whether this entry was generated by the allocation engine
+      - name: is_allocation_parent
+        description: Whether this entry is the parent of allocation-generated children
+      - name: is_present_in_accrual_balance
+        description: Whether this entry contributes to accrual balance calculations
+      - name: is_present_in_cash_balance
+        description: Whether this entry contributes to cash balance calculations
+      - name: is_present_in_journal_balance
+        description: Whether this entry contributes to journal balance calculations
+      - name: is_reconciled
+        description: Whether the transaction has been reconciled
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+      - name: is_reconciled_trial
+        description: Whether the transaction has been reconciled in trial mode
+      - name: created_at
+        description: Record creation timestamp in ODA
+        data_tests:
+          - not_null
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _operation_type
+        description: >
+          Estuary CDC operation type: 'c' = create, 'd' = soft-delete.
+          Soft-deleted rows are filtered out in the filtered CTE.
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+        data_tests:
+          - not_null
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt

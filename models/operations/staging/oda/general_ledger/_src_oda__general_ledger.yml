@@ -5,6 +5,29 @@ sources:
     database: ESTUARY_DB
     schema: ESTUARY_SCHEMA
     tables:
+      - name: GL
+        description: |
+          Raw general ledger entries from Quorum OnDemand Accounting (CDC, 180M rows).
+          Source of truth for all financial transactions: journal entries, AP/AR postings,
+          automated postings, accrual and cash-basis accounting entries.
+          Soft deletes filtered via _operation_type != 'd'.
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns:
+                  - ID
+                  - '"_meta/op"'
+        columns:
+          - name: ID
+            description: Unique identifier for each GL entry (GUID, Estuary CDC key)
+            data_tests:
+              - not_null
+          - name: '"_meta/op"'
+            description: >
+              Estuary CDC operation type: 'c' = create, 'd' = soft-delete.
+              Soft-deleted rows are filtered out in stg_oda__gl.
+            data_tests:
+              - not_null
       - name: ODA_VOUCHER_V2
         description: "Voucher headers — posting batches, dates, types, and approval status (batch, 370K rows)"
       - name: ODA_GLRECONCILIATIONTYPE

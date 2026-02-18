@@ -73,7 +73,7 @@ with ar_invoices as (
     left join {{ ref('stg_oda__wells') }} w
         on i.well_id = w.id
 
-    where i.Posted = 1
+    where i.is_posted
 )
 
 select * from ar_invoices

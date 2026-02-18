@@ -1,0 +1,36 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_ARINVOICE_V2
+        description: |
+          AR invoice headers from Quorum OnDemand Accounting (Estuary CDC, 436K rows).
+          Soft deletes filtered via _operation_type != 'd'.
+      - name: ODA_ARINVOICEDETAIL
+        description: |
+          AR invoice line item details from Quorum OnDemand Accounting (Estuary CDC, 611 rows).
+          Soft deletes filtered via _operation_type != 'd'.
+      - name: ODA_ARINVOICEPAYMENT
+        description: |
+          AR invoice payment headers (Estuary batch, 37.6K rows).
+      - name: ODA_ARINVOICEPAYMENTDETAIL
+        description: |
+          AR invoice payment line items (Estuary batch, 172K rows).
+      - name: ODA_ARINVOICENETTEDDETAIL
+        description: |
+          AR revenue netting details (Estuary batch, 531K rows).
+      - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENT
+        description: |
+          AR invoice adjustment headers (Estuary batch, 10.7K rows).
+      - name: ODA_BATCH_ODA_ARINVOICEADJUSTMENTDETAIL
+        description: |
+          AR invoice adjustment line items (Estuary batch, 41K rows).
+      - name: ODA_BATCH_ODA_ARADVANCE
+        description: |
+          AR AFE cash advance headers (Estuary batch, 27 rows).
+      - name: ODA_BATCH_ODA_ARADVANCECLOSEOUT
+        description: |
+          AR advance closeout records (Estuary batch, 0 rows -- schema only).

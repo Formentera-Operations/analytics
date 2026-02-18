@@ -339,7 +339,7 @@ final as (
         -- Source tracking
         gld.net_volume,
         gld.currency_id,
-        gld.is_currency_missing,
+        gld.is_currency_defaulted,
         gld.is_include_in_journal_report,
         gld.is_present_in_journal_balance,
 
