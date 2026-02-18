@@ -246,12 +246,14 @@ models:
       - name: n_id
         description: Numeric ID within the GL system
       - name: afe_id
-        description: FK to stg_oda__afe_v2 — Authorization for Expenditure
+        description: FK to stg_oda__afe_v2 — Authorization for Expenditure (~44K orphan GL entries reference inactive/archived AFEs)
         data_tests:
           - relationships:
               arguments:
                 to: ref("stg_oda__afe_v2")
                 field: id
+              config:
+                severity: warn
       - name: allocation_parent_id
         description: FK to parent GL entry for allocation-generated rows
       - name: ap_check_id

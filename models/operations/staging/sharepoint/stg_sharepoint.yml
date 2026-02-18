@@ -41,7 +41,7 @@ models:
               config:
                 severity: error
 
-      - name: line_number
+      - name: line_header_line_number
         description: >
           Hierarchical line number from the LOS report structure. This value is filled down
           from category header rows (e.g., 3 for "OIL BARRELS", 4 for "GAS MCF") to all
