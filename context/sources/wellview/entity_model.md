@@ -404,13 +404,15 @@ Stimulations live at the intersection of Physical Well and Well Work. The *activ
 
 These are the **fact-producing entities** that hang off Daily Report (and roll up to Job/Phase via calc tables). They share a common pattern: detailed line items at daily grain, with system-computed rollups at phase and job grain.
 
-| Entity | Grain | Key Measures | Calc Table Coverage |
-|--------|-------|-------------|-------------------|
-| **Cost** | Daily report line item | AFE amount, field estimate, final invoice, forecast, variance | 34 tables across 3 grains |
-| **Time Log** | Activity entry | Duration, % total, by 4-level code hierarchy | 16 tables across 3 grains |
-| **NPT** | Incident | Duration, type, category | 5 tables across 2 grains |
-| **Safety** | Incident or check | Frequency, rate, days since last | 6 tables across 1 grain |
-| **Personnel** | Company/role entry | Headcount, regular/OT hours | 5 tables across 2 grains |
+| Entity | Grain | Key Measures | Calc Table Coverage | Staging |
+|--------|-------|-------------|-------------------|---------|
+| **Cost** | Daily report line item | AFE amount, field estimate, final invoice, forecast, variance | 34 tables across 3 grains | `stg_wellview__daily_costs`, `stg_wellview__daily_recurring_costs` |
+| **Time Log** | Activity entry | Duration, % total, by 4-level code hierarchy | 16 tables across 3 grains | `stg_wellview__job_time_log` |
+| **NPT** | Incident | Duration, type, category | 5 tables across 2 grains | `stg_wellview__job_interval_problems` |
+| **Safety** | Incident or check | Frequency, rate, days since last | 6 tables across 1 grain | `stg_wellview__safety_checks` (57,856 rows), `stg_wellview__safety_incidents` (4,711 rows) |
+| **Personnel** | Company/role entry | Headcount, regular/OT hours | 5 tables across 2 grains | `stg_wellview__daily_personnel_logs` |
+
+**Safety staging note:** `wvJobSafetyChk` and `wvJobSafetyIncident` are both staged. Safety records use `IDRecParent` linking directly to **Jobs** (not Daily Reports) — 100% match rate. Both tables are in the `FORMENTERAOPS_WV120_CALC` schema despite being primary data (not calc).
 
 ---
 
@@ -614,17 +616,17 @@ Based on the entity models above, these are the marts that should eventually exi
 
 ### Well Work Marts
 
-| Mart | Type | Key Entities | Status | Dependencies |
-|------|------|-------------|--------|--------------|
+| Mart | Type | Key Entities | Status | Notes |
+|------|------|-------------|--------|-------|
 | `dim_job` | Dimension | Job | **Exists** | `stg_wellview__jobs` |
 | `dim_phase` | Dimension | Phase | **Exists** | `stg_wellview__job_program_phases` |
 | `bridge_job_afe` | Bridge | Job ↔ AFE | **Exists** | `stg_wellview__job_afe_definitions` |
-| `fct_daily_drilling` | Fact | Daily Report + Cost + Time + NPT | Not started | Staged (reports, costs, time) |
-| `fct_drilling_cost` | Fact | Cost at daily/phase/job grain | Not started | Calc tables: `wvJRCostCalc`, `wvJCostCumCalc` |
-| `fct_drilling_time` | Fact | Time breakdown by activity code | Not started | Calc tables: `wvJTLSumCalc`, `wvJRTLSumCalc` |
-| `fct_npt` | Fact | Non-productive time events | Not started | `stg_wellview__job_interval_problems` |
-| `fct_safety` | Fact | Incidents + checks | Not started | Not staged — need safety tables |
-| `fct_stimulation` | Fact | Frac operations + proppant | Not started | Staged (8 stim models) |
+| `fct_daily_drilling` | Fact | Daily Report + Cost + Time | **Exists** | Combined daily drilling summary |
+| `fct_daily_drilling_cost` | Fact | Cost at daily grain | **Exists** | Sprint 1, incremental, 1.9M rows; source calc tables `wvJRCostCalc` |
+| `fct_drilling_time` | Fact | Time breakdown by activity code | **Exists** | Sprint 2, table, 762K rows; source calc tables `wvJTLSumCalc`, `wvJRTLSumCalc` |
+| `fct_npt_events` | Fact | Non-productive time events | **Exists** | Sprint 2, table, 14K rows; source `stg_wellview__job_interval_problems` |
+| `fct_safety_events` | Fact | Incidents + checks (UNION) | **Exists** | Sprint 3, table, 62,567 rows; `event_type` discriminator (`check`/`incident`); parent links to Jobs not Daily Reports |
+| `fct_stimulation` | Fact | Frac operations + proppant | **Exists** | Sprint 3, table, 3,838 rows; stim-job grain with WellView calc rollups |
 | `fct_drilling_performance` | Fact | ROP, stand KPIs, slide/rotate | Not started | Calc tables: `wvJRigActivityCalc`, `wvJDSSlideSheetCalc` |
 
 ### Cross-Domain Marts (require multiple entity models)
@@ -633,7 +635,7 @@ Based on the entity models above, these are the marts that should eventually exi
 |------|------|----------------|--------|
 | `fct_well_cost_vs_budget` | Fact | Well Work (WV Job AFE) + Finance (ODA AFE + GL) | Not started |
 | `fct_ownership_history` | Fact | Land/Mineral (ODA decks) + Physical Well (WV well) | Not started |
-| `dim_owner` | Dimension | Land/Mineral (ODA owner + WV agreement partners) | Not started |
+| `dim_owner` | Dimension | Owner master across systems | **Exists** — `models/operations/marts/orm/dim_owner.sql` (64,387 rows). **Currently HubSpot-sourced** (PR #266): UNION of contact-based (19K) + company-only (45K) HubSpot owners. WellView `wvAgreement`/`wvAgreementInt` data and ODA `stg_oda__owner_v2` are NOT yet incorporated. Confirmed gap: HOOEY N731H shows 0 WellView agreements on a recently completed well — ownership likely lives in ODA decks. |
 | `fct_well_economics_vs_actual` | Fact | Economics (CC EUR) + Production (PV volumes) | Not started |
 
 ---

@@ -19,8 +19,14 @@
 # OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
 #
-# Staged: stg_wellview__jobs, stg_wellview__job_reports, stg_wellview__job_time_log, stg_wellview__job_program_phases,
-#   stg_wellview__job_afe_definitions, stg_wellview__job_supplies, stg_wellview__job_supply_amounts, stg_wellview__job_interval_problems
+# Staged: stg_wellview__jobs, stg_wellview__job_reports, stg_wellview__daily_costs, stg_wellview__daily_recurring_costs,
+#   stg_wellview__daily_personnel_logs, stg_wellview__job_time_log, stg_wellview__job_program_phases,
+#   stg_wellview__job_afe_definitions, stg_wellview__rigs, stg_wellview__drill_strings,
+#   stg_wellview__drill_string_components, stg_wellview__drill_string_drilling_parameters,
+#   stg_wellview__rig_mud_pumps, stg_wellview__rig_mud_pump_operations, stg_wellview__rig_mud_pump_checks,
+#   stg_wellview__job_supplies, stg_wellview__job_supply_amounts, stg_wellview__mud_additivies,
+#   stg_wellview__mud_checks, stg_wellview__job_interval_problems, stg_wellview__drill_bits,
+#   stg_wellview__safety_checks, stg_wellview__safety_incidents
 
 
 # Tables in this domain (column details in tables/ directory):

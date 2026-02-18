@@ -244,12 +244,12 @@ Load `_index.yaml` to find the right domain file for your task.
 | **Asset Management** | `asset_management.yaml` | 15 | 0 | — |
 | **Integrity & Barriers** | `integrity_barriers.yaml` | 10 | 0 | — |
 | **Other** | `other.yaml` | 10 | 0 | — |
-| **Operations: Jobs** | `operations_jobs.yaml` | 244 | 21 | `jobs`, `job_reports`, `daily_costs`, `daily_recurring_costs`, `daily_personnel_logs`, `job_time_log`, `job_program_phases`, `job_afe_definitions`, `rigs`, `drill_strings`, `drill_string_components`, `drill_string_drilling_parameters`, `rig_mud_pumps`, `rig_mud_pump_operations`, `rig_mud_pump_checks`, `job_supplies`, `job_supply_amounts`, `mud_additivies`, `mud_checks`, `job_interval_problems`, `drill_bits` |
+| **Operations: Jobs** | `operations_jobs.yaml` | 244 | 23 | `jobs`, `job_reports`, `daily_costs`, `daily_recurring_costs`, `daily_personnel_logs`, `job_time_log`, `job_program_phases`, `job_afe_definitions`, `rigs`, `drill_strings`, `drill_string_components`, `drill_string_drilling_parameters`, `rig_mud_pumps`, `rig_mud_pump_operations`, `rig_mud_pump_checks`, `job_supplies`, `job_supply_amounts`, `mud_additivies`, `mud_checks`, `job_interval_problems`, `drill_bits`, `safety_checks`, `safety_incidents` |
 | **Operations: Tasks** | `operations_tasks.yaml` | 2 | 0 | — |
 | **Operations: Inspections** | `operations_inspections.yaml` | 3 | 0 | — |
 | **Cross-system** | (in `src_wellview.yml`) | 1 | 1 | `system_integrations` |
 
-**Total: 58 staging models covering 49 unique source tables out of ~496 total.**
+**Total: 60 staging models covering 51 unique source tables out of ~496 total.**
 
 ### Wiserock Staging Models (17)
 

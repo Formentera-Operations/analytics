@@ -15,7 +15,7 @@
 # OMITTED (on all tables): IDWELL sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
 #
-# Staged: stg_wellview__wellbores, stg_wellview__wellbore_depths, stg_wellview__wellbore_directional_surveys, stg_wellview__wellbore_directional_survey_data,
+# Staged: stg_wellview__wellbores, stg_wellview__wellbore_depths, stg_wellview__wellbore_directional_surveys, stg_wellview__wellbore_directional_survey_data
 
 
 # Tables in this domain (column details in tables/ directory):
