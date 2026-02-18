@@ -4,42 +4,114 @@
 ) }}
 
 {#
-    Dimension: Unions all AR transaction types into a single dataset
-    -- ArInvoice (base invoices)
-    -- PaymentDetails (payments applied)
-    -- NetDetails (revenue netting)
-    -- AdjustmentDetails (AR adjustments)
-    
-    -- Layer 4: Combined AR Details
-    -- Purpose: Union all AR transaction types into a single model
-    -- Dependencies: int_ar_invoices, int_ar_payments, int_ar_netting, int_ar_adjustments
+    Combined AR Details — unions all AR transaction types into a single dataset
 
-    
-    Sources:
-    - int_oda_ar_invoices
+    Purpose: Standardize column order across ArInvoice, PaymentDetails,
+    NetDetails, and AdjustmentDetails into a single queryable model.
+
+    Note: Explicit column lists required because the 4 upstream models
+    define columns in different orders. SELECT * with UNION ALL resolves
+    by position, not name, causing type mismatches.
+
+    Dependencies:
+    - int_oda_ar_invoice
     - int_oda_ar_payments
-    - int_ar_netting
-    - int_ar_adjustments
+    - int_oda_ar_netting
+    - int_oda_ar_adjustments
 #}
-  with ar_all_details as (
-        SELECT  *
-        FROM {{ ref('int_oda_ar_invoice') }}
 
-        UNION All
+with ar_all_details as (
 
-        SELECT  *
-        FROM {{ ref('int_oda_ar_payments') }}
+    select
+        company_code,
+        company_name,
+        owner_id,
+        owner_code,
+        owner_name,
+        well_id,
+        well_code,
+        well_name,
+        invoice_number,
+        invoice_id,
+        invoice_type_id,
+        voucher_id,
+        invoice_date,
+        total_invoice_amount,
+        hold_billing,
+        invoice_description,
+        invoice_type,
+        sort_order
+    from {{ ref('int_oda_ar_invoice') }}
 
-        UNION All
-        
-        SELECT * 
-        FROM {{ ref('int_oda_ar_netting') }}
+    union all
 
-        UNION All
+    select
+        company_code,
+        company_name,
+        owner_id,
+        owner_code,
+        owner_name,
+        well_id,
+        well_code,
+        well_name,
+        invoice_number,
+        invoice_id,
+        invoice_type_id,
+        voucher_id,
+        invoice_date,
+        total_invoice_amount,
+        hold_billing,
+        invoice_description,
+        invoice_type,
+        sort_order
+    from {{ ref('int_oda_ar_payments') }}
 
-        SELECT * 
-        FROM {{ ref('int_oda_ar_adjustments')}}
+    union all
 
+    select
+        company_code,
+        company_name,
+        owner_id,
+        owner_code,
+        owner_name,
+        well_id,
+        well_code,
+        well_name,
+        invoice_number,
+        invoice_id,
+        invoice_type_id,
+        voucher_id,
+        invoice_date,
+        total_invoice_amount,
+        hold_billing,
+        invoice_description,
+        invoice_type,
+        sort_order
+    from {{ ref('int_oda_ar_netting') }}
 
-    )
-        select * from ar_all_details
+    union all
+
+    select
+        company_code,
+        company_name,
+        owner_id,
+        owner_code,
+        owner_name,
+        well_id,
+        well_code,
+        well_name,
+        invoice_number,
+        invoice_id,
+        invoice_type_id,
+        voucher_id,
+        invoice_date,
+        total_invoice_amount,
+        hold_billing,
+        invoice_description,
+        invoice_type,
+        sort_order
+    from {{ ref('int_oda_ar_adjustments') }}
+
+)
+
+select * from ar_all_details

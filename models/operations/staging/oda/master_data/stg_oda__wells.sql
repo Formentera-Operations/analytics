@@ -57,7 +57,7 @@ renamed as (
         coalesce(STRIPPERWELL = 1, false) as is_stripper_well,
 
         -- afe information
-        AFEUSAGETYPE::int as afe_usage_type,
+        trim(AFEUSAGETYPE)::varchar as afe_usage_type,
         AFEUSAGETYPEID::int as afe_usage_type_id,
 
         -- well status
