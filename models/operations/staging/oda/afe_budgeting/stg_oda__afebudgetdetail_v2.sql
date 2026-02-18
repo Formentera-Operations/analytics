@@ -33,7 +33,7 @@ renamed as (
         trim(AFEBUDGETENTRYID)::varchar as afe_budget_entry_id,
 
         -- financial
-        AMOUNT::float as amount,
+        AMOUNT::decimal(18, 2) as amount,
         "MONTH"::int as budget_month, -- noqa: RF06
 
         -- audit
