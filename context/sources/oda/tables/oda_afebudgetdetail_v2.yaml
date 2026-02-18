@@ -7,7 +7,7 @@ ODA_AFEBUDGETDETAIL_V2: AFE budget detail lines. Each row is a monthly budget am
   # -- Identifiers --
   ID(txt) #Primary key (GUID)
   AFEBUDGETDETAIL_V2IDENTITY(int) #Numeric identity for the detail record
-  AFEBUDGETENTRYID(txt) #FK to ODA_AFEBUDGET.ID — parent budget entry
+  AFEBUDGETENTRYID(txt) #FK to ODA_AFEBUDGETENTRY (not synced to Snowflake — 35K distinct entries)
 
   # -- Financial --
   AMOUNT(float) #Budget amount for this month
