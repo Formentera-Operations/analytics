@@ -594,6 +594,18 @@ final as (
     select
         *,
 
+        -- op_ref_effective: use ODA classification where available, fall back to
+        -- is_operated inference (from ProdView/WellView/CC) for non-ODA wells.
+        -- Use this for reporting/dashboards. Use op_ref for ODA reconciliation.
+        case
+            when op_ref != 'UNKNOWN' then op_ref
+            when is_operated = true then 'OPERATED'
+            when is_operated = false then 'NON-OPERATED'
+        end as op_ref_effective,
+
+        -- True when op_ref_effective was derived from is_operated rather than ODA
+        op_ref = 'UNKNOWN' as is_op_ref_inferred,
+
         -- Well type from name patterns (separate from well_type from CC/Enverus)
         -- Placed here so we can reference the golden well_name alias resolved above
         case

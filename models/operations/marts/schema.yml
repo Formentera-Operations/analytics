@@ -94,7 +94,19 @@ models:
         description: >
           Standardized operated status string derived from ODA property_reference_code.
           Values: OPERATED, NON-OPERATED, CONTRACT OPERATED, NON-WELL, OTHER, MIDSTREAM, UNKNOWN.
+          UNKNOWN = no ODA entry (non-ODA wells). Use op_ref_effective for reporting.
           Richer than the boolean is_operated — includes contract and non-well classifications.
+      - name: op_ref_effective
+        description: >
+          Reporting-ready operated status. Same as op_ref when ODA data is available.
+          For non-ODA wells (op_ref = UNKNOWN), falls back to is_operated inference from
+          ProdView/WellView/ComboCurve. 100% populated. Use this for dashboards and rollups.
+          Check is_op_ref_inferred to distinguish ODA-certified from inferred rows.
+      - name: is_op_ref_inferred
+        description: >
+          True when op_ref_effective was derived from is_operated inference rather than ODA
+          property_reference_code. Indicates a non-ODA well where ProdView, WellView, or
+          ComboCurve supplied the operated/non-operated classification.
       - name: is_hold_billing
         description: True when all billing is on hold in ODA. coalesce(oda.is_hold_all_billing, false).
       - name: is_suspend_revenue
