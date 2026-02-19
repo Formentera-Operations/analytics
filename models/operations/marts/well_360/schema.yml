@@ -1,0 +1,131 @@
+version: 2
+
+models:
+  - name: fct_well_production_monthly
+    description: >
+      Monthly production volumes per well, joined with LOS financial context.
+      Gold-layer fact — source-agnostic (ProdView today; additional sources
+      can be unioned at the staging/intermediate layer without changing this
+      model's column contract).
+
+      **Grain:** one row per (eid, production_month) for resolved wells;
+      one row per (id_rec_unit, production_month) for unresolved wells
+      (eid IS NULL). Multiple ProdView units mapping to the same EID are
+      collapsed into a single row.
+
+      **EID resolution:** two-step COALESCE — prodview_unit_id primary,
+      api_10 fallback. ~0.7% of unit-months are unresolved in production
+      (historically ~18.5% before FP Griffin EID backfill was completed).
+      Unresolved rows are retained with NULL eid and `is_eid_unresolved = true`.
+
+      **LOS coverage:** ~24% in dev build (incremental fct_los has partial
+      history). Full production build expected to exceed 50% LOS coverage.
+
+      **Upstream filter:** stg_prodview__units restricted to
+      `unit_type = 'pvunitcomp'` — excludes facilities, external ins/outs,
+      and meters (~3K units).
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: well_performance_monthly_sk
+        description: >
+          Surrogate key. For resolved wells: MD5(eid, production_month).
+          For unresolved wells: MD5(id_rec_unit, production_month).
+          Guaranteed unique across all rows.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: eid
+        description: >
+          Well EID (Entity Identifier) — the canonical business key joining
+          to well_360. NULL for unresolved wells (FP Griffin wells without
+          property_eid backfilled in ProdView, non-operated wells, SWD wells).
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+                # ~0.7% unresolved as of 2026-02-19; historically ~18.5% before
+                # FP Griffin EID backfill. Rows retained for volume completeness.
+
+      - name: id_rec_unit
+        description: >
+          ProdView unit ID (FK to stg_prodview__units.id_rec). Populated for
+          unresolved wells only; NULL for resolved wells where multiple units
+          may map to one EID. Use for ProdView-side debugging of unresolved rows.
+
+      - name: production_month
+        description: >
+          First day of the production month (date_trunc to month). Grain key
+          alongside eid.
+        data_tests:
+          - not_null
+
+      - name: is_eid_unresolved
+        description: >
+          True when neither the prodview_unit_id nor api_10 join produced an
+          EID match in well_360. These rows represent FP Griffin wells awaiting
+          EID backfill, non-operated wells, or SWD/injection wells. Resolves
+          automatically as EIDs are added to ProdView.
+        data_tests:
+          - not_null
+
+      - name: oil_bbls
+        description: Monthly allocated oil production in barrels (bbls). 0 when null in source.
+
+      - name: gas_mcf
+        description: Monthly allocated gas production in thousand cubic feet (Mcf). 0 when null in source.
+
+      - name: water_bbls
+        description: Monthly allocated water production in barrels (bbls). 0 when null in source.
+
+      - name: ngl_bbls
+        description: Monthly allocated NGL production in barrels (bbls). 0 when null in source.
+
+      - name: gross_boe
+        description: >
+          Monthly gross barrel of oil equivalent. Formula: oil_bbls + (gas_mcf / 6).
+          Uses 6:1 gas-to-oil conversion ratio (industry standard for US operations).
+        data_tests:
+          - not_null
+
+      - name: has_los_entry
+        description: >
+          True when int_los__well_monthly has a financial record for this
+          (eid, production_month). False for months with no GL activity,
+          pre-LOS-system history, or unresolved EIDs.
+        data_tests:
+          - not_null
+
+      - name: los_revenue
+        description: >
+          Monthly LOS revenue for this well (GL category = 'Revenue').
+          Pre-signed: positive. NULL when has_los_entry is false.
+
+      - name: los_loe
+        description: >
+          Monthly lease operating expense (GL category = 'Lease Operating Expenses').
+          Pre-signed: negative (costs are sign-flipped in fct_los). NULL when
+          has_los_entry is false.
+
+      - name: los_severance_tax
+        description: >
+          Monthly production and ad valorem taxes
+          (GL category = 'Production & Ad Valorem Taxes'). Pre-signed: negative.
+          NULL when has_los_entry is false.
+
+      - name: los_net_income
+        description: >
+          Monthly net income — sum of all LOS categories for this well-month
+          (Revenue + LOE + Severance Tax + all other signed categories).
+          Because fct_los pre-signs all costs as negative, SUM gives net income
+          directly. NULL when has_los_entry is false.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.

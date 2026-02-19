@@ -83,9 +83,7 @@ models:
             expression: "remaining_balance is not null"
           config:
             severity: error
-            error_msg: >
-              Every invoice must have a remaining_balance. NULL indicates a missing
-              row in int_oda_ar_invoice_remaining_balances — investigate join integrity.
+            # error_msg removed — not a valid dbt test config key in dbt-fusion
     columns:
       - name: invoice_id
         description: PK — unique per invoice

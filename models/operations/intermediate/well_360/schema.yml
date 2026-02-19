@@ -68,3 +68,28 @@ models:
         description: UF-SEARCH KEY userfield value from stg_oda__userfield. Used for GL reporting cross-reference. Deduplicated by _flow_published_at DESC.
       - name: pv_field
         description: UF-PV FIELD userfield value from stg_oda__userfield. ProdView field classification. Deduplicated by _flow_published_at DESC.
+
+
+  - name: int_los__well_monthly
+    description: >
+      LOS financial data aggregated from fct_los to well-month grain.
+      Pivots los_category into revenue, LOE, severance tax, and net income columns.
+      EID derived as right(well_code, 6). Filters to location_type = 'Well' only.
+
+      Consumed by fct_well_production_monthly (Sprint 1) and
+      plat_well__performance_scorecard (Sprint 2).
+    config:
+      materialized: ephemeral
+    columns:
+      - name: eid
+        description: Well EID derived from well_code as right(well_code, 6).
+      - name: los_month
+        description: First day of the LOS month (date_trunc of journal_month_start).
+      - name: los_revenue
+        description: Sum of GL amounts for los_category = 'Revenue'. Pre-signed positive.
+      - name: los_loe
+        description: Sum of GL amounts for 'Lease Operating Expenses'. Pre-signed negative.
+      - name: los_severance_tax
+        description: Sum of GL amounts for 'Production & Ad Valorem Taxes'. Pre-signed negative.
+      - name: los_net_income
+        description: Sum of all pre-signed GL amounts for this well-month. Equals net income.
