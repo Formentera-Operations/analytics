@@ -35,11 +35,12 @@ los_well as (
         date_trunc('month', journal_month_start)::date as los_month,
         los_category,
         los_gross_amount,
-        right(well_code, 6) as eid
+        right(trim(well_code), 6) as eid
     from {{ ref('fct_los') }}
     where
         location_type = 'Well'
         and well_code is not null
+        and len(trim(well_code)) >= 6
 ),
 
 aggregated as (

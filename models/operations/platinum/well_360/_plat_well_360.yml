@@ -1,0 +1,140 @@
+version: 2
+
+models:
+  - name: plat_well__performance_scorecard
+    description: >
+      Platinum OBT (one big table) at the EID grain providing a complete lifetime
+      performance scorecard for every known well. Spines from well_360 including
+      pre-production and inactive wells. LEFT JOINs aggregate production,
+      financials, drilling, and completion data. Intended for BI consumption —
+      no joins required at query time.
+
+      Grain: one row per EID (well). Includes all wells in well_360, with NULL
+      aggregates for wells with no activity in a given business process.
+
+      DATA FRESHNESS: Drilling EID resolution follows well_360 → fct_drilling_time
+      / fct_daily_drilling_cost → int_well_perf__drilling_summary → this model.
+      Build well_360 before drilling facts in daily batch to ensure EID consistency.
+
+      UNRESOLVED WELLS: ~18.5% of fct_well_production_monthly unit-months have no
+      well_360 match (is_eid_unresolved = true). These are excluded from production
+      aggregates. They appear in the spine with NULL production metrics.
+    config:
+      tags: ['platinum', 'fo', 'well_360']
+    columns:
+      - name: eid
+        description: External identifier — the canonical well key across all source systems.
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: error
+
+      - name: well_name
+        description: Resolved well name (ProdView → WellView → ODA → CC → Enverus priority).
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: basin_name
+        description: >
+          Formentera operational basin classification (Permian Basin, Eagle Ford, SCOOP/STACK, etc.).
+          Derived in well_360 from state/county CASE logic.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: cumulative_boe
+        description: >
+          Lifetime cumulative BOE production (oil + gas/6). NULL for pre-production wells.
+          Excludes ~18.5% of ProdView unit-months that lack EID resolution.
+
+      - name: peak_monthly_boe
+        description: >
+          Highest single-month gross BOE production for this well. NULL for pre-production wells.
+          Note: MAX_BY tiebreaker is non-deterministic if two months have identical BOE (rare).
+
+      - name: peak_month
+        description: Calendar month (first of month date) with highest gross BOE production.
+
+      - name: first_production_month
+        description: Earliest calendar month with gross_boe > 0.
+
+      - name: latest_production_month
+        description: Most recent calendar month with any production record.
+
+      - name: producing_months_count
+        description: Count of distinct months where gross_boe > 0.
+
+      - name: cumulative_los_revenue
+        description: Lifetime cumulative LOS revenue (pre-signed). NULL for wells with no LOS entries.
+
+      - name: cumulative_los_loe
+        description: Lifetime cumulative LOS lease operating expenses (pre-signed, costs are negative).
+
+      - name: cumulative_los_net_income
+        description: Lifetime cumulative LOS net income (sum of all pre-signed categories).
+
+      - name: months_with_los_count
+        description: Count of (eid, month) combinations with any LOS entry.
+
+      - name: drilling_job_count
+        description: Count of distinct drilling jobs from fct_daily_drilling_cost.
+
+      - name: total_dc_cost
+        description: Lifetime total D&C cost from WellView daily cost reports. NULL for wells with no drilling records.
+
+      - name: total_drilling_hours
+        description: Lifetime total drilling clock hours from fct_drilling_time.
+
+      - name: total_npt_hours
+        description: Lifetime total countable non-productive time hours from fct_npt_events.
+
+      - name: npt_pct
+        description: >
+          NPT (non-productive time) as a fraction of total drilling hours, capped at 1.0.
+          See is_npt_anomaly for wells where raw NPT events exceeded total clock time.
+
+      - name: is_npt_anomaly
+        description: >
+          True if raw NPT hours exceeded total drilling hours for this well,
+          indicating overlapping or duplicate NPT event entries in WellView.
+
+      - name: total_stages
+        description: Lifetime total stimulation stages from fct_stimulation.
+
+      - name: total_proppant_lb
+        description: Lifetime total proppant mass in pounds from fct_stimulation.
+
+      - name: total_clean_volume_bbl
+        description: Lifetime total clean fluid volume in barrels from fct_stimulation.
+
+      - name: stim_lateral_length_ft
+        description: >
+          Audit column: sum of stimulated interval length from fct_stimulation across all stim jobs.
+          Do NOT use as intensity denominator — use well_lateral_length_ft instead.
+          For re-stimulated wells, this sum can overstate the perforated interval.
+
+      - name: proppant_per_ft_lb
+        description: >
+          Proppant intensity (lb/ft) = total_proppant_lb / well_lateral_length_ft.
+          Uses well_360.lateral_length_ft as denominator (fixed physical well measurement),
+          not the stimulated interval, to correctly handle re-stimulated wells.
+
+      - name: has_production_data
+        description: "True if cumulative_boe > 0. Filters to wells with any production history."
+
+      - name: has_los_data
+        description: "True if any LOS entries joined for this well (l.eid IS NOT NULL)."
+
+      - name: has_drilling_data
+        description: "True if any daily drilling cost records exist for this well (d.eid IS NOT NULL)."
+
+      - name: has_completion_data
+        description: "True if any stimulation records exist for this well (c.eid IS NOT NULL)."

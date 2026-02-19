@@ -4,7 +4,7 @@
         unique_key='cost_line_id',
         incremental_strategy='merge',
         on_schema_change='sync_all_columns',
-        cluster_by=['well_id', 'job_id'],
+        cluster_by=['eid', 'job_id'],
         tags=['drilling', 'mart', 'fact']
     )
 }}
