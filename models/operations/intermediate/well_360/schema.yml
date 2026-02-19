@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: int_well__oda
+    description: >
+      ODA well attributes prepared for Well 360 integration. One row per EID (deduplicated,
+      operated preference). ODA is the system of record for financial/accounting attributes:
+      cost center codes, company, op/non-op status, billing/revenue flags.
+
+      Expanded 2026-02-19 to include all attributes needed by well_360's derived columns:
+      oda_well_id, basin_name, is_revenue_generating, op_ref, cost center classification,
+      operating group hierarchy, key operational dates, and userfield attributes (search_key,
+      pv_field).
+    columns:
+      - name: well_id
+        description: ODA internal numeric well ID (primary key in stg_oda__wells.id). Used for fct_los joins and Cortex Analyst. Distinct from eid (business key).
+      - name: company_name
+        description: Company name from stg_oda__company_v2, joined on the first 3 characters of the cost center code.
+      - name: cost_center
+        description: ODA cost center code (e.g., FOR100985). Left 3 chars = company code, right 6 chars = eid.
+      - name: well_name
+        description: Well name from ODA.
+      - name: api_number
+        description: API-10 well identifier from ODA.
+      - name: op_nonop_code
+        description: Property reference code (OPERATED, NON-OPERATED, CONTRACT_OP, DNU, etc.). Used to derive op_ref and is_operated.
+      - name: country_name
+        description: Country name from ODA well master.
+      - name: state_code
+        description: Two-character state abbreviation from ODA (e.g., TX, OK, ND).
+      - name: state_name
+        description: Full state name from ODA (e.g., Texas, Oklahoma). Used for basin_name derivation in well_360.
+      - name: county_name
+        description: County name from ODA (UPPER_CASE). Used for basin_name derivation in well_360.
+      - name: legal_description
+        description: Legal description of the well location from ODA.
+      - name: is_stripper_well
+        description: True when ODA classifies the well as a stripper well (low-production threshold).
+      - name: oda_status
+        description: ODA well status type name (e.g., Producing, Shut In, Plugged and Abandoned). Aliased from well_status_type_name.
+      - name: production_status_name
+        description: ODA production status (e.g., Active, Shutin, Plugged). Used alongside oda_status to derive is_revenue_generating.
+      - name: is_hold_all_billing
+        description: True when all billing is on hold for this well in ODA. Financial control flag.
+      - name: is_suspend_all_revenue
+        description: True when all revenue is suspended for this well in ODA. Financial control flag.
+      - name: cost_center_type_code
+        description: Cost center type code from ODA (e.g., W = Well, F = Facility). All rows filtered to 'W'.
+      - name: cost_center_type_name
+        description: Cost center type name from ODA (e.g., Well, Facility). All rows in this model are 'Well' due to WHERE filter.
+      - name: operating_group_code
+        description: ODA operating group code for organizational hierarchy.
+      - name: operating_group_name
+        description: ODA operating group name (e.g., GKC Rockies, Permian, Mid-Continent).
+      - name: shut_in_date
+        description: Date the well was shut in, per ODA records.
+      - name: inactive_date
+        description: Date the well became inactive, per ODA records.
+      - name: eid
+        description: Well entity identifier — right(cost_center, 6). Natural join key across all source systems. PK for well_360.
+      - name: company_code
+        description: Company prefix code — left(cost_center, 3). Used to join company name from stg_oda__company_v2.
+      - name: is_operated
+        description: >
+          True when property_reference_code = 'OPERATED', false when 'NON-OPERATED', NULL for other codes.
+          Note: ODA's op/non-op flag is less reliable than ProdView/WellView — well_360 uses this as a fallback only.
+      - name: search_key
+        description: UF-SEARCH KEY userfield value from stg_oda__userfield. Used for GL reporting cross-reference. Deduplicated by _flow_published_at DESC.
+      - name: pv_field
+        description: UF-PV FIELD userfield value from stg_oda__userfield. ProdView field classification. Deduplicated by _flow_published_at DESC.

@@ -1,0 +1,386 @@
+version: 2
+
+models:
+  - name: well_360
+    description: >
+      Master well dimension — single source of truth for well attributes across all
+      Formentera source systems (ODA, WellView, ProdView, ComboCurve, Enverus).
+
+      Architecture:
+      - Spine-based: every EID from any internal source gets a row (~8K wells)
+      - Golden Record: COALESCE priority per attribute based on system authority
+      - Enverus: third-party gap filler only (never overrides internal data)
+      - Source Lineage: track which system provided each golden value
+      - Conflict Detection: flag when sources disagree
+
+      Grain: One row per EID (well entity identifier).
+
+      Updated 2026-02-19 to include ODA derived attributes previously only in dim_wells:
+      oda_well_id, basin_name, op_ref, financial control flags, is_revenue_generating,
+      cost center classification, operating group hierarchy, well_type_oda (from name
+      patterns), shut_in_date, inactive_date, search_key, pv_field, and activity_status.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "eid is not null"
+          config:
+            severity: error
+    columns:
+      # =========================================================================
+      # IDENTIFIERS
+      # =========================================================================
+      - name: eid
+        description: Well entity identifier — primary key for well_360. Right 6 chars of ODA cost center code (e.g., 100985 from FOR100985). Natural join key used across all internal systems.
+        data_tests:
+          - unique
+          - not_null
+      - name: oda_well_id
+        description: ODA internal numeric well ID (stg_oda__wells.id). Used for FCT_LOS joins and the Cortex Analyst LOS semantic model. NULL for wells not in ODA.
+      - name: api_10
+        description: API-10 well identifier. COALESCE priority — ComboCurve, ODA, WellView, ProdView, Enverus.
+      - name: api_14
+        description: API-14 identifier. Constructed from API-10 with 0000 suffix when no explicit 14-digit source.
+      - name: cost_center_number
+        description: ODA cost center code (e.g., FOR100985). ODA is authoritative, WellView and ProdView as fallback.
+      - name: wellview_id
+        description: WellView internal well GUID.
+      - name: combo_curve_id
+        description: ComboCurve internal well ID.
+      - name: aries_propnum
+        description: Aries property number from ComboCurve.
+      - name: prodview_unit_id
+        description: ProdView unit ID. Used as primary join key for ProdView production fact tables.
+      - name: enverus_well_id
+        description: Enverus internal well identifier.
+      - name: enverus_completion_id
+        description: Enverus completion identifier (most recent completion when multiple exist).
+
+      # =========================================================================
+      # WELL IDENTIFICATION
+      # =========================================================================
+      - name: well_name
+        description: Golden well name. ProdView preferred (engineer-approved), then WellView, ODA, ComboCurve, Enverus.
+      - name: lease_name
+        description: Lease name from ComboCurve (primary), WellView, ProdView, Enverus.
+
+      # =========================================================================
+      # COMPANY / OWNERSHIP
+      # =========================================================================
+      - name: company_code
+        description: Company prefix code (3 chars). ODA first, then ProdView (seed-mapped), then WellView fallback.
+      - name: company_name
+        description: Standardized company name. ODA first, then ProdView mapped via seed_company_mapping, then WellView.
+      - name: prodview_asset_co_raw
+        description: Raw AssetCo value from ProdView (unstandardized). Retained for audit; use company_name for reporting.
+      - name: division
+        description: Division from WellView or ProdView.
+      - name: is_operated
+        description: >
+          True when Formentera operates the well. Priority: ProdView > WellView > ComboCurve > inferred from operator name.
+          ODA is excluded from this priority chain (unreliable for op/non-op).
+      - name: operator_name
+        description: Operator name from WellView, ProdView, or Enverus.
+
+      # =========================================================================
+      # ODA OPERATIONAL ATTRIBUTES
+      # =========================================================================
+      - name: basin_name
+        description: >
+          Formentera's canonical operational basin classification derived from the golden state/county
+          (covers all source systems — ODA, ProdView, WellView, ComboCurve, Enverus).
+          Values: Permian Basin, Eagle Ford, Fort Worth Basin, Texas Panhandle, SCOOP/STACK,
+          Williston Basin, Mississippi, Louisiana, Appalachian Basin, Arkansas, Other.
+          'Other' = valid state/county but outside any basin county list (incl. bad-county data like 'USA').
+          Distinct from geological_basin (Enverus/WellView technical classification).
+      - name: op_ref
+        description: >
+          Standardized operated status string derived from ODA property_reference_code.
+          Values: OPERATED, NON-OPERATED, CONTRACT OPERATED, NON-WELL, OTHER, MIDSTREAM, UNKNOWN.
+          UNKNOWN = no ODA entry (non-ODA wells). Use op_ref_effective for reporting.
+          Richer than the boolean is_operated — includes contract and non-well classifications.
+      - name: op_ref_effective
+        description: >
+          Reporting-ready operated status. Same as op_ref when ODA data is available.
+          For non-ODA wells (op_ref = UNKNOWN), falls back to is_operated inference from
+          ProdView/WellView/ComboCurve. 100% populated. Use this for dashboards and rollups.
+          Check is_op_ref_inferred to distinguish ODA-certified from inferred rows.
+      - name: is_op_ref_inferred
+        description: >
+          True when op_ref_effective was derived from is_operated inference rather than ODA
+          property_reference_code. Indicates a non-ODA well where ProdView, WellView, or
+          ComboCurve supplied the operated/non-operated classification.
+      - name: is_hold_billing
+        description: True when all billing is on hold in ODA. coalesce(oda.is_hold_all_billing, false).
+      - name: is_suspend_revenue
+        description: True when all revenue is suspended in ODA. coalesce(oda.is_suspend_all_revenue, false).
+      - name: is_revenue_generating
+        description: >
+          True when well is actively generating revenue: oda_status = 'Producing' AND production_status = 'Active'
+          AND not is_hold_billing AND not is_suspend_revenue. Defaults to false when ODA data is missing.
+
+      # =========================================================================
+      # LOCATION
+      # =========================================================================
+      - name: state_raw
+        description: Raw state value from ODA (state_code), then ComboCurve, WellView, ProdView, Enverus.
+      - name: county_raw
+        description: Raw county value from ODA, then ComboCurve, WellView, ProdView, Enverus.
+      - name: country
+        description: Country from WellView, ProdView, ODA, or Enverus.
+      - name: state
+        description: Standardized 2-character state abbreviation via normalize_state_abbrev() UDF.
+      - name: county
+        description: Standardized county name in InitCap format.
+      - name: combo_curve_focus_area
+        description: ComboCurve basin/project field (e.g., FP_GOLDSMITH-SLANT). Note — semantic mismatch, this is a focus area not a geological basin.
+      - name: geological_basin
+        description: Technical geological basin from Enverus or WellView (e.g., PERMIAN OTHER, EAGLE FORD). Distinct from basin_name.
+      - name: basin
+        description: Legacy basin field with mixed semantics. Prefer basin_name (operational) or geological_basin (technical).
+      - name: field_name
+        description: Field name from WellView or Enverus.
+      - name: regulatory_field_name
+        description: Regulatory field name from WellView or ProdView.
+      - name: district
+        description: District from WellView, ProdView (foreman_area), or Enverus.
+      - name: foreman_area
+        description: Foreman area from ProdView.
+      - name: field_office
+        description: Field office from WellView or ProdView.
+      - name: route
+        description: Route from WellView or ProdView.
+      - name: facility_name
+        description: Facility name from ProdView or WellView pad_name.
+      - name: pad_name
+        description: Pad/facility name from WellView or ProdView.
+      - name: legal_description
+        description: Legal description of well location from ODA.
+      - name: enverus_play
+        description: Geological play from Enverus (e.g., Wolfcamp, Spraberry).
+      - name: enverus_sub_play
+        description: Geological sub-play from Enverus.
+      - name: surface_latitude
+        description: Surface latitude. WellView preferred (surveyed), then ProdView, ComboCurve, Enverus.
+      - name: surface_longitude
+        description: Surface longitude. WellView preferred (surveyed), then ProdView, ComboCurve, Enverus.
+      - name: lat_long_datum
+        description: Coordinate datum (e.g., NAD27, NAD83) from WellView.
+      - name: latitude_bottom_hole
+        description: Bottom hole latitude from Enverus.
+      - name: longitude_bottom_hole
+        description: Bottom hole longitude from Enverus.
+
+      # =========================================================================
+      # WELL CHARACTERISTICS
+      # =========================================================================
+      - name: well_configuration_type_raw
+        description: Raw well configuration from WellView or Enverus trajectory.
+      - name: well_configuration_type
+        description: Standardized well configuration via normalize_well_config() UDF.
+      - name: well_type
+        description: Well type from ComboCurve or Enverus (e.g., Oil, Gas, Water). Distinct from well_type_oda.
+      - name: lateral_length_ft
+        description: Horizontal lateral length in feet from ComboCurve or Enverus.
+      - name: measured_depth_ft
+        description: Measured depth in feet from ComboCurve or Enverus.
+      - name: true_vertical_depth_ft
+        description: True vertical depth in feet from ComboCurve or Enverus.
+      - name: unwrapped_displacement_ft
+        description: Unwrapped displacement in feet from WellView.
+      - name: reserve_category
+        description: Reserve category from ComboCurve (e.g., PDP, PDNP, PUD).
+      - name: is_stripper_well
+        description: True when ODA classifies as a stripper well (low-production regulatory threshold).
+      - name: cost_center_type_code
+        description: ODA cost center type code. All wells in well_360 with in_oda=true have code 'W' (Well).
+      - name: cost_center_type_name
+        description: ODA cost center type name. 'Well' for all wells filtered from int_well__oda.
+      - name: is_well
+        description: True when cost_center_type_name = 'Well'. Distinguishes actual wells from facility or non-well cost centers.
+      - name: operating_group_code
+        description: ODA operating group code for organizational hierarchy (e.g., GKC, PERM).
+      - name: operating_group_name
+        description: ODA operating group name (e.g., GKC Rockies, Permian, Mid-Continent). Used for regional reporting.
+      - name: well_type_oda
+        description: >
+          Well type derived from well name patterns: SWD, Injector, Horizontal, Unit Well, Vertical/Conventional, Other.
+          Distinct from well_type (ComboCurve/Enverus classification). Uses the golden well_name for pattern matching.
+      - name: producing_method_raw
+        description: Raw producing method from ProdView or Enverus.
+      - name: producing_method
+        description: Standardized producing method via normalize_producing_method() UDF.
+      - name: enverus_fluid_type
+        description: Primary fluid type from Enverus (Oil, Gas, Water, etc.).
+      - name: perf_interval_ft
+        description: Perforated interval length in feet from Enverus.
+
+      # =========================================================================
+      # COMPLETION METRICS
+      # =========================================================================
+      - name: stimulated_stages
+        description: Number of stimulated frac stages from Enverus.
+      - name: frac_stages
+        description: Number of frac stages from Enverus.
+      - name: total_clusters
+        description: Total perforation clusters from Enverus.
+      - name: proppant_lbs
+        description: Total proppant pumped in pounds from Enverus.
+      - name: total_fluid_pumped_bbl
+        description: Total fluid pumped in barrels from Enverus.
+      - name: completion_design
+        description: Completion design description from Enverus.
+
+      # =========================================================================
+      # STATUS
+      # =========================================================================
+      - name: oda_status
+        description: Raw ODA well status type name (e.g., Producing, Shut In, Plugged and Abandoned).
+      - name: production_status_name
+        description: Raw ODA production status name (e.g., Active, Shutin, Plugged). Used in is_revenue_generating derivation.
+      - name: prodview_completion_status
+        description: Raw completion status from ProdView.
+      - name: prodview_status_raw
+        description: Raw ProdView well status before normalization.
+      - name: prodview_status_clean
+        description: ProdView well status after normalization via stg_prodview__status mapping table.
+      - name: prodview_status_date
+        description: Date of the ProdView status record.
+      - name: combo_curve_status
+        description: Well status from ComboCurve.
+      - name: wellview_status
+        description: Current well status from WellView.
+      - name: enverus_status
+        description: Well status from Enverus.
+      - name: unified_status
+        description: >
+          Normalized well status across all sources (UPPER_CASE, e.g., PRODUCING, SHUT IN, PLUGGED AND ABANDONED).
+          Priority: ProdView (already normalized) → ODA → Enverus → ComboCurve. Defaults to UNKNOWN.
+      - name: unified_status_source
+        description: Which source system provided the unified_status value.
+      - name: activity_status
+        description: >
+          Human-friendly activity status derived from unified_status (sentence case for display).
+          Maps normalize_well_status() UDF output: PRODUCING→Producing, SHUT_IN→Shut In,
+          PLUGGED_ABANDONED→Plugged & Abandoned, TEMP_ABANDONED→Temporarily Abandoned,
+          PLANNED→Planned, INJECTING→Injector, SOLD→Sold. All other values→Other.
+          Mirrors dim_wells.activity_status for backward compatibility.
+
+      # =========================================================================
+      # KEY DATES
+      # =========================================================================
+      - name: permit_date
+        description: Well permit approval date from WellView or Enverus.
+      - name: spud_date
+        description: Spud (drilling start) date from WellView or Enverus.
+      - name: rig_release_date
+        description: Date the drilling rig was released from WellView or Enverus.
+      - name: completion_date
+        description: Completion date from Enverus.
+      - name: first_production_date
+        description: Earliest first production date across ProdView, WellView, and Enverus (LEAST of non-null dates).
+      - name: prodview_first_production_date
+        description: First production date from ProdView daily volumes (may reflect acquisition date, not true first prod).
+      - name: wellview_first_production_date
+        description: On-production date from WellView.
+      - name: enverus_first_production_date
+        description: First production date from Enverus.
+      - name: shut_in_date
+        description: Date the well was shut in per ODA records. NULL for wells not in ODA.
+      - name: inactive_date
+        description: Date the well became inactive per ODA records. NULL for wells not in ODA.
+
+      # =========================================================================
+      # ENVERUS PRODUCTION BENCHMARKS
+      # =========================================================================
+      - name: enverus_cumulative_oil_bbl
+        description: Cumulative oil production in barrels per Enverus (public data benchmark).
+      - name: enverus_cumulative_gas_mcf
+        description: Cumulative gas production in MCF per Enverus.
+      - name: enverus_first_12_month_oil_bbl
+        description: First 12-month oil production benchmark from Enverus.
+      - name: enverus_first_12_month_gas_mcf
+        description: First 12-month gas production benchmark from Enverus.
+
+      # =========================================================================
+      # WORKING INTEREST / NRI
+      # =========================================================================
+      - name: working_interest
+        description: Working interest percentage from WellView user fields.
+      - name: nri_total
+        description: Net revenue interest (total) from WellView user fields.
+
+      # =========================================================================
+      # ODA USERFIELD ATTRIBUTES
+      # =========================================================================
+      - name: search_key
+        description: UF-SEARCH KEY custom attribute from ODA userfields. Used as a cross-reference key in GL reporting. Deduplicated by _flow_published_at DESC.
+      - name: pv_field
+        description: UF-PV FIELD custom attribute from ODA userfields. ProdView field classification. Deduplicated by _flow_published_at DESC.
+
+      # =========================================================================
+      # SOURCE PRESENCE FLAGS
+      # =========================================================================
+      - name: in_oda
+        description: True when this EID has a record in ODA (stg_oda__wells with cost_center_type='W').
+      - name: in_combo_curve
+        description: True when this EID has a record in ComboCurve.
+      - name: in_wellview
+        description: True when this EID has a record in WellView.
+      - name: in_prodview
+        description: True when this EID has a record in ProdView.
+      - name: in_enverus
+        description: True when this well matched an Enverus record via API-10.
+      - name: source_system_count
+        description: Number of source systems that have a record for this well (0-5).
+      - name: source_systems
+        description: Comma-separated list of source systems with records for this well.
+
+      # =========================================================================
+      # SOURCE LINEAGE
+      # =========================================================================
+      - name: api_10_source
+        description: Which source system provided the api_10 value.
+      - name: well_name_source
+        description: Which source system provided the well_name value.
+      - name: is_operated_source
+        description: Which source system provided the is_operated value.
+      - name: coordinates_source
+        description: Which source system provided the surface coordinates.
+      - name: spud_date_source
+        description: Which source system provided the spud_date.
+      - name: first_production_date_source
+        description: Which source system provided the first_production_date (earliest date wins).
+      - name: lateral_length_source
+        description: Which source system provided the lateral_length_ft value.
+
+      # =========================================================================
+      # CONFLICT FLAGS
+      # =========================================================================
+      - name: well_name_conflict
+        description: True when ComboCurve and ODA disagree on well name (internal systems only).
+      - name: api_conflict
+        description: True when ComboCurve and ODA have different API-10 values.
+      - name: is_operated_conflict
+        description: True when ComboCurve and ODA disagree on operated status.
+      - name: location_conflict
+        description: True when ComboCurve and ODA disagree on state or county.
+      - name: enverus_name_differs
+        description: Informational — Enverus well name differs from golden well name. Not a conflict (Enverus is external).
+      - name: has_any_conflict
+        description: True when any internal-system conflict flag is true.
+
+      # =========================================================================
+      # DATA QUALITY SCORES
+      # =========================================================================
+      - name: completeness_score
+        description: 0-100 score based on population of key fields (API, name, cost center, coordinates, status, spud date).
+      - name: enverus_contribution_score
+        description: 0-100 score tracking how much of the golden record came from Enverus (gap filler indicator).
+
+      # =========================================================================
+      # METADATA
+      # =========================================================================
+      - name: dbt_updated_at
+        description: Timestamp when this row was last rebuilt by dbt.
+      - name: dbt_batch_id
+        description: dbt invocation ID for the run that produced this row.

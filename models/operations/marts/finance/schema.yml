@@ -135,6 +135,67 @@ models:
       - name: balance_90_plus_days
         description: Balance for invoices more than 90 days past due (> 90, no upper bound)
 
+  - name: dim_wells
+    description: >
+      Well dimension for LOS reporting and Cortex Analyst. One row per ODA well.
+
+      ⚠️  This is a VIEW over well_360 (converted 2026-02-19). Do not alter column names —
+      the Cortex Analyst LOS semantic model (LOS_SEMANTIC_MODEL-2.yaml) joins on WELL_ID
+      and references many columns from this view.
+
+      Grain: one row per well with an ODA numeric ID (oda_well_id IS NOT NULL in well_360).
+      Join key for Cortex: FCT_LOS.WELL_ID = DIM_WELLS.WELL_ID (ODA internal numeric ID).
+    columns:
+      - name: well_id
+        description: ODA internal numeric well ID. Primary key for Cortex Analyst joins (maps to oda_well_id in well_360).
+        data_tests:
+          - unique
+          - not_null
+      - name: well_code
+        description: ODA cost center code (maps to cost_center_number in well_360).
+      - name: well_name
+        description: Golden well name from well_360.
+      - name: api_number
+        description: API-10 identifier (maps to api_10 in well_360).
+      - name: basin_name
+        description: Formentera operational basin classification (Permian Basin, Eagle Ford, SCOOP/STACK, etc.).
+      - name: state_name
+        description: Standardized 2-char state abbreviation (maps to state in well_360).
+      - name: county_name
+        description: Standardized county name in InitCap format (maps to county in well_360).
+      - name: op_ref
+        description: Standardized operated status string (OPERATED, NON-OPERATED, CONTRACT OPERATED, NON-WELL, etc.).
+      - name: is_operated
+        description: True when Formentera operates this well.
+      - name: is_revenue_generating
+        description: True when well is actively producing revenue (not held or suspended).
+      - name: is_stripper_well
+        description: True when ODA classifies as a stripper well.
+      - name: is_well
+        description: True when cost_center_type_name = 'Well' (excludes facilities and non-well cost centers).
+      - name: activity_status
+        description: "Human-friendly well status: Producing, Shut In, Plugged & Abandoned, Temporarily Abandoned, Planned, Injector, Sold, Other."
+      - name: well_type
+        description: Well type from name patterns (Horizontal, SWD, Injector, Unit Well, Vertical/Conventional, Other). Maps to well_type_oda in well_360.
+      - name: search_key
+        description: UF-SEARCH KEY userfield — used as GL reporting cross-reference key.
+      - name: pv_field
+        description: UF-PV FIELD userfield — ProdView field classification.
+      - name: operating_group_name
+        description: ODA operating group name for regional reporting.
+      - name: cost_center_type_name
+        description: ODA cost center type name (always 'Well' for rows in this view).
+      - name: spud_date
+        description: Spud date from well_360 (WellView or Enverus).
+      - name: first_production_date
+        description: Earliest first production date from well_360.
+      - name: shut_in_date
+        description: Date well was shut in per ODA.
+      - name: inactive_date
+        description: Date well became inactive per ODA.
+      - name: _refreshed_at
+        description: Timestamp when this row was generated (current_timestamp() at query time — this is a view).
+
   - name: wells
     description: Unified wells data combining project wells and company wells.
     columns:

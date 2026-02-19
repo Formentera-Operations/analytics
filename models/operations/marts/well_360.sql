@@ -12,10 +12,10 @@
 {#
     Well 360 - Master Well Dimension
     ================================
-    
+
     PURPOSE:
     Single source of truth for well attributes, integrating data from five source systems.
-    
+
     SOURCE SYSTEM HIERARCHY (varies by attribute domain):
     - Well Name: ProdView (engineer preference) → WellView → ODA → Combo Curve
     - Company Name/Code: ODA → ProdView (with standardization mapping) → WellView
@@ -23,7 +23,7 @@
     - Drilling/Operations: WellView → Enverus
     - Reserves/Type Curves: Combo Curve
     - Gap Filler: Enverus (third-party, used LAST to fill nulls)
-    
+
     DESIGN PATTERNS:
     1. Spine-based: Every EID from any internal source gets a row
     2. Golden Record: COALESCE priority based on data quality/authority per attribute
@@ -31,12 +31,12 @@
     4. Source Lineage: Track which system provided each golden value
     5. Conflict Detection: Flag when sources disagree
     6. Company Mapping: Seed table standardizes ProdView AssetCo to proper names/codes
-    
+
     KNOWN LIMITATIONS:
     - Point-in-time only (no SCD2 history yet)
     - Working Interest/NRI not fully integrated
     - Enverus may have multiple completions per API; we take most recent
-    
+
     REFRESH: Daily incremental recommended
 #}
 
@@ -78,6 +78,9 @@ golden_record as (
         -- IDENTIFIERS
         -- =========================================================================
         s.eid,
+
+        -- ODA internal numeric well ID (used for fct_los and Cortex Analyst joins)
+        oda.well_id as oda_well_id,
 
         -- API Numbers: Internal systems first, Enverus last
         coalesce(cc.api_10, oda.api_number, wv.api_10, pv.api_10, env.api_10) as api_10,
@@ -137,7 +140,8 @@ golden_record as (
 
         coalesce(wv.division, pv.division) as division,
 
-        -- Is Operated: ProdView > WellView > CC > inference (ODA excluded - unreliable)
+        -- Is Operated: ProdView > WellView > CC > inference > ODA fallback
+        -- ODA is less reliable than internal ops systems but better than NULL for ODA-only wells
         coalesce(
             pv.is_operated,
             wv.is_operated,
@@ -148,18 +152,55 @@ golden_record as (
                 when upper(coalesce(wv.operator_name, pv.operator_name, env.operator)) like '%FORMENTERA%' then true
                 -- Other operator = non-op
                 when coalesce(wv.operator_name, pv.operator_name, env.operator) is not null then false
-            end
+            end,
+            -- ODA fallback: preserves backward-compat for ODA-only wells not in other systems
+            oda.is_operated
         ) as is_operated,
 
         -- Operator name (Enverus can fill if internal is null)
         coalesce(wv.operator_name, pv.operator_name, env.operator) as operator_name,
 
         -- =========================================================================
+        -- ODA OPERATIONAL ATTRIBUTES
+        -- =========================================================================
+
+        -- Standardized operated status string (richer than boolean is_operated)
+        case
+            when oda.op_nonop_code = 'NON-OPERATED' then 'NON-OPERATED'
+            when oda.op_nonop_code in ('OPERATED', 'Operated') then 'OPERATED'
+            when oda.op_nonop_code = 'CONTRACT_OP' then 'CONTRACT OPERATED'
+            when oda.op_nonop_code in ('DNU', 'ACCOUNTING', 'Accounting') then 'NON-WELL'
+            when oda.op_nonop_code in ('OTHER', 'Other') then 'OTHER'
+            when oda.op_nonop_code = 'MIDSTREAM' then 'MIDSTREAM'
+            else 'UNKNOWN'
+        end as op_ref,
+
+        -- Financial control flags
+        coalesce(oda.is_hold_all_billing, false) as is_hold_billing,
+        coalesce(oda.is_suspend_all_revenue, false) as is_suspend_revenue,
+
+        -- Revenue generating: active + producing + not on hold
+        coalesce(
+            oda.oda_status = 'Producing'
+            and oda.production_status_name = 'Active'
+            and not oda.is_hold_all_billing
+            and not oda.is_suspend_all_revenue,
+            false
+        ) as is_revenue_generating,
+
+        -- =========================================================================
         -- LOCATION
         -- =========================================================================
         -- Raw values (as-is from sources)
         coalesce(oda.state_code, cc.state, wv.state_province, pv.state_province, env.state_province) as state_raw,
-        coalesce(oda.county_name, cc.county, wv.county_parish, pv.county, env.county) as county_raw,
+        -- nullif skips known bad ProdView value ('USA' = country entered as county)
+        coalesce(
+            oda.county_name,
+            cc.county,
+            wv.county_parish,
+            nullif(upper(pv.county), 'USA'),
+            env.county
+        ) as county_raw,
         coalesce(wv.country, pv.country, oda.country_name, env.country) as country,
 
         -- Standardized state (2-char uppercase via UDF)
@@ -167,8 +208,14 @@ golden_record as (
             coalesce(oda.state_code, cc.state, wv.state_province, pv.state_province, env.state_province)
         ) as state,
 
-        -- Standardized county (InitCap)
-        initcap(coalesce(oda.county_name, cc.county, wv.county_parish, pv.county, env.county)) as county,
+        -- Standardized county (InitCap); nullif skips bad ProdView 'USA' value
+        initcap(coalesce(
+            oda.county_name,
+            cc.county,
+            wv.county_parish,
+            nullif(upper(pv.county), 'USA'),
+            env.county
+        )) as county,
 
         -- BASIN: Separate focus area from geological basin (semantic mismatch fix)
         cc.basin as combo_curve_focus_area,  -- Project names like FP_GOLDSMITH-SLANT
@@ -217,6 +264,16 @@ golden_record as (
         cc.reserve_category,
         oda.is_stripper_well,
 
+        -- ODA cost center classification
+        oda.cost_center_type_code,
+        oda.cost_center_type_name,
+        coalesce(oda.cost_center_type_name = 'Well', false) as is_well,
+
+        -- ODA operating group hierarchy
+        oda.operating_group_code,
+        oda.operating_group_name,
+
+
         -- Raw producing method (as-is)
         coalesce(pv.producing_method, env.producing_method) as producing_method_raw,
 
@@ -242,6 +299,7 @@ golden_record as (
         -- STATUS (keep all raw for comparison)
         -- =========================================================================
         oda.oda_status,
+        oda.production_status_name,
         pv.completion_status as prodview_completion_status,
         pv.prodview_status_raw,
         pv.prodview_status_clean,  -- Engineer-approved mapping from stg_prodview__status
@@ -292,6 +350,10 @@ golden_record as (
         wv.on_production_date as wellview_first_production_date,
         env.first_production_date as enverus_first_production_date,
 
+        -- ODA operational status dates
+        oda.shut_in_date,
+        oda.inactive_date,
+
         -- =========================================================================
         -- ENVERUS PRODUCTION BENCHMARKS (for comparison/validation)
         -- =========================================================================
@@ -305,6 +367,12 @@ golden_record as (
         -- =========================================================================
         wv.working_interest,
         wv.nri_total,
+
+        -- =========================================================================
+        -- ODA USERFIELD ATTRIBUTES
+        -- =========================================================================
+        oda.search_key,
+        oda.pv_field,
 
         -- =========================================================================
         -- SOURCE PRESENCE FLAGS (from spine + Enverus match)
@@ -486,6 +554,97 @@ with_lineage as (
 final as (
     select
         *,
+
+        -- Formentera canonical basin classification using golden state/county
+        -- Covers all wells (ODA + non-ODA) — state is 100% populated across sources
+        -- Uses 2-char state abbrev (normalize_state_abbrev UDF) and upper(county)
+        -- Distinct from geological_basin (Enverus/WellView technical classification)
+        case
+            -- Permian Basin (West Texas)
+            when state = 'TX' and upper(county) in (
+                'ECTOR', 'CRANE', 'WINKLER', 'ANDREWS', 'MARTIN', 'GLASSCOCK',
+                'GAINES', 'PECOS', 'REEVES', 'COCHRAN', 'HOCKLEY', 'CROCKETT',
+                'STERLING', 'UPTON', 'MIDLAND', 'HOWARD', 'WARD', 'LOVING'
+            ) then 'Permian Basin'
+
+            -- Eagle Ford / South Texas
+            when state = 'TX' and upper(county) in (
+                'FRIO', 'ZAVALA', 'DIMMIT', 'KARNES', 'DEWITT', 'GONZALES',
+                'LAVACA', 'MCMULLEN', 'LASALLE', 'ATASCOSA', 'WILSON'
+            ) then 'Eagle Ford'
+
+            -- Fort Worth Basin / Barnett Shale (North Central Texas)
+            when state = 'TX' and upper(county) in (
+                'JOHNSON', 'TARRANT', 'PARKER', 'HOOD', 'HILL',
+                'WISE', 'PALO PINTO', 'ERATH', 'BOSQUE', 'SOMERVELL',
+                'JACK', 'DENTON', 'MONTAGUE', 'COOKE'
+            ) then 'Fort Worth Basin'
+
+            -- Texas Panhandle
+            when state = 'TX' and upper(county) in (
+                'WHEELER', 'HEMPHILL', 'ROBERTS', 'GRAY', 'HUTCHINSON'
+            ) then 'Texas Panhandle'
+
+            -- SCOOP/STACK / Anadarko Basin (Oklahoma)
+            when state = 'OK' and upper(county) in (
+                'OKLAHOMA', 'CANADIAN', 'GRADY', 'MCCLAIN', 'LOGAN',
+                'GARFIELD', 'KINGFISHER', 'GRANT', 'NOBLE', 'BLAINE',
+                'CUSTER', 'CADDO', 'DEWEY', 'MAJOR'
+            ) then 'SCOOP/STACK'
+
+            -- Williston Basin / Bakken (North Dakota)
+            when state = 'ND' and upper(county) in (
+                'DIVIDE', 'BURKE', 'BOTTINEAU', 'WILLIAMS', 'MOUNTRAIL',
+                'MCKENZIE', 'DUNN', 'STARK'
+            ) then 'Williston Basin'
+
+            -- State-level basins (county not needed)
+            when state = 'MS' then 'Mississippi'
+            when state = 'LA' then 'Louisiana'
+            when state = 'PA' then 'Appalachian Basin'
+            when state = 'AR' then 'Arkansas'
+
+            -- Known state but county outside any basin list
+            else 'Other'
+        end as basin_name,
+
+        -- op_ref_effective: use ODA classification where available, fall back to
+        -- is_operated inference (from ProdView/WellView/CC) for non-ODA wells.
+        -- Use this for reporting/dashboards. Use op_ref for ODA reconciliation.
+        case
+            when op_ref != 'UNKNOWN' then op_ref
+            when is_operated = true then 'OPERATED'
+            when is_operated = false then 'NON-OPERATED'
+        end as op_ref_effective,
+
+        -- True when op_ref_effective was derived from is_operated rather than ODA
+        op_ref = 'UNKNOWN' as is_op_ref_inferred,
+
+        -- Well type from name patterns (separate from well_type from CC/Enverus)
+        -- Placed here so we can reference the golden well_name alias resolved above
+        case
+            when upper(well_name) like '%SWD%' or upper(well_name) like '%DISPOSAL%' then 'SWD'
+            -- Injector: name token OR unified status (catches status-based injectors without INJ in name)
+            when unified_status = 'INJECTING' or upper(well_name) like '%INJ%' then 'Injector'
+            when regexp_like(upper(well_name), '.*[0-9]+[MW]?X?H(-[A-Z0-9]+)?$') then 'Horizontal'
+            when upper(well_name) like '%H-LL%' or upper(well_name) like '%H-SL%' then 'Horizontal'
+            when upper(well_name) like '%UNIT%' then 'Unit Well'
+            when cost_center_type_name = 'Well' then 'Vertical/Conventional'
+            else 'Other'
+        end as well_type_oda,
+
+        -- Activity status: human-friendly label derived from unified_status
+        -- unified_status uses normalized UPPER_SNAKE_CASE from normalize_well_status() UDF
+        case
+            when unified_status = 'PRODUCING' then 'Producing'
+            when unified_status = 'SHUT_IN' then 'Shut In'
+            when unified_status = 'PLUGGED_ABANDONED' then 'Plugged & Abandoned'
+            when unified_status = 'TEMP_ABANDONED' then 'Temporarily Abandoned'
+            when unified_status = 'PLANNED' then 'Planned'
+            when unified_status = 'INJECTING' then 'Injector'
+            when unified_status = 'SOLD' then 'Sold'
+            else 'Other'
+        end as activity_status,
 
         -- Completeness score (0-100) based on key fields populated
         round(
