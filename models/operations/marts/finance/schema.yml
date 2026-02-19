@@ -29,13 +29,11 @@ models:
       NOTE: Changes to los_category in dim_accounts require dbt run --select fct_los --full-refresh
       to backfill historical rows — the _loaded_at watermark does not re-process existing rows.
     data_tests:
-      # Monitor for NULL los_category on new rows post-fix (pre-2026-02-18 rows may be NULL until full-refresh)
-      # TODO: after fct_los --full-refresh is confirmed, remove the _loaded_at filter so the test covers all rows
       - dbt_utils.expression_is_true:
           arguments:
             expression: "los_category is not null"
           config:
-            where: "los_section is not null and los_section != '' and _loaded_at >= '2026-02-18'"
+            where: "los_section is not null and los_section != ''"
             severity: warn
 
   - name: wells
