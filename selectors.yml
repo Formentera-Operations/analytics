@@ -21,6 +21,8 @@ selectors:
         - +fct_ar_aging_detail
         - +fct_ar_aging_summary
         - +dim_oda_check_register
+        - +dim_revenue_check_register
+        - +dim_ap_check_register
 
   - name: marts-finance-combo-curve
     definition:
