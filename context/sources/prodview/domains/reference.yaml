@@ -71,7 +71,6 @@
 #     They appear across multiple domains and are not anchored to pvUnit or pvOpenState.
 #   - This domain contains mostly operational/administrative data. pvOpenState and its children
 #     are the highest-value tables for mart use cases (period boundary production accounting).
-#   - stg_prodview__remarks exists (filed under admin/) for pvUnitRemark.
 
 
 # Tables in this domain (column details in tables/ directory):
