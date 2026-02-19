@@ -12,6 +12,52 @@
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
 
 
+# Relationships:
+#   pvFlowNetHeader is the ROOT of the entire ProdView hierarchy — every table in ProdView carries idflownet
+#     which references pvFlowNetHeader; it defines the production network boundary (battery/lease/pad)
+#   pvFlowNetHeader 1:many pvUnit — all units belong to a flow network
+#     Join: pvUnit.idflownet = pvFlowNetHeader.idflownet
+#   pvFlowNetHeader 1:1 pvCalcSet — calculation settings record for the network (allocation method, BOE factor, etc.)
+#     Join: pvCalcSet.idflownet = pvFlowNetHeader.idflownet
+#   pvUnit 1:many pvUnitNode — routing nodes define how production enters/exits a unit in the flow graph
+#     Join: pvUnitNode.idrecparent = pvUnit.idrec AND pvUnitNode.idflownet = pvUnit.idflownet
+#   pvUnitNode 1:many pvUnitNodeFlowTo — directed edges (outlet connections) between nodes (the pipeline graph)
+#     Join: pvUnitNodeFlowTo.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeMeterEvent — meters or events installed on a node (links meter to routing point)
+#     Join: pvUnitNodeMeterEvent.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeAnaly — fluid analyses effective-dated to a node
+#     Join: pvUnitNodeAnaly.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeCorr — monthly node corrections (read-only, calc output)
+#     Join: pvUnitNodeCorr.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeCorrDay — daily node corrections (read-only, calc output)
+#     Join: pvUnitNodeCorrDay.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeNetFact — node shrinkage/net factor records
+#     Join: pvUnitNodeNetFact.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeMonthCalc — monthly calculated volumes per node (read-only, calc output)
+#     Join: pvUnitNodeMonthCalc.idrecparent = pvUnitNode.idrec AND matching idflownet
+#   pvUnitNode 1:many pvUnitNodeMonthDayCalc — daily calculated volumes per node (read-only, calc output)
+#     Join: pvUnitNodeMonthDayCalc.idrecparent = pvUnitNode.idrec AND matching idflownet
+#
+# Key patterns:
+#   - idrec: universal GUID PK on every table in the domain
+#   - idflownet: THE network scope identifier — pvFlowNetHeader.idflownet is the root anchor.
+#     EVERY table in all ProdView domains carries this column. It acts simultaneously as:
+#     (1) a FK to pvFlowNetHeader for network membership, and
+#     (2) a required scope filter on all inter-table joins to prevent cross-network row pollution
+#   - idrecparent: FK pointing to the parent table's idrec; always compound-join with idflownet
+#   - pvFlowNetHeader: root entity — not a staging target by itself, but its idflownet is the
+#     universal scope key woven through every join in ProdView. Formentera currently operates a
+#     single flow network, so all idflownet values are the same — but always include in joins
+#   - pvUnitNode + pvUnitNodeFlowTo: flow topology (directed pipeline routing graph). Used for
+#     flow routing analysis and allocation path tracing — NOT for production volume queries.
+#     Do not join these tables when building production measurement or allocation models.
+#   - pvUnitNodeMonthCalc / pvUnitNodeMonthDayCalc: calculated node volumes produced by the
+#     ProdView allocation engine; these are read-only outputs, not user-entered data
+#   - The "flow network" concept means all units, completions, meters, and measurements within a
+#     pvFlowNetHeader instance are physically and contractually related — same production
+#     battery / tank battery / lease boundary
+
+
 # Tables in this domain (column details in tables/ directory):
 #   pvFlowNetHeader: Networks | Single entity grouping used to deliniate assets by certain flow pa...
 #   pvCalcSet: Calculation Settings | Defines how the measurement and allocation calculation...

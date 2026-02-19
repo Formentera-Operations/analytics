@@ -10,6 +10,24 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   pvUnit 1:many -> pvUnitComp (via unit.idrec = comp.idrecparent AND unit.idflownet = comp.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompDownTm (via comp.idrec = downtm.idrecparent AND comp.idflownet = downtm.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompTest (via comp.idrec = test.idrecparent AND comp.idflownet = test.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompParam (via comp.idrec = param.idrecparent AND comp.idflownet = param.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompGathMonthCalc (via comp.idrec = calc.idrecparent AND comp.idflownet = calc.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompZone (via comp.idrec = zone.idrecparent AND comp.idflownet = zone.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompCmngl (via comp.idrec = cmngl.idrecparent AND comp.idflownet = cmngl.idflownet)
+#   pvUnitCompGathMonthCalc is a calc rollup — not a raw measurement table. Do not join for time-series; use for monthly summaries only.
+#
+# Key patterns:
+#   - idrec: universal GUID primary key on every ProdView table — always required in joins
+#   - idflownet: flow network identifier — every join between parent and child MUST also match idflownet (same network scope). Omitting idflownet causes cross-network data bleed.
+#   - idrecparent: FK to parent entity's idrec — must ALWAYS be paired with a matching idflownet predicate
+#   - pvUnitComp is the mart grain for production volume facts — filter unit_type = 'pvunitcomp' when querying from pvUnit to select only completions (excludes facilities and externals)
+#   - pvUnitCompDownTm.DowntimePct is the primary downtime percentage per completion per day
+#   - pvUnitCompTest has productivity index and injection ratio measurements — use the latest test per completion for current performance attributes
 
 
 # Tables in this domain (column details in tables/ directory):

@@ -12,6 +12,40 @@
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
 
 
+# Relationships:
+#   pvUnit 1:many pvUnitMeter[Type] (Header) — a single unit can have meters of multiple types active simultaneously
+#     (e.g., a pvUnitMeterLiquid AND a pvUnitMeterPDGas on the same unit at the same time)
+#     Join: pvUnit.idrec = pvUnitMeter[Type].idrecparent AND pvUnit.idflownet = pvUnitMeter[Type].idflownet
+#   pvUnitMeter[Type] (Header) 1:many pvUnitMeter[Type]Fact — meter instrument config to effective-dated factor records
+#     Join: Header.idrec = Fact.idrecparent AND Header.idflownet = Fact.idflownet
+#   pvUnitMeter[Type] (Header) 1:many pvUnitMeter[Type]Entry — daily readings per meter
+#     Join: Header.idrec = Entry.idrecparent AND Header.idflownet = Entry.idflownet
+#   pvUnitMeterPDGas 1:1 pvUnitMeterPDGasECF — effluent correction factor extension (tagged +ext,parent)
+#     Join: pvUnitMeterPDGas.idrec = pvUnitMeterPDGasECF.idrecparent AND matching idflownet
+#   pvUnitMeterOrifice 1:1 pvUnitMeterOrificeECF — effluent correction factor extension (tagged +ext,parent)
+#     Join: pvUnitMeterOrifice.idrec = pvUnitMeterOrificeECF.idrecparent AND matching idflownet
+#   pvUnitMeterOrifice 1:1 pvUnitMeterOrificeRange — spring ranges extension (tagged +ext,parent)
+#     Join: pvUnitMeterOrifice.idrec = pvUnitMeterOrificeRange.idrecparent AND matching idflownet
+#   pvUnitMeterOrifice 1:1 pvUnitMeterOrificeEntry — orifice entry extension (tagged +ext,parent)
+#     Join: pvUnitMeterOrifice.idrec = pvUnitMeterOrificeEntry.idrecparent AND matching idflownet
+#   pvUnitMeasPt 1:many pvUnitMeasPtEntry — other measurement points to their miscellaneous reading entries
+#     Join: pvUnitMeasPt.idrec = pvUnitMeasPtEntry.idrecparent AND matching idflownet
+#
+# Key patterns:
+#   - idrec: universal GUID PK on every table — always compound-join with idflownet
+#   - idflownet: required in all joins to scope to the correct flow network; scopes every inter-table join
+#   - idrecparent: FK to the parent table's idrec; the universal child→parent pointer in the ProdView hierarchy
+#   - 5 meter types: Liquid, GasPD, Orifice, Rate, Virtual — table names follow pattern pvUnitMeter[Type][Role]
+#   - +ext,parent tagged tables (ECF, OrificeRange, OrificeEntry) are 1:1 extensions of their parent meter —
+#     they extend the parent record with additional columns rather than adding new child rows
+#   - A pvUnit can have meters of different types active simultaneously — do not assume one meter per unit
+#   - DailyEntry tables (e.g., pvUnitMeterLiquidEntry) are the raw time-series grain; Fact tables are
+#     effective-dated configuration/factor records; Header tables (e.g., pvUnitMeterLiquid) are
+#     the instrument-level config record
+#   - Heat factor tables (pvUnitMeterPDGasHeatFact, pvUnitMeterOrificeHeatFact) are separate from volume
+#     factor tables — both are children of the meter header via idrecparent
+
+
 # Tables in this domain (column details in tables/ directory):
 #   pvUnitMeterLiquid: Oil/Water Meters +parent | In the Liquid Meters table, you can record any met...
 #   pvUnitMeterLiquidFact: Meter Factors +parent | Enter a date, a volume per volume measure, and the nu...

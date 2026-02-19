@@ -10,6 +10,30 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   Allocation chain (planned/actual production allocation):
+#   pvUnit 1:many -> pvUnitAllocMonth (via idrec -> idrecparent, must also match idflownet)
+#   pvUnitAllocMonth 1:many -> pvUnitAllocMonthDay (via idrec -> idrecparent AND idflownet)
+#
+#   Distribution chain (downstream product distribution):
+#   pvUnit 1:many -> pvUnitDistribMonth (via idrec -> idrecparent, must also match idflownet)
+#   pvUnitDistribMonth 1:many -> pvUnitDistribMonthDay (via idrec -> idrecparent AND idflownet)
+#
+#   Balance rollup:
+#   pvUnit 1:1 -> pvUnitBalanceMonthCalc (calculated rollup derived from allocation + distribution; not a raw measurement)
+#
+# Key patterns:
+#   - idrec: universal GUID PK on every ProdView table — required in all joins
+#   - idflownet: flow network scope — every parent->child join must match on BOTH idrecparent=idrec AND
+#     idflownet. Omitting idflownet causes cross-network data bleed.
+#   - idrecparent: FK to parent entity's idrec — must also match idflownet
+#   - Two parallel chains: Alloc chain (planned production allocation) and Distrib chain (downstream
+#     distribution). These are NOT the same concept — do not mix them.
+#   - pvUnitBalanceMonthCalc: a calculated rollup — represents the balance between allocated in and
+#     distributed out. Used for balance/imbalance checks, not raw measurement.
+#   - Month grain: pvUnitAllocMonth and pvUnitDistribMonth are at calendar-month grain per unit.
+#     Day-level tables (pvUnitAllocMonthDay, pvUnitDistribMonthDay) add daily granularity within each month.
 
 
 # Tables in this domain (column details in tables/ directory):
