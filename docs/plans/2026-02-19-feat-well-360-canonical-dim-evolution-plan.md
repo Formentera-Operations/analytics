@@ -7,19 +7,36 @@
 
 ---
 
+## ⚠️ Critical Finding: dim_wells is Used in Deployed Cortex Analyst Model
+
+**Confirmed 2026-02-19** by reading `@FO_PRODUCTION_DB.MARTS.SEMANTIC_VIEWS/semantic_views/LOS_SEMANTIC_MODEL-2.yaml`.
+
+`DIM_WELLS` is an active table in the LOS Cortex Analyst semantic model with:
+- Two join relationships: `FCT_LOS_TO_DIM_WELLS` (on `WELL_ID`) and `DIM_AFES_TO_DIM_WELLS` (on `WELL_ID`)
+- Multiple verified SQL samples joining `FCT_LOS f JOIN DIM_WELLS w ON f.WELL_ID = w.WELL_ID`
+- Exposed dimensions: `BASIN_NAME`, `ACTIVITY_STATUS`, `IS_REVENUE_GENERATING`, `OP_REF`,
+  `IS_WELL`, `WELL_TYPE`, `SEARCH_KEY`, `PV_FIELD`, `OPERATING_GROUP_NAME`, and ~10 others
+
+**`dim_wells` must NOT be deleted.** Instead, it becomes a **view over `well_360`** that
+preserves the existing column contract. Zero changes to the Cortex YAML. Zero downtime.
+
+The `dim_wells` dbt model changes from `materialized='table'` to `materialized='view'`,
+sourcing all columns from `well_360` with backward-compatible aliases.
+
+---
+
 ## Goal
 
 Evolve `well_360` into the project's single canonical well dimension by:
 
-1. Absorbing the valuable derived logic from `dim_wells` (basin classification,
+1. Absorbing the valuable derived logic from `dim_wells` into `well_360` (basin classification,
    activity status, revenue flags, well type from name patterns)
-2. Surfacing ODA's internal `well_id` for backward-compatible joins to `fct_los`
+2. Surfacing ODA's internal `well_id` (`oda_well_id`) for backward-compatible joins to `fct_los`
 3. Expanding `int_well__oda` to pass through the missing ODA attributes
-4. Deleting `dim_wells` (zero downstream SQL consumers — migration cost is free)
+4. **Converting `dim_wells` to a thin view over `well_360`** (NOT deleting it — Cortex dependency)
 
-`dim_wells` is an ODA-accidental dimension built to serve the finance/LOS use case
-before `well_360` existed. It has no `ref()` consumers. Its valuable logic belongs
-in `well_360` as the enterprise-wide canonical well dimension.
+`dim_wells` stays alive as a view. `well_360` becomes the canonical source of truth.
+All the logic moves once; consumers see zero breaking changes.
 
 ---
 
@@ -149,15 +166,59 @@ a separate column. `unified_status` uses normalized values (PRODUCING, SHUT IN, 
 `activity_status` from `dim_wells` uses sentence-case (Producing, Shut In, etc.).
 Decide at implementation: either rename to align or add as a separate alias.
 
-### Step 3: Validate and delete `dim_wells`
+### Step 3: Convert `dim_wells` to a view over `well_360`
 
-1. Confirm `grep -r "dim_wells" models/` returns only the comment in `stg_oda__userfield.sql`
-   (no actual `ref()` calls)
-2. Run `dbt build --select well_360 --full-refresh` — full refresh required because
-   new columns are being added to a materialized table
-3. Spot-check: verify `oda_well_id` populates and matches known wells from `fct_los`
-4. Delete `models/operations/marts/finance/dim_wells.sql` and its YAML entry
-5. Run `dbt build --select state:modified+` to confirm no downstream breakage
+Do NOT delete `dim_wells` — it is referenced in the live Cortex Analyst semantic model.
+Instead, change it from a standalone table to a thin view that wraps `well_360`.
+
+**Change `dim_wells.sql` config:**
+```python
+config(materialized='view', tags=['marts', 'finance', 'dimension'])
+```
+
+**Replace the body with a SELECT from `well_360` with backward-compatible aliases:**
+```sql
+SELECT
+    oda_well_id                              AS well_id,
+    cost_center_number                       AS well_code,
+    well_name,
+    api_10                                   AS api_number,
+    basin_name,
+    state                                    AS state_name,
+    county                                   AS county_name,
+    op_ref,
+    is_operated,
+    is_revenue_generating,
+    is_stripper_well,
+    coalesce(cost_center_type_name = 'Well', false) AS is_well,
+    activity_status,
+    well_type_oda                            AS well_type,
+    search_key,
+    pv_field,
+    operating_group_name,
+    cost_center_type_name,
+    spud_date,
+    first_production_date,
+    -- shut_in_date and inactive_date: add to int_well__oda if needed
+    current_timestamp()                      AS _refreshed_at
+FROM {{ ref('well_360') }}
+WHERE oda_well_id IS NOT NULL   -- only ODA wells; Cortex model expects ODA-keyed rows
+```
+
+**Notes:**
+- `shut_in_date` and `inactive_date` exist in `stg_oda__wells` but aren't currently in
+  `int_well__oda`. Add them if the Cortex model needs them (check the semantic YAML).
+- `WELL_TYPE` in the Cortex model uses `dim_wells.well_type` — this maps to `well_type_oda`
+  in `well_360` (name-pattern derived). `well_type` (ComboCurve/Enverus) is a separate column.
+- After this change, `dim_wells` is a live view — it automatically reflects `well_360` updates
+  with no manual refresh needed.
+
+**Validate:**
+1. `dbt build --select dim_wells` — confirm view builds cleanly
+2. Row count should match `SELECT COUNT(*) FROM well_360 WHERE oda_well_id IS NOT NULL`
+3. Spot-check: `SELECT well_id, well_name, basin_name, is_revenue_generating FROM dim_wells LIMIT 10`
+4. Run `dbt build --select state:modified+` to confirm no downstream dbt breakage
+5. Verify Cortex Analyst LOS model still returns results (query via Snowflake UI or Cortex API)
 
 ### Step 4: Update `int_well__oda` YAML docs
 
