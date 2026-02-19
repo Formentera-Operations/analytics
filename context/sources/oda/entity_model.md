@@ -327,7 +327,7 @@ Joint Interest Billing. When Formentera operates a well with working interest pa
 | **JIB grain** | JIB header per billing cycle |
 | **JIBDetail grain** | Detail line: Owner × Well × Account × Billing Period |
 | **Key measures** | `GrossValue`, `NetValue`, `ExpenseDeckInterest` |
-| **Billing status** | `BillingStatusId` → `stg_oda__...` — pending / billed / paid |
+| **Billing status** | `BillingStatusId` — pending / billed / paid |
 | **Expense deck link** | `ExpenseDeckRevisionId` — which ownership snapshot was used |
 | **Source tables** | `stg_oda__jib` (CDC, 63M rows), `stg_oda__jibdetail` (CDC, 63M rows) |
 | **Note** | JIB and JIBDetail rows are parallel denormalized views — no FK between them. Both link independently to wells, owners, and accounts. |
