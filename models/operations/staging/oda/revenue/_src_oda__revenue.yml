@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: oda
+    database: ESTUARY_DB
+    schema: ESTUARY_SCHEMA
+    tables:
+      - name: ODA_OWNERREVENUEDETAIL_V2
+        description: |
+          Owner revenue owner distributions by well/product/production date. (Estuary batch, ~61M rows). 
+          Identifies payees in suspense and redistributed ouchers. 
+          Grain: one row per owner revenue distribution line item. 
