@@ -143,8 +143,14 @@ los_monthly as (
 -- =============================================================================
 final as (
     select
-        -- surrogate key: use eid for resolved wells, id_rec_unit for unresolved
-        {{ dbt_utils.generate_surrogate_key(['coalesce(p.eid, p.id_rec_unit)', 'p.production_month']) }}
+            -- surrogate key: domain-prefixed to prevent collision between eid and id_rec_unit
+            -- namespaces: 'eid' for resolved wells, 'unit' for unresolved
+            -- prevents hash collision when an id_rec_unit value equals an eid in the same month
+        {{ dbt_utils.generate_surrogate_key([
+            "case when p.eid is not null then 'eid' else 'unit' end",
+            'coalesce(p.eid, p.id_rec_unit)',
+            'p.production_month'
+        ]) }}
             as well_performance_monthly_sk,
 
         -- grain keys
