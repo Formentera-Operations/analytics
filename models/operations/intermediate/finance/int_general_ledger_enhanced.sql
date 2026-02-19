@@ -65,7 +65,7 @@ userfields as (
         and entity_type_id = 2  -- Wells only
     qualify row_number() over (
         partition by id
-        order by user_field_identity desc
+        order by _flow_published_at desc
     ) = 1
 ),
 
