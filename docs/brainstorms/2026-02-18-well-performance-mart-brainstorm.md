@@ -2,179 +2,195 @@
 
 **Date:** 2026-02-18
 **Author:** Rob Stover
-**Status:** Ready for planning
+**Status:** Architecture finalized — see sprint plans to implement
 
 ---
 
 ## What We're Building
 
-A cross-domain well performance data asset combining:
+A cross-domain well performance data asset combining production, financial, and D&C context
+across a **galaxy (multi-star) schema** in gold, with a denormalized OBT in platinum for
+BI consumption.
 
-| Source | Data | Grain |
-|--------|------|-------|
-| ProdView | Production volumes (oil, gas, water, BOE) | Well-Month |
-| ODA (`fct_los`) | Revenue, LOE, severance tax, net income | Well-Month |
-| ODA (`bridge_job_afe`, `dim_afes`) | AFE authorization + actual capex | Per Job/Well |
-| WellView (`fct_daily_drilling_cost`) | D&C cost per job → well | Per Job/Well |
-| WellView (`fct_drilling_time`) | Drilling + NPT hours by phase | Per Job/Well |
-| WellView (`fct_stimulation`) | Proppant, stages, fluid volumes | Per Job/Well |
-| WellView (`fct_npt_events`) | NPT event count + hours | Per Job/Well |
-| `well_360` | Well identity, API numbers, basin/unit/formation | Well Dimension |
+**Output models (final):**
 
-**Output models:**
+| Model | Layer | Grain | Purpose |
+|-------|-------|-------|---------|
+| `fct_well_production_monthly` | Gold (marts) | EID + month | Production volumes — source-agnostic fact |
+| `int_los__well_monthly` | Intermediate (ephemeral) | EID + month | LOS financials rolled up from `fct_los`, feeds platinum only |
+| `int_well_perf__drilling_summary` | Intermediate (ephemeral) | EID | D&C cost + time + NPT per well, feeds platinum only |
+| `int_well_perf__completion_summary` | Intermediate (ephemeral) | EID | Stim metrics per well, feeds platinum only |
+| `plat_well__performance_scorecard` | Platinum | EID | Denormalized OBT — `well_360` identity + all rolled-up metrics |
 
-- `fct_well_performance_monthly` — well-month grain: production volumes + LOS financials
-- `fct_well_performance_summary` — well-lifetime grain: rolled-up production + financials + D&C context
+**Prerequisite sprint (must run first):**
+Evolve `well_360` into the canonical well dimension — absorb `dim_wells` logic, add
+`oda_well_id`, `basin_name`, revenue flags.
+See `docs/plans/2026-02-19-feat-well-360-canonical-dim-evolution-plan.md`.
 
-**Consumers:** Operations leadership (well scorecards, underperformance flags), Finance team (LOS reconciliation, AFE vs actual capex), Engineering (completion quality vs production correlation).
-
----
-
-## Why This Approach
-
-**Intermediate-first architecture (Approach B)** — 4 pre-aggregating intermediates + 2 mart models.
-
-Rationale:
-1. **WellView→EID join is non-trivial.** WellView jobs link to wellbores (`dim_wellbore`) which link to API numbers, which then need to join back to `well_360` via `api_10`/`api_14`. This deserves its own tested step rather than inline logic in a mart.
-2. **Grain mismatch must be resolved before the final join.** ProdView/LOS are time-series (well-month); WellView is event-based (per job). Each source needs to be collapsed to EID grain before the summary model can JOIN them.
-3. **Each intermediate is independently testable.** We can validate BOE calculations, LOS roll-ups, and D&C cost per EID without running the full pipeline.
-4. **Mirrors existing pattern.** `int_wellview__daily_drilling_enriched` → `fct_daily_drilling_cost` already uses this model; we're building parallel intermediates at the EID roll-up level.
+**Consumers:** Operations leadership (well scorecards, underperformance flags),
+Finance team (LOS reconciliation, AFE vs actual capex), Engineering
+(completion quality vs production correlation).
 
 ---
 
-## Key Decisions
+## Architecture Decisions
 
-### 1. Well Identity Bridge
-- **EID is the join key** across all sources
-- `well_360` is the authoritative EID→API mapping
+### Gold = True Galaxy (Multi-Star) Schema
 
-**Per-source EID resolution (validated by reading models):**
+One fact per business process, all sharing `well_360` as the conformed dimension.
+Facts do not know about each other. Cross-process combination happens in platinum only.
 
-| Source | EID Path | Notes |
-|--------|----------|-------|
-| `fct_los` | `right(well_code, 6)` | ODA cost center encodes EID as last 6 chars (e.g., `FO012345` → `012345`). String derivation — no join needed. |
-| `int_prodview__production_volumes` | `id_rec_unit` → `stg_prodview__units.api_10` → `well_360.api_10` | Must join through units table to get API-10, then to well_360. This is the only non-trivial identity join. |
-| `fct_daily_drilling_cost` | Column `eid` already present | Resolved inline via `well_360` join in the mart. |
-| `fct_drilling_time` | Column `eid` already present | Resolved inline via `well_360` join in the mart. |
-| `fct_stimulation` | Column `eid` already present | Resolved inline via `well_360` join in the mart. |
+```
+well_360 (conformed dimension)
+  ├── fct_well_production_monthly    ← NEW: production business process
+  ├── fct_los                        ← EXISTING: financial/GL business process
+  ├── fct_daily_drilling_cost        ← EXISTING
+  ├── fct_drilling_time              ← EXISTING
+  └── fct_stimulation                ← EXISTING
+```
 
-### 2. Intermediate Models
+**Why not a combined `fct_well_performance_monthly`?**
+Production (ProdView) and financials (ODA GL) are independent business processes with
+different owners, refresh cadences, and governance. Combining them in gold conflates
+those concerns. The platinum layer exists precisely to do cross-process aggregation
+for consumption — that's its job.
 
-| Model | Grain | Source(s) | Key Logic |
-|-------|-------|-----------|-----------|
-| `int_well_perf__prodview_monthly` | EID + month | `stg_prodview__daily_allocations`, `stg_prodview__units` | Read directly from staging (NOT via `int_prodview__production_volumes` — that model is a legacy quoted-alias compatibility bridge). Join `id_rec_unit` → `stg_prodview__units.api_10` → `well_360.api_10` for EID. Sum volumes to month. |
-| `int_well_perf__los_monthly` | EID + month | `fct_los` | Derive EID as `right(well_code, 6)`. Pass through `los_gross_amount`/`los_net_amount` by los_category. Filter: `location_type = 'Well'` only. |
-| `int_well_perf__drilling_summary` | EID | `fct_daily_drilling_cost`, `fct_drilling_time`, `fct_npt_events` | All three already carry `eid`. SUM cost + hours per EID across all jobs. |
-| `int_well_perf__completion_summary` | EID | `fct_stimulation` | Already carries `eid`. SUM stages, proppant, fluid volumes per EID (multiple stim jobs per well possible). |
+### Fact Naming = Business Entity, Not Source System
 
-### 3. Mart Models
+`fct_well_production_monthly`, not `fct_prodview__production_monthly`. If a second
+production source is acquired, the staging/intermediate layer handles the union.
+The fact contract (columns, grain, semantics) stays stable.
 
-**`fct_well_performance_monthly`**
-- Grain: `(eid, production_month)`
-- Spine: `int_well_perf__prodview_monthly` (production is the activity driver)
-- LEFT JOIN: `int_well_perf__los_monthly` — months with no LOS entry get NULLs (expected for inactive wells)
-- Columns: EID, month, oil_bbls, gas_mcf, water_bbls, boe, revenue, loe, severance_tax, net_income
-- Materialization: **Table** (time-series, ~500K–2M rows estimated)
-- Clustering: `(eid, production_month)`
+### Platinum = Cross-Process OBT
 
-**`fct_well_performance_summary`**
-- Grain: `eid` (one row per well, lifetime)
-- Spine: `well_360` (all known EIDs, even pre-production)
-- Aggregations from monthly fact: total BOE, peak month production, producing months count, cumulative revenue, cumulative LOE
-- LEFT JOINs: `int_well_perf__drilling_summary`, `int_well_perf__completion_summary`
-- Columns: all well_360 identity fields + production lifetime + financial lifetime + D&C context
-- Materialization: **Table** (~9K–15K rows)
+`plat_well__performance_scorecard` is the one-stop-shop for well performance analysis.
+It is fully denormalized — all `well_360` identity attributes embedded directly.
+No joins required at query time.
 
-### 4. Materialization Strategy
-- Intermediates: `ephemeral` (no need to materialize pre-aggregations; they're purpose-built for these two marts)
-- `fct_well_performance_monthly`: **table** — large time-series, queried with date filters; cluster by (eid, production_month)
-- `fct_well_performance_summary`: **table** — small enough to rebuild fast; acts as the scorecard spine
+### well_360 is the Canonical Well Dimension
 
-### 5. Production Source Priority
-- **ProdView only** for this phase — Griffin has overlap but adds complexity
-- If Griffin coverage expands, revisit with a `COALESCE(prodview, griffin)` priority pattern
-
-### 6. Financial Data Scope (Phase 1)
-- LOS + AFE/capital spending (via drilling summary)
-- AR Aging excluded for now — receivables is a separate finance use case
-- AP/vendor spend excluded — join path to well level is expensive and ODA vendor spend isn't reliably well-coded
+`dim_wells` (ODA-only, finance-era) has zero downstream SQL consumers and is deprecated.
+Its derived logic migrates into `well_360`. After the prerequisite sprint, `dim_wells`
+is deleted.
 
 ---
 
-## Open Questions
+## Source Inventory
 
-One remaining question to validate before sprint planning:
+| Source | Data | Grain | Layer |
+|--------|------|-------|-------|
+| ProdView (`stg_prodview__daily_allocations`) | Production volumes | Daily → roll to month | Staging → Gold |
+| ODA (`fct_los`) | Revenue, LOE, severance tax | GL transaction | Gold (existing) |
+| WellView (`fct_daily_drilling_cost`) | D&C cost per job | Per cost line | Gold (existing) |
+| WellView (`fct_drilling_time`) | Drilling + NPT hours | Per time log | Gold (existing) |
+| WellView (`fct_stimulation`) | Proppant, stages, fluid | Per stim job | Gold (existing) |
+| WellView (`fct_npt_events`) | NPT event count + hours | Per event | Gold (existing) |
+| `well_360` | Well identity, basin, API numbers | Per well (EID) | Gold dimension |
 
-1. **What's the date range for LOS data?** Run `dbt show --select fct_los --limit 5` and check earliest/latest `journal_date`. If LOS starts after 2018, monthly fact will have NULL financial windows for older production history.
+---
 
-All other open questions resolved (see Well Identity Bridge section above).
+## EID Join Strategy (Validated)
+
+All join paths validated by querying Snowflake directly (2026-02-18).
+
+| Source | EID Resolution | Notes |
+|--------|----------------|-------|
+| `fct_well_production_monthly` | Two-step COALESCE: `id_rec_unit` → `well_360.prodview_unit_id` first, `stg_prodview__units.api_10` → `well_360.api_10` fallback | 81.5% match on pvunitcomp units. Filter `unit_type = 'pvunitcomp'` first to exclude facilities/externals. |
+| `int_los__well_monthly` | `right(well_code, 6)` | ODA cost center encodes EID as last 6 chars — string derivation, no join. Filter `location_type = 'Well'` only. |
+| `fct_daily_drilling_cost` | `eid` column already present | Resolved inline in the mart. |
+| `fct_drilling_time` | `eid` column already present | Resolved inline in the mart. |
+| `fct_stimulation` | `eid` column already present | Resolved inline in the mart. |
+| `fct_npt_events` | `eid` column already present | Resolved inline in the mart. |
+
+**ProdView EID gap (~18.5% of pvunitcomp):**
+- Non-operated wells (~820): expected — not in ODA/WellView spine
+- Injection/SWD (~145): not production wells
+- Operated Gas Wells (~1,145): FP Griffin wells migrated to ProdView without
+  `property_eid` backfilled. Resolve automatically when EIDs are added.
+- **Decision:** include ALL pvunitcomp rows with `is_eid_unresolved` flag — do not drop.
+
+---
+
+## Model Specs
+
+### `fct_well_production_monthly` (gold, table)
+
+- **Grain:** `(eid, production_month)`
+- **Spine:** `stg_prodview__daily_allocations` filtered to `pvunitcomp` units
+- **EID join:** two-step COALESCE (prodview_unit_id → api_10)
+- **Unique key:** `generate_surrogate_key(['eid', 'production_month'])`
+- **Clustering:** `(eid, production_month)`
+- **Key columns:** `eid`, `id_rec_unit`, `production_month`, `is_eid_unresolved`,
+  `oil_bbls`, `gas_mcf`, `water_bbls`, `ngl_bbls`, `gross_boe`
+- **EID is the only well identity column** — join to `well_360` at query time for attributes
+- **Tags:** `['marts', 'fo', 'well_360']`
+
+### `int_los__well_monthly` (ephemeral, feeds platinum only)
+
+- **Grain:** `(eid, los_month)`
+- **Source:** `fct_los` — filter `location_type = 'Well'`
+- **EID:** `right(well_code, 6)`
+- **Logic:** `SUM(CASE WHEN los_category = ... THEN los_gross_amount ELSE 0 END)` pivot
+- **Key columns:** `eid`, `los_month`, `los_revenue`, `los_loe`, `los_severance_tax`, `los_net_income`
+- Check actual `los_category` values with `dbt show` before writing CASE statements
+
+### `int_well_perf__drilling_summary` (ephemeral, feeds platinum only)
+
+- **Grain:** `eid`
+- **Sources:** `fct_daily_drilling_cost`, `fct_drilling_time`, `fct_npt_events`
+- **Logic:** SUM across all jobs per EID (all three already carry `eid`)
+- **Key columns:** `eid`, `total_dc_cost`, `total_drilling_hours`, `total_npt_hours`,
+  `npt_pct`, `job_count`
+
+### `int_well_perf__completion_summary` (ephemeral, feeds platinum only)
+
+- **Grain:** `eid`
+- **Source:** `fct_stimulation` (already carries `eid`)
+- **Logic:** SUM across all stim jobs per well
+- **Key columns:** `eid`, `total_stages`, `total_proppant_lb`, `total_clean_volume_bbl`,
+  `lateral_length_ft`, `proppant_per_ft_lb`
+
+### `plat_well__performance_scorecard` (platinum, table)
+
+- **Grain:** `eid` — one row per well
+- **Spine:** `well_360` (all EIDs including pre-production)
+- **Denormalized:** all `well_360` identity columns embedded directly — no joins at query time
+- **LEFT JOINs:** all four intermediates/facts above
+- **Aggregates from `fct_well_production_monthly`:** cumulative + peak production, first/latest month
+- **Aggregates from `int_los__well_monthly`:** cumulative revenue, LOE, net income
+- **From `int_well_perf__drilling_summary`:** total D&C cost, hours, NPT pct, `has_drilling_data` flag
+- **From `int_well_perf__completion_summary`:** stim metrics, `has_completion_data` flag
+- **Tags:** `['platinum', 'fo', 'well_360']`
 
 ---
 
 ## Non-Goals (Phase 1)
 
-- No ComboCurve forecast columns (forecast vs actual is a Phase 2 extension)
-- No Griffin production data
+- No ComboCurve forecast vs actual columns (Phase 2 extension)
+- No Griffin production data (Phase 2 when Griffin→ProdView migration completes)
 - No AR/AP financial data at well level
-- No partner-tenant (FP) version yet — Operations (FO) only
-- No real-time or near-real-time refresh — daily batch is sufficient
+- No partner-tenant (FP) version — Operations (FO) only
+- No real-time refresh — daily batch sufficient
+- No SCD2 history on `well_360`
+- `fct_los` transaction grain stays as-is — no new gold monthly fact unless direct consumers emerge
 
 ---
 
-## Architecture Evolution (Post-Brainstorm Decisions)
+## Open Questions
 
-### Gold Layer = True Galaxy Schema
-
-After further discussion, the gold mart layer should be a **galaxy (multi-star) schema** — one
-fact per business process, all sharing `well_360` as the conformed dimension. No cross-process
-fact tables in gold.
-
-**`fct_well_performance_monthly` is removed from the plan.** It was combining two independent
-business processes (production volumes + LOS financials) into one fact — that's the platinum
-layer's job, not gold.
-
-Revised gold facts:
-- `fct_well_production_monthly` — production volumes at well-month grain (source-agnostic name)
-- `fct_los` — stays as-is (GL transaction grain, already exists)
-- WellView drilling facts — already exist
-
-The LOS monthly rollup (`int_los__well_monthly`) is an ephemeral intermediate that feeds
-platinum only. If direct consumers emerge, graduate it to a gold fact.
-
-### Source Naming Removed from Fact Models
-
-`fct_prodview__production_monthly` → renamed `fct_well_production_monthly`. Facts represent
-business entities, not source systems. If a second production source is acquired, the staging
-or intermediate layer handles the union — the fact contract stays stable.
-
-### Platinum Layer = Cross-Process OBT
-
-`plat_well__performance_scorecard` joins:
-- `well_360` identity (denormalized — all attributes embedded)
-- Rolled-up production from `fct_well_production_monthly`
-- Rolled-up financials from `fct_los` via `int_los__well_monthly`
-- D&C context from WellView drilling facts
-
-### well_360 Must Become the Canonical Well Dimension
-
-`dim_wells` (finance/LOS-era ODA-only well dimension) has zero downstream SQL consumers
-and should be deprecated. Its derived logic (basin classification, `is_revenue_generating`,
-ODA billing/revenue flags, `well_type` from name patterns) must be migrated into `well_360`
-before platinum layer work begins.
-
-**Separate sprint planned:** `docs/plans/2026-02-19-feat-well-360-canonical-dim-evolution-plan.md`
-
-**Sprint sequencing:**
-1. `well_360` canonical dim evolution (separate sprint, prerequisite)
-2. `fct_well_production_monthly` + `int_los__well_monthly` (gold foundation)
-3. `plat_well__performance_scorecard` (platinum OBT, joins gold + well_360)
+1. **LOS date range:** Validate earliest/latest `journal_date` in `fct_los` before building
+   `int_los__well_monthly`. If LOS starts after 2018, platinum scorecard will have NULL
+   financial windows for older production history — document the cutoff.
 
 ---
 
-## Sprint Sketch (Original — superseded by architecture evolution above)
+## Sprint Sequencing
 
-**Sprint 1 (Foundation):** Validate join keys across all sources; build 4 ephemeral intermediates; validate row counts and BOE calculations.
+**Sprint 0 (prerequisite):** `well_360` canonical dim evolution
+→ `docs/plans/2026-02-19-feat-well-360-canonical-dim-evolution-plan.md`
 
-**Sprint 2 (Mart Models):** Build `fct_well_performance_monthly` + `fct_well_performance_summary`; write YAML docs + tests (not_null, relationships to well_360); validate against known wells.
+**Sprint 1 (gold foundation):** `fct_well_production_monthly`
+→ Update `docs/plans/2026-02-18-feat-well-performance-mart-plan.md` before running
 
-**Sprint 3 (Extensions):** Add forecast vs actual columns from ComboCurve; add Griffin supplement pattern if needed.
+**Sprint 2 (platinum OBT):** `int_los__well_monthly` + `int_well_perf__drilling_summary`
++ `int_well_perf__completion_summary` + `plat_well__performance_scorecard`
