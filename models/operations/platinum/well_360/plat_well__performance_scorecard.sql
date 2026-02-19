@@ -13,6 +13,12 @@
     Platinum OBT: Well Performance Scorecard
     =========================================
 
+    POST-HOOK NOTE: The 'add search optimization' post_hook is idempotent here because
+    materialized='table' drops and recreates the table on each run, so search optimization
+    is always added to a fresh table. If this model is ever changed to incremental,
+    the post_hook would need an idempotency guard. (Mirrors same pattern in well_360.sql.)
+
+
     GRAIN: One row per EID (well). All known wells in well_360, including
     pre-production and inactive wells.
 
@@ -110,13 +116,28 @@ los_aggs as (
 drilling as (
     -- int_well_perf__drilling_summary is ephemeral — compiles inline
     -- Aggregates fct_daily_drilling_cost + fct_drilling_time + fct_npt_events to eid grain
-    select * from {{ ref('int_well_perf__drilling_summary') }}
+    select
+        eid,
+        drilling_job_count,
+        total_dc_cost,
+        total_drilling_hours,
+        total_npt_hours,
+        npt_pct,
+        is_npt_anomaly
+    from {{ ref('int_well_perf__drilling_summary') }}
 ),
 
 completion as (
     -- int_well_perf__completion_summary is ephemeral — compiles inline
     -- Aggregates fct_stimulation to eid grain
-    select * from {{ ref('int_well_perf__completion_summary') }}
+    select
+        eid,
+        stim_job_count,
+        total_stages,
+        total_proppant_lb,
+        total_clean_volume_bbl,
+        stim_lateral_length_ft
+    from {{ ref('int_well_perf__completion_summary') }}
 ),
 
 final as (

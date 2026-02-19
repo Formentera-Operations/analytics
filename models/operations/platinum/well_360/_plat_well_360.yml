@@ -88,13 +88,15 @@ models:
         description: Count of distinct drilling jobs from fct_daily_drilling_cost.
 
       - name: total_dc_cost
-        description: Lifetime total D&C cost from WellView daily cost reports. NULL for wells with no drilling records.
+        description: >
+          Lifetime total D&C cost from WellView daily cost reports. 0 for wells with no drilling
+          records (use has_drilling_data to distinguish no-record wells from wells with zero cost).
 
       - name: total_drilling_hours
-        description: Lifetime total drilling clock hours from fct_drilling_time.
+        description: Lifetime total drilling clock hours from fct_drilling_time. 0 for wells with no time log records.
 
       - name: total_npt_hours
-        description: Lifetime total countable non-productive time hours from fct_npt_events.
+        description: Lifetime total countable non-productive time hours from fct_npt_events. 0 for wells with no NPT events.
 
       - name: npt_pct
         description: >
@@ -105,6 +107,9 @@ models:
         description: >
           True if raw NPT hours exceeded total drilling hours for this well,
           indicating overlapping or duplicate NPT event entries in WellView.
+
+      - name: stim_job_count
+        description: Count of distinct stimulation jobs from fct_stimulation.
 
       - name: total_stages
         description: Lifetime total stimulation stages from fct_stimulation.
