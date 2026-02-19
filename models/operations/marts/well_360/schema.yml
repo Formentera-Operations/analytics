@@ -1,6 +1,249 @@
 version: 2
 
 models:
+  - name: fct_well_test
+    description: >
+      Per-event production test fact for ProdView completions. Each row is one
+      production test (PI test, injection ratio, flowback test, etc.) with
+      measured volumes, calculated rates, quality ratios, pressure/temperature
+      conditions, and ProdView-computed change-from-prior metrics.
+
+      Enables PI trending, GOR/WOR monitoring, and test-over-test decline
+      analysis by joining on (eid ORDER BY effective_date).
+
+      **Grain:** one row per production test record (id_rec from PVT_PVUNITCOMPTEST).
+      Tests are infrequent (typically monthly or quarterly per completion).
+
+      **EID resolution:** same three-hop chain as fct_completion_downtime —
+      test.id_rec_parent (completion ID) → completions.id_rec_parent (unit ID)
+      → well_360.prodview_unit_id. api_10 fallback via completions. ~99.5% resolved.
+
+      **Invalid tests:** rows with invalid_test = 'Y' are retained.
+      Filter `WHERE coalesce(invalid_test, 'N') != 'Y'` for valid-only analyses.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: well_test_sk
+        description: Surrogate key. MD5(id_rec). Unique per production test record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView production test record ID (natural key from PVT_PVUNITCOMPTEST).
+        data_tests:
+          - not_null
+
+      - name: id_rec_comp
+        description: ProdView completion record ID — the completion that was tested.
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID — canonical business key joining to well_360. NULL for completions
+          without a well_360 match. ~99.5% resolved in dev build.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID join produced no match in well_360.
+        data_tests:
+          - not_null
+
+      - name: effective_date
+        description: Date the production test was performed.
+        data_tests:
+          - not_null
+
+      - name: test_type
+        description: >
+          ProdView test type classification (e.g., Production, Injection, Flowback).
+
+      - name: test_hours
+        description: Duration of the test in hours.
+
+      - name: invalid_test
+        description: >
+          'Y' if the test was flagged as invalid in ProdView (do not use flag).
+          NULL or 'N' for valid tests. Do NOT filter this in the mart — retain all rows.
+
+      - name: tested_by
+        description: Name or ID of the person who conducted the test.
+
+      - name: choke_size_64ths
+        description: Choke size at time of test in 64ths of an inch.
+
+      - name: oil_cond_rate_bbl_per_day
+        description: Calculated oil + condensate rate in bbl/day from the test.
+
+      - name: produced_gas_rate_mcf_per_day
+        description: Calculated produced gas rate in Mcf/day from the test.
+
+      - name: water_rate_bbl_per_day
+        description: Calculated water rate in bbl/day from the test.
+
+      - name: total_fluid_rate_bbl_per_day
+        description: Total liquid (oil + water) rate in bbl/day from the test.
+
+      - name: gross_boe_rate_bbl_per_day
+        description: >
+          Derived gross BOE rate: oil_cond_rate_bbl_per_day + produced_gas_rate_mcf_per_day / 6.
+          Uses 6:1 gas-to-oil conversion. NULL inputs treated as 0.
+        data_tests:
+          - not_null
+
+      - name: gas_oil_ratio_mcf_per_bbl
+        description: Gas-oil ratio in Mcf/bbl calculated by ProdView.
+
+      - name: condensate_gas_ratio_bbl_per_mcf
+        description: Condensate-gas ratio in bbl/Mcf.
+
+      - name: water_gas_ratio_bbl_per_mcf
+        description: Water-gas ratio in bbl/Mcf.
+
+      - name: total_bsw_pct
+        description: Total basic sediment and water percentage (0-100 scale).
+
+      - name: pressure_wellhead_psi
+        description: Wellhead pressure in PSI at time of test.
+
+      - name: pressure_bh_psi
+        description: Bottom-hole pressure in PSI at time of test.
+
+      - name: temperature_well_head_f
+        description: Wellhead temperature in degrees Fahrenheit.
+
+      - name: temperature_bottom_hole_f
+        description: Bottom-hole temperature in degrees Fahrenheit.
+
+      - name: allocation_flag
+        description: Whether this test is used for allocation purposes.
+
+      - name: deliverability_flag
+        description: Whether this test is used for deliverability calculations.
+
+      - name: regulatory_flag
+        description: Whether this test is submitted for regulatory reporting.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
+  - name: fct_production_target_daily
+    description: >
+      Daily production target rates per ProdView completion, with EID resolved
+      from well_360. Enables target vs actual variance analysis when joined with
+      fct_well_production_daily on (eid, allocation_date = target_daily_date).
+
+      The parent target record (PVT_PVUNITCOMPTARGET) defines a target period
+      with a type (Budget, Forecast) and optional ComboCurve forecast name.
+      Child records (PVT_PVUNITCOMPTARGETDAY) provide per-day rates within
+      that period. This fact denormalizes both levels into a single daily row.
+
+      **Grain:** one row per daily target record (id_rec from PVT_PVUNITCOMPTARGETDAY).
+      A completion may have multiple rows per date when target types overlap
+      (e.g., Budget and Actuals for the same day).
+
+      **EID resolution:** four-hop chain — target_daily.id_rec_parent → target.id_rec
+      → target.id_rec_parent (completion ID) → completion.id_rec_parent (unit ID)
+      → well_360.prodview_unit_id. 100% resolved in dev build.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: production_target_daily_sk
+        description: Surrogate key. MD5(id_rec). Unique per daily target record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView daily target record ID (PVT_PVUNITCOMPTARGETDAY natural key).
+        data_tests:
+          - not_null
+
+      - name: id_rec_target
+        description: FK to the parent target period record (PVT_PVUNITCOMPTARGET.idrec).
+
+      - name: id_rec_comp
+        description: ProdView completion record ID this target belongs to.
+
+      - name: eid
+        description: >
+          Well EID — canonical business key joining to well_360.
+          100% resolved in dev build (all target records trace to a completion
+          with a well_360 match).
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID join produced no match in well_360.
+        data_tests:
+          - not_null
+
+      - name: target_daily_date
+        description: The specific date this target rate applies to. Join key with fct_well_production_daily.allocation_date.
+        data_tests:
+          - not_null
+
+      - name: target_start_date
+        description: Start date of the parent target period.
+
+      - name: target_type
+        description: Classification of the target period (Budget, Forecast, Actual, etc.).
+
+      - name: cc_forecast_name
+        description: ComboCurve forecast name driving this target period (from usertxt1 on parent record).
+
+      - name: is_use_in_diff_from_target_calculations
+        description: >
+          True when this target period is flagged for use in difference-from-target
+          calculations (ProdView's built-in variance engine).
+
+      - name: target_daily_rate_oil_bbl_per_day
+        description: Target daily oil rate in bbl/day.
+
+      - name: target_daily_rate_gas_mcf_per_day
+        description: Target daily gas rate in Mcf/day.
+
+      - name: target_daily_rate_hcliq_bbl_per_day
+        description: Target daily hydrocarbon liquid rate in bbl/day.
+
+      - name: target_daily_rate_condensate_bbl_per_day
+        description: Target daily condensate rate in bbl/day.
+
+      - name: target_daily_rate_ngl_bbl_per_day
+        description: Target daily NGL rate in bbl/day.
+
+      - name: target_daily_rate_water_bbl_per_day
+        description: Target daily water rate in bbl/day.
+
+      - name: target_daily_rate_sand_bbl_per_day
+        description: Target daily sand rate in bbl/day.
+
+      - name: target_daily_rate_gross_boe_per_day
+        description: >
+          Derived gross BOE target rate: target_daily_rate_oil_bbl_per_day +
+          target_daily_rate_gas_mcf_per_day / 6. Null inputs treated as 0.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
   - name: fct_completion_downtime
     description: >
       Event-level downtime fact for ProdView completions. Each row represents
