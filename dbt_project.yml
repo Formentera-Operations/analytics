@@ -79,6 +79,13 @@ models:
           +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'griffin' }}"
           +materialized: table
 
+      # Platinum models - denormalized OBT, consumption-ready for BI
+      platinum:
+        +database: "{{ {'prod': 'FO_PRODUCTION_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"
+        +schema: "{{ target.schema if target.name in ['ci', 'dev'] else 'platinum' }}"
+        +materialized: table
+        +tags: ["platinum", "fo"]
+
       # Applications models - application-specific data models
       applications:
         +database: "{{ {'prod': 'FORMENTERA_OPS_DB', 'ci': 'FO_CI_DB', 'dev': target.database}.get(target.name, target.database) }}"

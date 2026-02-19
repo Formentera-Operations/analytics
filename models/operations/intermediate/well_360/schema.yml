@@ -93,3 +93,59 @@ models:
         description: Sum of GL amounts for 'Production & Ad Valorem Taxes'. Pre-signed negative.
       - name: los_net_income
         description: Sum of all pre-signed GL amounts for this well-month. Equals net income.
+
+  - name: int_well_perf__drilling_summary
+    description: >
+      Ephemeral intermediate aggregating drilling performance data to EID grain.
+      Joins three gold-layer facts: fct_daily_drilling_cost, fct_drilling_time,
+      and fct_npt_events. One row per EID (lifetime aggregate across all jobs).
+
+      NOTE: Tests cannot be applied to ephemeral models — dbt silently skips them.
+      All assertions are on the downstream plat_well__performance_scorecard.
+
+      Mixed refresh strategies: fct_daily_drilling_cost is incremental (merge),
+      while fct_drilling_time and fct_npt_events are full-rebuild tables. Do NOT
+      attempt to make this model or its downstream platinum model incremental.
+    columns:
+      - name: eid
+        description: External well identifier. Canonical join key.
+      - name: drilling_job_count
+        description: Count of distinct drilling jobs from fct_daily_drilling_cost.
+      - name: total_dc_cost
+        description: Lifetime sum of field_estimate_cost across all jobs (invoicing-driven).
+      - name: total_drilling_hours
+        description: Lifetime sum of duration_hours from fct_drilling_time.
+      - name: total_npt_hours
+        description: Lifetime sum of problem_duration_gross_hours where is_countable_npt.
+      - name: npt_pct
+        description: total_npt_hours / total_drilling_hours, capped at 1.0 via LEAST().
+      - name: is_npt_anomaly
+        description: True if raw NPT hours exceeded total drilling hours (overlapping events).
+
+  - name: int_well_perf__completion_summary
+    description: >
+      Ephemeral intermediate aggregating stimulation/completion data to EID grain.
+      Aggregates fct_stimulation across all stim jobs per well. One row per EID.
+
+      NOTE: Tests cannot be applied to ephemeral models — dbt silently skips them.
+      All assertions are on the downstream plat_well__performance_scorecard.
+
+      IMPORTANT: proppant_per_ft_lb is NOT computed here. The correct denominator
+      is well_360.lateral_length_ft (fixed physical measurement). The ratio is
+      computed in the platinum final CTE to avoid re-stimulation denominator inflation.
+    columns:
+      - name: eid
+        description: External well identifier. Canonical join key.
+      - name: stim_job_count
+        description: Count of distinct stimulation jobs.
+      - name: total_stages
+        description: Lifetime sum of actual_total_stages across all stim jobs.
+      - name: total_proppant_lb
+        description: Lifetime sum of proppant_total_calc_lb in pounds.
+      - name: total_clean_volume_bbl
+        description: Lifetime sum of volume_clean_total_calc_bbl in barrels.
+      - name: stim_lateral_length_ft
+        description: >
+          Audit: sum of length_gross_ft (stimulated interval) across all stim jobs.
+          Do NOT use as proppant intensity denominator — use well_lateral_length_ft from
+          the platinum spine (well_360.lateral_length_ft) instead.
