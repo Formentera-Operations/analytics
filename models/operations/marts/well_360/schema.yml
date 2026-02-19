@@ -1,6 +1,403 @@
 version: 2
 
 models:
+  - name: fct_well_production_daily
+    description: >
+      Daily production volumes per ProdView unit, with EID resolved from well_360.
+      Wide-column fact carrying all mart-relevant staging columns at the source
+      grain (one row per id_rec_unit × allocation_date). No volume aggregation —
+      analysts GROUP BY eid when they need well-level daily summaries.
+
+      This is the EID-resolved replacement for fct_eng_volumes (legacy model
+      retained until Sprint 7 deprecation). Both coexist as independent facts.
+
+      **Grain:** one row per (id_rec_unit, allocation_date). For resolved wells,
+      eid is populated. For unresolved wells, eid is NULL and id_rec_unit is the
+      only grain discriminator.
+
+      **EID resolution:** two-step COALESCE — prodview_unit_id primary,
+      api_10 fallback. ~81.5% match rate on pvunitcomp units.
+      Unresolved rows (non-operated, FP Griffin without EIDs, SWD wells) are
+      retained with NULL eid and `is_eid_unresolved = true`.
+
+      **Incremental watermark:** _fivetran_synced (stable Fivetran ingestion
+      timestamp). The staging VIEW's _loaded_at always returns current_timestamp()
+      and is not usable as a watermark. Initial build requires --full-refresh.
+
+      **Upstream filter:** stg_prodview__units restricted to
+      `unit_type = 'pvunitcomp'` — excludes facilities, external ins/outs,
+      and meters (~3K units).
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: well_production_daily_sk
+        description: >
+          Surrogate key. MD5(id_rec_unit, allocation_date). Unique at the
+          source grain (one allocation record per ProdView unit per day, after
+          Fivetran re-ingestion deduplication in the fact CTE). Using id_rec_unit
+          directly avoids the EID-coalesce collision where multiple units sharing
+          the same EID would produce identical surrogate keys on the same date.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: eid
+        description: >
+          Well EID (Entity Identifier) — canonical business key joining to well_360.
+          NULL for unresolved wells (FP Griffin wells without property_eid in
+          ProdView, non-operated wells, SWD/injection wells). Resolves
+          automatically as EIDs are backfilled in ProdView.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+                # ~18.5% unresolved historically; improves as EIDs are backfilled
+
+      - name: id_rec_unit
+        description: >
+          ProdView unit ID (FK to stg_prodview__units.id_rec). Carried for ALL
+          rows — both resolved and unresolved — to support FK bridge context,
+          ProdView-side debugging, and multi-unit EID disambiguation.
+        data_tests:
+          - not_null
+
+      - name: allocation_date
+        description: >
+          Date of the daily allocation record. Grain key alongside id_rec_unit.
+        data_tests:
+          - not_null
+
+      - name: is_eid_unresolved
+        description: >
+          True when neither the prodview_unit_id nor api_10 join produced an EID
+          match in well_360. Resolves automatically as EIDs are added to ProdView.
+        data_tests:
+          - not_null
+
+      - name: id_rec
+        description: >
+          ProdView daily allocation record ID (source natural key from
+          PVT_PVUNITALLOCMONTHDAY). Useful for tracing back to the exact
+          source record when debugging volume discrepancies.
+
+      - name: id_rec_comp
+        description: ProdView completion ID this allocation belongs to.
+
+      - name: id_rec_comp_zone
+        description: ProdView completion zone ID.
+
+      - name: id_flownet
+        description: ProdView flow network ID governing allocation hierarchy.
+
+      - name: allocation_year
+        description: Calendar year of the allocation date (convenience column).
+
+      - name: allocation_month
+        description: Calendar month (1-12) of the allocation date (convenience column).
+
+      - name: allocation_day_of_month
+        description: Day of month (1-31) of the allocation date (convenience column).
+
+      - name: downtime_hours
+        description: Hours the well was down (non-producing) on this allocation date.
+
+      - name: operating_time_hours
+        description: Hours the well was actively producing on this allocation date.
+
+      - name: gathered_hcliq_bbl
+        description: Gathered hydrocarbon liquid volumes in barrels (pre-allocation).
+
+      - name: gathered_gas_mcf
+        description: Gathered gas volumes in Mcf (pre-allocation).
+
+      - name: gathered_water_bbl
+        description: Gathered produced water volumes in barrels (pre-allocation).
+
+      - name: gathered_sand_bbl
+        description: Gathered sand volumes in barrels (pre-allocation).
+
+      - name: allocated_hcliq_bbl
+        description: Allocated hydrocarbon liquid (oil + condensate + NGL) in barrels.
+
+      - name: allocated_oil_bbl
+        description: Allocated oil production in barrels.
+
+      - name: allocated_condensate_bbl
+        description: Allocated condensate production in barrels.
+
+      - name: allocated_ngl_bbl
+        description: Allocated NGL production in barrels.
+
+      - name: allocated_gas_eq_hcliq_mcf
+        description: Gas equivalent of allocated hydrocarbon liquid in Mcf.
+
+      - name: allocated_gas_mcf
+        description: Allocated gas production in Mcf.
+
+      - name: allocated_water_bbl
+        description: Allocated produced water in barrels.
+
+      - name: allocated_sand_bbl
+        description: Allocated sand in barrels.
+
+      - name: gross_boe
+        description: >
+          Daily gross barrel of oil equivalent. Formula: allocated_oil_bbl +
+          (allocated_gas_mcf / 6). Uses 6:1 gas-to-oil conversion ratio
+          (industry standard for US operations).
+        data_tests:
+          - not_null
+
+      - name: alloc_factor_hcliq
+        description: Hydrocarbon liquid allocation factor (unitless ratio).
+
+      - name: alloc_factor_gas
+        description: Gas allocation factor (unitless ratio).
+
+      - name: alloc_factor_water
+        description: Water allocation factor (unitless ratio).
+
+      - name: alloc_factor_sand
+        description: Sand allocation factor (unitless ratio).
+
+      - name: new_prod_hcliq_bbl
+        description: New production hydrocarbon liquid in barrels (excludes recovered load).
+
+      - name: new_prod_oil_bbl
+        description: New production oil in barrels.
+
+      - name: new_prod_condensate_bbl
+        description: New production condensate in barrels.
+
+      - name: new_prod_ngl_bbl
+        description: New production NGL in barrels.
+
+      - name: new_prod_hcliq_gas_eq_mcf
+        description: New production hydrocarbon liquid gas equivalent in Mcf.
+
+      - name: new_prod_gas_mcf
+        description: New production gas in Mcf.
+
+      - name: new_prod_water_bbl
+        description: New production water in barrels.
+
+      - name: new_prod_sand_bbl
+        description: New production sand in barrels.
+
+      - name: wi_hcliq_pct
+        description: Working interest percentage for hydrocarbon liquid (0-100 scale).
+
+      - name: wi_gas_pct
+        description: Working interest percentage for gas (0-100 scale).
+
+      - name: wi_water_pct
+        description: Working interest percentage for water (0-100 scale).
+
+      - name: wi_sand_pct
+        description: Working interest percentage for sand (0-100 scale).
+
+      - name: nri_hcliq_pct
+        description: Net revenue interest percentage for hydrocarbon liquid (0-100 scale).
+
+      - name: nri_gas_pct
+        description: Net revenue interest percentage for gas (0-100 scale).
+
+      - name: nri_water_pct
+        description: Net revenue interest percentage for water (0-100 scale).
+
+      - name: nri_sand_pct
+        description: Net revenue interest percentage for sand (0-100 scale).
+
+      - name: deferred_hcliq_bbl
+        description: Deferred (lost) hydrocarbon liquid production in barrels.
+
+      - name: deferred_gas_mcf
+        description: Deferred (lost) gas production in Mcf.
+
+      - name: deferred_water_bbl
+        description: Deferred (lost) water production in barrels.
+
+      - name: deferred_sand_bbl
+        description: Deferred (lost) sand production in barrels.
+
+      - name: diff_target_hcliq_bbl
+        description: Variance from target — hydrocarbon liquid in barrels (negative = below target).
+
+      - name: diff_target_oil_bbl
+        description: Variance from target — oil in barrels.
+
+      - name: diff_target_condensate_bbl
+        description: Variance from target — condensate in barrels.
+
+      - name: diff_target_ngl_bbl
+        description: Variance from target — NGL in barrels.
+
+      - name: diff_target_gas_mcf
+        description: Variance from target — gas in Mcf.
+
+      - name: diff_target_water_bbl
+        description: Variance from target — water in barrels.
+
+      - name: diff_target_sand_bbl
+        description: Variance from target — sand in barrels.
+
+      - name: disp_sales_hcliq_bbl
+        description: Disposition — hydrocarbon liquid sold in barrels.
+
+      - name: disp_sales_oil_bbl
+        description: Disposition — oil sold in barrels.
+
+      - name: disp_sales_condensate_bbl
+        description: Disposition — condensate sold in barrels.
+
+      - name: disp_sales_ngl_bbl
+        description: Disposition — NGL sold in barrels.
+
+      - name: disp_sales_gas_mcf
+        description: Disposition — gas sold in Mcf.
+
+      - name: disp_fuel_gas_mcf
+        description: Disposition — gas used as fuel in Mcf.
+
+      - name: disp_flare_gas_mcf
+        description: Disposition — gas flared in Mcf.
+
+      - name: disp_incineration_gas_mcf
+        description: Disposition — gas incinerated in Mcf.
+
+      - name: disp_vent_gas_mcf
+        description: Disposition — gas vented in Mcf.
+
+      - name: disp_injected_gas_mcf
+        description: Disposition — gas injected in Mcf.
+
+      - name: disp_injected_water_bbl
+        description: Disposition — water injected in barrels.
+
+      - name: injection_well_hcliq_bbl
+        description: Injection well hydrocarbon liquid volumes in barrels.
+
+      - name: injection_well_gas_mcf
+        description: Injection well gas volumes in Mcf.
+
+      - name: injection_well_water_bbl
+        description: Injection well water volumes in barrels.
+
+      - name: injection_well_sand_bbl
+        description: Injection well sand volumes in barrels.
+
+      - name: cum_hcliq_bbl
+        description: >
+          ProdView cumulative hydrocarbon liquid production in barrels as of this
+          date (running total maintained by ProdView at unit level).
+
+      - name: cum_oil_bbl
+        description: ProdView cumulative oil production in barrels as of this date.
+
+      - name: cum_condensate_bbl
+        description: ProdView cumulative condensate production in barrels as of this date.
+
+      - name: cum_ngl_bbl
+        description: ProdView cumulative NGL production in barrels as of this date.
+
+      - name: cum_gas_mcf
+        description: ProdView cumulative gas production in Mcf as of this date.
+
+      - name: cum_water_bbl
+        description: ProdView cumulative water production in barrels as of this date.
+
+      - name: cum_sand_bbl
+        description: ProdView cumulative sand production in barrels as of this date.
+
+      - name: gathered_heat_mmbtu
+        description: Gathered gas heat content in MMBtu.
+
+      - name: gathered_heat_factor_btu_per_ft3
+        description: Gathered gas heat factor in BTU/ft³.
+
+      - name: allocated_heat_mmbtu
+        description: Allocated gas heat content in MMBtu.
+
+      - name: allocated_heat_factor_btu_per_ft3
+        description: Allocated gas heat factor in BTU/ft³.
+
+      - name: new_prod_heat_mmbtu
+        description: New production heat content in MMBtu.
+
+      - name: disp_sales_heat_mmbtu
+        description: Sales gas heat content in MMBtu.
+
+      - name: disp_fuel_heat_mmbtu
+        description: Fuel gas heat content in MMBtu.
+
+      - name: disp_flare_heat_mmbtu
+        description: Flared gas heat content in MMBtu.
+
+      - name: disp_vent_heat_mmbtu
+        description: Vented gas heat content in MMBtu.
+
+      - name: disp_incinerate_heat_mmbtu
+        description: Incinerated gas heat content in MMBtu.
+
+      - name: allocated_density_api
+        description: Allocated liquid density in API gravity degrees.
+
+      - name: sales_density_api
+        description: Sales liquid density in API gravity degrees.
+
+      - name: id_rec_meas_method
+        description: FK to measurement method record (ProdView).
+
+      - name: id_rec_test
+        description: >
+          FK to the well test record associated with this allocation day.
+          Populated when a production test was run on this date. Used for
+          joining to fct_well_test in Sprint 5.
+
+      - name: id_rec_param
+        description: >
+          FK to the completion parameters record for this allocation day.
+          Populated when pressure/temperature/choke data was recorded.
+
+      - name: id_rec_downtime
+        description: >
+          FK to the downtime event record associated with this allocation day.
+          Populated when downtime was recorded. Used for joining to
+          fct_completion_downtime in Sprint 4.
+
+      - name: id_rec_deferment
+        description: FK to the deferment record explaining deferred volumes.
+
+      - name: id_rec_status
+        description: FK to the well status record for this allocation date.
+
+      - name: id_rec_facility
+        description: FK to the facility record this unit belongs to.
+
+      - name: pump_efficiency_pct
+        description: Pump efficiency percentage (0-100 scale).
+
+      - name: created_at_utc
+        description: Timestamp when the source ProdView record was created (UTC).
+
+      - name: modified_at_utc
+        description: Timestamp when the source ProdView record was last modified (UTC).
+
+      - name: _fivetran_synced
+        description: >
+          Fivetran ingestion timestamp. Used as the incremental watermark —
+          rows with _fivetran_synced newer than the fact table's max are
+          included in each incremental run.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
   - name: fct_well_production_monthly
     description: >
       Monthly production volumes per well, joined with LOS financial context.
