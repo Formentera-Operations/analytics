@@ -140,7 +140,8 @@ golden_record as (
 
         coalesce(wv.division, pv.division) as division,
 
-        -- Is Operated: ProdView > WellView > CC > inference (ODA excluded - unreliable)
+        -- Is Operated: ProdView > WellView > CC > inference > ODA fallback
+        -- ODA is less reliable than internal ops systems but better than NULL for ODA-only wells
         coalesce(
             pv.is_operated,
             wv.is_operated,
@@ -151,7 +152,9 @@ golden_record as (
                 when upper(coalesce(wv.operator_name, pv.operator_name, env.operator)) like '%FORMENTERA%' then true
                 -- Other operator = non-op
                 when coalesce(wv.operator_name, pv.operator_name, env.operator) is not null then false
-            end
+            end,
+            -- ODA fallback: preserves backward-compat for ODA-only wells not in other systems
+            oda.is_operated
         ) as is_operated,
 
         -- Operator name (Enverus can fill if internal is null)
@@ -161,6 +164,7 @@ golden_record as (
         -- ODA OPERATIONAL ATTRIBUTES
         -- =========================================================================
         -- Formentera canonical basin classification (from ODA state/county)
+        -- NULL for non-ODA wells (no state/county data) — 'Other' means ODA well outside basin list
         -- Distinct from geological_basin (Enverus/WellView technical basin)
         case
             -- Permian Basin (Texas)
@@ -206,7 +210,10 @@ golden_record as (
             -- Arkansas
             when oda.state_name = 'Arkansas' then 'Arkansas'
 
-            else 'Other'
+            -- ODA well with state/county not in any basin list
+            when oda.state_name is not null then 'Other'
+
+            -- Non-ODA wells: no state/county available → NULL (not 'Other')
         end as basin_name,
 
         -- Standardized operated status string (richer than boolean is_operated)
@@ -591,7 +598,8 @@ final as (
         -- Placed here so we can reference the golden well_name alias resolved above
         case
             when upper(well_name) like '%SWD%' or upper(well_name) like '%DISPOSAL%' then 'SWD'
-            when upper(well_name) like '%INJ%' then 'Injector'
+            -- Injector: name token OR unified status (catches status-based injectors without INJ in name)
+            when unified_status = 'INJECTING' or upper(well_name) like '%INJ%' then 'Injector'
             when regexp_like(upper(well_name), '.*[0-9]+[MW]?X?H(-[A-Z0-9]+)?$') then 'Horizontal'
             when upper(well_name) like '%H-LL%' or upper(well_name) like '%H-SL%' then 'Horizontal'
             when upper(well_name) like '%UNIT%' then 'Unit Well'
