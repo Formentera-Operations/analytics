@@ -193,7 +193,14 @@ golden_record as (
         -- =========================================================================
         -- Raw values (as-is from sources)
         coalesce(oda.state_code, cc.state, wv.state_province, pv.state_province, env.state_province) as state_raw,
-        coalesce(oda.county_name, cc.county, wv.county_parish, pv.county, env.county) as county_raw,
+        -- nullif skips known bad ProdView value ('USA' = country entered as county)
+        coalesce(
+            oda.county_name,
+            cc.county,
+            wv.county_parish,
+            nullif(upper(pv.county), 'USA'),
+            env.county
+        ) as county_raw,
         coalesce(wv.country, pv.country, oda.country_name, env.country) as country,
 
         -- Standardized state (2-char uppercase via UDF)
@@ -201,8 +208,14 @@ golden_record as (
             coalesce(oda.state_code, cc.state, wv.state_province, pv.state_province, env.state_province)
         ) as state,
 
-        -- Standardized county (InitCap)
-        initcap(coalesce(oda.county_name, cc.county, wv.county_parish, pv.county, env.county)) as county,
+        -- Standardized county (InitCap); nullif skips bad ProdView 'USA' value
+        initcap(coalesce(
+            oda.county_name,
+            cc.county,
+            wv.county_parish,
+            nullif(upper(pv.county), 'USA'),
+            env.county
+        )) as county,
 
         -- BASIN: Separate focus area from geological basin (semantic mismatch fix)
         cc.basin as combo_curve_focus_area,  -- Project names like FP_GOLDSMITH-SLANT
