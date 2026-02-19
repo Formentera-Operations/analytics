@@ -1,5 +1,9 @@
 # oda context index
-# Structure: domains/ (relationships) + tables/ (column definitions)
+# Structure: entity_model.md (mart roadmap) + domains/ (relationships) + tables/ (column definitions)
+#
+# entity_model.md — Three financial models (Ledger / Revenue Distribution / Cost Management),
+#                   entity hierarchy, cross-system resolution, mart roadmap, and staging sprint plan.
+#                   Load when planning new intermediate or mart models.
 #
 # Domain files (load for cross-table context):
 #   domains/accounts_payable.yaml — 3 tables (AP invoices, invoice detail, checks)
