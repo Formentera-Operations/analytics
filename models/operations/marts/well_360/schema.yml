@@ -1,6 +1,144 @@
 version: 2
 
 models:
+  - name: fct_facility_monthly
+    description: >
+      Monthly production/injection balance at the ProdView facility level.
+      A facility (pvFacility) is a multi-well aggregate entity — a battery,
+      tank battery, lease aggregate, or gathering group. This fact covers
+      the full volume balance per facility per month: production inputs,
+      gathered completion volumes, receipts in, injected volumes, consumed
+      volumes, dispositions out, inventory changes, and balance status flags.
+
+      Sourced from PVT_PVFACILITYMONTHCALC — a system-generated calc rollup
+      (not raw gauge readings). This is the primary mart target for
+      facility-level balance analytics per the ProdView entity model.
+
+      **Grain:** one row per monthly calc record (one per facility per month).
+      Unique on (id_rec_facility, facility_month).
+
+      **No EID resolution:** pvFacility is a separate root entity from pvUnit
+      and does not map 1:1 to an EID. The facility EID (pvFacility.IDPa)
+      requires a stg_prodview__facilities staging model not yet built.
+      Use id_rec_facility to join to a future facility dimension.
+
+      **Propane/butane columns** remain in m³ (no project macro available
+      for propane/butane unit conversion).
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: facility_monthly_sk
+        description: Surrogate key. MD5(id_rec). Unique per monthly calc record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView monthly calc record ID (PVT_PVFACILITYMONTHCALC natural key).
+        data_tests:
+          - not_null
+
+      - name: id_rec_facility
+        description: >
+          ProdView facility record ID (FK to pvFacility.idrec). Use as the
+          grain key alongside facility_month. EID resolution deferred — requires
+          a stg_prodview__facilities staging model to access pvFacility.IDPa.
+        data_tests:
+          - not_null
+
+      - name: facility_month
+        description: >
+          First day of the calculation month (date_trunc to month from
+          period_start_date). Primary time grain key alongside id_rec_facility.
+        data_tests:
+          - not_null
+
+      - name: period_start_date
+        description: Start date of the calculation period from ProdView.
+
+      - name: period_end_date
+        description: End date of the calculation period from ProdView.
+
+      - name: calculation_year
+        description: Calendar year of the calculation period (integer).
+
+      - name: calculation_month
+        description: Calendar month (1-12) of the calculation period (integer).
+
+      - name: produced_hcliq_bbl
+        description: Total facility hydrocarbon liquid production in barrels for the month.
+
+      - name: produced_gas_mcf
+        description: Total facility gas production in Mcf for the month.
+
+      - name: produced_gas_plus_gas_eq_mcf
+        description: Total facility gas + gas equivalent of liquids production in Mcf.
+
+      - name: produced_water_bbl
+        description: Total facility water production in barrels for the month.
+
+      - name: produced_gross_boe
+        description: >
+          Derived gross facility BOE: produced_hcliq_bbl + produced_gas_mcf / 6.
+          Uses 6:1 gas-to-oil conversion. NULL inputs treated as 0.
+
+      - name: gathered_comp_hcliq_bbl
+        description: Gathered new production hydrocarbon liquid from completions in barrels.
+
+      - name: gathered_comp_gas_mcf
+        description: Gathered new production gas from completions in Mcf.
+
+      - name: gathered_comp_water_bbl
+        description: Gathered new production water from completions in barrels.
+
+      - name: all_products_balanced
+        description: True when all product streams are balanced at this facility for the month.
+
+      - name: hcliq_balanced
+        description: True when the hydrocarbon liquid stream is balanced.
+
+      - name: gas_balanced
+        description: True when the gas stream is balanced.
+
+      - name: water_balanced
+        description: True when the water stream is balanced.
+
+      - name: volume_balance_hcliq_bbl
+        description: >
+          Volume balance for hydrocarbon liquid (production in minus disposition
+          out minus inventory change) in barrels. Near-zero when balanced.
+
+      - name: volume_balance_gas_mcf
+        description: Volume balance for gas in Mcf. Near-zero when balanced.
+
+      - name: proration_factor_hcliq
+        description: >
+          Hydrocarbon liquid proration factor (unitless ratio). Used by ProdView
+          to allocate facility-level volumes back to individual completions.
+
+      - name: proration_factor_gas
+        description: Gas proration factor (unitless ratio).
+
+      - name: opening_inventory_hcliq_bbl
+        description: Opening tank inventory of hydrocarbon liquid in barrels.
+
+      - name: closing_inventory_hcliq_bbl
+        description: Closing tank inventory of hydrocarbon liquid in barrels.
+
+      - name: change_in_inventory_hcliq_bbl
+        description: Net change in hydrocarbon liquid inventory during the month.
+
+      - name: produced_propane_m3
+        description: >
+          Propane production in cubic meters (m³). No project macro available for
+          propane/butane conversion — remains in ProdView native unit.
+
+      - name: produced_butane_m3
+        description: Butane production in cubic meters (m³). Native ProdView unit.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
   - name: fct_completion_parameters_daily
     description: >
       Daily surveillance measurements per ProdView completion: pressures,
