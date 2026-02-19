@@ -1,6 +1,395 @@
 version: 2
 
 models:
+  - name: fct_facility_monthly
+    description: >
+      Monthly production/injection balance at the ProdView facility level.
+      A facility (pvFacility) is a multi-well aggregate entity — a battery,
+      tank battery, lease aggregate, or gathering group. This fact covers
+      the full volume balance per facility per month: production inputs,
+      gathered completion volumes, receipts in, injected volumes, consumed
+      volumes, dispositions out, inventory changes, and balance status flags.
+
+      Sourced from PVT_PVFACILITYMONTHCALC — a system-generated calc rollup
+      (not raw gauge readings). This is the primary mart target for
+      facility-level balance analytics per the ProdView entity model.
+
+      **Grain:** one row per monthly calc record (one per facility per month).
+      Unique on (id_rec_facility, facility_month).
+
+      **No EID resolution:** pvFacility is a separate root entity from pvUnit
+      and does not map 1:1 to an EID. The facility EID (pvFacility.IDPa)
+      requires a stg_prodview__facilities staging model not yet built.
+      Use id_rec_facility to join to a future facility dimension.
+
+      **Propane/butane columns** remain in m³ (no project macro available
+      for propane/butane unit conversion).
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: facility_monthly_sk
+        description: Surrogate key. MD5(id_rec). Unique per monthly calc record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView monthly calc record ID (PVT_PVFACILITYMONTHCALC natural key).
+        data_tests:
+          - not_null
+
+      - name: id_rec_facility
+        description: >
+          ProdView facility record ID (FK to pvFacility.idrec). Use as the
+          grain key alongside facility_month. EID resolution deferred — requires
+          a stg_prodview__facilities staging model to access pvFacility.IDPa.
+        data_tests:
+          - not_null
+
+      - name: facility_month
+        description: >
+          First day of the calculation month (date_trunc to month from
+          period_start_date). Primary time grain key alongside id_rec_facility.
+        data_tests:
+          - not_null
+
+      - name: period_start_date
+        description: Start date of the calculation period from ProdView.
+
+      - name: period_end_date
+        description: End date of the calculation period from ProdView.
+
+      - name: calculation_year
+        description: Calendar year of the calculation period (integer).
+
+      - name: calculation_month
+        description: Calendar month (1-12) of the calculation period (integer).
+
+      - name: produced_hcliq_bbl
+        description: Total facility hydrocarbon liquid production in barrels for the month.
+
+      - name: produced_gas_mcf
+        description: Total facility gas production in Mcf for the month.
+
+      - name: produced_gas_plus_gas_eq_mcf
+        description: Total facility gas + gas equivalent of liquids production in Mcf.
+
+      - name: produced_water_bbl
+        description: Total facility water production in barrels for the month.
+
+      - name: produced_gross_boe
+        description: >
+          Derived gross facility BOE: produced_hcliq_bbl + produced_gas_mcf / 6.
+          Uses 6:1 gas-to-oil conversion. NULL inputs treated as 0.
+
+      - name: gathered_comp_hcliq_bbl
+        description: Gathered new production hydrocarbon liquid from completions in barrels.
+
+      - name: gathered_comp_gas_mcf
+        description: Gathered new production gas from completions in Mcf.
+
+      - name: gathered_comp_water_bbl
+        description: Gathered new production water from completions in barrels.
+
+      - name: all_products_balanced
+        description: True when all product streams are balanced at this facility for the month.
+
+      - name: hcliq_balanced
+        description: True when the hydrocarbon liquid stream is balanced.
+
+      - name: gas_balanced
+        description: True when the gas stream is balanced.
+
+      - name: water_balanced
+        description: True when the water stream is balanced.
+
+      - name: volume_balance_hcliq_bbl
+        description: >
+          Volume balance for hydrocarbon liquid (production in minus disposition
+          out minus inventory change) in barrels. Near-zero when balanced.
+
+      - name: volume_balance_gas_mcf
+        description: Volume balance for gas in Mcf. Near-zero when balanced.
+
+      - name: proration_factor_hcliq
+        description: >
+          Hydrocarbon liquid proration factor (unitless ratio). Used by ProdView
+          to allocate facility-level volumes back to individual completions.
+
+      - name: proration_factor_gas
+        description: Gas proration factor (unitless ratio).
+
+      - name: opening_inventory_hcliq_bbl
+        description: Opening tank inventory of hydrocarbon liquid in barrels.
+
+      - name: closing_inventory_hcliq_bbl
+        description: Closing tank inventory of hydrocarbon liquid in barrels.
+
+      - name: change_in_inventory_hcliq_bbl
+        description: Net change in hydrocarbon liquid inventory during the month.
+
+      - name: produced_propane_m3
+        description: >
+          Propane production in cubic meters (m³). No project macro available for
+          propane/butane conversion — remains in ProdView native unit.
+
+      - name: produced_butane_m3
+        description: Butane production in cubic meters (m³). Native ProdView unit.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
+  - name: fct_completion_parameters_daily
+    description: >
+      Daily surveillance measurements per ProdView completion: pressures,
+      temperatures, choke size, fluid properties, and plunger lift operations.
+      Enables time-series pressure monitoring, plunger cycle tracking, and
+      operational surveillance at the well level.
+
+      No legacy equivalent — this is a new mart. Previously only consumed
+      by legacy wiserock_app views.
+
+      **Grain:** one row per parameter measurement record (id_rec from
+      PVT_PVUNITCOMPPARAM). Typically one measurement per day per active
+      completion during surveillance periods. measurement_date is cast from
+      timestamp_ntz to date for grain clarity.
+
+      **EID resolution:** same three-hop chain as fct_completion_downtime —
+      parameter.id_rec_parent (completion ID) → completions.id_rec_parent
+      (unit ID) → well_360.prodview_unit_id. ~99.9% resolved.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: completion_parameter_daily_sk
+        description: Surrogate key. MD5(id_rec). Unique per parameter measurement record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView completion parameter record ID (PVT_PVUNITCOMPPARAM natural key).
+        data_tests:
+          - not_null
+
+      - name: id_rec_comp
+        description: ProdView completion record ID — the completion this measurement belongs to.
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID — canonical business key joining to well_360. ~99.9% resolved.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID join produced no match in well_360.
+        data_tests:
+          - not_null
+
+      - name: measurement_date
+        description: Date of the surveillance measurement (cast from ProdView timestamp_ntz).
+        data_tests:
+          - not_null
+
+      - name: tubing_pressure_psi
+        description: Tubing pressure in PSI at time of measurement.
+
+      - name: casing_pressure_psi
+        description: Casing pressure in PSI.
+
+      - name: annulus_pressure_psi
+        description: Annulus pressure in PSI.
+
+      - name: wellhead_pressure_psi
+        description: Wellhead pressure in PSI.
+
+      - name: bottomhole_pressure_psi
+        description: Bottom-hole pressure in PSI (may be measured or modeled).
+
+      - name: shut_in_tubing_pressure_psi
+        description: Shut-in tubing pressure in PSI (measured when well is shut in).
+
+      - name: shut_in_casing_pressure_psi
+        description: Shut-in casing pressure in PSI.
+
+      - name: wellhead_temp_f
+        description: Wellhead temperature in degrees Fahrenheit.
+
+      - name: bottomhole_temp_f
+        description: Bottom-hole temperature in degrees Fahrenheit.
+
+      - name: treater_temp_f
+        description: Treater vessel temperature in degrees Fahrenheit.
+
+      - name: choke_size_64ths
+        description: Choke bean size in 64ths of an inch.
+
+      - name: h2s_daily_reading_ppm
+        description: Hydrogen sulfide (H2S) daily reading in parts per million.
+
+      - name: cycles
+        description: Plunger lift cycles per day.
+
+      - name: arrivals
+        description: Plunger arrivals per day.
+
+      - name: travel_time_min
+        description: Plunger travel time in minutes.
+
+      - name: after_flow_min
+        description: After-flow time following plunger arrival in minutes.
+
+      - name: shut_in_time_min
+        description: Shut-in time per plunger cycle in minutes.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
+  - name: fct_tank_inventory_daily
+    description: >
+      Daily tank inventory volumes per ProdView tank, with EID resolved from
+      well_360. Provides opening/closing/change-in-inventory for oil+condensate,
+      water, and sand at the tank level.
+
+      Replaces fct_eng_tank_inventories functionally (legacy model retained
+      until Sprint 7 deprecation). Key improvements over legacy:
+      - Full history (legacy has a 3-year rolling window)
+      - EID resolved to well_360 (legacy only carries unit_id)
+      - No facility_id IS NOT NULL filter — retains all tanks
+      - Tank attributes denormalized in (tank_name, product, capacity)
+
+      **Grain:** one row per daily tank volume record (id_rec from
+      PVT_PVUNITTANKMONTHDAYCALC).
+
+      **EID resolution:** tanks.id_rec_parent (unit_id) → well_360.prodview_unit_id
+      (primary) + units.api_10 fallback. ~70.4% resolved — the 29.6% unresolved
+      rows represent facility/battery-level tanks associated with pvfac units
+      that don't map to individual well EIDs. These will be covered by
+      fct_facility_monthly in Sprint 7. Filter WHERE eid IS NOT NULL for
+      well-level analysis.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: tank_inventory_daily_sk
+        description: Surrogate key. MD5(id_rec). Unique per daily tank volume record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView daily tank volume record ID (PVT_PVUNITTANKMONTHDAYCALC natural key).
+        data_tests:
+          - not_null
+
+      - name: tank_id
+        description: FK to stg_prodview__tanks.id_rec — the tank that was measured.
+        data_tests:
+          - not_null
+
+      - name: id_rec_unit
+        description: >
+          ProdView unit ID that owns this tank (from stg_prodview__tanks.id_rec_parent).
+          May be a pvunitcomp (well completion), pvunit (battery), or pvfac (facility).
+
+      - name: eid
+        description: >
+          Well EID — canonical business key joining to well_360. ~70.4% resolved.
+          The 29.6% unresolved represents facility/battery-level tanks (pvfac units)
+          that don't correspond to individual well EIDs.
+          Filter WHERE eid IS NOT NULL for well-level-only analysis.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when unit → well_360 join produced no EID match.
+        data_tests:
+          - not_null
+
+      - name: tank_date
+        description: Date of the daily tank inventory reading.
+        data_tests:
+          - not_null
+
+      - name: tank_name
+        description: Descriptive name of the tank from stg_prodview__tanks.
+
+      - name: tank_product
+        description: Product stored in this tank (Oil, Water, Sand, etc.).
+
+      - name: tank_capacity_bbl
+        description: Total tank capacity in barrels.
+
+      - name: exclude_from_production
+        description: True when tank is flagged to exclude from production accounting.
+
+      - name: is_tank_active
+        description: True when stop_using_tank is NULL (tank still in use).
+
+      - name: opening_total_volume_bbl
+        description: Total tank volume at start of day in barrels.
+
+      - name: opening_oil_condensate_volume_bbl
+        description: Oil + condensate volume at start of day in barrels.
+
+      - name: opening_gas_equivalent_oil_cond_volume_mcf
+        description: Gas equivalent of oil + condensate opening volume in Mcf.
+
+      - name: opening_water_volume_bbl
+        description: Water volume at start of day in barrels.
+
+      - name: opening_bsw_total_pct
+        description: Basic sediment and water percentage at start of day (0-100 scale).
+
+      - name: closing_total_volume_bbl
+        description: Total tank volume at end of day in barrels.
+
+      - name: closing_oil_condensate_volume_bbl
+        description: Oil + condensate volume at end of day in barrels.
+
+      - name: closing_gas_equivalent_oil_cond_volume_mcf
+        description: Gas equivalent of oil + condensate closing volume in Mcf.
+
+      - name: closing_water_volume_bbl
+        description: Water volume at end of day in barrels.
+
+      - name: closing_bsw_total_pct
+        description: Basic sediment and water percentage at end of day (0-100 scale).
+
+      - name: change_total_volume_bbl
+        description: Net change in total tank volume during the day in barrels.
+
+      - name: change_oil_condensate_volume_bbl
+        description: Net change in oil + condensate volume during the day in barrels.
+
+      - name: change_gas_equivalent_oil_cond_volume_mcf
+        description: Net change in gas equivalent of oil + condensate during the day in Mcf.
+
+      - name: change_water_volume_bbl
+        description: Net change in water volume during the day in barrels.
+
+      - name: current_facility_id
+        description: FK to the facility this tank is currently associated with.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
   - name: fct_well_test
     description: >
       Per-event production test fact for ProdView completions. Each row is one
