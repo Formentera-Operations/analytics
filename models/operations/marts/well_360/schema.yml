@@ -210,6 +210,9 @@ models:
       - name: opening_oil_condensate_volume_bbl
         description: Oil + condensate volume at start of day in barrels.
 
+      - name: opening_gas_equivalent_oil_cond_volume_mcf
+        description: Gas equivalent of oil + condensate opening volume in Mcf.
+
       - name: opening_water_volume_bbl
         description: Water volume at start of day in barrels.
 
@@ -222,6 +225,9 @@ models:
       - name: closing_oil_condensate_volume_bbl
         description: Oil + condensate volume at end of day in barrels.
 
+      - name: closing_gas_equivalent_oil_cond_volume_mcf
+        description: Gas equivalent of oil + condensate closing volume in Mcf.
+
       - name: closing_water_volume_bbl
         description: Water volume at end of day in barrels.
 
@@ -233,6 +239,9 @@ models:
 
       - name: change_oil_condensate_volume_bbl
         description: Net change in oil + condensate volume during the day in barrels.
+
+      - name: change_gas_equivalent_oil_cond_volume_mcf
+        description: Net change in gas equivalent of oil + condensate during the day in Mcf.
 
       - name: change_water_volume_bbl
         description: Net change in water volume during the day in barrels.
