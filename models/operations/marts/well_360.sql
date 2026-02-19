@@ -163,58 +163,6 @@ golden_record as (
         -- =========================================================================
         -- ODA OPERATIONAL ATTRIBUTES
         -- =========================================================================
-        -- Formentera canonical basin classification (from ODA state/county)
-        -- NULL for non-ODA wells (no state/county data) — 'Other' means ODA well outside basin list
-        -- Distinct from geological_basin (Enverus/WellView technical basin)
-        case
-            -- Permian Basin (Texas)
-            when oda.state_name = 'Texas' and oda.county_name in (
-                'ECTOR', 'CRANE', 'WINKLER', 'ANDREWS', 'MARTIN', 'GLASSCOCK',
-                'GAINES', 'PECOS', 'REEVES', 'COCHRAN', 'HOCKLEY', 'CROCKETT',
-                'STERLING', 'UPTON', 'MIDLAND', 'HOWARD', 'WARD', 'LOVING'
-            ) then 'Permian Basin'
-
-            -- Eagle Ford / South Texas
-            when oda.state_name = 'Texas' and oda.county_name in (
-                'FRIO', 'ZAVALA', 'DIMMIT', 'KARNES', 'DEWITT', 'GONZALES',
-                'LAVACA', 'MCMULLEN', 'LASALLE', 'ATASCOSA', 'WILSON'
-            ) then 'Eagle Ford'
-
-            -- Texas Panhandle / Anadarko
-            when oda.state_name = 'Texas' and oda.county_name in (
-                'WHEELER', 'HEMPHILL', 'ROBERTS', 'GRAY', 'HUTCHINSON'
-            ) then 'Texas Panhandle'
-
-            -- SCOOP/STACK / Anadarko Basin (Oklahoma)
-            when oda.state_name = 'Oklahoma' and oda.county_name in (
-                'OKLAHOMA', 'CANADIAN', 'GRADY', 'MCCLAIN', 'LOGAN',
-                'GARFIELD', 'KINGFISHER', 'GRANT', 'NOBLE', 'BLAINE',
-                'CUSTER', 'CADDO', 'DEWEY', 'MAJOR'
-            ) then 'SCOOP/STACK'
-
-            -- Williston Basin / Bakken (North Dakota)
-            when oda.state_name = 'North Dakota' and oda.county_name in (
-                'DIVIDE', 'BURKE', 'BOTTINEAU', 'WILLIAMS', 'MOUNTRAIL',
-                'MCKENZIE', 'DUNN', 'STARK'
-            ) then 'Williston Basin'
-
-            -- Mississippi Interior Salt Basin
-            when oda.state_name = 'Mississippi' then 'Mississippi'
-
-            -- Louisiana Onshore
-            when oda.state_name = 'Louisiana' then 'Louisiana'
-
-            -- Marcellus/Utica (Pennsylvania)
-            when oda.state_name = 'Pennsylvania' then 'Appalachian Basin'
-
-            -- Arkansas
-            when oda.state_name = 'Arkansas' then 'Arkansas'
-
-            -- ODA well with state/county not in any basin list
-            when oda.state_name is not null then 'Other'
-
-            -- Non-ODA wells: no state/county available → NULL (not 'Other')
-        end as basin_name,
 
         -- Standardized operated status string (richer than boolean is_operated)
         case
@@ -593,6 +541,59 @@ with_lineage as (
 final as (
     select
         *,
+
+        -- Formentera canonical basin classification using golden state/county
+        -- Covers all wells (ODA + non-ODA) — state is 100% populated across sources
+        -- Uses 2-char state abbrev (normalize_state_abbrev UDF) and upper(county)
+        -- Distinct from geological_basin (Enverus/WellView technical classification)
+        case
+            -- Permian Basin (West Texas)
+            when state = 'TX' and upper(county) in (
+                'ECTOR', 'CRANE', 'WINKLER', 'ANDREWS', 'MARTIN', 'GLASSCOCK',
+                'GAINES', 'PECOS', 'REEVES', 'COCHRAN', 'HOCKLEY', 'CROCKETT',
+                'STERLING', 'UPTON', 'MIDLAND', 'HOWARD', 'WARD', 'LOVING'
+            ) then 'Permian Basin'
+
+            -- Eagle Ford / South Texas
+            when state = 'TX' and upper(county) in (
+                'FRIO', 'ZAVALA', 'DIMMIT', 'KARNES', 'DEWITT', 'GONZALES',
+                'LAVACA', 'MCMULLEN', 'LASALLE', 'ATASCOSA', 'WILSON'
+            ) then 'Eagle Ford'
+
+            -- Fort Worth Basin / Barnett Shale (North Central Texas)
+            when state = 'TX' and upper(county) in (
+                'JOHNSON', 'TARRANT', 'PARKER', 'HOOD', 'HILL',
+                'WISE', 'PALO PINTO', 'ERATH', 'BOSQUE', 'SOMERVELL',
+                'JACK', 'DENTON', 'MONTAGUE', 'COOKE'
+            ) then 'Fort Worth Basin'
+
+            -- Texas Panhandle
+            when state = 'TX' and upper(county) in (
+                'WHEELER', 'HEMPHILL', 'ROBERTS', 'GRAY', 'HUTCHINSON'
+            ) then 'Texas Panhandle'
+
+            -- SCOOP/STACK / Anadarko Basin (Oklahoma)
+            when state = 'OK' and upper(county) in (
+                'OKLAHOMA', 'CANADIAN', 'GRADY', 'MCCLAIN', 'LOGAN',
+                'GARFIELD', 'KINGFISHER', 'GRANT', 'NOBLE', 'BLAINE',
+                'CUSTER', 'CADDO', 'DEWEY', 'MAJOR'
+            ) then 'SCOOP/STACK'
+
+            -- Williston Basin / Bakken (North Dakota)
+            when state = 'ND' and upper(county) in (
+                'DIVIDE', 'BURKE', 'BOTTINEAU', 'WILLIAMS', 'MOUNTRAIL',
+                'MCKENZIE', 'DUNN', 'STARK'
+            ) then 'Williston Basin'
+
+            -- State-level basins (county not needed)
+            when state = 'MS' then 'Mississippi'
+            when state = 'LA' then 'Louisiana'
+            when state = 'PA' then 'Appalachian Basin'
+            when state = 'AR' then 'Arkansas'
+
+            -- Known state but county outside any basin list
+            else 'Other'
+        end as basin_name,
 
         -- op_ref_effective: use ODA classification where available, fall back to
         -- is_operated inference (from ProdView/WellView/CC) for non-ODA wells.

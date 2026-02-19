@@ -86,9 +86,11 @@ models:
       # =========================================================================
       - name: basin_name
         description: >
-          Formentera's canonical operational basin classification, derived from ODA state_name + county_name.
-          Values: Permian Basin, Eagle Ford, Texas Panhandle, SCOOP/STACK, Williston Basin, Mississippi,
-          Louisiana, Appalachian Basin, Arkansas, Other. NULL for wells not in ODA.
+          Formentera's canonical operational basin classification derived from the golden state/county
+          (covers all source systems — ODA, ProdView, WellView, ComboCurve, Enverus).
+          Values: Permian Basin, Eagle Ford, Fort Worth Basin, Texas Panhandle, SCOOP/STACK,
+          Williston Basin, Mississippi, Louisiana, Appalachian Basin, Arkansas, Other.
+          'Other' = valid state/county but outside any basin county list (incl. bad-county data like 'USA').
           Distinct from geological_basin (Enverus/WellView technical classification).
       - name: op_ref
         description: >
