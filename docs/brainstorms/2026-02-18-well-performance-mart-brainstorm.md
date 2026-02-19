@@ -121,7 +121,57 @@ All other open questions resolved (see Well Identity Bridge section above).
 
 ---
 
-## Sprint Sketch
+## Architecture Evolution (Post-Brainstorm Decisions)
+
+### Gold Layer = True Galaxy Schema
+
+After further discussion, the gold mart layer should be a **galaxy (multi-star) schema** — one
+fact per business process, all sharing `well_360` as the conformed dimension. No cross-process
+fact tables in gold.
+
+**`fct_well_performance_monthly` is removed from the plan.** It was combining two independent
+business processes (production volumes + LOS financials) into one fact — that's the platinum
+layer's job, not gold.
+
+Revised gold facts:
+- `fct_well_production_monthly` — production volumes at well-month grain (source-agnostic name)
+- `fct_los` — stays as-is (GL transaction grain, already exists)
+- WellView drilling facts — already exist
+
+The LOS monthly rollup (`int_los__well_monthly`) is an ephemeral intermediate that feeds
+platinum only. If direct consumers emerge, graduate it to a gold fact.
+
+### Source Naming Removed from Fact Models
+
+`fct_prodview__production_monthly` → renamed `fct_well_production_monthly`. Facts represent
+business entities, not source systems. If a second production source is acquired, the staging
+or intermediate layer handles the union — the fact contract stays stable.
+
+### Platinum Layer = Cross-Process OBT
+
+`plat_well__performance_scorecard` joins:
+- `well_360` identity (denormalized — all attributes embedded)
+- Rolled-up production from `fct_well_production_monthly`
+- Rolled-up financials from `fct_los` via `int_los__well_monthly`
+- D&C context from WellView drilling facts
+
+### well_360 Must Become the Canonical Well Dimension
+
+`dim_wells` (finance/LOS-era ODA-only well dimension) has zero downstream SQL consumers
+and should be deprecated. Its derived logic (basin classification, `is_revenue_generating`,
+ODA billing/revenue flags, `well_type` from name patterns) must be migrated into `well_360`
+before platinum layer work begins.
+
+**Separate sprint planned:** `docs/plans/2026-02-19-feat-well-360-canonical-dim-evolution-plan.md`
+
+**Sprint sequencing:**
+1. `well_360` canonical dim evolution (separate sprint, prerequisite)
+2. `fct_well_production_monthly` + `int_los__well_monthly` (gold foundation)
+3. `plat_well__performance_scorecard` (platinum OBT, joins gold + well_360)
+
+---
+
+## Sprint Sketch (Original — superseded by architecture evolution above)
 
 **Sprint 1 (Foundation):** Validate join keys across all sources; build 4 ephemeral intermediates; validate row counts and BOE calculations.
 
