@@ -10,6 +10,32 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   pvUnitComp 1:many -> pvUnitCompPump (via comp.idrec = pump.idrecparent AND comp.idflownet = pump.idflownet)
+#   pvUnitCompPump 1:1  -> pvUnitCompPumpRod     (via pump.idrec = rod.idrecparent — +ext,parent, type-specific config)
+#   pvUnitCompPumpRod 1:many -> pvUnitCompPumpRodEntry (via rod.idrec = entry.idrecparent)
+#   pvUnitCompPump 1:1  -> pvUnitCompPumpESP     (via pump.idrec = esp.idrecparent — +ext,parent, type-specific config)
+#   pvUnitCompPumpESP 1:many -> pvUnitCompPumpESPEntry (via esp.idrec = entry.idrecparent)
+#   pvUnitCompPump 1:1  -> pvUnitCompPumpPlunger (via pump.idrec = plunger.idrecparent — +ext,parent, type-specific config)
+#   pvUnitCompPumpPlunger 1:many -> pvUnitCompPumpPlungerEntry (via plunger.idrec = entry.idrecparent)
+#   pvUnitCompPump 1:many -> pvUnitCompPumpPCPEntry  (via pump.idrec = entry.idrecparent — NO extension header for PCP)
+#   pvUnitCompPump 1:many -> pvUnitCompPumpJetEntry  (via pump.idrec = entry.idrecparent — NO extension header for Jet)
+#   pvUnitCompPump 1:many -> pvUnitCompPumpJetFluid  (via pump.idrec = fluid.idrecparent — NO extension header for Jet)
+#   pvUnitCompPump 1:many -> pvUnitCompPumpDepth (via pump.idrec = depth.idrecparent — depth records, NOT an extension)
+#   pvUnitCompPumpPCPEntry and pvUnitCompPumpJetEntry join directly to pvUnitCompPump (no intermediate extension table).
+#   pvUnitCompPumpDepth is a 1:many child of pvUnitCompPump — it is NOT a +ext,parent extension.
+#
+# Key patterns:
+#   - idrec: universal GUID primary key on every ProdView table — always required in joins
+#   - idflownet: flow network identifier — every join between parent and child MUST also match idflownet (same network scope). Omitting idflownet causes cross-network data bleed.
+#   - idrecparent: FK to parent entity's idrec — must ALWAYS be paired with a matching idflownet predicate
+#   - pvUnitCompPump is the base lift installation record per completion — there is one row per installed lift device
+#   - The hierarchy is 3 levels deep: pvUnitComp → pvUnitCompPump → pvUnitCompPump{Type} extension → pvUnitCompPump{Type}Entry
+#   - 5 lift types: Rod, ESP, Plunger, PCP, Jet. Only Rod/ESP/Plunger have a +ext,parent config extension table.
+#     PCP and Jet entry tables join directly to pvUnitCompPump.idrec (skipping the extension level).
+#   - +ext,parent tables (pvUnitCompPumpRod, pvUnitCompPumpESP, pvUnitCompPumpPlunger) are 1:1 extensions — they store type-specific config and are NOT 1:many children
+#   - PowerRating on pvUnitCompPump is stored in watts — apply pv_watts_to_hp() macro when converting to horsepower
 
 
 # Tables in this domain (column details in tables/ directory):

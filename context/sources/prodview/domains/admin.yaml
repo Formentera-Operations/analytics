@@ -10,6 +10,30 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   Group 1: pvUnit children (standard idrecparent/idflownet join)
+#   pvUnit 1:many -> pvUnitAgreemt (partnership agreements, via unit.idrec = agreemt.idrecparent AND unit.idflownet = agreemt.idflownet)
+#   pvUnitAgreemt 1:many -> pvUnitAgreemtPartner (partner details per agreement, via agreemt.idrec = partner.idrecparent AND agreemt.idflownet = partner.idflownet)
+#
+#   Group 2: Standalone workflow/partner entities (NO pvUnit parent — idrecparent/idflownet join pattern does NOT apply)
+#   pvApproval 1:many -> pvApprovalStep (via approval.idrec = step.idrecparent)
+#   pvApprovalStep 1:many -> pvApprovalStepDeliv (deliverables, via step.idrec = deliv.idrecparent)
+#   pvApprovalStep 1:many -> pvApprovalStepPreReq (prerequisites, via step.idrec = prereq.idrecparent)
+#   pvApprovalStep 1:many -> pvApprovalStepRev (approvers required, via step.idrec = rev.idrecparent)
+#   pvApprovalStepRev 1:many -> pvApprovalStepRevAction (action required per approver, via rev.idrec = action.idrecparent)
+#   pvTask 1:many -> pvTaskDetail (task details, via task.idrec = detail.idrecparent)
+#   pvRespTeam 1:many -> pvRespTeamMember (team members, via team.idrec = member.idrecparent)
+#   pvPartner 1:many -> pvPartnerContact (partner contact records, via partner.idrec = contact.idrecparent)
+#
+# Key patterns:
+#   - idrec/idrecparent/idflownet compound join applies to Group 1 tables (pvUnitAgreemt, pvUnitAgreemtPartner) only — these are scoped to the flow network
+#   - Group 2 tables (pvApproval, pvTask, pvRespTeam, pvPartner and their children) are standalone entities — their joins do NOT use idflownet scope
+#   - pvPartner/pvPartnerContact represent a global partner directory with no pvUnit context — they are not anchored to any flow network node
+#   - Approval workflow is 4 levels deep: pvApproval -> pvApprovalStep ->
+#     {pvApprovalStepDeliv | pvApprovalStepPreReq | pvApprovalStepRev} -> pvApprovalStepRevAction
+#   - Staging models: stg_prodview__agreement_partners, stg_prodview__partnership_agreements,
+#     stg_prodview__regulatory_reporting_keys, stg_prodview__remarks, stg_prodview__tickets
 
 
 # Tables in this domain (column details in tables/ directory):

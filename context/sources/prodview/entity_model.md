@@ -337,13 +337,16 @@ Fully documented domains with relationships and key_patterns:
 - `meters` — see `context/sources/prodview/domains/meters.yaml`
 - `flow_network` — see `context/sources/prodview/domains/flow_network.yaml`
 
-### Sprint 2 (TBD)
+### Sprint 2 ✅ Complete
 
-Relationship details and key_patterns not yet documented for:
-- `artificial_lift` — lift method tracking (ESP, rod pump, PCP, jet pump, plunger)
-- `facilities` — surface facility equipment and aggregate reporting (multi-unit regulatory reporting)
-- `tanks` — tank gauge measurements, strap tables, and inventory calculations
-- `routes` — field data collection route assignments
-- `admin` — partnership agreements, regulatory reporting keys, remarks, tickets (likely not needed for mart modeling)
+All 12 domain YAMLs now have full `relationships:` and `key_patterns:` documentation:
+- `artificial_lift` — 3-level lift hierarchy (pvUnitComp → pvUnitCompPump → +ext → Entry); 5 types with asymmetric extension pattern
+- `facilities` — pvFacility as separate root entity; pvFacilityMonthCalc is primary mart target for facility-level balance reporting
+- `tanks` — pvUnitTank at pvUnit level; pvTicket documented as cross-network entity; strap tables for gauge-to-volume conversion
+- `routes` — mixed root: pvRouteSet chain + pvUnit calc children; low mart relevance
+- `admin` — mixed root: pvUnitAgreemt (pvUnit child) + standalone workflow/partner entities (pvApproval, pvTask, pvRespTeam, pvPartner)
+- `equipment` — pvUnitEquip + pvUnitCompressor (naming warning: NOT related to pvUnitComp/completions)
+- `fluid_analysis` — 3 sub-hierarchies: completion-level links, unit-level links (pvUnitAnaly), standalone analysis groups (Gas/HCLiq/Oil/Water)
+- `reference` — dual root: pvUnit children (6 functional clusters) + pvOpenState sub-hierarchy (production accounting period boundary)
 
 See individual domain YAML files in `context/sources/prodview/domains/` for table catalogs.

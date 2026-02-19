@@ -10,6 +10,37 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   This domain contains TWO independent sub-hierarchies. Do not conflate them.
+#
+#   Sub-hierarchy 1: pvRouteSet chain (independent root — NOT a pvUnit child)
+#   pvRouteSet is the root entity representing a series of field routes defined at a date.
+#   pvRouteSet 1:many -> pvRouteSetRoute (via routeset.idrec = route.idrecparent)
+#   pvRouteSetRoute 1:many -> pvRouteSetRouteUnit (via route.idrec = routeunit.idrecparent)
+#   pvRouteSetRouteUnit -> pvUnit (cross-reference: IDRecUnit identifies the unit visited at this stop)
+#   pvRouteSetRoute 1:many -> pvRouteSetRouteVwFlowDiag (via route.idrec = vwflowdiag.idrecparent)
+#   pvRouteSetRoute 1:many -> pvRouteSetRouteDtListCalc (via route.idrec = dtlistcalc.idrecparent; calc)
+#   pvRouteSetRoute 1:many -> pvRouteSetRouteUserID (via route.idrec = userid.idrecparent)
+#
+#   Sub-hierarchy 2: pvUnit calc children (standard pvUnit child pattern)
+#   These tables are pvUnit children placed in this domain because they support route entry security.
+#   pvUnit 1:many -> pvUnitUserIDCalc (via unit.idrec = calcuserid.idrecparent AND idflownet; calc)
+#   pvUnit 1:many -> pvUnitDateListCalc (via unit.idrec = datelist.idrecparent AND idflownet; calc)
+#
+# Key patterns:
+#   - pvRouteSet is NOT a pvUnit child — it is an independent field operations entity. Do not
+#     attempt to join pvRouteSet to pvUnit via idrecparent.
+#   - pvRouteSetRouteUnit is a cross-reference back to pvUnit: IDRecUnit (FK) identifies which
+#     unit/completion is the stop on a given route. This is the bridge between the route hierarchy
+#     and the well/completion hierarchy.
+#   - pvUnitUserIDCalc and pvUnitDateListCalc are calc tables — read-only, system-generated.
+#     Use for route-based entry security lookups only; not raw measurements.
+#   - pvRouteSetRouteDtListCalc is also a calc table — represents visible entry dates per route.
+#   - Low mart relevance: this domain is primarily field operations scheduling data. It does not
+#     contain production volumes, tests, or financial data.
+#   - idflownet: applies to pvUnit child joins (pvUnitUserIDCalc, pvUnitDateListCalc); the
+#     pvRouteSet chain does not consistently use idflownet scoping.
 
 
 # Tables in this domain (column details in tables/ directory):

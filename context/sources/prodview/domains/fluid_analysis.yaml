@@ -10,6 +10,59 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   Sub-hierarchy 1: Completion-level analysis links (FK pointers from pvUnitComp to analysis groups):
+#   pvUnitComp 1:many -> pvUnitCompGasAnaly (via comp.idrec = link.idrecparent AND comp.idflownet = link.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompHCLiqAnaly (via comp.idrec = link.idrecparent AND comp.idflownet = link.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompOilAnaly (via comp.idrec = link.idrecparent AND comp.idflownet = link.idflownet)
+#   pvUnitComp 1:many -> pvUnitCompWaterAnaly (via comp.idrec = link.idrecparent AND comp.idflownet = link.idflownet)
+#   These link tables carry a reference to the standalone analysis group (sub-hierarchy 3), not the analysis data itself.
+#
+#   Sub-hierarchy 2: Unit-level analysis links (applied to all tanks on the unit):
+#   pvUnit 1:many -> pvUnitAnaly (via unit.idrec = analy.idrecparent AND unit.idflownet = analy.idflownet)
+#   pvUnit 1:many -> pvUnitLiquidDensity (via unit.idrec = density.idrecparent AND unit.idflownet = density.idflownet)
+#   pvUnitAnaly is a pvUnit child (NOT pvUnitComp) — documents the fluid type used for ALL tanks on the unit.
+#
+#   Sub-hierarchy 3: Standalone analysis groups (shared reference entities):
+#   Gas chain:
+#   pvGasAnaly (group root, standalone) 1:many -> pvGasAnalysis (via analy.idrec = analysis.idrecparent AND analy.idflownet = analysis.idflownet)
+#   pvGasAnalysis 1:many -> pvGasAnalysisComp (via analysis.idrec = comp.idrecparent AND analysis.idflownet = comp.idflownet)
+#   pvGasAnalysisComp 1:many -> pvGasAnalysisCompCalc (via comp.idrec = calc.idrecparent AND comp.idflownet = calc.idflownet)
+#
+#   HC Liquid chain (same 4-table pattern as gas):
+#   pvHCLiqAnaly (standalone) 1:many -> pvHCLiqAnalysis -> pvHCLiqAnalysisComp -> pvHCLiqAnalysisCompCalc
+#   (join pattern identical to gas chain: idrec -> idrecparent AND idflownet on each level)
+#
+#   Oil chain (branches at pvOilAnalysis):
+#   pvOilAnaly (standalone) 1:many -> pvOilAnalysis (via analy.idrec = analysis.idrecparent AND analy.idflownet = analysis.idflownet)
+#   pvOilAnalysis 1:many -> pvOilAnalysisOilVis (oil viscosity, via analysis.idrec = vis.idrecparent AND idflownet)
+#   pvOilAnalysis 1:many -> pvOilAnalysisDistill (distillation, via analysis.idrec = distill.idrecparent AND idflownet)
+#
+#   Water chain:
+#   pvWaterAnaly (standalone) 1:many -> pvWaterAnalysis (via analy.idrec = analysis.idrecparent AND analy.idflownet = analysis.idflownet)
+#   pvWaterAnalysis 1:many -> pvWaterAnalysisComp (via analysis.idrec = comp.idrecparent AND analysis.idflownet = comp.idflownet)
+#
+#   Full join path from completion to gas composition data (5-step):
+#   pvUnitComp -> pvUnitCompGasAnaly -> pvGasAnaly -> pvGasAnalysis -> pvGasAnalysisComp
+#
+# Key patterns:
+#   - idrec: universal GUID primary key on every ProdView table — always required in joins
+#   - idflownet: flow network identifier — every join between parent and child MUST also match idflownet
+#     (same network scope). Omitting idflownet causes cross-network data bleed.
+#   - idrecparent: FK to parent entity's idrec — must ALWAYS be paired with a matching idflownet predicate
+#   - Analysis groups (pvGasAnaly, pvHCLiqAnaly, pvOilAnaly, pvWaterAnaly) are SHARED REFERENCE entities —
+#     many completions/units can point to the same group. When new analyses are added to the group, all
+#     linked completions/units are automatically updated. Do not treat these as per-completion data.
+#   - pvUnitCompGasAnaly et al. are FK pointer tables only — they link a completion to an analysis group
+#     but contain no analysis measurements themselves.
+#   - pvUnitAnaly is a pvUnit child (not pvUnitComp) — it documents the fluid type used for ALL tanks on the
+#     unit, used for tank origin fluids. Query via pvUnit, not pvUnitComp.
+#   - pvGasAnalysis.GrossHeatMoistFree is in joules/m3 — apply pv_joules_to_mmbtu() for BTU/MCF output
+#   - pvGasAnalysis.DepthBtm and DepthTop are in meters — apply pv_meters_to_feet() for US display
+#   - Mole fractions in pvGasAnalysisComp are dimensionless — no unit conversion needed
+#   - Low current mart relevance — primarily used for gas shrinkage calculations in allocation models.
+#     No staging models exist for this domain (context documentation only).
 
 
 # Tables in this domain (column details in tables/ directory):

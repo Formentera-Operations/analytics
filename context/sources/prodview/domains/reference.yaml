@@ -10,6 +10,68 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   ROOT 1 — pvUnit children (standard idrec/idflownet/idrecparent join pattern):
+#
+#   Events cluster:
+#   pvUnit 1:many -> pvUnitEvent (via unit.idrec = event.idrecparent AND unit.idflownet = event.idflownet)
+#   pvUnitEvent 1:many -> pvUnitEventEntry (via event.idrec = entry.idrecparent AND event.idflownet = entry.idflownet)
+#   pvUnitEventEntry 1:many -> pvUnitEventVol (via entry.idrec = vol.idrecparent AND entry.idflownet = vol.idflownet)
+#
+#   Chemicals cluster:
+#   pvUnit 1:many -> pvUnitChemRecur (via unit.idrec = chem.idrecparent AND unit.idflownet = chem.idflownet)
+#   pvUnitChemRecur 1:many -> pvUnitChemRecurEntry (via chem.idrec = entry.idrecparent AND chem.idflownet = entry.idflownet)
+#   pvUnit 1:many -> pvUnitChemInt (via unit.idrec = chem.idrecparent AND unit.idflownet = chem.idflownet; self-contained — no separate entry table)
+#
+#   Jobs and Costs cluster:
+#   pvUnit 1:many -> pvUnitJob (via unit.idrec = job.idrecparent AND unit.idflownet = job.idflownet)
+#   pvUnit 1:many -> pvUnitCost (via unit.idrec = cost.idrecparent AND unit.idflownet = cost.idflownet)
+#
+#   Checklists cluster:
+#   pvUnit 1:many -> pvUnitChkList (via unit.idrec = chk.idrecparent AND unit.idflownet = chk.idflownet)
+#   pvUnitChkList 1:many -> pvUnitChkListItem (via chk.idrec = item.idrecparent AND chk.idflownet = item.idflownet)
+#
+#   Reference/Tagging cluster:
+#   pvUnit 1:many -> pvUnitRemark (via unit.idrec = remark.idrecparent AND unit.idflownet = remark.idflownet)
+#   pvUnit 1:many -> pvUnitOtherTag (via unit.idrec = tag.idrecparent AND unit.idflownet = tag.idflownet)
+#   pvUnit 1:many -> pvUnitSeal (via unit.idrec = seal.idrecparent AND unit.idflownet = seal.idflownet)
+#   pvUnitSeal 1:many -> pvUnitSealEntry (via seal.idrec = entry.idrecparent AND seal.idflownet = entry.idflownet)
+#   pvUnit 1:many -> pvUnitProb (via unit.idrec = prob.idrecparent AND unit.idflownet = prob.idflownet)
+#   pvUnit 1:many -> pvUnitAssignOrig (via unit.idrec = orig.idrecparent AND unit.idflownet = orig.idflownet)
+#
+#   Regulatory cluster:
+#   pvUnit 1:many -> pvUnitRegBody (via unit.idrec = reg.idrecparent AND unit.idflownet = reg.idflownet)
+#   pvUnitRegBody 1:many -> pvUnitRegBodyKey (via reg.idrec = key.idrecparent AND reg.idflownet = key.idflownet)
+#   pvUnitRegBodyKey 1:many -> pvUnitRegBodySubmission (via key.idrec = sub.idrecparent AND key.idflownet = sub.idflownet)
+#
+#   ROOT 2 — pvOpenState sub-hierarchy (SEPARATE ROOT — NOT a pvUnit child):
+#   pvOpenState is a period-boundary entity for production accounting period opening inventories.
+#   Its children hang off pvOpenState.idrec — NOT pvUnit.idrec.
+#   pvOpenState 1:many -> pvOpenStateComp (via openstate.idrec = comp.idrecparent)
+#   pvOpenState 1:many -> pvOpenStateUnit (via openstate.idrec = unit.idrecparent)
+#   pvOpenState 1:many -> pvOpenStateTank (via openstate.idrec = tank.idrecparent)
+#   pvOpenState 1:many -> pvOpenStateCompLoad (via openstate.idrec = load.idrecparent)
+#
+#   STANDALONE — no idrecparent linkage (global shared entities, not anchored to any parent):
+#   pvAttachment (file attachments — cross-entity polymorphic; no specific parent)
+#   pvOtherTag (global reference tags — distinct from pvUnitOtherTag which IS a pvUnit child)
+#   pvComment (comments — cross-entity polymorphic; no specific parent)
+#
+# Key patterns:
+#   - idrec/idflownet/idrecparent join pattern applies to ROOT 1 (pvUnit children) only — every
+#     parent->child join must match on BOTH idrecparent=idrec AND idflownet. Omitting idflownet
+#     causes cross-network data bleed.
+#   - pvOpenState is a separate root entity — do NOT join its children via pvUnit.idrec. Use
+#     pvOpenState.idrec = child.idrecparent. Highest mart-relevance table in this domain:
+#     used for production accounting period boundary reporting (opening inventories, recoverables).
+#   - pvOtherTag (standalone) vs pvUnitOtherTag (pvUnit child): both exist in this domain with
+#     different join patterns. pvOtherTag has no idrecparent; pvUnitOtherTag joins via pvUnit.
+#   - pvAttachment and pvComment are polymorphic shared tables — no specific parent entity.
+#     They appear across multiple domains and are not anchored to pvUnit or pvOpenState.
+#   - This domain contains mostly operational/administrative data. pvOpenState and its children
+#     are the highest-value tables for mart use cases (period boundary production accounting).
+#   - stg_prodview__remarks exists (filed under admin/) for pvUnitRemark.
 
 
 # Tables in this domain (column details in tables/ directory):

@@ -10,6 +10,28 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   pvUnit 1:many -> pvUnitEquip (equipment header, via unit.idrec = equip.idrecparent AND unit.idflownet = equip.idflownet)
+#   pvUnitEquip 1:many -> pvUnitEquipService (recurring service requirements, via equip.idrec = service.idrecparent AND equip.idflownet = service.idflownet)
+#   pvUnitEquipService 1:many -> pvUnitEquipServiceRec (service history records, via service.idrec = rec.idrecparent AND service.idflownet = rec.idflownet)
+#   pvUnitEquip 1:many -> pvUnitEquipDownTm (equipment downtime, sibling to pvUnitEquipService, via equip.idrec = downtm.idrecparent AND equip.idflownet = downtm.idflownet)
+#   pvUnitEquip -> pvUnitEquipUnit (cross-reference: links equipment to related units/nodes — not a standard parent/child hierarchy)
+#   pvUnitEquip -> pvUnitEquipMeas (cross-reference: links equipment to measurement points — not a standard parent/child hierarchy)
+#   pvUnit 1:many -> pvUnitCompressor (compressor header, PARALLEL to pvUnitEquip at the pvUnit level, via unit.idrec = compressor.idrecparent AND unit.idflownet = compressor.idflownet)
+#   pvUnitCompressor 1:many -> pvUnitCompressorEntry (compressor daily interstage readings, via compressor.idrec = entry.idrecparent AND compressor.idflownet = entry.idflownet)
+#
+# Key patterns:
+#   - idrec: universal GUID primary key on every ProdView table — always required in joins
+#   - idflownet: flow network identifier — every join between parent and child MUST also match idflownet (same network scope). Omitting idflownet causes cross-network data bleed.
+#   - idrecparent: FK to parent entity's idrec — must ALWAYS be paired with a matching idflownet predicate
+#   - pvUnitEquip and pvUnitCompressor are siblings at the pvUnit level — they represent different asset types (general equipment vs. compressors) and are NOT sub-types of each other
+#   - pvUnitEquipUnit and pvUnitEquipMeas are cross-reference link tables, not standard children — they associate equipment with related units/measurements rather than containing child records
+#   - Service hierarchy is 3 levels deep: pvUnit -> pvUnitEquip -> pvUnitEquipService -> pvUnitEquipServiceRec
+#   - NAMING WARNING: pvUnitCompressor is a pvUnit-level sibling (NOT related to pvUnitComp/completions).
+#     The pvUnitComp* prefix normally means completion-level — pvUnitCompressor breaks this pattern.
+#   - No staging models exist for this domain — context documentation only
+#   - Low mart relevance for production volume analytics; relevant for maintenance and equipment tracking use cases
 
 
 # Tables in this domain (column details in tables/ directory):

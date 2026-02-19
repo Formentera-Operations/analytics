@@ -10,6 +10,34 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   pvUnit 1:many -> pvUnitTank (via unit.idrec = tank.idrecparent AND unit.idflownet = tank.idflownet)
+#   pvUnitTank 1:many -> pvUnitTankEntry        (via tank.idrec = entry.idrecparent — primary time-series grain, daily readings)
+#   pvUnitTank 1:many -> pvUnitTankCall         (via tank.idrec = call.idrecparent — call-ins)
+#   pvUnitTank 1:many -> pvUnitTankStartInv     (via tank.idrec = startinv.idrecparent — initial inventory)
+#   pvUnitTank 1:many -> pvUnitTankMonthCalc    (via tank.idrec = calc.idrecparent — monthly calculated rollups)
+#   pvUnitTank 1:many -> pvUnitTankMonthDayCalc (via tank.idrec = calc.idrecparent — daily calculated rollups)
+#   pvUnitTank 1:many -> pvUnitTankOilAnaly     (via tank.idrec = analy.idrecparent — cross-reference to fluid_analysis domain)
+#   pvUnitTank 1:many -> pvUnitTankWaterAnaly   (via tank.idrec = analy.idrecparent — cross-reference to fluid_analysis domain)
+#   pvUnitTank 1:1  -> pvUnitTankFactHt  (via tank.idrec = factht.idrecparent — +ext,parent height factor extension)
+#   pvUnitTank 1:1  -> pvUnitTankStrap   (via tank.idrec = strap.idrecparent — +ext,parent strapping table extension)
+#   pvUnitTankStrap 1:many -> pvUnitTankStrapData (via strap.idrec = strapdata.idrecparent — reading/volume pairs, child of strap NOT tank)
+#   pvTicket: cross-network truck ticket — NO +parent tag, does NOT join via idrecparent.
+#     FKs: IDRecTank (tank), IDRecUnitSend/Rec (units), IDRecFacilitySend/Rec (facilities), route.
+#     Join to tank via ticket.IDRecTank = tank.idrec.
+#
+# Key patterns:
+#   - idrec: universal GUID primary key on every ProdView table — always required in joins
+#   - idflownet: flow network identifier — every join between parent and child MUST also match idflownet (same network scope). Omitting idflownet causes cross-network data bleed.
+#   - idrecparent: FK to parent entity's idrec — must ALWAYS be paired with idflownet (except pvTicket, which uses explicit FK columns)
+#   - pvUnitTank is at pvUnit level (NOT pvUnitComp level) — join tank volumes to completion volumes
+#     via pvUnit as the common parent (cannot join pvUnitTank directly to pvUnitComp)
+#   - pvUnitTankEntry is the primary time-series grain — use for daily tank level and volume readings
+#   - pvUnitTankMonthCalc is mart-relevant (opening/closing inventory with full stream breakdown) — use for monthly aggregations; do not use pvUnitTankMonthDayCalc for monthly summaries
+#   - pvUnitTankStrap and pvUnitTankStrapData are needed together for gauge-to-volume conversion (strap header + reading/volume pairs)
+#   - dbl_m3_calc volume columns on pvUnitTankMonthCalc require pv_cbm_to_bbl() conversion when expressing in barrels
+#   - stg_prodview__tickets is filed under staging/admin/ (not staging/tanks/) — cross-domain boundary inconsistency; pvTicket is not a pure tank child
 
 
 # Tables in this domain (column details in tables/ directory):

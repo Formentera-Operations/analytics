@@ -10,6 +10,38 @@
 #
 # OMITTED (on all tables): IDFlowNet sysLock* sysMod* sysCreate*
 #   sysTag sysSecurityTyp IDRec IDRecParent *TK columns
+#
+# Relationships:
+#   pvFacility is a SEPARATE ROOT ENTITY — NOT a pvUnit child. Do NOT apply the standard
+#   pvUnit → child (idrecparent) join pattern here. pvFacility has its own independent hierarchy.
+#
+#   pvFacility 1:many -> pvFacilityUnit (BRIDGE: facility.idrec = facilityunit.idrecparent)
+#     pvFacilityUnit cross-references pvUnit/pvUnitComp via IDRecUnit (not idrecparent)
+#     A facility can contain multiple units; a unit can belong to multiple facilities (many-to-many)
+#   pvFacility 1:many -> pvFacilityMeasPt (via idrec = idrecparent AND idflownet)
+#   pvFacilityMeasPt 1:many -> pvFacilityMeasPtEntry (via measpt.idrec = entry.idrecparent AND idflownet)
+#   pvFacility 1:many -> pvFacilityMonthCalc (via idrec = idrecparent AND idflownet; calc rollup)
+#   pvFacility 1:many -> pvFacilityMonthDayCalc (via idrec = idrecparent AND idflownet; calc rollup)
+#   pvFacility 1:many -> pvFacilityRatios (via idrec = idrecparent AND idflownet)
+#   pvFacility 1:many -> pvFacilityTol (via idrec = idrecparent AND idflownet)
+#   pvFacility 1:many -> pvFacilityOtherTag (via idrec = idrecparent AND idflownet)
+#   pvFacility 1:many -> pvFacilityRegBody (via idrec = idrecparent AND idflownet)
+#   pvFacilityRegBody 1:many -> pvFacilityRegBodyKey (via regbody.idrec = key.idrecparent AND idflownet)
+#   pvFacRecDispCalc: no +parent annotation — relationship to pvFacility is system-managed; treat as
+#     a standalone daily summary of facility receipts/dispositions, not a direct idrecparent child
+#
+# Key patterns:
+#   - pvFacility.IDPa = EID (primary identifier for joining to well_360)
+#   - pvFacilityUnit.IDRecUnit is the FK to pvUnit/pvUnitComp — NOT idrecparent. Use this column
+#     to resolve which units or completions belong to a facility.
+#   - pvFacilityUnit is a bridge (many-to-many): DtTmStart/DtTmEnd define membership windows;
+#     filter DtTmEnd IS NULL (or >= report date) for current facility membership
+#   - pvFacilityMonthCalc is the PRIMARY MART TARGET — 83 columns covering facility-level
+#     production/injection balance by stream (oil, gas, water, etc.) at monthly grain
+#   - pvFacilityMonthDayCalc is the daily equivalent of pvFacilityMonthCalc
+#   - pvFacilityMonthCalc and pvFacilityMonthDayCalc are calc rollups — read-only, system-generated;
+#     do not join for raw measurements
+#   - idflownet: all parent→child joins within the pvFacility hierarchy must also match idflownet
 
 
 # Tables in this domain (column details in tables/ directory):
