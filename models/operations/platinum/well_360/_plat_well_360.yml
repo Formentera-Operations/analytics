@@ -143,3 +143,49 @@ models:
 
       - name: has_completion_data
         description: "True if any stimulation records exist for this well (c.eid IS NOT NULL)."
+
+      - name: lifetime_downtime_hours
+        description: >
+          Lifetime total downtime hours across all contiguous events from
+          fct_completion_downtime. NULL for wells with no ProdView downtime records.
+
+      - name: lifetime_downtime_event_count
+        description: >
+          Lifetime count of contiguous downtime events from fct_completion_downtime.
+          NULL for wells with no ProdView downtime records.
+
+      - name: downtime_event_count_12m
+        description: >
+          Count of downtime events with event_start_date in the rolling 12 months
+          from current_date. NULL for wells with no downtime records.
+
+      - name: last_prod_date
+        description: >
+          Most recent allocation_date with any production record in
+          fct_well_production_daily. NULL for pre-production or inactive wells
+          without daily allocation history. Use for "days since last production"
+          surveillance.
+
+      - name: days_since_last_production
+        description: >
+          Calendar days from last_prod_date to current_date. NULL when last_prod_date
+          is NULL. Use with has_daily_production_data to distinguish no-record wells
+          from wells with zero recent production.
+
+      - name: avg_daily_oil_bbl_30d
+        description: >
+          Average daily allocated oil production in barrels over the most recent
+          30 calendar days. Computed over all allocation_date rows in the 30-day
+          window; NULL days (no allocation) are excluded from the average.
+          NULL for wells with no daily production records in the window.
+
+      - name: avg_daily_gas_mcf_30d
+        description: >
+          Average daily allocated gas production in Mcf over the most recent
+          30 calendar days. Same averaging methodology as avg_daily_oil_bbl_30d.
+
+      - name: has_downtime_data
+        description: "True if any downtime events exist for this well in fct_completion_downtime (dt.eid IS NOT NULL)."
+
+      - name: has_daily_production_data
+        description: "True if any daily production records exist for this well in fct_well_production_daily (dp.eid IS NOT NULL)."

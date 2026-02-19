@@ -1,6 +1,131 @@
 version: 2
 
 models:
+  - name: fct_completion_downtime
+    description: >
+      Event-level downtime fact for ProdView completions. Each row represents
+      one contiguous downtime event (island of consecutive single-day records
+      sharing the same downtime codes), retaining full production history.
+
+      Replaces fct_eng_completion_downtimes functionally (legacy model retained
+      until Sprint 7 deprecation). Both coexist as independent facts.
+
+      **Grain:** one row per contiguous downtime event per completion. Multiple
+      consecutive single-day downtime records with the same (id_rec_comp,
+      downtime_code_1/2/3) are merged into a single event via the
+      islands+gaps algorithm.
+
+      **EID resolution:** three-hop chain — downtime.id_rec_parent (completion
+      ID) → stg_prodview__completions.id_rec_parent (unit ID) →
+      well_360.prodview_unit_id (primary). api_10 fallback via
+      stg_prodview__completions.api_10. ~99.4% resolution in dev build.
+
+      **Legacy cutoff removed:** the existing int_prodview__completion_downtimes
+      filters to first_day > 2021-12-31. This fact carries full history.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: downtime_event_sk
+        description: >
+          Surrogate key. MD5(downtime_event_id). Unique per contiguous
+          downtime event. Guaranteed unique across all rows.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: downtime_event_id
+        description: >
+          Natural grain key. The minimum id_rec within the island of consecutive
+          source records that form this contiguous event. Stable across runs.
+        data_tests:
+          - not_null
+
+      - name: id_rec_comp
+        description: >
+          ProdView completion record ID (FK to stg_prodview__completions.id_rec).
+          The completion that experienced this downtime event.
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID — canonical business key joining to well_360. NULL for
+          completions without a well_360 match (non-operated, SWD, FP Griffin
+          without EID backfill). ~99.4% resolved in dev build.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: >
+          True when neither prodview_unit_id nor api_10 join produced an EID
+          match in well_360. Resolves automatically as EIDs are backfilled.
+        data_tests:
+          - not_null
+
+      - name: event_start_date
+        description: >
+          First day of the contiguous downtime event (min first_day across
+          merged source records in this island).
+        data_tests:
+          - not_null
+
+      - name: event_end_date
+        description: >
+          Last day of the contiguous downtime event (max last_day across
+          merged source records in this island). NULL for open-ended events.
+
+      - name: total_downtime_hours
+        description: >
+          Total hours of downtime across all source records in this island.
+          For non-single-day events (Range, Calculated), this is the calculated
+          total from the source record.
+        data_tests:
+          - not_null
+
+      - name: days_down
+        description: >
+          Calendar days from event_start_date to event_end_date (inclusive).
+          For open-ended events, measured to yesterday (current_date - 1).
+
+      - name: downtime_code_1
+        description: Primary downtime classification code (e.g., well type, equipment category).
+
+      - name: downtime_code_2
+        description: Secondary downtime classification code (reason category).
+
+      - name: downtime_code_3
+        description: Tertiary downtime classification code (sub-reason).
+
+      - name: downtime_type
+        description: >
+          ProdView downtime entry type. "Single Day" events on consecutive dates
+          with the same codes are merged into one event by the islands algorithm.
+          Other types (Range, Calculated) form their own single-record events.
+
+      - name: product
+        description: Product stream affected by this downtime (Oil, Gas, Water, All, etc.).
+
+      - name: location
+        description: >
+          Physical location of the downtime cause (Wellbore, Surface, Pipeline, etc.).
+
+      - name: is_failure
+        description: True when ProdView flagged this downtime as an equipment or system failure.
+
+      - name: comments
+        description: Free-text comments from the operator for this downtime event.
+
+      - name: _loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+
   - name: fct_well_production_daily
     description: >
       Daily production volumes per ProdView unit, with EID resolved from well_360.

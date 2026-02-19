@@ -140,8 +140,54 @@ completion as (
     from {{ ref('int_well_perf__completion_summary') }}
 ),
 
-final as (
+downtime_aggs as (
+    -- Aggregates fct_completion_downtime (Sprint 4) to eid grain.
+    -- Excludes unresolved events (eid IS NULL) — same pattern as production_aggs.
+    -- downtime_event_count_12m: events with event_start_date in the rolling 12 months.
     select
+        eid,
+        sum(total_downtime_hours) as lifetime_downtime_hours,
+        count(*) as lifetime_downtime_event_count,
+        count(
+            case
+                when event_start_date >= dateadd('month', -12, current_date())
+                    then 1
+            end
+        ) as downtime_event_count_12m
+    from {{ ref('fct_completion_downtime') }}
+    where eid is not null
+    group by eid
+),
+
+daily_production_recent as (
+    -- Aggregates fct_well_production_daily (Sprint 3) to eid grain.
+    -- last_prod_date: most recent allocation_date with any production.
+    -- 30-day averages: average daily production over the 30 most recent calendar
+    --   days where gross_boe > 0 for this well.
+    -- Excludes unresolved rows (eid IS NULL).
+    select
+        eid,
+        max(allocation_date) as last_prod_date,
+        -- 30-day window: average daily oil/gas over most recent 30 producing days
+        avg(
+            case
+                when allocation_date >= dateadd('day', -30, current_date())
+                    then allocated_oil_bbl
+            end
+        ) as avg_daily_oil_bbl_30d,
+        avg(
+            case
+                when allocation_date >= dateadd('day', -30, current_date())
+                    then allocated_gas_mcf
+            end
+        ) as avg_daily_gas_mcf_30d
+    from {{ ref('fct_well_production_daily') }}
+    where eid is not null
+    group by eid
+),
+
+final as (
+    select  -- noqa: ST06
         -- ── Identity (from well_360 spine) ────────────────────────────────────────
         w.eid,
         w.oda_well_id,
@@ -210,19 +256,34 @@ final as (
         -- Use well_360's fixed lateral length (not stim interval) as intensity denominator
         c.total_proppant_lb / nullif(w.well_lateral_length_ft, 0) as proppant_per_ft_lb,
 
+        -- ── Downtime aggregates (Sprint 4) ────────────────────────────────────────
+        dt.lifetime_downtime_hours,
+        dt.lifetime_downtime_event_count,
+        dt.downtime_event_count_12m,
+
+        -- ── Daily production recency (Sprint 4) ───────────────────────────────────
+        dp.last_prod_date,
+        datediff('day', dp.last_prod_date, current_date()) as days_since_last_production,
+        dp.avg_daily_oil_bbl_30d,
+        dp.avg_daily_gas_mcf_30d,
+
         -- ── Presence flags (NULL-safe) ────────────────────────────────────────────
         -- Note: do NOT use months_with_los_count > 0 without COALESCE —
         -- that evaluates to NULL (not false) when LEFT JOIN finds no rows.
         coalesce(p.cumulative_boe, 0) > 0 as has_production_data,
         l.eid is not null as has_los_data,
         d.eid is not null as has_drilling_data,
-        c.eid is not null as has_completion_data
+        c.eid is not null as has_completion_data,
+        dt.eid is not null as has_downtime_data,
+        dp.eid is not null as has_daily_production_data
 
     from well_spine w
     left join production_aggs p on w.eid = p.eid
     left join los_aggs l on w.eid = l.eid
     left join drilling d on w.eid = d.eid
     left join completion c on w.eid = c.eid
+    left join downtime_aggs dt on w.eid = dt.eid
+    left join daily_production_recent dp on w.eid = dp.eid
 )
 
 select * from final
