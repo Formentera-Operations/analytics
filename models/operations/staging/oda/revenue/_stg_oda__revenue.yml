@@ -1,5 +1,6 @@
 version: 2
 
+models:
   - name: stg_oda__ownerrevenuedetail_v2
     description: |
       Staging model for ODA Owner Revenue Distribution Line Items V2.
