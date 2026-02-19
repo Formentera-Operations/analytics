@@ -51,8 +51,11 @@ npt_events as (
 
 final as (
     select
-        -- COALESCE on eid ensures wells with time/npt data but no cost records are retained
-        coalesce(dc.eid, dt.eid) as eid,
+        -- COALESCE on eid retains wells present in any of the three facts.
+        -- NOTE: NPT-only wells (no cost/time records) are theoretically impossible
+        -- in the current data model — NPT events require a WellView job that would
+        -- always produce cost or time records. The FULL OUTER JOIN is defensive.
+        coalesce(dc.eid, dt.eid, n.eid) as eid,
 
         -- Job count from cost fact (invoicing-driven, most complete source)
         coalesce(dc.drilling_job_count, 0) as drilling_job_count,
@@ -73,7 +76,7 @@ final as (
 
     from drilling_cost dc
     full outer join drilling_time dt on dc.eid = dt.eid
-    left join npt_events n on coalesce(dc.eid, dt.eid) = n.eid
+    full outer join npt_events n on coalesce(dc.eid, dt.eid) = n.eid
 )
 
 select * from final
