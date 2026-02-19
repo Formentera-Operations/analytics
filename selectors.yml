@@ -18,7 +18,8 @@ selectors:
         - +dim_los_acct_map
         - +general_ledger+
         - +dim_ar_summary
-        - +fct_ar_aging
+        - +fct_ar_aging_detail
+        - +fct_ar_aging_summary
         - +dim_oda_check_register
 
   - name: marts-finance-combo-curve

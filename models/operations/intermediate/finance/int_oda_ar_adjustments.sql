@@ -6,14 +6,16 @@
 {#
     Dimension: Company AR Invoice Adjustments
     Adjustment transactions (advances applied, cross-clears, etc.)
-    
+
     -- Layer 1: Adjustment Details Model
-    -- Purpose: Extract and standardize adjustment transaction data
+    -- Purpose: Extract and standardize adjustment transaction data. Unfiltered —
+    --          exposes is_invoice_posted and is_voucher_posted flags so downstream
+    --          agg models can split posted vs. unposted adjustment totals.
     -- Dependencies: Base tables only
-    
+
     Sources:
-    - stg_oda__arinvoiceadjustment
     - stg_oda__arinvoiceadjustmentdetail
+    - stg_oda__arinvoiceadjustment
     - stg_oda__arinvoice_v2
     - stg_oda__voucher_v2
     - stg_oda__company_v2
@@ -21,6 +23,7 @@
     - stg_oda__entity_v2
     - stg_oda__wells
 #}
+
 with ar_adjustments as (
     select
         c.code as company_code,
@@ -34,14 +37,19 @@ with ar_adjustments as (
         i.code as invoice_number,
         i.id as invoice_id,
         i.invoice_type_id as invoice_type_id,
-        w.is_hold_all_billing as hold_billing,
         aria.voucher_id as voucher_id,
         aria.adjustment_date as invoice_date,
         ariad.adjustment_detail_amount as total_invoice_amount,
         2 as sort_order,
+        i.is_posted as is_invoice_posted,
+        v.is_posted as is_voucher_posted,
+        coalesce(w.is_hold_all_billing, false) as hold_billing,
+        -- Posting status flags — used by adjustments_agg for posted/unposted splits
         case
-            when aria.adjustment_type_id = 0 then 'Application of Advance'
-            when aria.adjustment_type_id = 1 then replace(ariad.description, 'XClear with Inv#', 'Cross Clear Inv #')
+            when aria.adjustment_type_id = 0
+                then 'Application of Advance'
+            when aria.adjustment_type_id = 1
+                then replace(ariad.description, 'XClear with Inv#', 'Cross Clear Inv #')
             else 'Adjustment'
         end as invoice_description,
         case
@@ -50,13 +58,15 @@ with ar_adjustments as (
             else 'Adj.'
         end as invoice_type
 
-
     from {{ ref('stg_oda__arinvoiceadjustmentdetail') }} ariad
 
     inner join {{ ref('stg_oda__arinvoiceadjustment') }} aria
         on ariad.invoice_adjustment_id = aria.id
 
-    inner join {{ ref('stg_oda__voucher_v2') }} v
+    -- LEFT JOIN: voucher_id is nullable on unposted adjustments (severity: warn in staging).
+    -- INNER JOIN would silently drop adjustment records not yet assigned a voucher,
+    -- contradicting the unfiltered design. is_voucher_posted = NULL when no voucher.
+    left join {{ ref('stg_oda__voucher_v2') }} v
         on aria.voucher_id = v.id
 
     inner join {{ ref('stg_oda__arinvoice_v2') }} i
@@ -69,15 +79,13 @@ with ar_adjustments as (
         on i.owner_id = o.id
 
     inner join {{ ref('stg_oda__entity_v2') }} e
-        on o.entity_id = e.Id
+        on o.entity_id = e.id
 
     left join {{ ref('stg_oda__wells') }} w
         on i.well_id = w.id
 
-    where
-        i.is_posted
-        and v.is_posted
-
+-- NOTE: No WHERE posted filter — all adjustment transactions exposed.
+-- Use is_invoice_posted / is_voucher_posted flags for filtering.
 )
 
 select * from ar_adjustments
