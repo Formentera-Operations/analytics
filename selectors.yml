@@ -16,7 +16,7 @@ selectors:
         - +dim_purchasers
         - +fct_los
         - +dim_los_acct_map
-        - +general_ledger+
+        - +fct_gl_details+
         - +dim_ar_summary
         - +fct_ar_aging_detail
         - +fct_ar_aging_summary
