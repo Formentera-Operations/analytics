@@ -26,7 +26,7 @@
     - Well search key from userfields
     
     Incremental strategy:
-    - Uses _loaded_at watermark from staging model
+    - Uses _flow_published_at watermark (Estuary CDC batch timestamp)
     - Note: Late-arriving dimension updates require periodic full refresh
     
     Dependencies:
@@ -37,7 +37,7 @@
 with source_gl as (
     select * from {{ ref('stg_oda__gl') }}
     {% if is_incremental() %}
-        where _loaded_at > (select max(_loaded_at) from {{ this }})
+        where _flow_published_at > (select max(_flow_published_at) from {{ this }})
     {% endif %}
 ),
 
@@ -271,6 +271,7 @@ final as (
         -- Surrogate key and metadata
         gld.id as gl_id,
         gld._loaded_at,
+        gld._flow_published_at,
         gld.created_at,
         gld.updated_at,
         c.code as company_code,
@@ -320,6 +321,7 @@ final as (
         vouchers.posted_date as posted_at,
         gld.journal_date,
         gld.accrual_date,
+        gld.accrual_date_key,
 
         -- Journal date (primary)
         gld.cash_date,
@@ -350,6 +352,8 @@ final as (
         gld.is_present_in_accrual_balance,
         cast(rev_deck_revisions.revision_number as varchar) as revenue_deck_revision,
         rev_decks.effective_date as revenue_deck_effective_date,
+        rev_deck_revisions.total_interest_expected,
+        rev_deck_revisions.nri_actual as net_revenue_interest_actual,
 
         -- Report inclusion flags
         cast(exp_deck_sets.code as varchar) as expense_deck_set_code,

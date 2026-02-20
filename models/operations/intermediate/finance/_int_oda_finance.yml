@@ -141,6 +141,46 @@ models:
       - name: remaining_balance_unposted
         description: Balance including only unposted invoice and unposted transaction components
 
+  - name: int_gl_enhanced
+    description: >
+      Enhanced General Ledger intermediate. Enriches raw GL entries from stg_oda__gl
+      with dimensional attributes: company, account, polymorphic location/entity resolution,
+      AFE classification, voucher/posting info, revenue/expense deck details, and well
+      search key from userfields.
+
+      Grain: one row per GL entry (gl_id). ~180M rows.
+      Incremental: merge on gl_id, _flow_published_at watermark (Estuary CDC batch timestamp).
+      Late-arriving dimension updates require periodic full refresh.
+    columns:
+      - name: gl_id
+        description: Natural key — ODA GL entry ID (from stg_oda__gl.id)
+      - name: _flow_published_at
+        description: Estuary CDC batch timestamp. Used as incremental watermark.
+      - name: _loaded_at
+        description: Staging load timestamp (current_timestamp() at query time — view). Kept for backward compat.
+      - name: company_code
+        description: ODA company code (numeric, used as cluster key)
+      - name: account_id
+        description: FK to stg_oda__account_v2 — used for dim_accounts join in fct_gl_details
+      - name: main_account
+        description: Chart of accounts main account number
+      - name: sub_account
+        description: Chart of accounts sub account number
+      - name: well_id
+        description: FK to ODA well (nullable — not all GL entries are well-level)
+      - name: search_key
+        description: UF-SEARCH KEY userfield for the well (from stg_oda__userfield, deduplicated by _flow_published_at)
+      - name: is_posted
+        description: True when the GL entry has been posted (boolean)
+      - name: gross_amount
+        description: Gross financial value of the GL entry (decimal precision preserved)
+      - name: net_amount
+        description: Net financial value of the GL entry
+      - name: total_interest_expected
+        description: Expected total interest from revenue deck revision (NRI expected)
+      - name: net_revenue_interest_actual
+        description: Actual net revenue interest from revenue deck revision (NRI actual)
+
   - name: int_oda_ar_invoice_remaining_balances
     description: >
       Final remaining balance model with advance/closeout pair exclusion applied.

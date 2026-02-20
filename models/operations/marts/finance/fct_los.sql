@@ -11,202 +11,195 @@
 
 {#
     Mart: Lease Operating Statement Transactions
-    
+
     Purpose: Transaction-level fact table for LOS reporting
     Grain: One row per posted GL transaction on LOS-mapped accounts (gl_id)
-    
+
     Key filters applied:
     - is_posted = true (only posted transactions)
     - is_los_account = true (only accounts in LOS mapping)
-    
-    Key enrichments from accounts dimension:
+
+    Key enrichments from fct_gl_details:
     - LOS hierarchy (los_category → los_section → los_line_item_name)
     - Product type (OIL, GAS, NGL, OTHER)
     - Volume/value reporting flags
     - Report line numbers for Power BI sorting
-    
-    Use cases:
-    - Lease Operating Statement by well/property
-    - LOE analysis by category
-    - Revenue and production tax reporting
-    - Workover and P&A tracking
-    
+
+    LOS sign convention:
+    - Revenue amounts are NEGATIVE (cash received)
+    - Costs (LOE, capex, etc.) are POSITIVE
+    - Net income = SUM(all categories); positive = profitable
+
     Dependencies:
-    - int_gl_enhanced
-    - dim_accounts
+    - fct_gl_details (canonical GL fact with pre-joined account classification)
 #}
 
-WITH gl_posted AS (
-    SELECT *
-    FROM {{ ref('int_gl_enhanced') }}
-    WHERE is_posted = TRUE
-    {% if is_incremental() %}
-        AND _loaded_at > (SELECT MAX(_loaded_at) FROM {{ this }})
-    {% endif %}
+with gl_posted as (
+    select *
+    from {{ ref('fct_gl_details') }}
+    where
+        is_posted = true
+        and is_los_account = true
+        {% if is_incremental() %}
+            and _flow_published_at > (select max(_flow_published_at) from {{ this }})
+        {% endif %}
 ),
 
-accounts AS (
-    SELECT *
-    FROM {{ ref('dim_accounts') }}
-    WHERE is_los_account = TRUE
-),
-
-los_transactions AS (
-    SELECT
+los_transactions as (
+    select -- noqa: ST06
         -- =================================================================
         -- Keys and Metadata
         -- =================================================================
-        gl.gl_id,
-        gl._loaded_at,
-        gl._last_refresh_at,
-        gl.created_at,
-        gl.updated_at,
-        
+        gl_id,
+        _loaded_at,
+        _flow_published_at,
+        _last_refresh_at,
+        created_at,
+        updated_at,
+
         -- =================================================================
         -- Company
         -- =================================================================
-        gl.company_code,
-        gl.company_name,
-        
+        company_code,
+        company_name,
+
         -- =================================================================
         -- Account (from GL)
         -- =================================================================
-        gl.account_id,
-        gl.main_account,
-        gl.sub_account,
-        gl.account_name,
-        
+        account_id,
+        main_account,
+        sub_account,
+        account_name,
+
         -- =================================================================
-        -- LOS Classification (from Accounts Dimension)
+        -- LOS Classification (from dim_accounts via fct_gl_details)
         -- =================================================================
-        acct.los_category,
-        acct.los_section,
-        acct.los_key_sort,
-        acct.los_line_item_name,
-        acct.los_product_type,
-        acct.los_volume_line_number,
-        acct.los_value_line_number,
-        acct.has_volume_reporting,
-        acct.has_value_reporting,
-        acct.is_los_subtraction,
-        acct.interest_type,
-        acct.commodity_type,
-        acct.expense_classification,
-        
+        los_category,
+        los_section,
+        los_key_sort,
+        los_line_item_name,
+        los_product_type,
+        los_volume_line_number,
+        los_value_line_number,
+        has_volume_reporting,
+        has_value_reporting,
+        is_los_subtraction,
+        interest_type,
+        commodity_type,
+        expense_classification,
+
         -- =================================================================
         -- Location (Polymorphic)
         -- =================================================================
-        gl.location_type,
-        gl.location_code,
-        gl.location_name,
-        
+        location_type,
+        location_code,
+        location_name,
+
         -- =================================================================
         -- Entity (Polymorphic - separate IDs for Power BI joins)
         -- =================================================================
-        gl.entity_type,
-        gl.owner_entity_id,
-        gl.vendor_entity_id,
-        gl.purchaser_entity_id,
-        gl.entity_code,
-        gl.entity_name,
-        
+        entity_type,
+        owner_entity_id,
+        vendor_entity_id,
+        purchaser_entity_id,
+        entity_code,
+        entity_name,
+
         -- =================================================================
         -- Well
         -- =================================================================
-        gl.well_id,
-        gl.well_code,
-        gl.well_name,
-        gl.op_ref,
-        gl.search_key,
-        
+        well_id,
+        well_code,
+        well_name,
+        op_ref,
+        search_key,
+
         -- =================================================================
         -- AFE
         -- =================================================================
-        gl.afe_id,
-        gl.afe_code,
-        gl.afe_type_code,
-        gl.afe_type_label,
-        
+        afe_id,
+        afe_code,
+        afe_type_code,
+        afe_type_label,
+
         -- =================================================================
         -- Dates
         -- =================================================================
-        gl.journal_date,
-        gl.journal_month_start,
-        gl.journal_year,
-        gl.accrual_date,
-        gl.accrual_month_start,
-        gl.accrual_year,
-        gl.cash_date,
-        gl.cash_month_start,
-        gl.cash_year,
-        
+        journal_date,
+        journal_month_start,
+        journal_year,
+        accrual_date,
+        accrual_month_start,
+        accrual_year,
+        cash_date,
+        cash_month_start,
+        cash_year,
+
         -- =================================================================
         -- Posting Info
         -- =================================================================
-        gl.voucher_id,
-        gl.voucher_code,
-        gl.posted_at,
-        gl.posted_at_cst,
-        
+        voucher_id,
+        voucher_code,
+        posted_at,
+        posted_at_cst,
+
         -- =================================================================
         -- Source & Reference
         -- =================================================================
-        gl.source_module_code,
-        gl.source_module_name,
-        gl.payment_type_code,
-        gl.reference,
-        gl.gl_description,
-        
+        source_module_code,
+        source_module_name,
+        payment_type_code,
+        reference,
+        gl_description,
+
         -- =================================================================
         -- Financial Values
         -- =================================================================
-        gl.gross_amount,
-        gl.net_amount,
-        gl.gross_volume,
-        gl.net_volume,
-        
+        gross_amount,
+        net_amount,
+        gross_volume,
+        net_volume,
+
         -- Signed values based on LOS subtraction flag
-        CASE 
-            WHEN acct.is_los_subtraction THEN gl.gross_amount * -1
-            ELSE gl.gross_amount
-        END AS los_gross_amount,
-        
-        CASE 
-            WHEN acct.is_los_subtraction THEN gl.net_amount * -1
-            ELSE gl.net_amount
-        END AS los_net_amount,
-        
-        CASE 
-            WHEN acct.is_los_subtraction THEN gl.gross_volume * -1
-            ELSE gl.gross_volume
-        END AS los_gross_volume,
-        
-        CASE 
-            WHEN acct.is_los_subtraction THEN gl.net_volume * -1
-            ELSE gl.net_volume
-        END AS los_net_volume,
-        
+        case
+            when is_los_subtraction then gross_amount * -1
+            else gross_amount
+        end as los_gross_amount,
+
+        case
+            when is_los_subtraction then net_amount * -1
+            else net_amount
+        end as los_net_amount,
+
+        case
+            when is_los_subtraction then gross_volume * -1
+            else gross_volume
+        end as los_gross_volume,
+
+        case
+            when is_los_subtraction then net_volume * -1
+            else net_volume
+        end as los_net_volume,
+
         -- =================================================================
         -- Revenue/Expense Deck
         -- =================================================================
-        gl.revenue_deck_revision,
-        gl.revenue_deck_effective_date,
-        gl.expense_deck_set_code,
-        gl.expense_deck_revision,
-        gl.expense_deck_effective_date,
-        
+        revenue_deck_revision,
+        revenue_deck_effective_date,
+        expense_deck_set_code,
+        expense_deck_revision,
+        expense_deck_effective_date,
+
         -- =================================================================
         -- Entry Metadata
         -- =================================================================
-        gl.is_generated_entry,
-        gl.is_allocation_parent,
-        gl.is_allocation_generated,
-        gl.entry_group,
-        gl.entry_sequence
+        is_generated_entry,
+        is_allocation_parent,
+        is_allocation_generated,
+        entry_group,
+        entry_sequence
 
-    FROM gl_posted gl
-    INNER JOIN accounts acct
-        ON gl.account_id = acct.account_id
+    from gl_posted
 )
 
-SELECT * FROM los_transactions
+select * from los_transactions
