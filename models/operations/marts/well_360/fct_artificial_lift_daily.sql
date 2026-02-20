@@ -106,6 +106,7 @@ plunger_raw as (
         on r.plunger_lift_id = pl.id_rec
     inner join {{ ref('stg_prodview__artificial_lift') }} al
         on pl.completion_id = al.id_rec
+    where lower(trim(r.comments)) != 'seed record' or r.comments is null
 ),
 
 -- =============================================================================
