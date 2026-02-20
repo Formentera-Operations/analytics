@@ -30,12 +30,21 @@ with drilling_cost as (
 ),
 
 drilling_time as (
+    -- Filter to Drilling category only — WellView time logs cover ALL job types
+    -- (drilling, completion, flowback, facilities). Without this filter,
+    -- total_drilling_hours would include completion and flowback days, inflating
+    -- the metric by 3–4× for a typical horizontal well.
+    -- Example: N731H shows 2,599 hrs total vs 679 hrs actual drilling.
     select
-        eid,
-        sum(duration_hours) as total_drilling_hours
-    from {{ ref('fct_drilling_time') }}
-    where eid is not null
-    group by eid
+        dt.eid,
+        sum(dt.duration_hours) as total_drilling_hours
+    from {{ ref('fct_drilling_time') }} dt
+    inner join {{ ref('dim_job') }} j
+        on dt.job_id = j.job_id
+    where
+        dt.eid is not null
+        and j.job_category = 'Drilling'
+    group by dt.eid
 ),
 
 npt_events as (
