@@ -1,0 +1,42 @@
+# oda / revenue_distribution / ODA_CHECKREVENUEDETAIL_V2
+# 21 columns, 46,261,151 rows. Revenue check-to-detail allocation with working/non-working splits.
+# Not yet staged.
+#
+ODA_CHECKREVENUEDETAIL_V2: Revenue check detail records. Each row allocates a revenue check payment to a specific owner revenue detail line with working and non-working interest value/volume splits. Links CheckRevenue (payment header) to OwnerRevenueDetail_V2 (revenue line). Enables revenue payment reconciliation and working/non-working interest analysis.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  CHECKREVENUEDETAIL_V2IDENTITY(int) #ODA internal sequence identity
+
+  # -- Key Relationships --
+  CHECKREVENUEID(txt) #FK to ODA_CHECKREVENUE.ID — parent revenue check
+  OWNERREVENUEDETAILID(txt) #FK to ODA_OWNERREVENUEDETAIL_V2.ID — source revenue detail
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well/cost center
+
+  # -- Working/Non-Working Splits --
+  NETVALUEWORKING(float) #Net revenue value for working interest portions
+  NETVALUENONWORKING(float) #Net revenue value for non-working interest portions (royalties, ORRI)
+  NETVOLUMEWORKING(float) #Net volume for working interest portions
+  NETVOLUMENONWORKING(float) #Net volume for non-working interest portions
+
+  # -- Payment --
+  PAYMENTAMOUNT(float) #Total payment amount for this check detail line
+
+  # -- Flags --
+  VOIDED(bool) #Whether this check detail has been voided
+
+  # -- References --
+  TRIALOWNERREVENUEDETAILID(txt) #Trial/draft owner revenue detail ID (before finalization)
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #Estuary operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary publication timestamp
+  FLOW_DOCUMENT(variant) #Full document as JSON

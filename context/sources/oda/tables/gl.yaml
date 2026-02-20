@@ -1,6 +1,6 @@
 # oda / general_ledger / GL
 # Source: context/sources/oda/domains/general_ledger.yaml
-# 80 columns, 180,288,799 rows. General ledger journal entries.
+# 80 columns, 180,807,269 rows. General ledger journal entries.
 # Maps to stg_oda__gl.
 #
 GL: General ledger journal entries. Each row is a single GL entry (debit or credit) with account, well, entity, and source module attribution. Highest-volume ODA table (180M+ rows). CDC soft deletes filtered via _meta/op = 'd'.

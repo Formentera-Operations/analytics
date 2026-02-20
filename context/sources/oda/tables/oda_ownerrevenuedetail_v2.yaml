@@ -1,0 +1,81 @@
+# oda / revenue_distribution / ODA_OWNERREVENUEDETAIL_V2
+# 50 columns, 63,028,042 rows. Per-owner revenue line items by well, product, and production month.
+# Not yet staged. Highest-priority unstaged table — unlocks fct_revenue_distribution.
+#
+ODA_OWNERREVENUEDETAIL_V2: Owner revenue detail records. Each row is a revenue line item for a specific owner × well × voucher × product × production month. Contains net value/volume, paid amount, interest decimal, and payment/statement status. Central bridge between deck participant ownership and actual revenue checks. Enables revenue distribution analytics, royalty statements, and owner-level P&L.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  OWNERREVENUEDETAILIDENTITY(int) #ODA internal sequence identity
+
+  # -- Key Relationships --
+  OWNERID(txt) #FK to ODA_BATCH_ODA_OWNER_V2.ID — the interest owner receiving revenue
+  WELLID(txt) #FK to ODA_BATCH_ODA_WELL.ID — well/cost center generating revenue
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — operating company
+  PRODUCTID(txt) #FK to ODA_BATCH_ODA_PRODUCT.ID — oil/gas/NGL product
+  PURCHASERID(txt) #FK to ODA_BATCH_ODA_PURCHASER_V2.ID — purchaser of production
+  VOUCHERID(txt) #FK to voucher record linking to GL posting
+  REVENUEDECKID(txt) #FK to revenue deck used for this distribution
+  REVENUEDECKREVISIONID(txt) #FK to revenue deck revision used for ownership snapshot
+  CURRENCYID(txt) #Currency ID for this revenue detail
+
+  # -- Interest --
+  INTERESTTYPEID(int) #FK to interest type (WI, NRI, ORRI, Royalty)
+  CUSTOMINTERESTTYPEID(txt) #Custom interest type ID for non-standard interest types
+  DECIMALINTEREST(float) #Owner's interest decimal (e.g., 0.125 = 12.5%)
+  SIGNMULTIPLIER(int) #Sign multiplier (1 or -1) for reversals/adjustments
+
+  # -- Production Period --
+  PRODUCTIONDATE(date) #Production month this revenue relates to
+  ACCRUALDATE(date) #Accrual period date for financial reporting
+  BTUFACTOR(float) #BTU factor for gas production volume conversion
+
+  # -- Financial --
+  NETVALUE(float) #Net revenue value after interest and deductions
+  NETVOLUME(float) #Net volume after interest allocation
+  PAIDAMOUNT(float) #Amount actually paid to the owner
+  NEXTPAYMENT(float) #Amount scheduled for next payment
+  NETTEDAMOUNT(float) #Amount applied via cross-invoice netting
+
+  # -- Status --
+  PAYMENTSTATUSID(int) #Payment status classifier (pending/paid/held)
+  STATEMENTSTATUSID(int) #Statement status classifier
+  CHECKSTUBCOUNT(int) #Number of check stubs associated with this revenue detail
+
+  # -- Netting --
+  NETTEDDETAILCOUNT(int) #Number of netting detail records
+  OPENNETTEDDETAILCOUNT(int) #Number of open (unresolved) netting details
+
+  # -- Suspense --
+  SUSPENSECATEGORYID(txt) #FK to suspense category for revenue holds
+  SUSPENSECATEGORYPROCESSED(bool) #Whether suspense category has been processed
+  PENDINGSUSPENSECATEGORYID(txt) #Pending suspense category for revenue holds
+
+  # -- Redistribution --
+  REDISTRIBUTIONID(txt) #Redistribution ID
+  PENDINGREDISTRIBUTIONID(txt) #ID of pending redistribution
+
+  # -- Flags --
+  DUPLICATEGROSS(bool) #Whether gross values are duplicated (memo flag)
+  HISTORICAL(bool) #Whether this is a historical record
+  INCLUDEINACCRUALREPORT(bool) #Whether to include in accrual-basis reports
+  MEMOALSOCODEMISSING(bool) #Whether memo code is also missing
+
+  # -- References --
+  MEMOCOMPANYID(txt) #Company ID for memo entries
+  PURCHASERRECEIPTID(txt) #Purchaser receipt ID
+  IMPORTDATAID(txt) #Import batch data ID
+  GROSSEVENTID(txt) #Event ID for gross value posting
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  CREATEEVENTID(txt) #Event ID that created this record
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  UPDATEEVENTID(txt) #Event ID of last update
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #Estuary operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary publication timestamp
+  FLOW_DOCUMENT(variant) #Full document as JSON

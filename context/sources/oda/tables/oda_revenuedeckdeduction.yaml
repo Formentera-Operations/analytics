@@ -1,0 +1,19 @@
+# oda / revenue_distribution / RevenueDeckDeduction
+# NOT IN SNOWFLAKE — schema from entity_model.md. Estuary not syncing this table.
+# Not yet staged. Requires Estuary configuration to add to batch connector.
+#
+# Expected Snowflake table name: ODA_REVENUEDECKDEDUCTION or ODA_BATCH_ODA_REVENUEDECKDEDUCTION
+# (depends on which Estuary connector path is used)
+#
+RevenueDeckDeduction: Revenue deck deduction rates per deck participant. Each row defines a deduction (e.g., severance tax, marketing fee) applied to a participant's revenue before net payment. Links to DeckParticipant and DeductionType. Needed for accurate net revenue calculation in fct_revenue_distribution.
+
+  # -- Expected Key Columns (from entity_model.md) --
+  # Column names below are ESTIMATED based on ODA naming conventions.
+  # Actual column names must be validated against information_schema when Estuary begins syncing.
+
+  ID(txt) #Primary key (GUID) — expected
+  DECKPARTICIPANTID(txt) #FK to ODA_REVENUEDECKPARTICIPANT.ID — expected
+  DEDUCTIONTYPEID(txt) #FK to RevenueDeductionType_V2.ID — deduction classification
+  DEDUCTIONRATE(float) #Deduction rate as decimal percentage — expected
+  EFFECTIVEDATE(ts) #Date this deduction becomes effective — expected
+  EXPIRYDATE(ts) #Date this deduction expires — expected
