@@ -139,7 +139,11 @@ liquid_with_unit as (
     inner join {{ ref('stg_prodview__liquid_meters') }} h
         on r.id_rec_parent = h.id_rec
     {% if is_incremental() %}
-        where r._fivetran_synced > (select max(_fivetran_synced) from {{ this }})  -- noqa: LT14
+        where r._fivetran_synced > (  -- noqa: LT14
+            select coalesce(max(_fivetran_synced), '1900-01-01'::timestamp_tz)
+            from {{ this }}
+            where meter_type = 'liquid'
+        )
     {% endif %}
 ),
 
@@ -192,7 +196,11 @@ gas_with_unit as (
     inner join {{ ref('stg_prodview__gas_meters') }} h
         on r.id_rec_parent = h.id_rec
     {% if is_incremental() %}
-        where r._fivetran_synced > (select max(_fivetran_synced) from {{ this }})  -- noqa: LT14
+        where r._fivetran_synced > (  -- noqa: LT14
+            select coalesce(max(_fivetran_synced), '1900-01-01'::timestamp_tz)
+            from {{ this }}
+            where meter_type = 'gas'
+        )
     {% endif %}
 ),
 
@@ -245,7 +253,11 @@ gas_pd_with_unit as (
     inner join {{ ref('stg_prodview__gas_pd_meters') }} h
         on r.id_rec_parent = h.id_rec
     {% if is_incremental() %}
-        where r._fivetran_synced > (select max(_fivetran_synced) from {{ this }})  -- noqa: LT14
+        where r._fivetran_synced > (  -- noqa: LT14
+            select coalesce(max(_fivetran_synced), '1900-01-01'::timestamp_tz)
+            from {{ this }}
+            where meter_type = 'gas_pd'
+        )
     {% endif %}
 ),
 

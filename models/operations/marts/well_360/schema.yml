@@ -1443,6 +1443,12 @@ models:
       Materialization: incremental, watermark = _fivetran_synced per meter_type.
     config:
       tags: ["marts", "fo", "well_360"]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - id_rec
+              - meter_type
     columns:
       - name: meter_reading_sk
         description: Surrogate key. MD5(id_rec || meter_type). Unique per reading.
