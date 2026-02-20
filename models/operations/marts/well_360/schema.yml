@@ -1573,3 +1573,238 @@ models:
 
       - name: _loaded_at
         description: Timestamp when dbt loaded this row.
+
+  - name: fct_meter_readings_daily
+    description: >
+      Daily raw measurement readings from ProdView's meter hierarchy, upstream
+      of the allocation engine. Covers three meter types in a single UNION fact
+      with a `meter_type` discriminator. This is the raw gauge/reading layer —
+      allocation outputs from these meters flow into fct_well_production_daily.
+
+      **Grain:** one row per daily reading per meter installation per meter type.
+      Natural key: (id_rec, meter_type). Surrogate key: MD5(id_rec || meter_type).
+
+      **EID resolution (2-hop):** reading.id_rec_parent → meter_header.id_rec_parent (unit_id)
+      → well_360.prodview_unit_id. Resolution rates vary by meter type:
+      liquid=83.4%, gas=67.4%, gas_pd=25.5%. Lower rates reflect facility-level
+      battery meters without per-well EIDs (similar to tank inventory).
+
+      **Meter types:**
+      - liquid: pvUnitMeterLiquid — oil/condensate and water meters (BSW, volumes)
+      - gas: pvUnitMeterOrifice — gas orifice meters (pressure, temperature, MCF, heat)
+      - gas_pd: pvUnitMeterPdGas — positive displacement gas meters (reading value, MCF)
+
+      **Rows:** ~7.4M as of Sprint 10 (3M liquid + 4.1M gas + 236K gas_pd).
+      Materialization: incremental, watermark = _fivetran_synced per meter_type.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - id_rec
+              - meter_type
+    columns:
+      - name: meter_reading_sk
+        description: Surrogate key. MD5(id_rec || meter_type). Unique per reading.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: Source reading record ID (natural key within meter_type).
+        data_tests:
+          - not_null
+
+      - name: meter_type
+        description: >
+          Meter type discriminator. Values: 'liquid', 'gas', 'gas_pd'.
+        data_tests:
+          - not_null
+
+      - name: meter_id_rec
+        description: FK to the meter header record (pvUnitMeterLiquid, pvUnitMeterOrifice, or pvUnitMeterPdGas).
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID resolved via meter_header.id_rec_parent (unit_id) → well_360.
+          NULL for facility-level battery meters without per-well EIDs.
+          liquid=83.4%, gas=67.4%, gas_pd=25.5% resolution as of Sprint 10.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID could not be resolved. Includes facility-level battery meters.
+        data_tests:
+          - not_null
+
+      - name: reading_date
+        description: Date of the meter reading.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: meter_name
+        description: Meter installation name from the meter header record.
+
+      - name: temperature_f
+        description: Measurement temperature in degrees Fahrenheit (where applicable).
+
+      - name: pressure_psi
+        description: >
+          Measurement pressure in PSI. For liquid=volume pressure;
+          for gas=static pressure; for gas_pd=pressure reading.
+
+      - name: hcliq_volume_bbl
+        description: Hydrocarbon liquid volume in barrels. Liquid meter only; NULL for gas types.
+
+      - name: water_volume_bbl
+        description: Water volume in barrels. Liquid meter only; NULL for gas types.
+
+      - name: uncorrected_volume_bbl
+        description: Uncorrected total volume in barrels. Liquid meter only.
+
+      - name: corrected_volume_bbl
+        description: Corrected total volume in barrels. Liquid meter only.
+
+      - name: bsw_pct
+        description: Basic sediment and water percentage (final calculated). Liquid meter only.
+
+      - name: sample_density_api
+        description: Sample density in API gravity. Liquid meter only.
+
+      - name: is_verified
+        description: Whether the reading has been verified. Liquid meter only; NULL for gas types.
+
+      - name: gas_volume_mcf
+        description: Calculated gas volume in MCF. Gas and gas_pd meters only; NULL for liquid.
+
+      - name: heat_mmbtu
+        description: Heat content in MMBtu. Gas and gas_pd meters only; NULL for liquid.
+
+      - name: heat_factor_btu_per_ft3
+        description: Heat factor in BTU/ft3. Gas and gas_pd meters only; NULL for liquid.
+
+      - name: static_pressure_psi
+        description: Static pressure in PSI. Gas orifice meter only; NULL for liquid and gas_pd.
+
+      - name: differential_pressure_psi
+        description: Differential pressure in PSI. Gas orifice meter only; NULL for liquid and gas_pd.
+
+      - name: c_prime_factor
+        description: C-prime orifice calculation factor. Gas orifice meter only; NULL for liquid and gas_pd.
+
+      - name: reading_value
+        description: Raw meter register reading. Gas PD meter only; NULL for liquid and gas.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.
+
+  - name: fct_well_distribution_daily
+    description: >
+      Daily product distribution records for ProdView completions, representing
+      where produced volumes went — downstream of the allocation engine. Covers
+      the full NGL hydrocarbon component breakdown (C1 through C7+, N2, CO2, H2S)
+      plus outlet routing references.
+
+      **Distinct from fct_well_production_daily:** The allocation fact carries
+      disposition category totals (sales, fuel, vent, injected). This model
+      adds full NGL component composition (C1/C2/C3+) and outlet routing context
+      not available anywhere else in the mart. These are the same source-system
+      records (PVT_PVUNITDISPMONTHDAY) but at a different analytical layer.
+
+      **Grain:** one row per disposition record (PVT_PVUNITDISPMONTHDAY.IDREC).
+
+      **EID resolution (1-hop):** disposition.unit_id → well_360.prodview_unit_id.
+      The disposition table carries the unit_id directly — no completion hop needed.
+      99.6% resolution rate (24.75M / 24.86M rows) as of Sprint 10.
+
+      **Rows:** ~24.75M as of Sprint 10.
+      Materialization: incremental, watermark = _fivetran_synced.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: distribution_daily_sk
+        description: Surrogate key. MD5(id_rec). Unique per disposition record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView disposition record ID (PVT_PVUNITDISPMONTHDAY natural key).
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID resolved via unit_id → well_360.prodview_unit_id (1-hop).
+          99.6% resolution rate; 0.4% unresolved for non-operated or unregistered units.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when unit_id did not match any well_360.prodview_unit_id.
+        data_tests:
+          - not_null
+
+      - name: disposition_date
+        description: Date of the disposition record.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: unit_id
+        description: ProdView unit record ID — the FK used for 1-hop EID resolution.
+
+      - name: completion_id
+        description: ProdView completion record ID for this disposition row.
+
+      - name: outlet_send_id
+        description: Outlet routing destination — where the product was sent.
+
+      - name: disposition_unit_id
+        description: Receiving unit record ID for the disposition.
+
+      - name: hcliq_volume_bbl
+        description: Total hydrocarbon liquid volume in barrels.
+
+      - name: gas_volume_mcf
+        description: Total gas volume in MCF.
+
+      - name: water_volume_bbl
+        description: Total water volume in barrels.
+
+      - name: c1_gas_volume_mcf
+        description: Methane (C1) gas volume in MCF.
+
+      - name: c2_gas_volume_mcf
+        description: Ethane (C2) gas volume in MCF.
+
+      - name: c3_gas_volume_mcf
+        description: Propane (C3) gas volume in MCF.
+
+      - name: heat_content_mmbtu
+        description: Total heat content in MMBtu.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.
