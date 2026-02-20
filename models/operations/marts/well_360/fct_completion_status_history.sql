@@ -88,11 +88,19 @@ completions as (
 -- =============================================================================
 well_dim_primary as (
     -- Primary path: ProdView unit ID → well_360.prodview_unit_id
+    -- Deduplicated to 1 EID per prodview_unit_id: prefer operated wells, then lowest EID
+    -- (guards against duplicate prodview_unit_id across two EIDs in well_360)
     select
         prodview_unit_id as pvunit_id_rec,
         eid
     from {{ ref('well_360') }}
     where prodview_unit_id is not null
+    qualify row_number() over (
+        partition by prodview_unit_id
+        order by
+            case when is_operated then 0 else 1 end,
+            eid
+    ) = 1
 ),
 
 well_dim_fallback as (

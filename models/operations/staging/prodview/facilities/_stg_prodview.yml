@@ -633,8 +633,13 @@ models:
       # -- identifiers
       - name: facility_sk
         description: "Surrogate key (MD5 hash of id_rec)"
+        data_tests:
+          - not_null
+          - unique
       - name: id_rec
         description: "Unique facility record ID (PK). ProdView: IDREC"
+        data_tests:
+          - not_null
       - name: id_flownet
         description: "Flow network identifier. ProdView: IDFLOWNET"
 

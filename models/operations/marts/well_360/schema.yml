@@ -1333,8 +1333,9 @@ models:
       - name: eid
         description: >
           Well EID (Enterprise Identifier). Resolved from prodview_unit_id
-          (primary) or api_10 (fallback) via well_360. NULL for ~1% of
-          non-operated, SWD, or unregistered wells.
+          (primary) or api_10 (fallback) via well_360. NULL for ~27% of rows —
+          historical completions and non-operated wells not yet in the well_360 spine.
+          See model-level description for full rate breakdown.
         data_tests:
           - not_null:
               config:
@@ -1355,6 +1356,10 @@ models:
 
       - name: status_date
         description: Effective date of this status record. ProdView DTTM.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
 
       - name: status
         description: >
