@@ -103,7 +103,7 @@
 #   ODA_CHECKREVENUEDETAILLINEITEM (74.6M rows) — revenue check detail line items. IN SNOWFLAKE.
 #
 # Already staged (PR #292):
-#   ODA_OWNERREVENUEDETAIL_V2 (50 cols, 63M rows) -> stg_oda__ownerrevenuedetail_v2
-#   ODA_REVENUEPENDINGREDISTRIBUTION -> stg_oda__revenuependingredistribution
+#   ODA_OWNERREVENUEDETAIL_V2 (50 cols, 63M rows) -> stg_oda__owner_revenue_detail_v2
+#   ODA_REVENUEPENDINGREDISTRIBUTION -> stg_oda__revenue_pending_redistribution
 #
 # Total unstaged: 2 in Snowflake (ready to stage), 2 not in Snowflake (need Estuary config)
