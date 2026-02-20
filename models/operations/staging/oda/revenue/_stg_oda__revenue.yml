@@ -152,7 +152,7 @@ models:
         description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
       - name: _flow_published_at
         description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
- # ==========================================================================
+  # ==========================================================================
   # stg_oda__revenuependingredistribution
   # ==========================================================================
   - name: stg_oda__revenuependingredistribution
@@ -234,6 +234,89 @@ models:
         description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
 
       # -- dbt metadata
+      - name: _loaded_at
+        description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
+      - name: _flow_published_at
+        description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
+
+  # ==========================================================================
+  # stg_oda__revenue_suspense_category
+  # ==========================================================================
+  - name: stg_oda__revenue_suspense_category
+    description: |
+      Staging model for ODA Revenue Suspense Categories.
+      Source: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY (Estuary batch, 24 rows)
+      Grain: One row per suspense category (id)
+      Note: Lookup table for reasons revenue payments are held in suspense.
+    columns:
+      - name: revenue_suspense_category_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_suspense_category_identity
+        description: Numeric identity for the category
+      - name: code
+        description: Category code (user-facing)
+        data_tests:
+          - not_null
+      - name: name
+        description: Short category name
+      - name: full_name
+        description: Full category name/description
+      - name: created_at
+        description: Record creation timestamp in ODA
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+      - name: updated_at
+        description: Record last update timestamp in ODA
+      - name: record_inserted_at
+        description: Estuary record insert timestamp
+      - name: record_updated_at
+        description: Estuary record update timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded by dbt
+      - name: _flow_published_at
+        description: Estuary publication timestamp
+  # ==========================================================================
+  # stg_oda__revenue_payment_status
+  # ==========================================================================
+  - name: stg_oda__revenue_payment_status
+    description: |
+      Staging model for ODA Revenue Payment Status lookup.
+      Source: ODA_BATCH_ODA_REVENUEPAYMENTSTATUS (Estuary batch, small lookup)
+      Grain: One row per payment status (id)
+      Note: ID is a numeric integer (NUMBER 38,0), not a GUID — downstream joins use integer key.
+      Column list validated against information_schema.columns on 2026-02-20.
+    columns:
+      - name: revenue_payment_status_sk
+        description: Surrogate key derived from id
+      - name: id
+        description: "Primary key — integer (NUMBER 38,0). Source: ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_payment_status_identity
+        description: "Numeric identity sequence for this payment status record. Source: REVENUEPAYMENTSTATUSIDENTITY (NUMBER 38,0)"
+      - name: code
+        description: "Payment status code (user-facing). Source: CODE"
+      - name: name
+        description: "Short payment status name. Source: NAME"
+      - name: full_name
+        description: "Full payment status name/description. Source: FULLNAME"
+      - name: record_inserted_at
+        description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: record_updated_at
+        description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
       - name: _loaded_at
         description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
       - name: _flow_published_at

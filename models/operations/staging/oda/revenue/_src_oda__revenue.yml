@@ -15,3 +15,10 @@ sources:
           Pending revenue redistribution jobs from Quorum OnDemand Accounting (Estuary batch), ~10k rows).
           Grain: one row per pending redistribution job (id).
           Captures filter criteria and configuration used when triggering a revenue redistribution run.
+      - name: ODA_BATCH_ODA_REVENUESUSPENSECATEGORY
+        description: "Revenue suspense category lookup — reasons for holding revenue in suspense (batch, 24 rows)"
+      - name: ODA_BATCH_ODA_REVENUEPAYMENTSTATUS
+        description: |
+          Revenue payment status lookup from Quorum OnDemand Accounting (Estuary batch, small lookup).
+          Grain: one row per payment status (id).
+          Note: ID is a numeric integer, not a GUID — joins use integer key.
