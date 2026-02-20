@@ -1319,6 +1319,7 @@ models:
         description: ProdView status record ID (PVT_PVUNITCOMPSTATUS natural key).
         data_tests:
           - not_null
+          - unique
 
       - name: id_rec_comp
         description: >

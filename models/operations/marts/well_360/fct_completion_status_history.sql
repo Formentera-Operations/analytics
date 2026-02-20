@@ -23,10 +23,10 @@
     One row per status record (PVT_PVUNITCOMPSTATUS.IDREC). Status changes
     are infrequent — typically < 20 per well over its lifetime.
 
-    EID RESOLUTION (two-step COALESCE via completions → unit → well_360):
-    1. Primary:  status.id_rec_parent → completions.id_rec
-                 → completions.id_rec_parent (unit ID)
-                 → well_360.prodview_unit_id
+    EID RESOLUTION (three-hop chain via completions → unit → well_360):
+    1. Primary:  status.id_rec_parent (hop 1) → completions.id_rec
+                 → completions.id_rec_parent (unit ID, hop 2)
+                 → well_360.prodview_unit_id (hop 3)
     2. Fallback: completions.api_10 → well_360.api_10
                  (deduplicated to 1 EID per api_10 — prefer operated wells)
 
@@ -67,6 +67,8 @@ status_raw as (
         created_at_utc,
         modified_by,
         modified_at_utc
+        -- Lock columns (lock_date_utc, is_locked*, record_tag) intentionally
+        -- omitted — not analytic payload for lifecycle surveillance workflows
     from {{ ref('stg_prodview__status') }}
 ),
 
