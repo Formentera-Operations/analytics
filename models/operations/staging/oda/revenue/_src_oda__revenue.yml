@@ -8,7 +8,7 @@ sources:
       - name: ODA_OWNERREVENUEDETAIL_V2
         description: |
           Owner revenue owner distributions by well/product/production date. (Estuary batch, ~61M rows). 
-          Identifies payees in suspense and redistributed ouchers. 
+          Identifies payees in suspense and redistributed vouchers. 
           Grain: one row per owner revenue distribution line item. 
       - name: ODA_REVENUEPENDINGREDISTRIBUTION
         description: |
