@@ -16,8 +16,7 @@
     - Entities can be wells, companies, owners, etc. (determined by entity_type_id)
     - Downstream consumers pivot on user_field_name to get specific values
     - BREAKING CHANGE: Columns renamed from quoted camelCase to snake_case.
-      Downstream consumers (int_general_ledger_enhanced, int_gl_enhanced,
-      int_oda_wells, dim_wells) must be updated.
+      Downstream consumers (int_gl_enhanced, int_oda_wells, dim_wells) must be updated.
     - No audit columns (CREATEDATE/UPDATEDATE) in source
     - FLOW_DOCUMENT excluded (large JSON, not needed downstream)
 #}
