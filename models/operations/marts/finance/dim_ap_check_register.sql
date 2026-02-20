@@ -16,6 +16,7 @@
     - stg_oda__voucher_v2
     - stg_oda__entity_v2
     - stg_oda__company_v2
+    - stg_oda__account_v2
 #}
 
 
@@ -26,6 +27,7 @@ ap_checks as (
     select
         a.transaction_number,
         a.company_id,
+        a.account_id,
         a.issued_date,
         a.payment_type_code,
         a.is_system_generated,
@@ -86,6 +88,17 @@ companies as (
 
 ),
 
+accounts as (
+
+    select
+        id,
+        main_account,
+        sub_account,
+        account_name
+    from {{ ref('stg_oda__account_v2') }}
+
+),
+
 
 final as (
 
@@ -93,6 +106,9 @@ final as (
         c.code as company_code,
         c.name as company_name,
         ac.transaction_number as check_number,
+        a.main_account as main_account,
+        a.sub_account as sub_account,
+        a.account_name  as account_name, 
         ac.issued_date as check_date,
         ac.payment_type_code as check_type,
         ac.payment_amount as check_amount,
@@ -114,6 +130,8 @@ final as (
         on ac.voucher_id = vo.id
     left join entities as e
         on v.entity_id = e.id
+    left join accounts as a 
+        on a.id = ac.account_id
 
 )
 
