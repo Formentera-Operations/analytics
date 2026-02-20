@@ -644,9 +644,9 @@ final as (
         --
         -- Priority order:
         -- 1. SWD / Injector — status-based, not overridden by completion data
-        -- 2. Unit Well — structural classification, not overridden
-        -- 3. Horizontal evidence (lateral >= 3000 ft OR stages >= 10) → Horizontal
-        -- 4. Fall through to well_type_oda name-pattern result
+        -- 2. Horizontal evidence (lateral >= 3000 ft OR stages >= 10) → overrides all name patterns
+        --    (incl. UNIT names — "UNIT" in STX Eagle Ford is acreage naming, not a well type)
+        -- 3. Fall through to name-pattern result (Unit Well, H suffix, Vertical/Conventional, Other)
         case
             when upper(well_name) like '%SWD%' or upper(well_name) like '%DISPOSAL%' then 'SWD'
             when unified_status = 'INJECTING' or upper(well_name) like '%INJ%' then 'Injector'
