@@ -35,7 +35,10 @@
 with gl_enhanced as (
     select * from {{ ref('int_gl_enhanced') }}
     {% if is_incremental() %}
-        where _flow_published_at > (select max(_flow_published_at) from {{ this }})
+        where _flow_published_at > (
+            select coalesce(max(_flow_published_at), '1900-01-01'::timestamp_tz)
+            from {{ this }}
+        )
     {% endif %}
 ),
 

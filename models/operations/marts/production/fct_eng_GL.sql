@@ -14,7 +14,7 @@
     Filters:
     - Posted transactions only
     - Journal date within last 3 years
-    - LOS-mapped accounts only (via dim_accounts RIGHT JOIN)
+    - LOS-mapped accounts only (via dim_accounts WHERE IN filter)
     - Non-null GL IDs
 
     Source migration (2026-02-20):
@@ -23,7 +23,7 @@
 
     Dependencies:
     - fct_gl_details (canonical GL fact)
-    - dim_accounts (for combined_account RIGHT JOIN filter)
+    - dim_accounts (for combined_account WHERE IN filter)
 #}
 
 with acctmapping as (

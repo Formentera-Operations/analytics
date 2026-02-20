@@ -37,7 +37,10 @@
 with source_gl as (
     select * from {{ ref('stg_oda__gl') }}
     {% if is_incremental() %}
-        where _flow_published_at > (select max(_flow_published_at) from {{ this }})
+        where _flow_published_at > (
+            select coalesce(max(_flow_published_at), cast('1900-01-01' as timestamp_tz))
+            from {{ this }}
+        )
     {% endif %}
 ),
 

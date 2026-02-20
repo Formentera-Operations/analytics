@@ -41,7 +41,10 @@ with gl_posted as (
         is_posted = true
         and is_los_account = true
         {% if is_incremental() %}
-            and _flow_published_at > (select max(_flow_published_at) from {{ this }})
+            and _flow_published_at > (
+                select coalesce(max(_flow_published_at), '1900-01-01'::timestamp_tz)
+                from {{ this }}
+            )
         {% endif %}
 ),
 
