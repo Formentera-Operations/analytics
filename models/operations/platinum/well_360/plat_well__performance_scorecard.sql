@@ -253,8 +253,11 @@ final as (
         c.total_proppant_lb,
         c.total_clean_volume_bbl,
         c.stim_lateral_length_ft,
-        -- Use well_360's fixed lateral length (not stim interval) as intensity denominator
-        c.total_proppant_lb / nullif(w.well_lateral_length_ft, 0) as proppant_per_ft_lb,
+        -- Use stimulated lateral (WellView length_gross_ft) as intensity denominator,
+        -- not well_360's drilled lateral from CC/Enverus. Stimulated interval is the
+        -- correct basis for proppant intensity (what was actually frac'd).
+        -- For N731H: 30.9M lb / 9,514 ft stimulated = 3,247 lb/ft (not 2,769 using 11,158 ft drilled).
+        c.total_proppant_lb / nullif(c.stim_lateral_length_ft, 0) as proppant_per_ft_lb,
 
         -- ── Downtime aggregates (Sprint 4) ────────────────────────────────────────
         dt.lifetime_downtime_hours,

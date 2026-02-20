@@ -23,9 +23,11 @@ aggregated as (
         sum(actual_total_stages) as total_stages,
         sum(proppant_total_calc_lb) as total_proppant_lb,
         sum(volume_clean_total_calc_bbl) as total_clean_volume_bbl,
-        -- Audit only: stimulated interval per job, summed across all jobs.
-        -- Do NOT use this as the intensity denominator — use well_360.lateral_length_ft
-        -- instead, since re-stimulations inflate this sum.
+        -- Stimulated lateral interval, summed across all stim jobs.
+        -- Use this as the proppant intensity denominator (preferred over well_360.lateral_length_ft
+        -- which is the CC/Enverus DRILLED lateral — often longer than what was actually fracked).
+        -- Caveat: re-stimulations inflate this sum; for wells with multiple stim jobs,
+        -- filter to the most recent actual job before using for intensity metrics.
         sum(length_gross_ft) as stim_lateral_length_ft
     from source
     group by eid
