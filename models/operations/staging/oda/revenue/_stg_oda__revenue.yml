@@ -1,0 +1,240 @@
+version: 2
+
+models:
+  # stg_oda__ownerrevenuedetail_v2
+  # ==========================================================================
+  - name: stg_oda__ownerrevenuedetail_v2
+    description: |
+      Staging model for ODA Owner Revenue Distribution Line Items V2.
+      Source: ODA_OWNERREVENUEDETAIL_V2 (Estuary batch, ~61M rows)
+      Grain: One row per owner revenue distribution line item (id)
+      Note: V2 replaces stale ODA_OWNERREVENUEDETAIL from the old connector (last altered 2026-01-11).
+      Column list validated against information_schema.columns on 2026-02-19.
+    columns:
+      - name: owner_revenue_detail_v2_sk
+        description: Surrogate key derived from id
+
+      # -- identifiers
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: owner_revenue_detail_identity
+        description: "Numeric identity sequence for the owner revenue detail record. Source: OWNERREVENUEDETAILIDENTITY (NUMBER 38,0)"
+      - name: owner_id
+        description: "FK to stg_oda__owner_v2 — revenue owner receiving this distribution. Source: OWNERID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__owner_v2')
+                field: id
+              config:
+                severity: warn
+      - name: company_id
+        description: "FK to stg_oda__company_v2 — company context for this distribution. Source: COMPANYID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__company_v2')
+                field: id
+              config:
+                severity: warn
+      - name: well_id
+        description: "FK to stg_oda__wells — well associated with this distribution. Source: WELLID"
+      - name: product_id
+        description: "FK to stg_oda__product — product type (oil, gas, NGL, etc.). Source: PRODUCTID"
+      - name: interest_type_id
+        description: "FK to stg_oda__interest_type — ownership interest type (WI, NRI, RI, ORRI). Source: INTERESTTYPEID (NUMBER 38,0 → int)"
+      - name: custom_interest_type_id
+        description: "Custom interest type override for non-standard ownership structures. Source: CUSTOMINTERESTTYPEID"
+      - name: voucher_id
+        description: "FK to stg_oda__voucher_v2 — GL voucher associated with this distribution. Source: VOUCHERID"
+      - name: currency_id
+        description: "Currency identifier for this distribution. Source: CURRENCYID"
+      - name: purchaser_id
+        description: "FK to stg_oda__purchaser_v2 — the purchaser who paid for the production. Source: PURCHASERID"
+      - name: purchaser_receipt_id
+        description: "Purchaser receipt record associated with this distribution. Source: PURCHASERRECEIPTID"
+      - name: revenue_deck_id
+        description: "FK to stg_oda__revenue_deck_v2 — the revenue deck governing this distribution. Source: REVENUEDECKID"
+      - name: revenue_deck_revision_id
+        description: "FK to stg_oda__revenue_deck_revision — specific revision of the revenue deck. Source: REVENUEDECKREVISIONID (note: ODA drops entity prefix per FK naming pattern)"
+      - name: redistribution_id
+        description: "FK to the redistribution record if this amount was redistributed. Source: REDISTRIBUTIONID"
+      - name: pending_redistribution_id
+        description: "FK to a pending redistribution not yet finalized. Source: PENDINGREDISTRIBUTIONID"
+      - name: suspense_category_id
+        description: "FK to suspense category if payment is held in suspense. Source: SUSPENSECATEGORYID"
+      - name: pending_suspense_category_id
+        description: "FK to pending suspense category not yet resolved. Source: PENDINGSUSPENSECATEGORYID"
+      - name: import_data_id
+        description: "FK to import batch that originated this record. Source: IMPORTDATAID"
+      - name: gross_event_id
+        description: "Event ID for the gross revenue event. Source: GROSSEVENTID"
+      - name: memo_company_id
+        description: "Memo company identifier — used for inter-company memo entries. Source: MEMOCOMPANYID"
+
+      # -- financial
+      - name: net_value
+        description: "Net revenue value in USD for this distribution line. Source: NETVALUE (FLOAT)"
+      - name: net_volume
+        description: "Net production volume for this distribution (BOE or MCF). Source: NETVOLUME (FLOAT)"
+      - name: netted_amount
+        description: "Amount netted against AR invoices for this distribution. Source: NETTEDAMOUNT (FLOAT)"
+      - name: paid_amount
+        description: "Amount already paid out on this distribution. Source: PAIDAMOUNT (FLOAT)"
+      - name: next_payment
+        description: "Amount scheduled for the next payment run. Source: NEXTPAYMENT (FLOAT)"
+      - name: decimal_interest
+        description: "Owner decimal interest (ownership fraction) used to calculate this distribution. Source: DECIMALINTEREST (FLOAT)"
+      - name: btu_factor
+        description: "BTU conversion factor applied to gas volume for this distribution. Source: BTUFACTOR (FLOAT)"
+
+      # -- counts / status
+      - name: sign_multiplier
+        description: "Sign convention multiplier (+1 or -1) applied to revenue amounts. Source: SIGNMULTIPLIER (NUMBER 38,0 → int)"
+      - name: check_stub_count
+        description: "Number of check stubs associated with this distribution. Source: CHECKSTUBCOUNT (NUMBER 38,0 → int)"
+      - name: netted_detail_count
+        description: "Total count of netted AR detail records linked to this distribution. Source: NETTEDDETAILCOUNT (NUMBER 38,0 → int)"
+      - name: open_netted_detail_count
+        description: "Count of open (unresolved) netted AR detail records. Source: OPENNETTEDDETAILCOUNT (NUMBER 38,0 → int)"
+      - name: payment_status_id
+        description: "Integer status code for the payment state of this distribution. Source: PAYMENTSTATUSID (NUMBER 38,0 → int)"
+      - name: statement_status_id
+        description: "Integer status code for the statement processing state. Source: STATEMENTSTATUSID (NUMBER 38,0 → int)"
+
+      # -- dates
+      - name: accrual_date
+        description: "Accrual date for this revenue distribution record. Source: ACCRUALDATE (DATE)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: production_date
+        description: "Production period date this distribution relates to. Source: PRODUCTIONDATE (DATE)"
+
+      # -- flags
+      - name: is_duplicate_gross
+        description: "True if this record is a duplicate gross distribution entry. Source: DUPLICATEGROSS (BOOLEAN)"
+      - name: is_historical
+        description: "True if this distribution was loaded as a historical record rather than current-period. Source: HISTORICAL (BOOLEAN)"
+      - name: is_include_in_accrual_report
+        description: "True if this distribution should be included in accrual reporting. Source: INCLUDEINACCRUALREPORT (BOOLEAN)"
+      - name: is_memo_also_code_missing
+        description: "True if the memo also-code is missing for this distribution. Source: MEMOALSOCODEMISSING (BOOLEAN)"
+      - name: is_suspense_category_processed
+        description: "True if the suspense category has been processed for this distribution. Source: SUSPENSECATEGORYPROCESSED (BOOLEAN)"
+
+      # -- audit
+      - name: created_at
+        description: "Record creation timestamp in ODA. Source: CREATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: create_event_id
+        description: "Event ID for the creation transaction. Source: CREATEEVENTID"
+      - name: updated_at
+        description: "Record last update timestamp in ODA. Source: UPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: update_event_id
+        description: "Event ID for the most recent update transaction. Source: UPDATEEVENTID"
+      - name: record_inserted_at
+        description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: record_updated_at
+        description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
+      - name: _flow_published_at
+        description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
+ # ==========================================================================
+  # stg_oda__revenuependingredistribution
+  # ==========================================================================
+  - name: stg_oda__revenuependingredistribution
+    description: |
+      Staging model for ODA Revenue Pending Redistribution jobs.
+      Source: ODA_REVENUEPENDINGREDISTRIBUTION (Estuary batch)
+      Grain: One row per pending redistribution job (id)
+      Note: Captures filter criteria and configuration used when triggering a revenue redistribution run.
+      Column list validated against information_schema.columns on 2026-02-20.
+    columns:
+      - name: revenue_pending_redistribution_sk
+        description: Surrogate key derived from id
+
+      # -- identifiers
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_pending_redistribution_identity
+        description: "Numeric identity sequence for this redistribution record. Source: REVENUEPENDINGREDISTRIBUTIONIDENTITY (NUMBER 38,0)"
+      - name: voucher_id
+        description: "FK to stg_oda__voucher_v2 — GL voucher associated with this redistribution job. Source: VOUCHERID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: filter_company_id
+        description: "FK to stg_oda__company_v2 — company scope filter for this redistribution run. Source: FILTERCOMPANYID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: filter_owner_id
+        description: "FK to stg_oda__owner_v2 — optional owner scope filter. Source: FILTEROWNERID"
+      - name: filter_owner_group_id
+        description: "Optional owner group scope filter. Source: FILTEROWNERGROUPID"
+      - name: filter_product_id
+        description: "FK to stg_oda__product — optional product scope filter. Source: FILTERPRODUCTID"
+      - name: filter_well_id
+        description: "FK to stg_oda__wells — optional well scope filter. Source: FILTERWELLID"
+      - name: filter_well_group_id
+        description: "Optional well group scope filter. Source: FILTERWELLGROUPID"
+      - name: reset_suspense_category_id
+        description: "FK to suspense category to reset distributions to during redistribution. Source: RESETSUSPENSECATEGORYID"
+
+      # -- configuration
+      - name: cash_date_source_id
+        description: "Integer code controlling which date is used as the cash date for this redistribution. Source: CASHDATESOURCEID (NUMBER 38,0)"
+      - name: division_of_interest_source_id
+        description: "Integer code controlling which DOI version is applied during redistribution. Source: DIVISIONOFINTERESTSOURCEID (NUMBER 38,0)"
+      - name: reset_payment_status_id
+        description: "Integer code for the payment status distributions are reset to during this redistribution. Source: RESETPAYMENTSTATUSID (NUMBER 38,0)"
+
+      # -- filter dates
+      - name: filter_from_production_date
+        description: "Start of production date range filter applied to this redistribution run. Source: FILTERFROMPRODUCTIONDATE (DATE)"
+      - name: filter_thru_production_date
+        description: "End of production date range filter applied to this redistribution run. Source: FILTERTHRUPRODUCTIONDATE (DATE)"
+
+      # -- flags
+      - name: is_filter_payable
+        description: "True if the redistribution run is filtered to only payable distributions. Source: FILTERPAYABLE (BOOLEAN)"
+      - name: is_suppress_gross
+        description: "True if gross revenue amounts should be suppressed during redistribution. Source: SUPPRESSGROSS (BOOLEAN)"
+
+      # -- audit
+      - name: created_at
+        description: "Record creation timestamp in ODA. Source: CREATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: create_event_id
+        description: "Event ID for the creation transaction. Source: CREATEEVENTID"
+      - name: updated_at
+        description: "Record last update timestamp in ODA. Source: UPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: update_event_id
+        description: "Event ID for the most recent update transaction. Source: UPDATEEVENTID"
+      - name: record_inserted_at
+        description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: record_updated_at
+        description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
+      - name: _flow_published_at
+        description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
