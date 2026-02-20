@@ -17,10 +17,11 @@ models:
       **Grain:** one row per monthly calc record (one per facility per month).
       Unique on (id_rec_facility, facility_month).
 
-      **No EID resolution:** pvFacility is a separate root entity from pvUnit
-      and does not map 1:1 to an EID. The facility EID (pvFacility.IDPa)
-      requires a stg_prodview__facilities staging model not yet built.
-      Use id_rec_facility to join to a future facility dimension.
+      **Facility EID enrichment (Sprint 9):** `stg_prodview__facilities` is joined to
+      expose `facility_eid` (pvFacility.IDPa), `facility_name`, and `facility_type_*`.
+      Note: `facility_eid` is a FACILITY-LEVEL identifier — it does NOT map to
+      `well_360.eid` (0 / 2,086 IDPa values match any well EID; different namespace).
+      96.4% of monthly records have a `facility_eid` populated; 3.6% are unresolved.
 
       **Propane/butane columns** remain in m³ (no project macro available
       for propane/butane unit conversion).
@@ -41,10 +42,31 @@ models:
       - name: id_rec_facility
         description: >
           ProdView facility record ID (FK to pvFacility.idrec). Use as the
-          grain key alongside facility_month. EID resolution deferred — requires
-          a stg_prodview__facilities staging model to access pvFacility.IDPa.
+          grain key alongside facility_month. Join to stg_prodview__facilities
+          on id_rec for facility header details.
         data_tests:
           - not_null
+
+      - name: facility_eid
+        description: >
+          Facility production accounting ID (pvFacility.IDPa). This is a
+          FACILITY-LEVEL identifier, NOT a well EID. It does not cross-reference
+          well_360.eid (different namespace). NULL for 3.6% of monthly records
+          (facilities where IDPa is not populated in ProdView).
+
+      - name: facility_name
+        description: Facility display name from ProdView pvFacility header.
+
+      - name: facility_type_1
+        description: User-defined facility type 1 from pvFacility header.
+
+      - name: facility_type_2
+        description: User-defined facility type 2 from pvFacility header.
+
+      - name: is_facility_eid_unresolved
+        description: >
+          True when facility_eid is NULL — facility header has no IDPa populated.
+          3.6% of monthly records as of Sprint 9.
 
       - name: facility_month
         description: >
@@ -1415,6 +1437,139 @@ models:
         description: User who last modified the record. ProdView SYSMODUSER.
       - name: modified_at_utc
         description: Last modification timestamp (UTC). ProdView SYSMODDATE.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.
+
+  - name: fct_artificial_lift_daily
+    description: >
+      Daily operational readings for artificial lift installations per ProdView
+      completion. Covers both plunger lift (pvUnitCompPumpPlunger) and rod pump
+      (pvUnitCompPumpRod) in a single UNION fact with a `lift_type` discriminator.
+
+      Enables artificial lift performance analytics: trip count trends, travel time
+      monitoring, SPM and stroke length tracking, and per-completion efficiency analysis.
+
+      **Grain:** one row per daily reading per lift installation.
+      Natural key: (id_rec, lift_type). Surrogate key: MD5(id_rec || lift_type).
+
+      **Lift type hierarchy (both go through artificial_lift header):**
+      - Plunger: readings → plunger_lifts → artificial_lift_header → completion → unit → well_360
+        (plunger_lifts.completion_id maps to artificial_lift.id_rec, not directly to completions)
+      - Rod pump: entries → rod_pump_configs → artificial_lift_header → completion → unit → well_360
+
+      **Lift-type-specific columns:** Plunger columns (travel time, trip counts, duration)
+      are NULL for rod_pump rows. Rod pump columns (spm, stroke_length_in, run_time_pct,
+      vol_per_day_calc_bbl) are NULL for plunger rows.
+
+      **Rows:** ~79K as of Sprint 9 (61K plunger + 18K rod pump).
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: artificial_lift_daily_sk
+        description: Surrogate key. MD5(id_rec || lift_type). Unique per reading.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: Source reading record ID (natural key within lift_type).
+        data_tests:
+          - not_null
+
+      - name: lift_type
+        description: >
+          Lift installation type discriminator. Either 'plunger' (pvUnitCompPumpPlunger)
+          or 'rod_pump' (pvUnitCompPumpRod).
+        data_tests:
+          - not_null
+
+      - name: id_rec_comp
+        description: >
+          FK to pvUnitComp (completion record ID). Resolution path:
+          plunger readings → plunger_lifts.completion_id;
+          rod pump entries → rod_pump_configs → artificial_lift_header.id_rec_parent.
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID resolved via completions → unit → well_360. NULL for completions
+          not registered in the well_360 spine.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID could not be resolved via either prodview_unit_id or api_10.
+        data_tests:
+          - not_null
+
+      - name: reading_date
+        description: Date of the daily reading. Entry_date for plunger; observation_date for rod pump.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: on_pressure_psi
+        description: >
+          Plunger on-pressure in PSI (converted from kPa). NULL for rod_pump rows.
+
+      - name: off_pressure_psi
+        description: Off-pressure in PSI. Currently NULL for both lift types (reserved).
+
+      - name: total_trips_or_cycles
+        description: Total trip/cycle count for the day. Plunger only; NULL for rod_pump.
+
+      - name: successful_trips_or_arrivals
+        description: Successful trips (plunger arrivals). Plunger only; NULL for rod_pump.
+
+      - name: failed_trips_or_misses
+        description: Failed trips (plunger misses). Plunger only; NULL for rod_pump.
+
+      - name: duration_on_minutes
+        description: Duration on-time in minutes (plunger). NULL for rod_pump.
+
+      - name: duration_off_minutes
+        description: Duration off-time in minutes (plunger). NULL for rod_pump.
+
+      - name: after_flow_time_hours
+        description: After-flow time in hours (plunger). NULL for rod_pump.
+
+      - name: travel_time_avg_minutes
+        description: Average plunger travel time in minutes. NULL for rod_pump.
+
+      - name: travel_time_max_minutes
+        description: Maximum plunger travel time in minutes. NULL for rod_pump.
+
+      - name: travel_time_min_minutes
+        description: Minimum plunger travel time in minutes. NULL for rod_pump.
+
+      - name: travel_time_target_minutes
+        description: Target plunger travel time in minutes. NULL for rod_pump.
+
+      - name: spm
+        description: Strokes per minute (rod pump). NULL for plunger.
+
+      - name: stroke_length_in
+        description: Stroke length in inches (rod pump; converted from meters). NULL for plunger.
+
+      - name: run_time_pct
+        description: Run time percentage (rod pump). NULL for plunger.
+
+      - name: vol_per_day_calc_bbl
+        description: Calculated volume per day in barrels (rod pump; converted from m³). NULL for plunger.
+
+      - name: comments
+        description: Operator comments on the reading.
 
       - name: _loaded_at
         description: Timestamp when dbt loaded this row.
