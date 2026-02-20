@@ -1283,3 +1283,132 @@ models:
 
       - name: _loaded_at
         description: Timestamp when this row was loaded into the data warehouse.
+
+  - name: fct_completion_status_history
+    description: >
+      Effective-dated status change events per ProdView completion. Each row
+      represents one pvUnitCompStatus record — a point-in-time snapshot of a
+      completion's operating status (producing, shut-in, injecting, etc.).
+      Retains full history with no date cutoff. Source: PVT_PVUNITCOMPSTATUS.
+
+      Complements fct_completion_downtime for root cause analysis and well
+      lifecycle surveillance workflows. Status records describe WHAT a completion
+      is doing at a point in time; downtime records describe WHEN it stopped.
+
+      **Grain:** one row per status record (PVT_PVUNITCOMPSTATUS.IDREC).
+
+      **EID resolution:** 3-hop identical to fct_completion_downtime.
+      status.id_rec_parent → completions.id_rec → completions.id_rec_parent (unit_id)
+      → well_360.prodview_unit_id (primary) OR completions.api_10 → well_360.api_10 (fallback).
+
+      **EID resolution rate:** 72.9% (9,148 / 12,541 rows resolved as of Sprint 8).
+      3,393 unresolved rows represent historical wells and non-operated completions
+      not yet registered in the well_360 spine. Documented with severity: warn on
+      the not_null and relationships tests for eid.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: completion_status_sk
+        description: >
+          Surrogate key. MD5(id_rec). Unique per status record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView status record ID (PVT_PVUNITCOMPSTATUS natural key).
+        data_tests:
+          - not_null
+
+      - name: id_rec_comp
+        description: >
+          FK to pvUnitComp (completion record ID). Equivalent to status.id_rec_parent.
+          Use to join to stg_prodview__completions or stg_prodview__status.
+        data_tests:
+          - not_null
+
+      - name: id_flownet
+        description: Flow network identifier. ProdView IDFLOWNET.
+
+      - name: eid
+        description: >
+          Well EID (Enterprise Identifier). Resolved from prodview_unit_id
+          (primary) or api_10 (fallback) via well_360. NULL for ~1% of
+          non-operated, SWD, or unregistered wells.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: >
+          True when the EID could not be resolved through either the prodview_unit_id
+          or api_10 join paths. Indicates non-operated, SWD, or wells not yet in well_360.
+        data_tests:
+          - not_null
+
+      - name: status_date
+        description: Effective date of this status record. ProdView DTTM.
+
+      - name: status
+        description: >
+          Completion operating status at this point in time. Common values:
+          'Producing', 'Shut In', 'Injecting', 'Abandoned'. ProdView STATUS.
+
+      - name: primary_fluid_type
+        description: Primary fluid type at this status snapshot. ProdView PRIMARYFLUIDTYP.
+
+      - name: flow_direction
+        description: Flow direction (producer/injector). ProdView FLOWDIRECTION.
+
+      - name: commingled
+        description: Whether the completion is commingled with others. ProdView COMMINGLED.
+
+      - name: oil_or_condensate
+        description: Whether the primary hydrocarbon is oil or condensate. ProdView TYPFLUIDPROD.
+
+      - name: completion_type
+        description: Completion type (e.g., vertical, horizontal, frac). ProdView TYPCOMPLETION.
+
+      - name: production_method
+        description: Production method (e.g., flowing, pumping, gas lift). ProdView METHODPROD.
+
+      - name: calc_lost_production
+        description: Whether to calculate lost production for this status. ProdView CALCLOSTPROD.
+
+      - name: include_in_well_count
+        description: Whether to include in well count reporting. ProdView WELLCOUNTINCL.
+
+      - name: comments
+        description: Status comments. ProdView COM.
+
+      - name: user_txt1
+        description: User-defined text field 1. ProdView USERTXT1.
+      - name: user_txt2
+        description: User-defined text field 2. ProdView USERTXT2.
+      - name: user_txt3
+        description: User-defined text field 3. ProdView USERTXT3.
+      - name: user_num1
+        description: User-defined numeric field 1. ProdView USERNUM1.
+      - name: user_num2
+        description: User-defined numeric field 2. ProdView USERNUM2.
+      - name: user_num3
+        description: User-defined numeric field 3. ProdView USERNUM3.
+
+      - name: created_by
+        description: User who created the status record. ProdView SYSCREATEUSER.
+      - name: created_at_utc
+        description: Record creation timestamp (UTC). ProdView SYSCREATEDATE.
+      - name: modified_by
+        description: User who last modified the record. ProdView SYSMODUSER.
+      - name: modified_at_utc
+        description: Last modification timestamp (UTC). ProdView SYSMODDATE.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.

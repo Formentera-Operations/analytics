@@ -616,3 +616,122 @@ models:
         description: "Fivetran sync timestamp. Used for deduplication."
       - name: _loaded_at
         description: "Timestamp when dbt loaded this record."
+
+  - name: stg_prodview__facilities
+    description: >
+      ProdView facility header — pvFacility root entities representing batteries,
+      tank batteries, lease aggregates, and gathering groups. One row per facility.
+      Source: PVT_PVFACILITY.
+
+      pvFacility is a SEPARATE ROOT ENTITY from pvUnit — it does not join to
+      pvUnit via a standard parent/child hierarchy. The facility EID (facility_eid,
+      mapped from IDPA) is the key for joining to future facility dimension or
+      linking fct_facility_monthly EID resolution in a subsequent sprint.
+
+      **Grain:** one row per facility header record (PVT_PVFACILITY.IDREC).
+    columns:
+      # -- identifiers
+      - name: facility_sk
+        description: "Surrogate key (MD5 hash of id_rec)"
+      - name: id_rec
+        description: "Unique facility record ID (PK). ProdView: IDREC"
+      - name: id_flownet
+        description: "Flow network identifier. ProdView: IDFLOWNET"
+
+      # -- facility EID and name
+      - name: facility_eid
+        description: "Facility EID — production accounting ID (IDPA). Used to link to fct_facility_monthly in future sprints."
+      - name: facility_name
+        description: "Facility display name. ProdView: NAME"
+      - name: permanent_facility_id
+        description: "Permanent facility identifier (survives renames). ProdView: PERMANENTID"
+
+      # -- facility type classifiers
+      - name: facility_type_pa
+        description: "Production accounting type. ProdView: TYPPA"
+      - name: facility_type_1
+        description: "User-defined facility type 1. ProdView: TYP1"
+      - name: facility_type_2
+        description: "User-defined facility type 2. ProdView: TYP2"
+      - name: facility_type_regulatory
+        description: "Regulatory facility type code. ProdView: TYPREGULATORY"
+
+      # -- user-defined facility identifiers
+      - name: facility_id_a
+        description: "User-defined facility identifier A. ProdView: FACILITYIDA"
+      - name: facility_id_b
+        description: "User-defined facility identifier B. ProdView: FACILITYIDB"
+      - name: facility_id_c
+        description: "User-defined facility identifier C. ProdView: FACILITYIDC"
+      - name: facility_id_d
+        description: "User-defined facility identifier D. ProdView: FACILITYIDD"
+
+      # -- primary unit link
+      - name: primary_unit_id_rec
+        description: "Primary associated unit record ID. ProdView: IDRECUNITPRIMARY"
+      - name: primary_unit_table_key
+        description: "Primary unit table key. ProdView: IDRECUNITPRIMARYTK"
+
+      # -- responsible party references
+      - name: responsible_party_1_id_rec
+        description: "First responsible party record ID. ProdView: IDRECRESP1"
+      - name: responsible_party_1_table_key
+        description: "First responsible party table key. ProdView: IDRECRESP1TK"
+      - name: responsible_party_2_id_rec
+        description: "Second responsible party record ID. ProdView: IDRECRESP2"
+      - name: responsible_party_2_table_key
+        description: "Second responsible party table key. ProdView: IDRECRESP2TK"
+
+      # -- lifecycle dates
+      - name: start_date
+        description: "Facility effective start date. ProdView: DTTMSTART"
+      - name: end_date
+        description: "Facility expiry/end date. ProdView: DTTMEND"
+      - name: hide_date
+        description: "Date facility was hidden in UI. ProdView: DTTMHIDE"
+
+      # -- display / reporting flags
+      - name: is_revenue_hidden
+        description: "Whether facility revenue is hidden in reporting. ProdView: HIDEFACREV"
+      - name: is_hcliq_treated_as_gas
+        description: "Whether hydrocarbon liquid is treated as gas for calculations. ProdView: TREATHCLIQUIDASGAS"
+
+      # -- comments and user-defined text
+      - name: comments
+        description: "Facility comments. ProdView: COM"
+      - name: user_txt1
+        description: "User-defined text field 1. ProdView: USERTXT1"
+      - name: user_txt2
+        description: "User-defined text field 2. ProdView: USERTXT2"
+      - name: user_txt3
+        description: "User-defined text field 3. ProdView: USERTXT3"
+
+      # -- system / audit
+      - name: created_by
+        description: "User who created the record. ProdView: SYSCREATEUSER"
+      - name: created_at_utc
+        description: "Record creation timestamp (UTC). ProdView: SYSCREATEDATE"
+      - name: modified_by
+        description: "User who last modified the record. ProdView: SYSMODUSER"
+      - name: modified_at_utc
+        description: "Last modification timestamp (UTC). ProdView: SYSMODDATE"
+      - name: lock_date_utc
+        description: "Record lock timestamp (UTC). ProdView: SYSLOCKDATE"
+      - name: is_locked
+        description: "Whether the record is locked. ProdView: SYSLOCKME"
+      - name: is_children_locked
+        description: "Whether child records are locked. ProdView: SYSLOCKCHILDREN"
+      - name: is_locked_ui
+        description: "Whether the record is locked in UI. ProdView: SYSLOCKMEUI"
+      - name: is_children_locked_ui
+        description: "Whether child records are locked in UI. ProdView: SYSLOCKCHILDRENUI"
+      - name: record_tag
+        description: "System record tag. ProdView: SYSTAG"
+
+      # -- dbt metadata
+      - name: _fivetran_deleted
+        description: "Fivetran soft-delete flag. True if record was deleted in source."
+      - name: _fivetran_synced
+        description: "Fivetran sync timestamp. Used for deduplication."
+      - name: _loaded_at
+        description: "Timestamp when dbt loaded this record."
