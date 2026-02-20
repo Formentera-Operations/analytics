@@ -14,3 +14,5 @@ sources:
         description: "Facility monthly volumes — calculated monthly volumes at facility level"
       - name: PVT_PVFACRECDISPCALC
         description: "Facility daily receipts — daily receipt and disposition calculations"
+      - name: PVT_PVFACILITY
+        description: "Facility header — pvFacility root entity (battery, tank battery, lease aggregate, gathering group). IDPa is the facility EID."

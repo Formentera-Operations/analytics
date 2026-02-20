@@ -17,10 +17,11 @@ models:
       **Grain:** one row per monthly calc record (one per facility per month).
       Unique on (id_rec_facility, facility_month).
 
-      **No EID resolution:** pvFacility is a separate root entity from pvUnit
-      and does not map 1:1 to an EID. The facility EID (pvFacility.IDPa)
-      requires a stg_prodview__facilities staging model not yet built.
-      Use id_rec_facility to join to a future facility dimension.
+      **Facility EID enrichment (Sprint 9):** `stg_prodview__facilities` is joined to
+      expose `facility_eid` (pvFacility.IDPa), `facility_name`, and `facility_type_*`.
+      Note: `facility_eid` is a FACILITY-LEVEL identifier — it does NOT map to
+      `well_360.eid` (0 / 2,086 IDPa values match any well EID; different namespace).
+      96.4% of monthly records have a `facility_eid` populated; 3.6% are unresolved.
 
       **Propane/butane columns** remain in m³ (no project macro available
       for propane/butane unit conversion).
@@ -41,10 +42,31 @@ models:
       - name: id_rec_facility
         description: >
           ProdView facility record ID (FK to pvFacility.idrec). Use as the
-          grain key alongside facility_month. EID resolution deferred — requires
-          a stg_prodview__facilities staging model to access pvFacility.IDPa.
+          grain key alongside facility_month. Join to stg_prodview__facilities
+          on id_rec for facility header details.
         data_tests:
           - not_null
+
+      - name: facility_eid
+        description: >
+          Facility production accounting ID (pvFacility.IDPa). This is a
+          FACILITY-LEVEL identifier, NOT a well EID. It does not cross-reference
+          well_360.eid (different namespace). NULL for 3.6% of monthly records
+          (facilities where IDPa is not populated in ProdView).
+
+      - name: facility_name
+        description: Facility display name from ProdView pvFacility header.
+
+      - name: facility_type_1
+        description: User-defined facility type 1 from pvFacility header.
+
+      - name: facility_type_2
+        description: User-defined facility type 2 from pvFacility header.
+
+      - name: is_facility_eid_unresolved
+        description: >
+          True when facility_eid is NULL — facility header has no IDPa populated.
+          3.6% of monthly records as of Sprint 9.
 
       - name: facility_month
         description: >
@@ -1283,3 +1305,506 @@ models:
 
       - name: _loaded_at
         description: Timestamp when this row was loaded into the data warehouse.
+
+  - name: fct_completion_status_history
+    description: >
+      Effective-dated status change events per ProdView completion. Each row
+      represents one pvUnitCompStatus record — a point-in-time snapshot of a
+      completion's operating status (producing, shut-in, injecting, etc.).
+      Retains full history with no date cutoff. Source: PVT_PVUNITCOMPSTATUS.
+
+      Complements fct_completion_downtime for root cause analysis and well
+      lifecycle surveillance workflows. Status records describe WHAT a completion
+      is doing at a point in time; downtime records describe WHEN it stopped.
+
+      **Grain:** one row per status record (PVT_PVUNITCOMPSTATUS.IDREC).
+
+      **EID resolution:** 3-hop identical to fct_completion_downtime.
+      status.id_rec_parent → completions.id_rec → completions.id_rec_parent (unit_id)
+      → well_360.prodview_unit_id (primary) OR completions.api_10 → well_360.api_10 (fallback).
+
+      **EID resolution rate:** 72.9% (9,148 / 12,541 rows resolved as of Sprint 8).
+      3,393 unresolved rows represent historical wells and non-operated completions
+      not yet registered in the well_360 spine. Documented with severity: warn on
+      the not_null and relationships tests for eid.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: completion_status_sk
+        description: >
+          Surrogate key. MD5(id_rec). Unique per status record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView status record ID (PVT_PVUNITCOMPSTATUS natural key).
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec_comp
+        description: >
+          FK to pvUnitComp (completion record ID). Equivalent to status.id_rec_parent.
+          Use to join to stg_prodview__completions or stg_prodview__status.
+        data_tests:
+          - not_null
+
+      - name: id_flownet
+        description: Flow network identifier. ProdView IDFLOWNET.
+
+      - name: eid
+        description: >
+          Well EID (Enterprise Identifier). Resolved from prodview_unit_id
+          (primary) or api_10 (fallback) via well_360. NULL for ~27% of rows —
+          historical completions and non-operated wells not yet in the well_360 spine.
+          See model-level description for full rate breakdown.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: >
+          True when the EID could not be resolved through either the prodview_unit_id
+          or api_10 join paths. Indicates non-operated, SWD, or wells not yet in well_360.
+        data_tests:
+          - not_null
+
+      - name: status_date
+        description: Effective date of this status record. ProdView DTTM.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: status
+        description: >
+          Completion operating status at this point in time. Common values:
+          'Producing', 'Shut In', 'Injecting', 'Abandoned'. ProdView STATUS.
+
+      - name: primary_fluid_type
+        description: Primary fluid type at this status snapshot. ProdView PRIMARYFLUIDTYP.
+
+      - name: flow_direction
+        description: Flow direction (producer/injector). ProdView FLOWDIRECTION.
+
+      - name: commingled
+        description: Whether the completion is commingled with others. ProdView COMMINGLED.
+
+      - name: oil_or_condensate
+        description: Whether the primary hydrocarbon is oil or condensate. ProdView TYPFLUIDPROD.
+
+      - name: completion_type
+        description: Completion type (e.g., vertical, horizontal, frac). ProdView TYPCOMPLETION.
+
+      - name: production_method
+        description: Production method (e.g., flowing, pumping, gas lift). ProdView METHODPROD.
+
+      - name: calc_lost_production
+        description: Whether to calculate lost production for this status. ProdView CALCLOSTPROD.
+
+      - name: include_in_well_count
+        description: Whether to include in well count reporting. ProdView WELLCOUNTINCL.
+
+      - name: comments
+        description: Status comments. ProdView COM.
+
+      - name: user_txt1
+        description: User-defined text field 1. ProdView USERTXT1.
+      - name: user_txt2
+        description: User-defined text field 2. ProdView USERTXT2.
+      - name: user_txt3
+        description: User-defined text field 3. ProdView USERTXT3.
+      - name: user_num1
+        description: User-defined numeric field 1. ProdView USERNUM1.
+      - name: user_num2
+        description: User-defined numeric field 2. ProdView USERNUM2.
+      - name: user_num3
+        description: User-defined numeric field 3. ProdView USERNUM3.
+
+      - name: created_by
+        description: User who created the status record. ProdView SYSCREATEUSER.
+      - name: created_at_utc
+        description: Record creation timestamp (UTC). ProdView SYSCREATEDATE.
+      - name: modified_by
+        description: User who last modified the record. ProdView SYSMODUSER.
+      - name: modified_at_utc
+        description: Last modification timestamp (UTC). ProdView SYSMODDATE.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.
+
+  - name: fct_artificial_lift_daily
+    description: >
+      Daily operational readings for artificial lift installations per ProdView
+      completion. Covers both plunger lift (pvUnitCompPumpPlunger) and rod pump
+      (pvUnitCompPumpRod) in a single UNION fact with a `lift_type` discriminator.
+
+      Enables artificial lift performance analytics: trip count trends, travel time
+      monitoring, SPM and stroke length tracking, and per-completion efficiency analysis.
+
+      **Grain:** one row per daily reading per lift installation.
+      Natural key: (id_rec, lift_type). Surrogate key: MD5(id_rec || lift_type).
+
+      **Lift type hierarchy (both go through artificial_lift header):**
+      - Plunger: readings → plunger_lifts → artificial_lift_header → completion → unit → well_360
+        (plunger_lifts.completion_id maps to artificial_lift.id_rec, not directly to completions)
+      - Rod pump: entries → rod_pump_configs → artificial_lift_header → completion → unit → well_360
+
+      **Lift-type-specific columns:** Plunger columns (travel time, trip counts, duration)
+      are NULL for rod_pump rows. Rod pump columns (spm, stroke_length_in, run_time_pct,
+      vol_per_day_calc_bbl) are NULL for plunger rows.
+
+      **Rows:** ~79K as of Sprint 9 (61K plunger + 18K rod pump).
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: artificial_lift_daily_sk
+        description: Surrogate key. MD5(id_rec || lift_type). Unique per reading.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: Source reading record ID (natural key within lift_type).
+        data_tests:
+          - not_null
+
+      - name: lift_type
+        description: >
+          Lift installation type discriminator. Either 'plunger' (pvUnitCompPumpPlunger)
+          or 'rod_pump' (pvUnitCompPumpRod).
+        data_tests:
+          - not_null
+
+      - name: id_rec_comp
+        description: >
+          FK to pvUnitComp (completion record ID). Resolution path:
+          plunger readings → plunger_lifts.completion_id;
+          rod pump entries → rod_pump_configs → artificial_lift_header.id_rec_parent.
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID resolved via completions → unit → well_360. NULL for completions
+          not registered in the well_360 spine.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID could not be resolved via either prodview_unit_id or api_10.
+        data_tests:
+          - not_null
+
+      - name: reading_date
+        description: Date of the daily reading. Entry_date for plunger; observation_date for rod pump.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: on_pressure_psi
+        description: >
+          Plunger on-pressure in PSI (converted from kPa). NULL for rod_pump rows.
+
+      - name: off_pressure_psi
+        description: Off-pressure in PSI. Currently NULL for both lift types (reserved).
+
+      - name: total_trips_or_cycles
+        description: Total trip/cycle count for the day. Plunger only; NULL for rod_pump.
+
+      - name: successful_trips_or_arrivals
+        description: Successful trips (plunger arrivals). Plunger only; NULL for rod_pump.
+
+      - name: failed_trips_or_misses
+        description: Failed trips (plunger misses). Plunger only; NULL for rod_pump.
+
+      - name: duration_on_minutes
+        description: Duration on-time in minutes (plunger). NULL for rod_pump.
+
+      - name: duration_off_minutes
+        description: Duration off-time in minutes (plunger). NULL for rod_pump.
+
+      - name: after_flow_time_hours
+        description: After-flow time in hours (plunger). NULL for rod_pump.
+
+      - name: travel_time_avg_minutes
+        description: Average plunger travel time in minutes. NULL for rod_pump.
+
+      - name: travel_time_max_minutes
+        description: Maximum plunger travel time in minutes. NULL for rod_pump.
+
+      - name: travel_time_min_minutes
+        description: Minimum plunger travel time in minutes. NULL for rod_pump.
+
+      - name: travel_time_target_minutes
+        description: Target plunger travel time in minutes. NULL for rod_pump.
+
+      - name: spm
+        description: Strokes per minute (rod pump). NULL for plunger.
+
+      - name: stroke_length_in
+        description: Stroke length in inches (rod pump; converted from meters). NULL for plunger.
+
+      - name: run_time_pct
+        description: Run time percentage (rod pump). NULL for plunger.
+
+      - name: vol_per_day_calc_bbl
+        description: Calculated volume per day in barrels (rod pump; converted from m³). NULL for plunger.
+
+      - name: comments
+        description: Operator comments on the reading.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.
+
+  - name: fct_meter_readings_daily
+    description: >
+      Daily raw measurement readings from ProdView's meter hierarchy, upstream
+      of the allocation engine. Covers three meter types in a single UNION fact
+      with a `meter_type` discriminator. This is the raw gauge/reading layer —
+      allocation outputs from these meters flow into fct_well_production_daily.
+
+      **Grain:** one row per daily reading per meter installation per meter type.
+      Natural key: (id_rec, meter_type). Surrogate key: MD5(id_rec || meter_type).
+
+      **EID resolution (2-hop):** reading.id_rec_parent → meter_header.id_rec_parent (unit_id)
+      → well_360.prodview_unit_id. Resolution rates vary by meter type:
+      liquid=83.4%, gas=67.4%, gas_pd=25.5%. Lower rates reflect facility-level
+      battery meters without per-well EIDs (similar to tank inventory).
+
+      **Meter types:**
+      - liquid: pvUnitMeterLiquid — oil/condensate and water meters (BSW, volumes)
+      - gas: pvUnitMeterOrifice — gas orifice meters (pressure, temperature, MCF, heat)
+      - gas_pd: pvUnitMeterPdGas — positive displacement gas meters (reading value, MCF)
+
+      **Rows:** ~7.4M as of Sprint 10 (3M liquid + 4.1M gas + 236K gas_pd).
+      Materialization: incremental, watermark = _fivetran_synced per meter_type.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - id_rec
+              - meter_type
+    columns:
+      - name: meter_reading_sk
+        description: Surrogate key. MD5(id_rec || meter_type). Unique per reading.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: Source reading record ID (natural key within meter_type).
+        data_tests:
+          - not_null
+
+      - name: meter_type
+        description: >
+          Meter type discriminator. Values: 'liquid', 'gas', 'gas_pd'.
+        data_tests:
+          - not_null
+
+      - name: meter_id_rec
+        description: FK to the meter header record (pvUnitMeterLiquid, pvUnitMeterOrifice, or pvUnitMeterPdGas).
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID resolved via meter_header.id_rec_parent (unit_id) → well_360.
+          NULL for facility-level battery meters without per-well EIDs.
+          liquid=83.4%, gas=67.4%, gas_pd=25.5% resolution as of Sprint 10.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when EID could not be resolved. Includes facility-level battery meters.
+        data_tests:
+          - not_null
+
+      - name: reading_date
+        description: Date of the meter reading.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: meter_name
+        description: Meter installation name from the meter header record.
+
+      - name: temperature_f
+        description: Measurement temperature in degrees Fahrenheit (where applicable).
+
+      - name: pressure_psi
+        description: >
+          Measurement pressure in PSI. For liquid=volume pressure;
+          for gas=static pressure; for gas_pd=pressure reading.
+
+      - name: hcliq_volume_bbl
+        description: Hydrocarbon liquid volume in barrels. Liquid meter only; NULL for gas types.
+
+      - name: water_volume_bbl
+        description: Water volume in barrels. Liquid meter only; NULL for gas types.
+
+      - name: uncorrected_volume_bbl
+        description: Uncorrected total volume in barrels. Liquid meter only.
+
+      - name: corrected_volume_bbl
+        description: Corrected total volume in barrels. Liquid meter only.
+
+      - name: bsw_pct
+        description: Basic sediment and water percentage (final calculated). Liquid meter only.
+
+      - name: sample_density_api
+        description: Sample density in API gravity. Liquid meter only.
+
+      - name: is_verified
+        description: Whether the reading has been verified. Liquid meter only; NULL for gas types.
+
+      - name: gas_volume_mcf
+        description: Calculated gas volume in MCF. Gas and gas_pd meters only; NULL for liquid.
+
+      - name: heat_mmbtu
+        description: Heat content in MMBtu. Gas and gas_pd meters only; NULL for liquid.
+
+      - name: heat_factor_btu_per_ft3
+        description: Heat factor in BTU/ft3. Gas and gas_pd meters only; NULL for liquid.
+
+      - name: static_pressure_psi
+        description: Static pressure in PSI. Gas orifice meter only; NULL for liquid and gas_pd.
+
+      - name: differential_pressure_psi
+        description: Differential pressure in PSI. Gas orifice meter only; NULL for liquid and gas_pd.
+
+      - name: c_prime_factor
+        description: C-prime orifice calculation factor. Gas orifice meter only; NULL for liquid and gas_pd.
+
+      - name: reading_value
+        description: Raw meter register reading. Gas PD meter only; NULL for liquid and gas.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.
+
+  - name: fct_well_distribution_daily
+    description: >
+      Daily product distribution records for ProdView completions, representing
+      where produced volumes went — downstream of the allocation engine. Covers
+      the full NGL hydrocarbon component breakdown (C1 through C7+, N2, CO2, H2S)
+      plus outlet routing references.
+
+      **Distinct from fct_well_production_daily:** The allocation fact carries
+      disposition category totals (sales, fuel, vent, injected). This model
+      adds full NGL component composition (C1/C2/C3+) and outlet routing context
+      not available anywhere else in the mart. These are the same source-system
+      records (PVT_PVUNITDISPMONTHDAY) but at a different analytical layer.
+
+      **Grain:** one row per disposition record (PVT_PVUNITDISPMONTHDAY.IDREC).
+
+      **EID resolution (1-hop):** disposition.unit_id → well_360.prodview_unit_id.
+      The disposition table carries the unit_id directly — no completion hop needed.
+      99.6% resolution rate (24.75M / 24.86M rows) as of Sprint 10.
+
+      **Rows:** ~24.75M as of Sprint 10.
+      Materialization: incremental, watermark = _fivetran_synced.
+    config:
+      tags: ["marts", "fo", "well_360"]
+    columns:
+      - name: distribution_daily_sk
+        description: Surrogate key. MD5(id_rec). Unique per disposition record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: id_rec
+        description: ProdView disposition record ID (PVT_PVUNITDISPMONTHDAY natural key).
+        data_tests:
+          - not_null
+
+      - name: eid
+        description: >
+          Well EID resolved via unit_id → well_360.prodview_unit_id (1-hop).
+          99.6% resolution rate; 0.4% unresolved for non-operated or unregistered units.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('well_360')
+                field: eid
+              config:
+                severity: warn
+
+      - name: is_eid_unresolved
+        description: True when unit_id did not match any well_360.prodview_unit_id.
+        data_tests:
+          - not_null
+
+      - name: disposition_date
+        description: Date of the disposition record.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: unit_id
+        description: ProdView unit record ID — the FK used for 1-hop EID resolution.
+
+      - name: completion_id
+        description: ProdView completion record ID for this disposition row.
+
+      - name: outlet_send_id
+        description: Outlet routing destination — where the product was sent.
+
+      - name: disposition_unit_id
+        description: Receiving unit record ID for the disposition.
+
+      - name: hcliq_volume_bbl
+        description: Total hydrocarbon liquid volume in barrels.
+
+      - name: gas_volume_mcf
+        description: Total gas volume in MCF.
+
+      - name: water_volume_bbl
+        description: Total water volume in barrels.
+
+      - name: c1_gas_volume_mcf
+        description: Methane (C1) gas volume in MCF.
+
+      - name: c2_gas_volume_mcf
+        description: Ethane (C2) gas volume in MCF.
+
+      - name: c3_gas_volume_mcf
+        description: Propane (C3) gas volume in MCF.
+
+      - name: heat_content_mmbtu
+        description: Total heat content in MMBtu.
+
+      - name: _loaded_at
+        description: Timestamp when dbt loaded this row.

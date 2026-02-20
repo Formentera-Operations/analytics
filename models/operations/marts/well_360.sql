@@ -622,6 +622,9 @@ final as (
 
         -- Well type from name patterns (separate from well_type from CC/Enverus)
         -- Placed here so we can reference the golden well_name alias resolved above
+        -- NOTE: Name-pattern matching misses many horizontals whose names don't end in 'H'
+        -- (e.g. Bakken BMB/RSU names, SCOOP/STACK location-coded names). Use
+        -- well_type_canonical below for all analytics and dashboards.
         case
             when upper(well_name) like '%SWD%' or upper(well_name) like '%DISPOSAL%' then 'SWD'
             -- Injector: name token OR unified status (catches status-based injectors without INJ in name)
@@ -632,6 +635,34 @@ final as (
             when cost_center_type_name = 'Well' then 'Vertical/Conventional'
             else 'Other'
         end as well_type_oda,
+
+        -- Canonical well type: uses WellView/ProdView completion evidence to override
+        -- name-pattern misclassifications in well_type_oda.
+        -- 361 operated wells are classified "Vertical/Conventional" by name pattern
+        -- but have laterals >=3K ft with 40+ stages — unambiguously horizontal.
+        -- These represent $468M cumulative revenue hidden in the "vertical" bucket.
+        --
+        -- Priority order:
+        -- 1. SWD / Injector — status-based, not overridden by completion data
+        -- 2. Horizontal evidence (lateral >= 3000 ft OR stages >= 10) → overrides all name patterns
+        --    (incl. UNIT names — "UNIT" in STX Eagle Ford is acreage naming, not a well type)
+        -- 3. Fall through to name-pattern result (Unit Well, H suffix, Vertical/Conventional, Other)
+        case
+            when upper(well_name) like '%SWD%' or upper(well_name) like '%DISPOSAL%' then 'SWD'
+            when unified_status = 'INJECTING' or upper(well_name) like '%INJ%' then 'Injector'
+            -- Completion evidence overrides all name patterns (incl. UNIT names):
+            -- "UNIT" in STX Eagle Ford is a location/acreage naming convention,
+            -- not a well type. A well with a 12K ft lateral is Horizontal regardless
+            -- of whether it's named "XXXXX-UNIT" or ends in H.
+            when coalesce(lateral_length_ft, 0) >= 3000 then 'Horizontal'
+            when coalesce(stimulated_stages, 0) >= 10 then 'Horizontal'
+            -- No lateral/stage evidence — fall through to name-pattern classification
+            when upper(well_name) like '%UNIT%' then 'Unit Well'
+            when regexp_like(upper(well_name), '.*[0-9]+[MW]?X?H(-[A-Z0-9]+)?$') then 'Horizontal'
+            when upper(well_name) like '%H-LL%' or upper(well_name) like '%H-SL%' then 'Horizontal'
+            when cost_center_type_name = 'Well' then 'Vertical/Conventional'
+            else 'Other'
+        end as well_type_canonical,
 
         -- Activity status: human-friendly label derived from unified_status
         -- unified_status uses normalized UPPER_SNAKE_CASE from normalize_well_status() UDF
