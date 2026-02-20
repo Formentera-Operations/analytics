@@ -10,3 +10,8 @@ sources:
           Owner revenue owner distributions by well/product/production date. (Estuary batch, ~61M rows). 
           Identifies payees in suspense and redistributed ouchers. 
           Grain: one row per owner revenue distribution line item. 
+      - name: ODA_REVENUEPENDINGREDISTRIBUTION
+        description: |
+          Pending revenue redistribution jobs from Quorum OnDemand Accounting (Estuary batch), ~10k rows).
+          Grain: one row per pending redistribution job (id).
+          Captures filter criteria and configuration used when triggering a revenue redistribution run.

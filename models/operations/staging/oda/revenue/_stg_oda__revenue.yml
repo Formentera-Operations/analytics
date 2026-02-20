@@ -152,3 +152,89 @@ models:
         description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
       - name: _flow_published_at
         description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
+ # ==========================================================================
+  # stg_oda__revenuependingredistribution
+  # ==========================================================================
+  - name: stg_oda__revenuependingredistribution
+    description: |
+      Staging model for ODA Revenue Pending Redistribution jobs.
+      Source: ODA_REVENUEPENDINGREDISTRIBUTION (Estuary batch)
+      Grain: One row per pending redistribution job (id)
+      Note: Captures filter criteria and configuration used when triggering a revenue redistribution run.
+      Column list validated against information_schema.columns on 2026-02-20.
+    columns:
+      - name: revenue_pending_redistribution_sk
+        description: Surrogate key derived from id
+
+      # -- identifiers
+      - name: id
+        description: Primary key — GUID
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_pending_redistribution_identity
+        description: "Numeric identity sequence for this redistribution record. Source: REVENUEPENDINGREDISTRIBUTIONIDENTITY (NUMBER 38,0)"
+      - name: voucher_id
+        description: "FK to stg_oda__voucher_v2 — GL voucher associated with this redistribution job. Source: VOUCHERID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: filter_company_id
+        description: "FK to stg_oda__company_v2 — company scope filter for this redistribution run. Source: FILTERCOMPANYID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: filter_owner_id
+        description: "FK to stg_oda__owner_v2 — optional owner scope filter. Source: FILTEROWNERID"
+      - name: filter_owner_group_id
+        description: "Optional owner group scope filter. Source: FILTEROWNERGROUPID"
+      - name: filter_product_id
+        description: "FK to stg_oda__product — optional product scope filter. Source: FILTERPRODUCTID"
+      - name: filter_well_id
+        description: "FK to stg_oda__wells — optional well scope filter. Source: FILTERWELLID"
+      - name: filter_well_group_id
+        description: "Optional well group scope filter. Source: FILTERWELLGROUPID"
+      - name: reset_suspense_category_id
+        description: "FK to suspense category to reset distributions to during redistribution. Source: RESETSUSPENSECATEGORYID"
+
+      # -- configuration
+      - name: cash_date_source_id
+        description: "Integer code controlling which date is used as the cash date for this redistribution. Source: CASHDATESOURCEID (NUMBER 38,0)"
+      - name: division_of_interest_source_id
+        description: "Integer code controlling which DOI version is applied during redistribution. Source: DIVISIONOFINTERESTSOURCEID (NUMBER 38,0)"
+      - name: reset_payment_status_id
+        description: "Integer code for the payment status distributions are reset to during this redistribution. Source: RESETPAYMENTSTATUSID (NUMBER 38,0)"
+
+      # -- filter dates
+      - name: filter_from_production_date
+        description: "Start of production date range filter applied to this redistribution run. Source: FILTERFROMPRODUCTIONDATE (DATE)"
+      - name: filter_thru_production_date
+        description: "End of production date range filter applied to this redistribution run. Source: FILTERTHRUPRODUCTIONDATE (DATE)"
+
+      # -- flags
+      - name: is_filter_payable
+        description: "True if the redistribution run is filtered to only payable distributions. Source: FILTERPAYABLE (BOOLEAN)"
+      - name: is_suppress_gross
+        description: "True if gross revenue amounts should be suppressed during redistribution. Source: SUPPRESSGROSS (BOOLEAN)"
+
+      # -- audit
+      - name: created_at
+        description: "Record creation timestamp in ODA. Source: CREATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: create_event_id
+        description: "Event ID for the creation transaction. Source: CREATEEVENTID"
+      - name: updated_at
+        description: "Record last update timestamp in ODA. Source: UPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: update_event_id
+        description: "Event ID for the most recent update transaction. Source: UPDATEEVENTID"
+      - name: record_inserted_at
+        description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: record_updated_at
+        description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+
+      # -- dbt metadata
+      - name: _loaded_at
+        description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
+      - name: _flow_published_at
+        description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
