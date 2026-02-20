@@ -12,7 +12,7 @@ ODA_BATCH_ODA_WELL: Well master records. Each row is a well (or property/unit) i
   CODESORT(txt) #Sortable version of the code
   NAME(txt) #Well name
   APINUMBER(txt) #API well number (state-assigned unique well identifier)
-  PROPERTYREFERENCECODE(txt) #Formentera EID (6-char property identifier). Primary cross-system join key to WellView, ProdView, and ComboCurve. Maps to well_360.eid. Direct EID value — no parsing needed (unlike CODE which requires right(CODE, 6)).
+  PROPERTYREFERENCECODE(txt) #Well classification code (OPERATED, NON-OPERATED, ACCOUNTING, CONTRACT_OP, etc.). Used as op/non-op classifier in int_well__oda. NOT the EID — despite the field name suggesting a cross-reference.
 
   # -- Location --
   COUNTRYISOALPHA2CODE(txt) #ISO 3166-1 alpha-2 country code (e.g., US)
