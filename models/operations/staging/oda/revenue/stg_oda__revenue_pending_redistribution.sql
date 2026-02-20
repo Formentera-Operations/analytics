@@ -20,6 +20,7 @@
     - Timestamps are TIMESTAMP_LTZ in source → cast to ::timestamp_ntz per convention
     - _meta/op excluded — batch table, never contains 'd' operations
     - FLOW_DOCUMENT excluded — large JSON blob, not needed downstream
+    - Renamed from stg_oda__revenuependingredistribution to snake_case in M2 sprint
     - Validated against information_schema.columns on 2026-02-20
 #}
 
@@ -30,42 +31,42 @@ source as (
 ),
 
 renamed as (
-    select 
+    select
         -- identifiers
-        ID::varchar                                         as id,
-        REVENUEPENDINGREDISTRIBUTIONIDENTITY::int           as revenue_pending_redistribution_identity,
-        VOUCHERID::varchar                                  as voucher_id,
-        FILTERCOMPANYID::varchar                            as filter_company_id,
-        FILTEROWNERID::varchar                              as filter_owner_id,
-        FILTEROWNERGROUPID::varchar                         as filter_owner_group_id,
-        FILTERPRODUCTID::varchar                            as filter_product_id,
-        FILTERWELLID::varchar                               as filter_well_id,
-        FILTERWELLGROUPID::varchar                          as filter_well_group_id,
-        RESETSUSPENSECATEGORYID::varchar                    as reset_suspense_category_id,
+        ID::varchar as id,
+        REVENUEPENDINGREDISTRIBUTIONIDENTITY::int as revenue_pending_redistribution_identity,
+        VOUCHERID::varchar as voucher_id,
+        FILTERCOMPANYID::varchar as filter_company_id,
+        FILTEROWNERID::varchar as filter_owner_id,
+        FILTEROWNERGROUPID::varchar as filter_owner_group_id,
+        FILTERPRODUCTID::varchar as filter_product_id,
+        FILTERWELLID::varchar as filter_well_id,
+        FILTERWELLGROUPID::varchar as filter_well_group_id,
+        RESETSUSPENSECATEGORYID::varchar as reset_suspense_category_id,
 
         -- configuration
-        CASHDATESOURCEID::int                               as cash_date_source_id,
-        DIVISIONOFINTERESTSOURCEID::int                     as division_of_interest_source_id,
-        RESETPAYMENTSTATUSID::int                           as reset_payment_status_id,
+        CASHDATESOURCEID::int as cash_date_source_id,
+        DIVISIONOFINTERESTSOURCEID::int as division_of_interest_source_id,
+        RESETPAYMENTSTATUSID::int as reset_payment_status_id,
 
         -- filter dates
-        FILTERFROMPRODUCTIONDATE::date                      as filter_from_production_date,
-        FILTERTHRUPRODUCTIONDATE::date                      as filter_thru_production_date,
+        FILTERFROMPRODUCTIONDATE::date as filter_from_production_date,
+        FILTERTHRUPRODUCTIONDATE::date as filter_thru_production_date,
 
         -- flags (confirmed native BOOLEAN)
-        FILTERPAYABLE::boolean                              as is_filter_payable,
-        SUPPRESSGROSS::boolean                              as is_suppress_gross,
+        FILTERPAYABLE::boolean as is_filter_payable,
+        SUPPRESSGROSS::boolean as is_suppress_gross,
 
         -- audit
-        CREATEDATE::timestamp_ntz                           as created_at,
-        CREATEEVENTID::varchar                              as create_event_id,
-        UPDATEDATE::timestamp_ntz                           as updated_at,
-        UPDATEEVENTID::varchar                              as update_event_id,
-        RECORDINSERTDATE::timestamp_ntz                     as record_inserted_at,
-        RECORDUPDATEDATE::timestamp_ntz                     as record_updated_at,
+        CREATEDATE::timestamp_ntz as created_at,
+        CREATEEVENTID::varchar as create_event_id,
+        UPDATEDATE::timestamp_ntz as updated_at,
+        UPDATEEVENTID::varchar as update_event_id,
+        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
+        RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
 
         -- ingestion metadata
-        FLOW_PUBLISHED_AT::timestamp_tz                     as _flow_published_at
+        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at
 
     from source
 ),
