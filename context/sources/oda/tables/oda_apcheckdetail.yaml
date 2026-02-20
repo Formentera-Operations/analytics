@@ -1,0 +1,40 @@
+# oda / accounts_payable / ODA_APCHECKDETAIL
+# 21 columns, 324,764 rows. AP check-to-invoice payment allocation detail.
+# Not yet staged.
+#
+ODA_APCHECKDETAIL: AP check detail records. Each row allocates an AP check payment to a specific AP invoice. Contains payment amount, discount taken, and federal/state tax withholding amounts. Links APCheck (payment header) to APInvoice (vendor invoice). Enables full AP payment reconciliation and vendor payment analysis.
+
+  # -- Identifiers --
+  ID(txt) #Primary key (GUID)
+  APCHECKDETAILIDENTITY(int) #ODA internal sequence identity
+
+  # -- Key Relationships --
+  CHECKID(txt) #FK to ODA_APCHECK.ID — parent AP check
+  INVOICEID(txt) #FK to ODA_APINVOICE.ID — the AP invoice being paid
+  COMPANYID(txt) #FK to ODA_BATCH_ODA_COMPANY_V2.ID — operating company
+  VENDORID(txt) #FK to ODA_BATCH_ODA_VENDOR_V2.ID — vendor being paid
+  VOUCHERID(txt) #FK to voucher record linking to GL posting
+
+  # -- Financial --
+  PAYMENTAMOUNT(float) #Payment amount applied to the invoice
+  DISCOUNTAMOUNT(float) #Discount amount taken on this payment
+  FEDERALWITHHOLDING(float) #Federal tax withholding amount
+  STATEWITHHOLDING(float) #State tax withholding amount
+
+  # -- Flags --
+  VOIDED(bool) #Whether this check detail has been voided
+
+  # -- Foreign Currency --
+  GAINLOSSEXCHANGERATEID(txt) #Exchange rate ID for gain/loss calculation
+  GAINLOSSPOSTEDTHRUDATE(ts) #Date through which gain/loss has been posted
+
+  # -- Audit --
+  CREATEDATE(ts) #Record creation timestamp in ODA
+  UPDATEDATE(ts) #Last update timestamp in ODA
+  RECORDINSERTDATE(ts) #Estuary record insert timestamp
+  RECORDUPDATEDATE(ts) #Estuary record update timestamp
+
+  # -- CDC Metadata --
+  _meta/op(txt) #Estuary operation type (c=create, u=update, d=delete)
+  FLOW_PUBLISHED_AT(ts) #Estuary publication timestamp
+  FLOW_DOCUMENT(variant) #Full document as JSON

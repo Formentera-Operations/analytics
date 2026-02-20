@@ -1,0 +1,18 @@
+# oda / revenue_distribution / RevenueDeductionType_V2
+# NOT IN SNOWFLAKE — schema from entity_model.md. Estuary not syncing this table.
+# Not yet staged. Requires Estuary configuration to add to batch connector.
+#
+# Expected Snowflake table name: ODA_BATCH_ODA_REVENUEDEDUCTIONTYPE_V2
+# (lookup table, likely small — <100 rows)
+#
+RevenueDeductionType_V2: Revenue deduction type lookup. Classifies deduction categories (e.g., severance tax, transportation, marketing, compression). Used by RevenueDeckDeduction to categorize deduction rates on deck participants.
+
+  # -- Expected Key Columns (from entity_model.md) --
+  # Column names below are ESTIMATED based on ODA naming conventions.
+  # Actual column names must be validated against information_schema when Estuary begins syncing.
+
+  ID(txt) #Primary key (GUID) — expected
+  CODE(txt) #Deduction type code (short code) — expected
+  CDEXCODE(txt) #CDEX standard code for electronic data exchange — expected
+  NAME(txt) #Deduction type display name — expected
+  ACTIVE(bool) #Whether this deduction type is currently active — expected

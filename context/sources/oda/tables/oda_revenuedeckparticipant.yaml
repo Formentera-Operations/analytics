@@ -1,5 +1,5 @@
 # oda / revenue_expense_decks / ODA_REVENUEDECKPARTICIPANT
-# 27 columns, 196,069,668 rows. Revenue deck participant interest allocations.
+# 27 columns, 196,289,475 rows. Revenue deck participant interest allocations.
 # Maps to stg_oda__revenue_deck_participant.
 #
 # NOTE: This is the largest ODA table (~196M rows). Each row is an owner's

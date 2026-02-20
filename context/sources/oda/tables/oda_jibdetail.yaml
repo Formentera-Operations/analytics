@@ -1,5 +1,5 @@
 # oda / supporting / ODA_JIBDETAIL
-# 53 columns, 63,213,576 rows. Joint Interest Billing normalized detail records.
+# 53 columns, 63,477,722 rows. Joint Interest Billing normalized detail records.
 # Maps to stg_oda__jibdetail.
 #
 # NOTE: This is the largest ODA CDC table (~63M rows). Contains normalized JIB

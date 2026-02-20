@@ -17,7 +17,7 @@
 # Per-table files (load for single-model work):
 #   tables/{table_name}.yaml
 #
-# Total: 7 domains, 46 staged tables
+# Total: 7 domains, 46 staged tables, 5 unstaged documented
 #
 # Ingestion: Estuary CDC + Estuary Batch into ESTUARY_DB.ESTUARY_SCHEMA
 # Two ODA connectors share one Snowflake schema:
@@ -86,3 +86,21 @@
 #   ODA_USERFIELD (13 cols, 4.8M rows, Batch) -> stg_oda__userfield
 #   ODA_REVISIONSTATE (9 cols, 3 rows, Batch) -> stg_oda__revision_state
 #   ODA_BATCH_ODA_SOURCEMODULE (10 cols, 26 rows, Batch) -> stg_oda__source_module
+#
+# ============================================================
+# NOT STAGED — documented in entity_model.md but not yet staged
+# ============================================================
+#
+# revenue_distribution domain:
+#   ODA_OWNERREVENUEDETAIL_V2 (50 cols, 63M rows) — per-owner revenue line item (owner × well × product × month). IN SNOWFLAKE.
+#   ODA_CHECKREVENUEDETAIL_V2 (21 cols, 46.2M rows) — revenue check-to-detail allocation with working/non-working splits. IN SNOWFLAKE.
+#   RevenueDeckDeduction — deduction rates per deck participant. NOT IN SNOWFLAKE — Estuary not syncing.
+#   RevenueDeductionType_V2 — deduction type lookup (Code, CdexCode, Name). NOT IN SNOWFLAKE — Estuary not syncing.
+#
+# accounts_payable domain:
+#   ODA_APCHECKDETAIL (21 cols, 324K rows) — check-to-invoice payment allocation detail. IN SNOWFLAKE.
+#
+# bonus find (not in original sprint scope):
+#   ODA_CHECKREVENUEDETAILLINEITEM (74.6M rows) — revenue check detail line items. IN SNOWFLAKE.
+#
+# Total unstaged: 3 in Snowflake (ready to stage), 2 not in Snowflake (need Estuary config)
