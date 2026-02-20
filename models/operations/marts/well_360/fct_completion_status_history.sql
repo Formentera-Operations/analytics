@@ -106,13 +106,14 @@ well_dim_primary as (
 well_dim_fallback as (
     -- Fallback path: API-10 → well_360.api_10
     -- Deduplicated to 1 EID per api_10: prefer operated wells, then lowest EID
-    select
-        api_10 as pvunit_api_10,
+    -- nullif guards against blank-string api_10 being grouped into a single partition
+    select  -- noqa: ST06
+        nullif(api_10, '') as pvunit_api_10,
         eid
     from {{ ref('well_360') }}
-    where api_10 is not null
+    where nullif(api_10, '') is not null
     qualify row_number() over (
-        partition by api_10
+        partition by nullif(api_10, '')
         order by
             case when is_operated then 0 else 1 end,
             eid
