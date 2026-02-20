@@ -76,7 +76,26 @@ gl as (
         case
             when accrual_date is null then 'UNCLOSED'
             else 'CLOSED'
-        end as "Closed"
+        end as "Closed",
+
+        -- Columns for pre-computed DAX measures
+        los_category as "LOS Category",
+        case
+            when los_category = 'Capital Expenses' then net_amount
+        end as "Capital Expenses Total",
+        case
+            when
+                los_category = 'Capital Expenses'
+                and afe_type_code in ('CAP_WO', 'FACILITY')
+                then net_amount
+        end as "Capital Expenses",
+        net_volume * -1 as "Net Volume Signed",
+        case
+            when main_account = '703' then net_volume * -1
+        end as "Net NGL Total Gallons",
+        case
+            when main_account = '703' then (net_volume * -1) / 42
+        end as "Net NGL Total Barrels"
     from {{ ref('fct_gl_details') }}
 ),
 
@@ -119,7 +138,13 @@ tbl as (
         "Voucher Code",
         "Voucher Type Code",
         "Well Code",
-        "Well Name"
+        "Well Name",
+        "LOS Category",
+        "Capital Expenses Total",
+        "Capital Expenses",
+        "Net Volume Signed",
+        "Net NGL Total Gallons",
+        "Net NGL Total Barrels"
     from gl
     where
         "Posted" = 'Y'
