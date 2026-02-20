@@ -13,7 +13,7 @@
 
     Notes:
     - Tiny lookup table for ODA module identifiers (GL, AP, AR, JIB, etc.)
-    - Referenced by int_general_ledger_enhanced and int_gl_enhanced via code join
+    - Referenced by int_gl_enhanced via code join
     - No audit columns (CREATEDATE/UPDATEDATE) in source
 #}
 
