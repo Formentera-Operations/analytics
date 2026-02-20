@@ -135,6 +135,58 @@ models:
       - name: balance_90_plus_days
         description: Balance for invoices more than 90 days past due (> 90, no upper bound)
 
+  - name: fct_gl_details
+    description: >
+      Canonical GL fact table. Enriches int_gl_enhanced with account classifications
+      from dim_accounts. Single source of truth for all GL consumers.
+
+      Grain: one row per GL entry (gl_id). ~180M rows.
+      Incremental: merge on gl_id, _flow_published_at watermark.
+      Clustered by company_code, journal_date, main_account, sub_account.
+
+      Consumers:
+      - fct_los (LOS-filtered subset, posted only)
+      - fct_eng_GL (Power BI engineering view, 3-year rolling)
+      - Future: any model needing GL + account classification
+    columns:
+      - name: gl_id
+        description: Natural key — ODA GL entry ID
+        data_tests:
+          - unique
+          - not_null
+      - name: _flow_published_at
+        description: Estuary CDC batch timestamp. Incremental watermark column.
+        data_tests:
+          - not_null
+      - name: company_code
+        description: ODA company code (cluster key)
+      - name: account_id
+        description: FK to dim_accounts.account_id
+      - name: main_account
+        description: Chart of accounts main account number (cluster key)
+      - name: sub_account
+        description: Chart of accounts sub account number (cluster key)
+      - name: is_los_account
+        description: True when account is mapped in the LOS account mapping (from dim_accounts)
+      - name: los_category
+        description: "High-level LOS grouping: Revenue, Lease Operating Expenses, Capital Expenses, G&A, etc."
+      - name: los_section
+        description: Detail section within los_category (direct from SharePoint report header)
+      - name: is_posted
+        description: True when the GL entry has been posted (boolean)
+      - name: journal_date
+        description: Primary reporting date for the GL entry (cluster key)
+      - name: gross_amount
+        description: Gross financial value of the GL entry
+      - name: net_amount
+        description: Net financial value of the GL entry
+      - name: well_id
+        description: FK to ODA well (nullable — not all GL entries are well-level)
+      - name: total_interest_expected
+        description: Expected total interest from revenue deck revision (NRI expected)
+      - name: net_revenue_interest_actual
+        description: Actual net revenue interest from revenue deck revision (NRI actual)
+
   - name: dim_wells
     description: >
       Well dimension for LOS reporting and Cortex Analyst. One row per ODA well.

@@ -16,7 +16,7 @@ selectors:
         - +dim_purchasers
         - +fct_los
         - +dim_los_acct_map
-        - +general_ledger+
+        - +fct_gl_details+
         - +dim_ar_summary
         - +fct_ar_aging_detail
         - +fct_ar_aging_summary
@@ -54,6 +54,9 @@ selectors:
   - name: marts-orm
     definition: +path:models/operations/marts/orm
 
+  - name: platinum
+    definition: +path:models/operations/platinum
+
   - name: default
     default: true
     definition:
@@ -66,3 +69,4 @@ selectors:
         - {method: "selector", value: "marts-drilling"}
         - {method: "selector", value: "marts-well-360"}
         - {method: "selector", value: "marts-orm"}
+        - {method: "selector", value: "platinum"}
