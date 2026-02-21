@@ -248,6 +248,209 @@ models:
       - name: _refreshed_at
         description: Timestamp when this row was generated (current_timestamp() at query time — this is a view).
 
+  - name: fct_deck_interest_history
+    description: >
+      Unified deck interest history covering both revenue and expense deck participants.
+      One row per deck participant with a deck_type discriminator ('revenue' or 'expense').
+
+      Revenue participants carry product_id (from deck_set); expense rows have NULL product_id
+      since expense deck sets have no product column.
+
+      Join chain (4-hop): participant → revision → deck_v2 → deck_set (well_id, effective_date).
+      Revenue: 99.9% resolve to well_id. Expense: 100% resolve.
+
+      Enriched with dim_owners (owner_name, owner_code), dim_wells (well_code, eid),
+      and stg_oda__interest_type (interest_type_code, interest_type_name).
+
+      Use cases:
+      - Full history of ownership interest changes per well
+      - Source for bridge_well_owner (current ownership snapshot)
+      - Sprint 2: refactor dim_company_WI/NRI to source from this fact
+    columns:
+      - name: deck_interest_history_sk
+        description: Surrogate key on (participant_id, deck_type)
+        data_tests:
+          - unique
+          - not_null
+      - name: participant_id
+        description: Natural key from the source participant table
+        data_tests:
+          - not_null
+      - name: deck_type
+        description: "'revenue' or 'expense' — discriminator for the UNION"
+        data_tests:
+          - not_null
+      - name: well_id
+        description: FK to dim_wells — resolved via 4-hop join chain through deck hierarchy
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: owner_id
+        description: FK to dim_owners — the interest holder (97.4% populated on expense, 100% on revenue)
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: interest_type_id
+        description: "FK to stg_oda__interest_type (T=Total, W=Working, R=Royalty, O=Override, S=Same)"
+        data_tests:
+          - not_null
+      - name: decimal_interest
+        description: Ownership interest as a decimal (e.g. 0.125 = 12.5%)
+      - name: effective_date
+        description: Date this deck version became effective (from deck_v2 header)
+      - name: deck_code
+        description: Deck set code identifier
+      - name: product_id
+        description: Product identifier from revenue deck_set (Oil, Gas, NGL, etc.). NULL for expense rows.
+
+  - name: bridge_well_owner
+    description: >
+      Current ownership interest bridge (M:N) between wells and owners. One row per
+      well × owner × deck_type × interest_type combination, filtered to the latest
+      effective date and highest revision number.
+
+      Excludes memo-only participants (is_memo = true).
+
+      Use cases:
+      - "Who has interest in this well?" lookups
+      - Current WI/NRI analysis per well
+      - Owner portfolio queries
+    columns:
+      - name: well_owner_sk
+        description: Surrogate key on (well_id, owner_id, deck_type, interest_type_id)
+        data_tests:
+          - unique
+          - not_null
+      - name: well_id
+        description: FK to dim_wells
+        data_tests:
+          - not_null
+      - name: owner_id
+        description: FK to dim_owners
+        data_tests:
+          - not_null
+      - name: deck_type
+        description: "'revenue' or 'expense'"
+        data_tests:
+          - not_null
+      - name: interest_type_code
+        description: "Interest type code (W=Working, R=Royalty, O=Override, T=Total, S=Same)"
+      - name: decimal_interest
+        description: Current ownership interest as a decimal
+      - name: effective_date
+        description: Effective date of the current deck version
+
+  - name: fct_jib_billing
+    description: >
+      Enriched JIB detail line items. One row per JIB detail entry from stg_oda__jibdetail,
+      enriched with account classifications, well/owner/company/AFE names from dimension tables.
+
+      CRITICAL: JIB and JIBDetail have NO direct FK relationship (parallel CDC views). This model
+      uses JIBDetail as the sole source — investigation confirmed ZERO DETAILID values match JIB.ID.
+
+      Grain: one row per JIB detail line item (jibdetail.id). ~63M rows.
+      Clustered by well_id, owner_id, accrual_date.
+
+      Use cases:
+      - JIB billing analysis and reconciliation
+      - Owner billing statements
+      - Cost allocation reporting by well/AFE/account
+    columns:
+      - name: jib_billing_sk
+        description: Surrogate key on jibdetail.id
+        data_tests:
+          - unique
+          - not_null
+      - name: id
+        description: Natural key — JIB detail line item ID from ODA
+        data_tests:
+          - not_null
+      - name: well_id
+        description: FK to dim_wells — well charged for this billing line
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: owner_id
+        description: FK to dim_owners — owner billed
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: account_id
+        description: FK to dim_accounts — GL account for classification
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to dim_companies
+      - name: afe_id
+        description: FK to dim_afes — AFE associated with this billing line (nullable)
+      - name: accrual_date
+        description: Accrual date for the billing line
+      - name: gross_value
+        description: Gross dollar amount for this billing line
+      - name: net_value
+        description: Net dollar amount (after deck interest)
+      - name: expense_deck_interest
+        description: Expense deck interest percentage applied
+      - name: los_category
+        description: LOS category from dim_accounts enrichment
+
+  - name: fct_ap_payment_activity
+    description: >
+      Invoice-level AP fact with aggregated check payment allocations. One row per AP invoice
+      enriched with payment totals, check counts, and derived status fields.
+
+      Check allocation coverage: 97.1% of invoices have at least one check allocation.
+      Invoices without allocations show zero for all check aggregate columns.
+
+      Grain: one row per AP invoice. ~336K rows.
+
+      Use cases:
+      - AP payment tracking and aging
+      - Vendor spend analysis
+      - Days-to-payment reporting
+      - Overdue invoice identification
+    columns:
+      - name: ap_payment_activity_sk
+        description: Surrogate key on apinvoice.id
+        data_tests:
+          - unique
+          - not_null
+      - name: invoice_id
+        description: Natural key — AP invoice ID from ODA
+        data_tests:
+          - unique
+          - not_null
+      - name: vendor_id
+        description: FK to dim_vendors
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to dim_companies
+      - name: invoice_amount
+        description: Original invoice amount
+      - name: total_check_paid_amount
+        description: Sum of all check payment allocations for this invoice
+      - name: amount_remaining
+        description: "invoice_amount - total_check_paid_amount - total_check_discount_amount"
+      - name: check_count
+        description: Number of distinct checks applied to this invoice
+      - name: is_fully_paid
+        description: True when amount_remaining <= 0
+      - name: is_overdue
+        description: True when due_date < today AND amount_remaining > 0
+      - name: is_posted
+        description: True when invoice is posted in ODA
+      - name: days_to_first_payment
+        description: Days between invoice_date and first non-voided check date (NULL if no checks)
+
   - name: wells
     description: Unified wells data combining project wells and company wells.
     columns:
