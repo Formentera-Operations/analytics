@@ -451,6 +451,74 @@ models:
       - name: days_to_first_payment
         description: Days between invoice_date and first non-voided check date (NULL if no checks)
 
+  - name: fct_revenue_distribution
+    description: >
+      Enriched owner revenue distribution line items. One row per owner revenue detail
+      record from ODA, enriched with dimension lookups for owners, wells, products,
+      purchasers, companies, interest types, payment status, and suspense categories.
+
+      Grain: one row per owner_revenue_detail_v2 record (id). ~61M rows.
+      Incremental: merge on id, _flow_published_at watermark.
+      Clustered by well_id, production_date, owner_id.
+
+      Use cases:
+      - Revenue distribution reporting by owner, well, and product
+      - Payment status tracking and suspense analysis
+      - Purchaser revenue allocation
+      - Revenue reconciliation with check detail
+    columns:
+      - name: revenue_distribution_sk
+        description: Surrogate key on owner_revenue_detail_v2.id
+        data_tests:
+          - unique
+          - not_null
+      - name: id
+        description: Natural key — ODA owner revenue detail ID
+        data_tests:
+          - not_null
+      - name: owner_id
+        description: FK to dim_owners — the interest holder receiving revenue
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: well_id
+        description: FK to dim_wells — well producing the revenue
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: company_id
+        description: FK to dim_companies — operating company
+      - name: product_id
+        description: FK to stg_oda__product — commodity type (oil, gas, NGL, etc.)
+      - name: production_date
+        description: Production period date for this revenue line
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: net_value
+        description: Net dollar value of the revenue distribution
+      - name: net_volume
+        description: Net volume of the commodity
+      - name: decimal_interest
+        description: Ownership interest decimal applied to this distribution
+      - name: payment_status_id
+        description: FK to stg_oda__revenue_payment_status (integer ID, not UUID)
+      - name: payment_status_name
+        description: Human-readable payment status from lookup
+      - name: suspense_category_id
+        description: FK to stg_oda__revenue_suspense_category
+      - name: suspense_category_name
+        description: Human-readable suspense category from lookup
+      - name: eid
+        description: Enterprise ID from well_360 (for cross-system well matching)
+      - name: _flow_published_at
+        description: Estuary batch timestamp — incremental watermark column
+        data_tests:
+          - not_null
+
   - name: wells
     description: Unified wells data combining project wells and company wells.
     columns:
