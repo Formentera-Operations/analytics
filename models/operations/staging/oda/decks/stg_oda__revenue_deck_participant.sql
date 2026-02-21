@@ -40,7 +40,7 @@ renamed as (
         -- interest and suspense
         INTERESTTYPEID::int as interest_type_id,
         try_to_double(DECIMALINTEREST) as decimal_interest,
-        CUSTOMINTERESTTYPEID::int as custom_interest_type_id,
+        CUSTOMINTERESTTYPEID::varchar as custom_interest_type_id,
         SUSPENSECATEGORYID::varchar as suspend_category_id,
 
         -- flags
