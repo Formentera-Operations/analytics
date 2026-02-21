@@ -19,6 +19,7 @@
     - _meta/op excluded — batch table, never contains 'd' operations
     - FLOW_DOCUMENT excluded — large JSON blob, not needed downstream
     - Validated against information_schema.columns on 2026-02-19
+    - Renamed from stg_oda__ownerrevenuedetail_v2 to snake_case in M2 sprint
 #}
 
 with
@@ -28,68 +29,68 @@ source as (
 ),
 
 renamed as (
-    select 
+    select
         -- identifiers
-        ID::varchar                                 as id,
-        OWNERREVENUEDETAILIDENTITY::int             as owner_revenue_detail_identity,
-        OWNERID::varchar                            as owner_id,
-        COMPANYID::varchar                          as company_id,
-        WELLID::varchar                             as well_id,
-        PRODUCTID::varchar                          as product_id,
-        INTERESTTYPEID::int                         as interest_type_id,
-        CUSTOMINTERESTTYPEID::varchar               as custom_interest_type_id,
-        VOUCHERID::varchar                          as voucher_id,
-        CURRENCYID::varchar                         as currency_id,
-        PURCHASERID::varchar                        as purchaser_id,
-        PURCHASERRECEIPTID::varchar                 as purchaser_receipt_id,
-        REVENUEDECKID::varchar                      as revenue_deck_id,
-        REVENUEDECKREVISIONID::varchar              as revenue_deck_revision_id,
-        REDISTRIBUTIONID::varchar                   as redistribution_id,
-        PENDINGREDISTRIBUTIONID::varchar            as pending_redistribution_id,
-        SUSPENSECATEGORYID::varchar                 as suspense_category_id,
-        PENDINGSUSPENSECATEGORYID::varchar          as pending_suspense_category_id,
-        IMPORTDATAID::varchar                       as import_data_id,
-        GROSSEVENTID::varchar                       as gross_event_id,
-        MEMOCOMPANYID::varchar                      as memo_company_id,
+        ID::varchar as id,
+        OWNERREVENUEDETAILIDENTITY::int as owner_revenue_detail_identity,
+        OWNERID::varchar as owner_id,
+        COMPANYID::varchar as company_id,
+        WELLID::varchar as well_id,
+        PRODUCTID::varchar as product_id,
+        INTERESTTYPEID::int as interest_type_id,
+        CUSTOMINTERESTTYPEID::varchar as custom_interest_type_id,
+        VOUCHERID::varchar as voucher_id,
+        CURRENCYID::varchar as currency_id,
+        PURCHASERID::varchar as purchaser_id,
+        PURCHASERRECEIPTID::varchar as purchaser_receipt_id,
+        REVENUEDECKID::varchar as revenue_deck_id,
+        REVENUEDECKREVISIONID::varchar as revenue_deck_revision_id,
+        REDISTRIBUTIONID::varchar as redistribution_id,
+        PENDINGREDISTRIBUTIONID::varchar as pending_redistribution_id,
+        SUSPENSECATEGORYID::varchar as suspense_category_id,
+        PENDINGSUSPENSECATEGORYID::varchar as pending_suspense_category_id,
+        IMPORTDATAID::varchar as import_data_id,
+        GROSSEVENTID::varchar as gross_event_id,
+        MEMOCOMPANYID::varchar as memo_company_id,
 
         -- financial
-        NETVALUE::float                             as net_value,
-        NETVOLUME::float                            as net_volume,
-        NETTEDAMOUNT::float                         as netted_amount,
-        PAIDAMOUNT::float                           as paid_amount,
-        NEXTPAYMENT::float                          as next_payment,
-        DECIMALINTEREST::float                      as decimal_interest,
-        BTUFACTOR::float                            as btu_factor,
+        NETVALUE::float as net_value,
+        NETVOLUME::float as net_volume,
+        NETTEDAMOUNT::float as netted_amount,
+        PAIDAMOUNT::float as paid_amount,
+        NEXTPAYMENT::float as next_payment,
+        DECIMALINTEREST::float as decimal_interest,
+        BTUFACTOR::float as btu_factor,
 
         -- counts / status
-        SIGNMULTIPLIER::int                         as sign_multiplier,
-        CHECKSTUBCOUNT::int                         as check_stub_count,
-        NETTEDDETAILCOUNT::int                      as netted_detail_count,
-        OPENNETTEDDETAILCOUNT::int                  as open_netted_detail_count,
-        PAYMENTSTATUSID::int                        as payment_status_id,
-        STATEMENTSTATUSID::int                      as statement_status_id,
+        SIGNMULTIPLIER::int as sign_multiplier,
+        CHECKSTUBCOUNT::int as check_stub_count,
+        NETTEDDETAILCOUNT::int as netted_detail_count,
+        OPENNETTEDDETAILCOUNT::int as open_netted_detail_count,
+        PAYMENTSTATUSID::int as payment_status_id,
+        STATEMENTSTATUSID::int as statement_status_id,
 
         -- dates
-        ACCRUALDATE::date                           as accrual_date,
-        PRODUCTIONDATE::date                        as production_date,
+        ACCRUALDATE::date as accrual_date,
+        PRODUCTIONDATE::date as production_date,
 
         -- flags (all confirmed native BOOLEAN)
-        DUPLICATEGROSS::boolean                     as is_duplicate_gross,
-        HISTORICAL::boolean                         as is_historical,
-        INCLUDEINACCRUALREPORT::boolean             as is_include_in_accrual_report,
-        MEMOALSOCODEMISSING::boolean                as is_memo_also_code_missing,
-        SUSPENSECATEGORYPROCESSED::boolean          as is_suspense_category_processed,
+        DUPLICATEGROSS::boolean as is_duplicate_gross,
+        HISTORICAL::boolean as is_historical,
+        INCLUDEINACCRUALREPORT::boolean as is_include_in_accrual_report,
+        MEMOALSOCODEMISSING::boolean as is_memo_also_code_missing,
+        SUSPENSECATEGORYPROCESSED::boolean as is_suspense_category_processed,
 
         -- audit
-        CREATEDATE::timestamp_ntz                   as created_at,
-        CREATEEVENTID::varchar                      as create_event_id,
-        UPDATEDATE::timestamp_ntz                   as updated_at,
-        UPDATEEVENTID::varchar                      as update_event_id,
-        RECORDINSERTDATE::timestamp_ntz             as record_inserted_at,
-        RECORDUPDATEDATE::timestamp_ntz             as record_updated_at,
+        CREATEDATE::timestamp_ntz as created_at,
+        CREATEEVENTID::varchar as create_event_id,
+        UPDATEDATE::timestamp_ntz as updated_at,
+        UPDATEEVENTID::varchar as update_event_id,
+        RECORDINSERTDATE::timestamp_ntz as record_inserted_at,
+        RECORDUPDATEDATE::timestamp_ntz as record_updated_at,
 
         -- ingestion metadata
-        FLOW_PUBLISHED_AT::timestamp_tz             as _flow_published_at
+        FLOW_PUBLISHED_AT::timestamp_tz as _flow_published_at
 
     from source
 ),

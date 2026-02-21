@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  # stg_oda__ownerrevenuedetail_v2
+  # stg_oda__owner_revenue_detail_v2
   # ==========================================================================
-  - name: stg_oda__ownerrevenuedetail_v2
+  - name: stg_oda__owner_revenue_detail_v2
     description: |
       Staging model for ODA Owner Revenue Distribution Line Items V2.
       Source: ODA_OWNERREVENUEDETAIL_V2 (Estuary batch, ~61M rows)
@@ -153,9 +153,9 @@ models:
       - name: _flow_published_at
         description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
   # ==========================================================================
-  # stg_oda__revenuependingredistribution
+  # stg_oda__revenue_pending_redistribution
   # ==========================================================================
-  - name: stg_oda__revenuependingredistribution
+  - name: stg_oda__revenue_pending_redistribution
     description: |
       Staging model for ODA Revenue Pending Redistribution jobs.
       Source: ODA_REVENUEPENDINGREDISTRIBUTION (Estuary batch)
@@ -277,15 +277,6 @@ models:
       - name: _loaded_at
         description: Timestamp when record was loaded by dbt
       - name: _flow_published_at
-      - name: updated_at
-        description: Record last update timestamp in ODA
-      - name: record_inserted_at
-        description: Estuary record insert timestamp
-      - name: record_updated_at
-        description: Estuary record update timestamp
-      - name: _loaded_at
-        description: Timestamp when record was loaded by dbt
-      - name: _flow_published_at
         description: Estuary publication timestamp
   # ==========================================================================
   # stg_oda__revenue_payment_status
@@ -313,6 +304,185 @@ models:
         description: "Short payment status name. Source: NAME"
       - name: full_name
         description: "Full payment status name/description. Source: FULLNAME"
+      - name: record_inserted_at
+        description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: record_updated_at
+        description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: _loaded_at
+        description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
+      - name: _flow_published_at
+        description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
+  # ==========================================================================
+  # stg_oda__check_revenue_detail_v2
+  # ==========================================================================
+  - name: stg_oda__check_revenue_detail_v2
+    description: |
+      Staging model for ODA Check Revenue Detail V2.
+      Source: ODA_CHECKREVENUEDETAIL_V2 (Estuary batch, ~46.2M rows)
+      Grain: One row per check-to-detail allocation (id)
+      Each row allocates a revenue check payment to a specific owner revenue detail line
+      with working/non-working interest value and volume splits.
+      Column list validated against information_schema.columns on 2026-02-20.
+    columns:
+      - name: check_revenue_detail_v2_sk
+        description: Surrogate key derived from id
+
+      # -- identifiers
+      - name: id
+        description: "Primary key — GUID. Source: ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: check_revenue_detail_v2_identity
+        description: "ODA internal sequence identity. Source: CHECKREVENUEDETAIL_V2IDENTITY (NUMBER 38,0)"
+      - name: check_revenue_id
+        description: "FK to CheckRevenue — parent revenue check header. Source: CHECKREVENUEID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: owner_revenue_detail_id
+        description: "FK to stg_oda__owner_revenue_detail_v2 — source revenue detail line. Source: OWNERREVENUEDETAILID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__owner_revenue_detail_v2')
+                field: id
+              config:
+                severity: warn
+      - name: well_id
+        description: "FK to stg_oda__wells — well or cost center. Source: WELLID"
+
+      # -- working / non-working splits
+      - name: net_value_working
+        description: "Net revenue value for working interest portions (USD). Source: NETVALUEWORKING (FLOAT)"
+      - name: net_value_non_working
+        description: "Net revenue value for non-working interest portions (royalties, ORRI). Source: NETVALUENONWORKING (FLOAT)"
+      - name: net_volume_working
+        description: "Net production volume for working interest portions. Source: NETVOLUMEWORKING (FLOAT)"
+      - name: net_volume_non_working
+        description: "Net production volume for non-working interest portions. Source: NETVOLUMENONWORKING (FLOAT)"
+
+      # -- payment
+      - name: payment_amount
+        description: "Total payment amount for this check detail line. Source: PAYMENTAMOUNT (FLOAT)"
+
+      # -- flags
+      - name: is_voided
+        description: "True if this check detail has been voided. Source: VOIDED (BOOLEAN)"
+
+      # -- references
+      - name: trial_owner_revenue_detail_id
+        description: "Trial/draft owner revenue detail ID before finalization. Source: TRIALOWNERREVENUEDETAILID"
+
+      # -- audit
+      - name: created_at
+        description: "Record creation timestamp in ODA. Source: CREATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: create_event_id
+        description: "Event ID that created this record. Source: CREATEEVENTID"
+      - name: updated_at
+        description: "Record last update timestamp in ODA. Source: UPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: update_event_id
+        description: "Event ID of last update. Source: UPDATEEVENTID"
+      - name: record_inserted_at
+        description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: record_updated_at
+        description: "Estuary record update timestamp. Source: RECORDUPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: _loaded_at
+        description: Timestamp when this record was loaded by dbt. Set via current_timestamp() in enhanced CTE.
+      - name: _flow_published_at
+        description: "Estuary publication timestamp. Source: FLOW_PUBLISHED_AT (TIMESTAMP_LTZ)"
+  # ==========================================================================
+  # stg_oda__ap_check_detail
+  # ==========================================================================
+  - name: stg_oda__ap_check_detail
+    description: |
+      Staging model for ODA AP Check Detail.
+      Source: ODA_APCHECKDETAIL (Estuary batch, ~324K rows)
+      Grain: One row per AP check-to-invoice payment allocation (id)
+      Each row allocates an AP check payment to a specific AP invoice with payment amount,
+      discount taken, and federal/state tax withholding amounts.
+      Note: Technically accounts payable domain, staged in revenue/ for M2 sprint scope.
+      Column list validated against information_schema.columns on 2026-02-20.
+    columns:
+      - name: ap_check_detail_sk
+        description: Surrogate key derived from id
+
+      # -- identifiers
+      - name: id
+        description: "Primary key — GUID. Source: ID"
+        data_tests:
+          - unique
+          - not_null
+      - name: ap_check_detail_identity
+        description: "ODA internal sequence identity. Source: APCHECKDETAILIDENTITY (NUMBER 38,0)"
+      - name: check_id
+        description: "FK to APCheck — parent AP check header. Source: CHECKID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: invoice_id
+        description: "FK to APInvoice — the AP invoice being paid. Source: INVOICEID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: company_id
+        description: "FK to stg_oda__company_v2 — operating company. Source: COMPANYID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__company_v2')
+                field: id
+              config:
+                severity: warn
+      - name: vendor_id
+        description: "FK to stg_oda__vendor_v2 — vendor being paid. Source: VENDORID"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_oda__vendor_v2')
+                field: id
+              config:
+                severity: warn
+      - name: voucher_id
+        description: "FK to voucher record linking to GL posting. Source: VOUCHERID"
+
+      # -- financial
+      - name: payment_amount
+        description: "Payment amount applied to the invoice. Source: PAYMENTAMOUNT (FLOAT)"
+      - name: discount_amount
+        description: "Discount amount taken on this payment. Source: DISCOUNTAMOUNT (FLOAT)"
+      - name: federal_withholding
+        description: "Federal tax withholding amount. Source: FEDERALWITHHOLDING (FLOAT)"
+      - name: state_withholding
+        description: "State tax withholding amount. Source: STATEWITHHOLDING (FLOAT)"
+
+      # -- flags
+      - name: is_voided
+        description: "True if this check detail has been voided. Source: VOIDED (BOOLEAN)"
+
+      # -- foreign currency
+      - name: gain_loss_exchange_rate_id
+        description: "Exchange rate ID for gain/loss calculation. Source: GAINLOSSEXCHANGERATEID"
+      - name: gain_loss_posted_thru_date
+        description: "Date through which gain/loss has been posted. Source: GAINLOSSPOSTEDTHRUDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+
+      # -- audit
+      - name: created_at
+        description: "Record creation timestamp in ODA. Source: CREATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
+      - name: updated_at
+        description: "Record last update timestamp in ODA. Source: UPDATEDATE (TIMESTAMP_LTZ → timestamp_ntz)"
       - name: record_inserted_at
         description: "Estuary record insert timestamp. Source: RECORDINSERTDATE (TIMESTAMP_LTZ → timestamp_ntz)"
       - name: record_updated_at

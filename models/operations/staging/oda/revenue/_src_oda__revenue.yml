@@ -7,9 +7,9 @@ sources:
     tables:
       - name: ODA_OWNERREVENUEDETAIL_V2
         description: |
-          Owner revenue owner distributions by well/product/production date. (Estuary batch, ~61M rows). 
-          Identifies payees in suspense and redistributed vouchers. 
-          Grain: one row per owner revenue distribution line item. 
+          Owner revenue owner distributions by well/product/production date. (Estuary batch, ~61M rows).
+          Identifies payees in suspense and redistributed vouchers.
+          Grain: one row per owner revenue distribution line item.
       - name: ODA_REVENUEPENDINGREDISTRIBUTION
         description: |
           Pending revenue redistribution jobs from Quorum OnDemand Accounting (Estuary batch), ~10k rows).
@@ -22,3 +22,16 @@ sources:
           Revenue payment status lookup from Quorum OnDemand Accounting (Estuary batch, small lookup).
           Grain: one row per payment status (id).
           Note: ID is a numeric integer, not a GUID — joins use integer key.
+      - name: ODA_CHECKREVENUEDETAIL_V2
+        description: |
+          Revenue check-to-detail allocation records (Estuary batch, ~46.2M rows).
+          Each row allocates a revenue check payment to a specific owner revenue detail line
+          with working/non-working interest value and volume splits.
+          Grain: one row per check-to-detail allocation (id).
+      - name: ODA_APCHECKDETAIL
+        description: |
+          AP check-to-invoice payment allocation detail (Estuary batch, ~324K rows).
+          Each row allocates an AP check payment to a specific AP invoice with payment amount,
+          discount, and federal/state tax withholding amounts.
+          Grain: one row per AP check-to-invoice allocation (id).
+          Note: Technically accounts payable domain, staged here for M2 revenue sprint scope.
